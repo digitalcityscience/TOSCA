@@ -27,7 +27,7 @@ kdialog --yesno "Do you want to remove previous from/via/to points and area?"
                 mv ~/cityapp/data_from_browser/"$(ls -ct1 ~/cityapp/data_from_browser | head -n1)" ~/cityapp/data_from_browser/from.geojson
                 echo "var from_points = " > ~/cityapp/data_from_browser/from_points.js
                 cat ~/cityapp/data_from_browser/from.geojson >> ~/cityapp/data_from_browser/from_points.js;;
-                
+
             "1")
                 FROM=1
                 FROM_MAP=$(kdialog --getexistingdirectory ~/cityapp/grass/global/project/vector/ --title "Select a start point map")
@@ -51,7 +51,7 @@ kdialog --yesno "Do you want to remove previous from/via/to points and area?"
             "2")
                 VIA=2;;
         esac
-        
+
     kdialog --yesnocancel "Target points are required.\n If you want to select target points from the map, click -- Yes -- \n If you want to select a map containing via points, click -- No --\n If you want to use the default target points map, click -- Cancel --"
         case $? in
             "0")
@@ -83,9 +83,9 @@ kdialog --yesno "Do you want to remove previous from/via/to points and area?"
             "2")
                 AREA=2;;
         esac
-    
+
     # Data process
-        
+
         if [ $FROM -eq 0 ]
             then
                 grass ~/cityapp/grass/global/project --exec v.in.ogr -e input=~/cityapp/data_from_browser/from.geojson layer=from output=from_point --overwrite
@@ -102,7 +102,7 @@ kdialog --yesno "Do you want to remove previous from/via/to points and area?"
             "0")
                 grass ~/cityapp/grass/global/project --exec v.in.ogr -e input=~/cityapp/data_from_browser/to.geojson layer=to output=to_point --overwrite
                 TO_POINT="to_point";;
-            "2")  
+            "2")
                 # User selected default to points (points along the roads)
                 # Creating a new map, containing points along the roads
                 grass ~/cityapp/grass/global/project --exec v.to.points input=clipped_lines_highway output=points_on_roads dmax=0.001 --overwrite;;
@@ -112,16 +112,16 @@ kdialog --yesno "Do you want to remove previous from/via/to points and area?"
             "0")
                 grass ~/cityapp/grass/global/project --exec v.in.ogr -e input=~/cityapp/data_from_browser/area.geojson layer=area output=area --overwrite
                 AREA_MAP="area"
-                
+
                 # Clip roads map
                 grass ~/cityapp/grass/global/project --exec v.overlay --overwrite ainput=lines_highway binput=$AREA_MAP operator=not output=clipped_lines_highway --overwrite;;
             "1")
                 # Clip roads map
                 grass ~/cityapp/grass/global/project --exec v.overlay --overwrite ainput=lines_highway binput=$AREA_MAP operator=not output=clipped_lines_highway --overwrite;;
         esac
-        
+
 # Setting region to fit the "selection" map (taken by location_selector), and resolution
-grass ~/cityapp/grass/global/project --exec g.region vector=selection@PERMANENT res=$(cat ~/cityapp/scripts/shared/variables/resolution | tail -n1) 
+grass ~/cityapp/grass/global/project --exec g.region vector=selection@PERMANENT res=$(cat ~/cityapp/scripts/shared/variables/resolution | tail -n1)
 
 # connecting from/via/to point to the clipped network, if neccessary
 # connecting from_point to clipped_lines_highway -- it is a mandatory step
@@ -152,9 +152,9 @@ grass ~/cityapp/grass/global/project --exec v.db.addcolumn map=highways_from_poi
 
     # Kdialog is used to display current speed values,
     kdialog --textinputbox "Do you want to set the speed on the road network? \n If not, the current values will used (km/h).\n If you want to change the values, you may overwrite those. \n Do not remove semicolons from the end of lines." "$(cat ~/cityapp/scripts/shared/variables/roads_speed)" 600 600 > ~/cityapp/scripts/shared/variables/roads_speed
-    
+
     # The following method is not to elegant a for loop would nicer, but this solution is a bit faster. Yes, it is a property of BASH.
-    
+
     ROAD_SPD_1=$(cat ~/cityapp/scripts/shared/variables/roads_speed | head -n1 | tail -n1 | cut -d":" -f2 | sed s'/ //'g)
     ROAD_SPD_2=$(cat ~/cityapp/scripts/shared/variables/roads_speed | head -n2 | tail -n1 | cut -d":" -f2 | sed s'/ //'g)
     ROAD_SPD_3=$(cat ~/cityapp/scripts/shared/variables/roads_speed | head -n3 | tail -n1 | cut -d":" -f2 | sed s'/ //'g)
@@ -183,24 +183,24 @@ grass ~/cityapp/grass/global/project --exec v.db.addcolumn map=highways_from_poi
     # done
 
     # Converting clipped and connected road network map into raster format
-    grass ~/cityapp/grass/global/project --exec v.to.rast input=highways_from_points output=highways_from_points use=attr attribute_column=avg_speed --overwrite 
+    grass ~/cityapp/grass/global/project --exec v.to.rast input=highways_from_points output=highways_from_points use=attr attribute_column=avg_speed --overwrite
 
     # Now the Supplementary lines (CAT_SUPP_LINES) raster map have to be added to map highways_from_points.
     grass ~/cityapp/grass/global/project --exec v.to.rast input=highways_from_points cats=$CAT_SUPP_LINES-1000000000 output=temp use=cat --overwrite
-    
+
     # Now vector zones are created around from_points (its radius is equal to the curren resolution),
     # converted into raster format, and patched to raster map 'temp' (just created in the previous step)
     # from_zones:
-    v.buffer input=from_point output=from_zones distance=$(cat ~/cityapp/scripts/shared/variables/resolution | head -n3 | tail -n1) minordistance=$(cat ~/cityapp/scripts/shared/variables/resolution | head -n3 | tail -n1) --overwrite 
+    v.buffer input=from_point output=from_zones distance=$(cat ~/cityapp/scripts/shared/variables/resolution | head -n3 | tail -n1) minordistance=$(cat ~/cityapp/scripts/shared/variables/resolution | head -n3 | tail -n1) --overwrite
     v.to.rast input=from_zones output=from_zones use=val --overwrite
     r.patch input=temp,from_zones output=temp_zones --overwrite
-    
+
     grass ~/cityapp/grass/global/project --exec r.reclass input=temp_zones output=temp_reclassed rules=~/cityapp/scripts/shared/variables/reclass --overwrite
     grass ~/cityapp/grass/global/project --exec r.patch input=highways_from_points,temp_reclassed output=highways_from_points_full --overwrite
     grass ~/cityapp/grass/global/project --exec r.mapcalc expression="roads_friction=$(cat ~/cityapp/scripts/shared/variables/resolution | head -n3 | tail -n1)/(highways_from_points_full*1000/3600)" --overwrite
     grass ~/cityapp/grass/global/project --exec r.cost -k input=roads_friction output=time_from_to start_points=$FROM_POINT --overwrite
     grass ~/cityapp/grass/global/project --exec r.mapcalc expression="time_from_to_minutes=time_from_to/60" --overwrite
-    
+
     # Growing a bit the result to get a better visualization
     # Result is now ready for to be exported to geoserver
     grass ~/cityapp/grass/global/project --exec r.grow input=time_from_to_minutes@project output=time_map radius=1.001 --overwrite
