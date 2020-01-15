@@ -1,0 +1,4 @@
+First data is the resolution value defined by the user (in meters).
+Second data is the resolution value in decimal degrees, derived from the first data.
+5
+0.000044914662
