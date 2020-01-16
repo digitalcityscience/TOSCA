@@ -6,6 +6,11 @@
 
     <meta charset="UTF-8">
 
+    <script src="./from_points.js"></script>
+    <script src="./via_points.js"></script>
+    <script src="./to_points.js"></script>
+    <script src="./area.js"></script>
+    
     <script src="../../lib/leaflet/leaflet.js"></script>
     <script src="../../lib/leaflet/leaflet.draw.js"></script>
 
@@ -17,6 +22,7 @@
         /* Ezt itt lehetne "html, body"-nak is nevezni meg "body"-nak is. De ha csak "body", akkor nem működik.  */
         html,
         body {
+
             height: 100%;
             margin: 2px;
         }
@@ -113,7 +119,7 @@
         });
 
         /* Marker line, do not remove this text*/
-        var map = new L.Map('map', { center: new L.LatLng(47.681949, 16.595163), zoom: 13 }), drawnItems = L.featureGroup().addTo(map);
+        var map = new L.Map('map', { center: new L.LatLng(35.944444, 14.379562), zoom: 13 }), drawnItems = L.featureGroup().addTo(map);
 
         L.control.layers({
         },
@@ -163,7 +169,7 @@
             var convertedData = 'text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(data));
             /* saving */
             document.getElementById('saving').setAttribute('href', 'data:' + convertedData);
-            document.getElementById('saving').setAttribute('download', 'data.geojson');
+            document.getElementById('saving').setAttribute('download', 'module_01.geojson');
         }
 
         /*------------------------------------------------*/

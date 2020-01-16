@@ -1,0 +1,10 @@
+Select a from point map
+Select a via point map
+Select a target point map
+Select an area map
+Do you want to remove previous calculations and maps taken by module_1? \n If yes, click -- Yes -- \n If you want to preserve, click -- No -- \n If you want to exit now, click -- Cancel -- 
+Start points are required. \n If you want to select 'start' points from the base map, click -- Yes -- \n If you want to select an already imported map containing start points, click -- No -- \n To exit click -- Cancel --
+Via points are optional.\n If you want to select 'via' points from the map, click -- Yes -- \n If you want to select a map containing via points, click -- No -- \n If you do not want to use via points, click -- Cancel --
+Target points are required.\n If you want to select target points from the map, click -- Yes -- \n If you want to select a map containing via points, click -- No -- \n If you want to use the default target points map, click -- Cancel --
+You may define non-accessible area.\n If you want to define an area interactively on the map, click -- Yes -- \n If you want to select a map containing area, click -- No --\n If you do not want to use any area, click -- Cancel --
+Do you want to set the speed on the road network? \n If not, the current values will used (km/h). \n If you want to change the values, you may overwrite those. \n Do not remove semicolons from the end of lines.

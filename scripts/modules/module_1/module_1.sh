@@ -191,10 +191,10 @@ grass ~/cityapp/grass/global/project --exec v.db.addcolumn map=highways_from_poi
     # Now vector zones are created around from_points (its radius is equal to the curren resolution),
     # converted into raster format, and patched to raster map 'temp' (just created in the previous step)
     # from_zones:
-    v.buffer input=from_point output=from_zones distance=$(cat ~/cityapp/scripts/shared/variables/resolution | head -n3 | tail -n1) minordistance=$(cat ~/cityapp/scripts/shared/variables/resolution | head -n3 | tail -n1) --overwrite
-    v.to.rast input=from_zones output=from_zones use=val --overwrite
-    r.patch input=temp,from_zones output=temp_zones --overwrite
-
+    grass ~/cityapp/grass/global/project --exec v.buffer input=from_point output=from_zones distance=$(cat ~/cityapp/scripts/shared/variables/resolution | tail -n1) minordistance=$(cat ~/cityapp/scripts/shared/variables/resolution | tail -n1) --overwrite 
+    grass ~/cityapp/grass/global/project --exec v.to.rast input=from_zones output=from_zones use=val --overwrite
+    grass ~/cityapp/grass/global/project --exec r.patch input=temp,from_zones output=temp_zones --overwrite
+    
     grass ~/cityapp/grass/global/project --exec r.reclass input=temp_zones output=temp_reclassed rules=~/cityapp/scripts/shared/variables/reclass --overwrite
     grass ~/cityapp/grass/global/project --exec r.patch input=highways_from_points,temp_reclassed output=highways_from_points_full --overwrite
     grass ~/cityapp/grass/global/project --exec r.mapcalc expression="roads_friction=$(cat ~/cityapp/scripts/shared/variables/resolution | head -n3 | tail -n1)/(highways_from_points_full*1000/3600)" --overwrite

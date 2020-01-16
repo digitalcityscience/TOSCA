@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Module 1</title>
+        <script src="/home/titusz/cityapp/data_from_browser/from_points.js"></script>
+        <script src="/home/titusz/cityapp/data_from_browser/via_points.js"></script>
+        <script src="/home/titusz/cityapp/data_from_browser/to_points.js"></script>
+        <script src="/home/titusz/cityapp/data_from_browser/area.js"></script>
+
+        <script src="/usr/share/leaflet/leaflet.js"></script>
+        <script src="/usr/share/leaflet/leaflet-src.js"></script>
+        <link rel="stylesheet" href="/usr/share/leaflet/leaflet.css"/>
+        <link rel="shortcut icon" type="image/x-icon" href="/usr/share/leaflet/images/favicon.ico" />
+    
+        <script src="/usr/share/leaflet/addons/jquery-2.1.1.min.js"></script> 
+
+        <script src="/usr/share/leaflet/addons/leaflet_draw/src/Leaflet.draw.js"></script>
+        <script src="/usr/share/leaflet/addons/leaflet_draw/src/Leaflet.Draw.Event.js"></script>
+        <script src="/usr/share/leaflet/addons/leaflet_draw/src/Toolbar.js"></script>
+        <script src="/usr/share/leaflet/addons/leaflet_draw/src/Tooltip.js"></script>
+        <script src="/usr/share/leaflet/addons/leaflet_draw/src/Control.Draw.js"></script>
+        <link rel="stylesheet" href="/usr/share/leaflet/addons/leaflet_draw/src/leaflet.draw.css"/>
+
+        <script src="/usr/share/leaflet/addons/leaflet_draw/src/draw/DrawToolbar.js"></script>
+
+        <script src="/usr/share/leaflet/addons/leaflet_draw/src/edit/EditToolbar.js"></script>
+
+        <script src="/usr/share/leaflet/addons/leaflet_draw/src/edit/handler/EditToolbar.Edit.js"></script>
+        <script src="/usr/share/leaflet/addons/leaflet_draw/src/edit/handler/EditToolbar.Delete.js"></script>
+        <script src="/usr/share/leaflet/addons/leaflet_draw/src/draw/handler/Draw.Feature.js"></script>
+        <script src="/usr/share/leaflet/addons/leaflet_draw/src/draw/handler/Draw.SimpleShape.js"></script>
+        <script src="/usr/share/leaflet/addons/leaflet_draw/src/draw/handler/Draw.Polyline.js"></script>
+        <script src="/usr/share/leaflet/addons/leaflet_draw/src/draw/handler/Draw.Marker.js"></script>
+        <script src="/usr/share/leaflet/addons/leaflet_draw/src/draw/handler/Draw.Circle.js"></script>
+        <script src="/usr/share/leaflet/addons/leaflet_draw/src/draw/handler/Draw.CircleMarker.js"></script>
+        <script src="/usr/share/leaflet/addons/leaflet_draw/src/draw/handler/Draw.Polygon.js"></script>
+        <script src="/usr/share/leaflet/addons/leaflet_draw/src/draw/handler/Draw.Rectangle.js"></script>
+        <script src="/usr/share/leaflet/addons/leaflet_draw/src/edit/handler/Edit.Poly.js"></script>
+        <script src="/usr/share/leaflet/addons/leaflet_draw/src/edit/handler/Edit.SimpleShape.js"></script>
+        <script src="/usr/share/leaflet/addons/leaflet_draw/src/edit/handler/Edit.Rectangle.js"></script>
+        <script src="/usr/share/leaflet/addons/leaflet_draw/src/edit/handler/Edit.Marker.js"></script>
+        <script src="/usr/share/leaflet/addons/leaflet_draw/src/edit/handler/Edit.CircleMarker.js"></script>
+        <script src="/usr/share/leaflet/addons/leaflet_draw/src/edit/handler/Edit.Circle.js"></script>
+        
+        <script src="/usr/share/leaflet/addons/leaflet_draw/src/ext/GeometryUtil.js"></script>
+        <script src="/usr/share/leaflet/addons/leaflet_draw/src/ext/LatLngUtil.js"></script>
+        <script src="/usr/share/leaflet/addons/leaflet_draw/src/ext/LineUtil.Intersect.js"></script>
+        <script src="/usr/share/leaflet/addons/leaflet_draw/src/ext/Polygon.Intersect.js"></script>
+        <script src="/usr/share/leaflet/addons/leaflet_draw/src/ext/Polyline.Intersect.js"></script>
+        <script src="/usr/share/leaflet/addons/leaflet_draw/src/ext/TouchEvents.js"></script>
+        
+        <style>
+            /* Ezt itt lehetne "html, body"-nak is nevezni meg "body"-nak is. De ha csak "body", akkor nem működik.  */
+            html, body {
+            height: 100%;
+            margin: 2px;
+            }
+            /* Ezt itt lehetne leaflet-container-nek is nevezni meg #map-nak is. Mindegy. */	
+        
+            #map {
+                background-color: #eeeeee;
+                height: 100%;
+                width: 100%;
+                margin: 1px;
+                border: 1px solid #666666;
+            }
+
+            #saving {
+                position: absolute;
+                top:300px;
+                left:20px;
+                z-index:10000;
+                background:#999999;
+                color:white;
+                padding:12px;
+                border-radius:6px;
+                cursor: pointer;
+                font-family: 'Helvetica';
+                font-size:18px;
+                text-decoration:none;
+            }
+
+            }
+        </style>
+
+        </head>
+    <body>
+        <div id='map'></div>
+        <div id='map2'></div>
+        <a href='#' id='saving'>Save</a>
+    
+        <script>
+        
+        /* Stílusbeállítás a vektoros állományhoz*/     
+    
+        function Area(features) {
+        return {
+        radius:10,
+        fillColor: "#FF00FF",
+        fillOpacity: 1,
+        color: '#888888',
+        weight: 4,
+        maxZoom:18,
+        minZoom:1,
+        };
+        }
+    
+            Dem = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/dem/wms/", {
+                layers: 'dem:dem',
+                format: 'image/png',
+                transparent: false,
+                attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+                maxZoom: 20,
+                minZoom: 1,});
+                
+            
+            Roads = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/roads/wms/", {
+                layers: 'roads:lines',
+                format: 'image/png',
+                transparent: true,
+                attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+                maxZoom: 20,
+                minZoom: 3,});
+
+            Buildings = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/buildings/wms/", {
+                layers: 'buildings:polygons',
+                format: 'image/png',
+                transparent: true,
+                attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+                maxZoom: 20,
+                minZoom: 3,});
+                
+            SurfaceWaters = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/water/wms/", {
+                layers: 'water:surface_waters',
+                format: 'image/png',
+                transparent: true,
+                attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+                maxZoom: 20,
+                minZoom: 3,});    
+
+            CityArea = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/cover/wms/", {
+                layers: 'cover:cover',
+                format: 'image/png',
+                transparent: true,
+                attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+                maxZoom: 20,
+                minZoom: 3,});
+
+/* Marker line, do not remove this text*/
+var map = new L.Map('map', {center: new L.LatLng(50.291865, 4.087456), zoom: 13 }),drawnItems = L.featureGroup().addTo(map);            
+
+
+            L.control.layers({
+                },
+                {
+                "Dem": Dem,
+                "Roads": Roads,
+                "Buildings": Buildings,
+                "Surface Waters": SurfaceWaters,
+                "Markers & Selection": drawnItems
+                },
+                {position: 'topright', collapsed: false}).addTo(map);
+
+            map.addControl(new L.Control.Draw
+                ({edit: {
+                    featureGroup: drawnItems,
+                    poly: {allowIntersection: false}
+                    },
+                draw: {polygon: {
+                    allowIntersection: false,
+                    showArea: true,
+                    fill: '#FFFFFF',
+                    },
+                    polyline: false,
+                    polygon: true,
+                    rectangle: false,
+                    circle: false,
+                    marker: false,
+                    circlemarker: true,
+                    }
+                }));
+
+/*----- Save drawing -----------------------------------------*/
+
+            var featureGroup = L.featureGroup().addTo(map);
+            map.on('draw:created', function(saving_draw) {
+                /* Creating a new item (polygon, line ... ) will added to the feature group */
+                featureGroup.addLayer(saving_draw.layer);
+            });
+            
+            document.getElementById('saving').onclick = function(saving_draw) {
+                /*  making a GeoJson from featureGroup */
+                var data = featureGroup.toGeoJSON();
+
+                /* Convert data to GeoJson string*/ 
+                var convertedData = 'text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(data));
+                /* saving */
+                document.getElementById('saving').setAttribute('href', 'data:' + convertedData);
+                document.getElementById('saving').setAttribute('download','data.geojson');
+            }
+
+/*------------------------------------------------*/
+            map.on(L.Draw.Event.CREATED, function (event) {
+                var layer = event.layer;
+                drawnItems.addLayer(layer);
+                });
+                
+            /* Méretarány megjelenítése, skálahosz-szal*/
+            L.control.scale({maxWidth:300}).addTo(map);
+
+            /* Észak nyíl */
+            var north = L.control({position: "bottomright"});
+                north.onAdd = function(map) {
+
+                var div = L.DomUtil.create("div", "info legend");
+                    div.innerHTML = '<img src="north.png">';
+                    return div;
+                    }; north.addTo(map);
+            
+
+/* Additional elements: from_points, via_points, to_points and the user defined area*/
+        var geojsonLayer = L.geoJSON(from_points,{
+            style:Area
+        });
+        geojsonLayer.addTo(map);
+                 
+        var geojsonLayer = L.geoJSON(via_points,{
+            style:Area
+        });
+        geojsonLayer.addTo(map);
+        
+        var geojsonLayer = L.geoJSON(to_points,{
+            style:Area
+        });
+        geojsonLayer.addTo(map);
+        
+        var geojsonLayer = L.geoJSON(area,{
+            style:Area
+        });
+        geojsonLayer.addTo(map);
+                 
+        </script>
+        
+    </body>
+</html>
+
