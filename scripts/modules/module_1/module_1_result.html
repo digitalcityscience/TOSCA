@@ -10,7 +10,7 @@
     <script src="../../lib/leaflet/leaflet.draw.js"></script>
 
     <link rel="stylesheet" href="../../lib/leaflet/leaflet.css" />
-    <link rel="stylesheet" href="../../lib/leaflet/addons/leaflet_draw/src/leaflet.draw.css" />
+    <link rel="stylesheet" href="../../lib/leaflet/leaflet.draw.css" />
     <link rel="shortcut icon" type="image/x-icon" href="../../lib/leaflet/images/favicon.ico" />
 
     <style>
@@ -180,7 +180,7 @@
         north.onAdd = function (map) {
 
             var div = L.DomUtil.create("div", "info legend");
-            div.innerHTML = '<img src="/home/titusz/cityapp/html/north.png">';
+            div.innerHTML = '<img src="../../lib/north.png">';
             return div;
         }; north.addTo(map);
 
