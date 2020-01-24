@@ -1,0 +1,22 @@
+
+
+if db.describe -ct table= | grep INTEGER\DOUBLE PRECISION
+INTEGER típusú vektoros adattábla lekérdezése,  intervallum, 6 osztály:
+
+v.class map=slum_points@module_1 column=TOTAL algorithm=int nbclasses=6
+
+
+1.
+Leíró statisztika adatmezőkről (csak INTEGER, és DOUBLE PRECISION) esetén
+
+Egyszerű poligon rajz a térképen
+    |
+    V
+Save
+    |
+    V
+Import to grass
+    |
+    V
+Query  -->  v.vect.stats -p points=slum_houses@PERMANENT areas=area@module_1 type=centroid method=sum points_column=TOTAL
+            sum, average, median, mode, minimum, min_cat, maximum, max_cat, range, stddev, variance, diversity

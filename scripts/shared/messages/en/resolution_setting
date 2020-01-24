@@ -1,0 +1,2 @@
+Type the resolution in meters, you want to use.\n For further details see manual.\n Current value is (in mteres):
+Resolution has to be an integer number, greater than 0. \n Please, define the resolution for calculations in meters.

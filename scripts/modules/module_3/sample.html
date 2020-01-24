@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Module 1 -- Results</title>
+    <title>Bubaneshwar slums</title>
 
     <meta charset="UTF-8">
 
@@ -9,7 +9,7 @@
     <script src="../../lib/leaflet/leaflet.draw.js"></script>
 
     <link rel="stylesheet" href="../../lib/leaflet/leaflet.css" />
-    <link rel="stylesheet" href="../../lib/leaflet/leaflet.draw.css" />
+    <link rel="stylesheet" href="../../lib/leaflet/addons/leaflet_draw/src/leaflet.draw.css" />
     <link rel="shortcut icon" type="image/x-icon" href="../../lib/leaflet/images/favicon.ico" />
     
     <style>
@@ -114,8 +114,8 @@
 
     <script>
 
-        Dem = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/raster/wms/", {
-            layers: 'raster:dem',
+        item_rater_1 = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/raster/wms/", {
+            layers: 'raster:your_raster_layer',
             format: 'image/png',
             transparent: false,
             attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
@@ -123,8 +123,8 @@
             minZoom: 1,
         });
 
-        WaterLines = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
-            layers: 'vector:water_lines_osm',
+        item_1 = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+            layers: 'vector:your_layer',
             format: 'image/png',
             transparent: true,
             attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
@@ -132,8 +132,8 @@
             minZoom: 1,
         });
 
-        WaterArea = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
-            layers: 'vector:',
+        item_2 = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+            layers: 'vector:your_layer',
             format: 'image/png',
             transparent: true,
             attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
@@ -141,35 +141,8 @@
             minZoom: 1,
         });
         
-        Roads = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
-            layers: 'vector:lines_osm',
-            format: 'image/png',
-            transparent: true,
-            attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
-            maxZoom: 20,
-            minZoom: 1,
-        });
-
-        Buildings = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
-            layers: 'vector:polygons_osm',
-            format: 'image/png',
-            transparent: true,
-            attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
-            maxZoom: 20,
-            minZoom: 1,
-        });
-        
-        TimeMap = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/raster/wms/", {
-            layers: 'raster:time_map',
-            format: 'image/png',
-            transparent: true,
-            attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
-            maxZoom: 20,
-            minZoom: 1,
-        });
-        
-        Selection = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
-            layers: 'vector:selection',
+        item_3 = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+            layers: 'vector:your_layer',
             format: 'image/png',
             transparent: true,
             attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
@@ -177,8 +150,35 @@
             minZoom: 1,
         });
 
-        FromPoints = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
-            layers: 'vector:from_points',
+        item_4 = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+            layers: 'vector:your_layer',
+            format: 'image/png',
+            transparent: true,
+            attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+            maxZoom: 20,
+            minZoom: 1,
+        });
+        
+        item_5 = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/raster/wms/", {
+            layers: 'raster:your_layer',
+            format: 'image/png',
+            transparent: true,
+            attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+            maxZoom: 20,
+            minZoom: 1,
+        });
+        
+        item_6 = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+            layers: 'vector:your_layer',
+            format: 'image/png',
+            transparent: true,
+            attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+            maxZoom: 20,
+            minZoom: 1,
+        });
+
+        item_7 = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+            layers: 'vector:your_layer',
             format: 'image/png',
             transparent: true,
             attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
@@ -186,8 +186,8 @@
             minZoom: 3,
         });
         
-        ViaPoints = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
-            layers: 'vector:via_points',
+        item_8 = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+            layers: 'vector:your_layer',
             format: 'image/png',
             transparent: true,
             attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
@@ -195,8 +195,8 @@
             minZoom: 3,
         });
         
-        ToPoints = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
-            layers: 'vector:to_points',
+        item_9 = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+            layers: 'vector:your_layer',
             format: 'image/png',
             transparent: true,
             attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
@@ -204,8 +204,8 @@
             minZoom: 3,
         });
         
-        Areas = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
-            layers: 'vector:area',
+        item_10 = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+            layers: 'vector:your_layer',
             format: 'image/png',
             transparent: true,
             attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
@@ -214,23 +214,25 @@
         });
 
 /* Marker line, keep this in line 216 */
-var map = new L.Map('map', {center: new L.LatLng(20.313527, 85.830517), zoom: 12 }),drawnItems = L.featureGroup().addTo(map);        
+var map = new L.Map('map', {center: new L.LatLng(20.295074, 85.812836), zoom: 12 }),drawnItems = L.featureGroup().addTo(map);        
 /* Marker line, keep this in line 218 */
 
         L.control.layers({
         },
             {
-                "Dem": Dem,
-                "Water lines": WaterLines,
-                "Water areas": WaterArea,
-                "Roads": Roads,
-                "Buildings": Buildings,
-                "Current selection": Selection,
-                "Time map": TimeMap,
-                "From-points":FromPoints,
-                "Via-points":ViaPoints,
-                "To-points":ToPoints,
-                "Unavailable areas":Areas,
+                "Dem": item_rater_1,
+                "Surface Water": item_1,
+                "Water areas": item_2,
+                "Roads": item_3,
+                "Buildings": item_4,
+                "Current selection": item_5,
+                "Time map": item_6,
+                "From-points":item_7,
+                "Via-points":item_8,
+                "To-points":item_9,
+                "Unavailable areas":item_10,
+                /* Do not modify the next line. If you need more items,
+                then insert as many as you need before this line. */
                 "Drawing": drawnItems
             },
             { position: 'topright', collapsed: false }).addTo(map);
@@ -269,7 +271,7 @@ var map = new L.Map('map', {center: new L.LatLng(20.313527, 85.830517), zoom: 12
         north.onAdd = function (map) {
 
             var div = L.DomUtil.create("div", "info legend");
-            div.innerHTML = '<img src="../../lib/north.png">';
+            div.innerHTML = '<img src="/home/titusz/cityapp/html/north.png">';
             return div;
         }; north.addTo(map);
 

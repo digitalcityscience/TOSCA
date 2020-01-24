@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-    <title>Select location</title>
+    <title>Select location version 0.91</title>
 
     <meta charset="UTF-8">
 
@@ -14,16 +13,14 @@
     <link rel="shortcut icon" type="image/x-icon" href="../../lib/leaflet/images/favicon.ico" />
 
     <style>
-        /* Ezt itt lehetne "html, body"-nak is nevezni meg "body"-nak is. De ha csak "body", akkor nem működik.  */
         html,
         body {
             height: 100%;
             margin: 2px;
         }
 
-        /* Ezt itt lehetne leaflet-container-nek is nevezni meg #map-nak is. Mindegy. */
         #map {
-            background-color: #eeeeee;
+            background-color: #fefefe;
             height: 100%;
             width: 100%;
             margin: 1px;
@@ -35,26 +32,47 @@
             top: 300px;
             left: 20px;
             z-index: 10000;
-            background: #999999;
-            color: white;
-            padding: 12px;
-            border-radius: 6px;
+        }
+         
+        #close {
+            position: absolute;
+            top: 400px;
+            left: 20px;
+            z-index: 10000;
+        }
+        
+        .button1 {
+            padding: 16px 24px;
+            font-size: 24px;
+            text-align: center;
             cursor: pointer;
-            font-family: 'Helvetica';
-            font-size: 18px;
-            text-decoration: none;
+            outline: none;
+            color: #006600;
+            background-color: #aaffaa;
+            border: 3px solid #006600;
+            border-radius: 6px;
+        }
+
+        .button1:hover {
+            background-color: #ddffdd
+        }
+
+        .button1:active {
+            background-color: #ffffdd;
+            box-shadow: 0 2px #886;
+            transform: translateY(2px);
         }
     </style>
 </head>
-
 <body>
-    <div id='map'></div>
-    <div id='map2'></div>
-    <a href='#' id='saving'>Save</a>
 
+    <div id='map'></div>
+    <a href='#' id='saving'><button class="button1">Save</button></a>
+    <a href='#' id='close'> <button class="button1" onclick="window.close();">Submit</button> </a>
+    
     <script>
-        Dem = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/dem/wms/", {
-            layers: 'dem:dem',
+        Dem = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/raster/wms/", {
+            layers: 'raster:dem',
             format: 'image/png',
             transparent: false,
             attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
@@ -62,57 +80,69 @@
             minZoom: 1,
         });
 
-        Roads = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/roads/wms/", {
-            layers: 'roads:lines',
+        WaterLines = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+            layers: 'vector:water_lines_osm',
             format: 'image/png',
             transparent: true,
             attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
             maxZoom: 20,
-            minZoom: 3,
+            minZoom: 1,
         });
 
-        Buildings = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/buildings/wms/", {
-            layers: 'buildings:polygons',
+        WaterArea = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+            layers: 'vector:polygons',
             format: 'image/png',
             transparent: true,
             attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
             maxZoom: 20,
-            minZoom: 3,
+            minZoom: 1,
         });
-
-        SurfaceWaters = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/water/wms/", {
-            layers: 'water:surface_waters',
+        
+        Roads = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+            layers: 'vector:lines_osm',
             format: 'image/png',
             transparent: true,
             attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
             maxZoom: 20,
-            minZoom: 3,
+            minZoom: 1,
         });
-
-        CityArea = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/cover/wms/", {
-            layers: 'cover:cover',
+        
+        Buildings = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+            layers: 'vector:polygons_osm',
             format: 'image/png',
             transparent: true,
             attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
             maxZoom: 20,
-            minZoom: 3,
+            minZoom: 1,
         });
-
-        /* Marker line, do not remove this text*/
-        var map = new L.Map('map', { center: new L.LatLng(35.944444, 14.379562), zoom: 13 }), drawnItems = L.featureGroup().addTo(map);
+        
+        Selection = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+            layers: 'vector:selection',
+            format: 'image/png',
+            transparent: true,
+            attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+            maxZoom: 20,
+            minZoom: 1,
+        });
+        
+        /* Marker line, keep this in line 128 */
+var map = new L.Map('map', {center: new L.LatLng(20.313527, 85.830517), zoom: 9 }),drawnItems = L.featureGroup().addTo(map);
+        /* Marker line, keep this in line 130 */
 
         L.control.layers({
         },
             {
                 "Dem": Dem,
+                "Water lines": WaterLines,
+                "Water areas": WaterArea,
                 "Roads": Roads,
                 "Buildings": Buildings,
-                "Surface Waters": SurfaceWaters,
-                "Selection": drawnItems
+                "Current selection": Selection,
+                "Drawing": drawnItems
             },
             { position: 'topright', collapsed: false }).addTo(map);
 
-        map.addControl(new L.Control.Draw
+            map.addControl(new L.Control.Draw
             ({
                 edit: {
                     featureGroup: drawnItems,
@@ -149,7 +179,7 @@
             var convertedData = 'text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(data));
             /* saving */
             document.getElementById('saving').setAttribute('href', 'data:' + convertedData);
-            document.getElementById('saving').setAttribute('download', 'data.geojson');
+            document.getElementById('saving').setAttribute('download', '../../../data_from_browser/selection_1.geojson');
         }
 
         /*------------------------------------------------*/
@@ -158,18 +188,18 @@
             drawnItems.addLayer(layer);
         });
 
-        /* Méretarány megjelenítése, skálahosz-szal*/
+        /* scale bar */
         L.control.scale({ maxWidth: 300 }).addTo(map);
 
-        /* Észak nyíl */
+        /* north arrow */
         var north = L.control({ position: "bottomright" });
         north.onAdd = function (map) {
 
-            var div = L.DomUtil.create("div", "info legend");
-            div.innerHTML = '<img src="../../lib/north.png">';
-            return div;
+        var div = L.DomUtil.create("div", "info legend");
+        div.innerHTML = '<img src="north.png">';
+        return div;
         }; north.addTo(map);
+        
     </script>
 </body>
-
 </html>

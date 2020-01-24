@@ -1,0 +1,1 @@
+./shutdown.sh not found in /usr/share/geoserver/bin \n If you have an already installed geoserver, \n then create link for /usr/share/geoserver/. \n If Geoserver is not yet installed, please select /usr/share/geoserver to install.
