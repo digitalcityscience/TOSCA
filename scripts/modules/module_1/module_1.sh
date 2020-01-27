@@ -1,5 +1,5 @@
 #! /bin/bash
-# version 1.1
+# version 1.2
 # CityApp module
 # This module is to calculate the fastest way from "from_points" to "to_points" thru "via_points".
 # The network is the road network, with user-defined average speed.
@@ -17,7 +17,7 @@ BROWSER=~/cityapp/data_from_browser
 GRASS=~/cityapp/grass/global/module_1
 PERMANENT=~/cityapp/grass/global/PERMANENT
 MESSAGES=$(cat ~/cityapp/scripts/shared/variables/lang)/module_1
-BUTTONS=$(cat ~/cityapp/scripts/shared/variables/lang)/location_selector_buttons
+BUTTONS=$(cat ~/cityapp/scripts/shared/variables/lang)/module_1_buttons
 # An example message:
 # kdialog --yes-label "$(cat $BUTTONS | head -n1 | tail -n1)" --no-label "$(cat $BUTTONS | head -n3 | tail -n1)" --yesno "$(cat $MESSAGES | head -n1 | tail -n1)"
 
@@ -59,7 +59,7 @@ BUTTONS=$(cat ~/cityapp/scripts/shared/variables/lang)/location_selector_buttons
         {
         inotifywait -e close_write ~/cityapp/data_from_browser/
         FRESH=$BROWSER/$(ls -ct1 ~/cityapp/data_from_browser/ | head -n1)
-        grass $GRASS --exec v.in.ogr -o input=$FRESH  output=area --overwrite --quiet
+        grass $GRASS --exec v.in.ogr -o input=$FRESH output=area --overwrite --quiet
         grass $GRASS --exec v.out.ogr format=GPKG input=area output=$GEOSERVER/area".gpkg" --overwrite --quiet
         AREA_MAP="area"
         rm -f $FRESH
@@ -88,23 +88,37 @@ BUTTONS=$(cat ~/cityapp/scripts/shared/variables/lang)/location_selector_buttons
         }
     function select_AREA
         {
-        AREA_MAP=$(kdialog --getexistingdirectory $GRASS/vector --title "$(cat $MESSAGES | head -n4 | tail -n1)")
-        AREA_MAP=$(echo $AREA_MAP | cut -d"/" -f$(($(echo $AREA_MAP | sed s'/\// /'g | wc -w)+1)))
+        AREA_FILE=$(kdialog --getexistingdirectory $GRASS/vector --title "$(cat $MESSAGES | head -n4 | tail -n1)")
+        AREA_MAP=$(echo $AREA_FILE | cut -d"/" -f$(($(echo $AREA_FILE | sed s'/\// /'g | wc -w)+1)))
         grass $GRASS --exec v.out.ogr format=GPKG input=$AREA_MAP output=$GEOSERVER/area".gpkg" --overwrite --quiet
         }
 
 # Module_1 first check if the location settings (and, therefore selection map in PERMANENT) is the same or changed since the last running
-
+# Acknowledgement mnagement
 if [ -e $VARIABLES/location_new ]
     then
-        INIT=1
-        echo "INIT 1"
-        elif [ -e $VARIABLES/location_mod ]
+        if [ -e $MODULES/module_1/ack_location_new ]
             then
-                INIT=2
-            else
                 INIT=3
+            else
+                INIT=1
+        fi
+    else
+        if [ -e $VARIABLES/location_mod ]
+            then
+                if [ -e $MODULES/module_1/ack_location_mod ]
+                    then
+                        INIT=3
+                    else
+                        INIT=2
+                fi
+            else
+                # MESSAGE 15
+                kdialog --error "$(cat $MESSAGES | head -n15 | tail -n1)"
+        fi
 fi
+
+
 falkon ~/cityapp/scripts/modules/module_1/module_1_query.html &
 sleep 3 
 # Message 5
@@ -124,9 +138,9 @@ case $INIT in
         grass $GRASS --exec g.copy vector=selection@PERMANENT,selection --overwrite --quiet
         grass $GRASS --exec g.copy vector=lines@PERMANENT,lines --overwrite --quiet
                 
-        # Inserting the center coordinates of the new area in the location_selector.html
-        EAST=$(grass $GRASS --exec g.region -cg vector=selection | head -n1 | cut -d"=" -f2)
-        NORTH=$(grass $GRASS --exec g.region -cg vector=selection | head -n2 | tail -n1 | cut -d"=" -f2)
+        # get center coordinates from file
+        EAST=$(cat $VARIABLES/coordinate_east)
+        NORTH=$(cat $VARIABLES/coordinate_north)
 
         # Replace the line in module_1_query.html containing the coordinates. The next 4 lines is a single expression.
         sed -e '175d' $MODULES/module_1/module_1_query.html > $MODULES/module_1/module_1_query_temp.html
@@ -188,7 +202,8 @@ case $INIT in
                 AREA=2;;
         esac
             
-        rm -f $VARIABLES/location_new;;
+            touch $MODULES/module_1/ack_location_new
+            rm -f $MODULES/module_1/ack_location_mod;;
     
     2|3)
         # $GRASS module_1 mapset is not removed
@@ -201,7 +216,8 @@ case $INIT in
                 # Therefore selection have to imported again, and have toremove from, via, to points and area geojons and js files.
                 grass $GRASS --exec g.copy vector=selection@PERMANENT,selection --overwrite --quiet
                 grass $GRASS --exec g.copy vector=lines@PERMANENT,lines --overwrite --quiet
-                rm -f $VARIABLES/location_mod
+                touch $MODULES/module_1/ack_location_mod
+                rm -f $MODULES/module_1/ack_location_new
         fi
         
         # Message 10 

@@ -36,6 +36,8 @@ sed -i "129i\
 var map = new L.Map('map', {center: new L.LatLng($NORTH, $EAST), zoom: 9 }),drawnItems = L.featureGroup().addTo(map);\
 " $MODULES/location_selector/location_selector_temp.html
 mv $MODULES/location_selector/location_selector_temp.html $MODULES/location_selector/location_selector.html
+echo $EAST > $VARIABLES/coordinate_east
+echo $NORTH > $VARIABLES/coordinate_north
 }
 
 if [ ! -d "$GRASS/PERMANENT/" ]
