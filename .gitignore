@@ -1,3 +1,7 @@
-data_from_browser
-geoserver_data
-grass
+# user data
+/data_from_browser
+/geoserver_data
+/grass
+
+# Node.js dependencies
+node_modules

@@ -1,0 +1,47 @@
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+#map {
+  background-color: #fefefe;
+  height: 100%;
+  width: 100%;
+}
+
+#saving {
+  position: absolute;
+  top: 300px;
+  left: 20px;
+  z-index: 10000;
+}
+
+#close {
+  position: absolute;
+  top: 400px;
+  left: 20px;
+  z-index: 10000;
+}
+
+.button1 {
+  padding: 16px 24px;
+  font-size: 24px;
+  text-align: center;
+  cursor: pointer;
+  outline: none;
+  color: #006600;
+  background-color: #aaffaa;
+  border: 3px solid #006600;
+  border-radius: 6px;
+}
+
+.button1:hover {
+  background-color: #ddffdd
+}
+
+.button1:active {
+  background-color: #ffffdd;
+  box-shadow: 0 2px #886;
+  transform: translateY(2px);
+}
