@@ -1,291 +1,253 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Bubaneshwar slums</title>
+    <head>
+        <title>Module 3 -- Query </title>
 
-    <meta charset="UTF-8">
+        <meta charset="UTF-8">
 
-    <script src="../../lib/leaflet/leaflet.js"></script>
-    <script src="../../lib/leaflet/leaflet.draw.js"></script>
+        <script src="../../lib/leaflet/leaflet.js"></script>
+        <script src="../../lib/leaflet/leaflet.draw.js"></script>
 
-    <link rel="stylesheet" href="../../lib/leaflet/leaflet.css" />
-    <link rel="stylesheet" href="../../lib/leaflet/addons/leaflet_draw/src/leaflet.draw.css" />
-    <link rel="shortcut icon" type="image/x-icon" href="../../lib/leaflet/images/favicon.ico" />
-    <link rel="stylesheet" href="../../lib/leaflet/addons/leaflet.wmslegend.js" />
-    <style>
-        html,
-        body {
-            height: 99%;
-            margin: 2px;
-        }
-
-    #info {
-        position:fixed;
-        border: 2px solid darkgreen;
-        background-color: #fffdfb;
-        width: 14%;
-        height: 99%;
-        top: 3px;
-        right:3px;
-        font-size:small;
-    }
-    #map {
-        position: fixed;
-        border: 2px solid darkgreen;
-        background-color: #fffdfb;
-        width: 85%;
-        height: 99%;
-        top: 3px;
-        left: 3px;
-    }
-    
-    #saving {
-        position: absolute;
-        top: 350px;
-        left: 20px;
-        z-index: 10000;
-    }
-    
-    #close {
-        position: absolute;
-        top: 450px;
-        left: 20px;
-        z-index: 10000;
-    }
-    
-    .button1 {
-        padding: 16px 24px;
-        font-size: 24px;
-        text-align: center;
-        cursor: pointer;
-        outline: none;
-        color: #006600;
-        background-color: #aaffaa;
-        border: 3px solid #006600;
-        border-radius: 6px;
-    }
-
-    .button1:hover {
-        background-color: #ddffdd
-    }
-
-    .button1:active {
-        background-color: #ffffdd;
-        box-shadow: 0 2px #886;
-        transform: translateY(2px);
-    }
-    
-    </style>
-</head>
-
-<body>
-
-    <a href='#' id='saving'><button class="button1">Save</button></a>
-    <a href='#' id='close'> <button class="button1" onclick="window.close();">Exit</button> </a>
-
-    <div id='info'>
-        <h2>&nbsp Average speed:</h2>
-        <object data="/home/titusz/cityapp/scripts/shared/variables/roads_speed" width=100% height="100%" font-size:small ></object>
-    </div>
-    
-    <div id='map'></div>
-
-    <script>
-
-        item_rater_1 = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/raster/wms/", {
-            layers: 'raster:time_map',
-            format: 'image/png',
-            transparent: false,
-            attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
-            maxZoom: 20,
-            minZoom: 1,
-        });
-
-        item_1 = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
-            layers: 'vector:const_bubaneshwar_surface_waters',
-            format: 'image/png',
-            transparent: true,
-            attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
-            maxZoom: 20,
-            minZoom: 1,
-        });
-
-        item_2 = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
-            layers: 'vector:const_slum_houses_avg_incomes',
-            format: 'image/png',
-            transparent: true,
-            attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
-            maxZoom: 20,
-            minZoom: 1,
-        });
+        <link rel="stylesheet" href="../../lib/leaflet/leaflet.css" />
+        <link rel="stylesheet" href="../../lib/leaflet/leaflet.draw.css" />
+        <link rel="shortcut icon" type="image/x-icon" href="../../lib/leaflet/images/favicon.ico" />
         
-        item_3 = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
-            layers: 'vector:const_slum_houses_bathroom',
-            format: 'image/png',
-            transparent: true,
-            attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
-            maxZoom: 20,
-            minZoom: 1,
-        });
-
-        item_4 = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
-            layers: 'vector:const_slum_houses_land_tenure',
-            format: 'image/png',
-            transparent: true,
-            attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
-            maxZoom: 20,
-            minZoom: 1,
-        });
+        <style>
         
-        item_5 = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/raster/wms/", {
-            layers: 'raster:const_slum_houses_tapwater',
-            format: 'image/png',
-            transparent: true,
-            attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
-            maxZoom: 20,
-            minZoom: 1,
-        });
-        
-        item_6 = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
-            layers: 'vector:const_slum_houses_toilettes',
-            format: 'image/png',
-            transparent: true,
-            attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
-            maxZoom: 20,
-            minZoom: 1,
-        });
-
-        item_7 = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
-            layers: 'vector:const_slum_houses_total_family_member',
-            format: 'image/png',
-            transparent: true,
-            attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
-            maxZoom: 20,
-            minZoom: 3,
-        });
-        
-        item_8 = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
-            layers: 'vector:const_slums_houses_religion',
-            format: 'image/png',
-            transparent: true,
-            attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
-            maxZoom: 20,
-            minZoom: 3,
-        });
-        
-        item_9 = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
-            layers: 'vector:from_points',
-            format: 'image/png',
-            transparent: true,
-            attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
-            maxZoom: 20,
-            minZoom: 3,
-        });
-        
-        item_10 = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
-            layers: 'vector:area',
-            format: 'image/png',
-            transparent: true,
-            attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
-            maxZoom: 20,
-            minZoom: 3,
-        });
-        item_11 = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
-            layers: 'vector:lines_osm',
-            format: 'image/png',
-            transparent: true,
-            attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
-            maxZoom: 20,
-            minZoom: 3,
-        });
-
-/* Marker line, keep this in line 202 */
-var map = new L.Map('map', {center: new L.LatLng(20.295074, 85.812836), zoom: 12 }),drawnItems = L.featureGroup().addTo(map);        
-/* Marker line, keep this in line 204 */
-
-        L.control.layers({
-        },
-            {
-                "Time_map": item_rater_1,
-                "Surface Water": item_1,
-                "Average monthly incomes": item_2,
-                "Bathroom facilities": item_3,
-                "Land Tenure Status": item_4,
-                "Tapwater accessibility": item_5,
-                "Toilette accessibility": item_6,
-                "Family members/household":item_7,
-                "Religion":item_8,
-                "From-points":item_9,
-                "Unaccessible areas":item_10,
-                "Roads":item_11,
-                /* Do not modify the next line. If you need more items,
-                then insert as many as you need before this line. */
-                "Drawing": drawnItems
-            },
-            { position: 'topright', collapsed: false }).addTo(map);
-
-        map.addControl(new L.Control.Draw
-            ({
-                edit: {
-                    featureGroup: drawnItems,
-                    poly: { allowIntersection: false }
-                },
-                draw: {
-                    polygon: {
-                        allowIntersection: false,
-                        showArea: true,
-                        fill: '#FFFFFF',
-                    },
-                    polyline: true,
-                    polygon: true,
-                    rectangle: true,
-                    circle: true,
-                    marker: true,
-                    circlemarker: true,
+            #map {
+                position: fixed;
+                background-color: #fffdfb;
+                width: 99%;
+                height: 99%;
                 }
-            }));
-
             
-       /*----- Save drawing -----------------------------------------*/
-
-        var featureGroup = L.featureGroup().addTo(map);
-        map.on('draw:created', function (saving_draw) {
-            /* Creating a new item (polygon, line ... ) will added to the feature group */
-            featureGroup.addLayer(saving_draw.layer);
-        });
-
-        document.getElementById('saving').onclick = function (saving_draw) {
-            /*  making a GeoJson from featureGroup */
-            var data = featureGroup.toGeoJSON();
-
-            /* Convert data to GeoJson string*/
-            var convertedData = 'text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(data));
-            /* saving */
-            document.getElementById('saving').setAttribute('href', 'data:' + convertedData);
-            document.getElementById('saving').setAttribute('download', 'sample.geojson');
-        }
-
-       /*------------------------------------------------*/
+            #saving {
+                position: fixed;
+                top: 28%;
+                left: 86%;
+                z-index: 10000;
+                }
             
+            .button1 {
+                padding: 10px 14px;
+                font-size: 24px;
+                text-align: center;
+                cursor: pointer;
+                outline: none;
+                color: #006600;
+                background-color: #aaffaa;
+                border: 3px solid #006600;
+                border-radius: 36px;
+                }
+
+            .button1:hover {
+                background-color: #ddffdd
+                }
+
+            .button1:active {
+                background-color: #ffffdd;
+                box-shadow: 0 2px #886;
+                transform: translateY(2px);
+                }
             
-        map.on(L.Draw.Event.CREATED, function (event) {
-            var layer = event.layer;
-            drawnItems.addLayer(layer);
-        });
+        </style>
+    </head>
+    <body>
+      <a href='#' id='saving'><button class="button1">Save</button></a>
+          
+        <div id='map'></div>
 
-        /* Scale bar*/
-        L.control.scale({ maxWidth: 300 }).addTo(map);
+        <script>
 
-        /* North arrow */
-        var north = L.control({ position: "bottomright" });
-        north.onAdd = function (map) {
+            Dem = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/raster/wms/", {
+                layers: 'raster:dem',
+                format: 'image/png',
+                transparent: false,
+                attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+                maxZoom: 20,
+                minZoom: 1,
+            });
 
-            var div = L.DomUtil.create("div", "info legend");
-            div.innerHTML = '<img src="/home/titusz/cityapp/html/north.png">';
-            return div;
-        }; north.addTo(map);
-        
-    </script>
-</body>
+            WaterLines = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+                layers: 'vector:water_lines_osm',
+                format: 'image/png',
+                transparent: true,
+                attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+                maxZoom: 20,
+                minZoom: 1,
+            });
 
+            WaterArea = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+                layers: 'vector:',
+                format: 'image/png',
+                transparent: true,
+                attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+                maxZoom: 20,
+                minZoom: 1,
+            });
+            
+            Roads = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+                layers: 'vector:lines_osm',
+                format: 'image/png',
+                transparent: true,
+                attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+                maxZoom: 20,
+                minZoom: 1,
+            });
+
+            Buildings = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+                layers: 'vector:polygons_osm',
+                format: 'image/png',
+                transparent: true,
+                attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+                maxZoom: 20,
+                minZoom: 1,
+            });
+            
+            TimeMap = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/raster/wms/", {
+                layers: 'raster:time_map',
+                format: 'image/png',
+                transparent: true,
+                attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+                maxZoom: 20,
+                minZoom: 1,
+            });
+            
+            Selection = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+                layers: 'vector:selection',
+                format: 'image/png',
+                transparent: true,
+                attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+                maxZoom: 20,
+                minZoom: 1,
+            });
+
+            FromPoints = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+                layers: 'vector:from_points',
+                format: 'image/png',
+                transparent: true,
+                attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+                maxZoom: 20,
+                minZoom: 3,
+            });
+            
+            ViaPoints = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+                layers: 'vector:via_points',
+                format: 'image/png',
+                transparent: true,
+                attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+                maxZoom: 20,
+                minZoom: 3,
+            });
+            
+            ToPoints = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+                layers: 'vector:to_points',
+                format: 'image/png',
+                transparent: true,
+                attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+                maxZoom: 20,
+                minZoom: 3,
+            });
+            
+            Areas = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+                layers: 'vector:area',
+                format: 'image/png',
+                transparent: true,
+                attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+                maxZoom: 20,
+                minZoom: 3,
+            });
+            Query = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+                layers: 'vector:m2_area',
+                format: 'image/png',
+                transparent: true,
+                attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+                maxZoom: 20,
+                minZoom: 3,
+            });
+
+
+    /* Marker line, keep this in line 216 */
+    var map = new L.Map('map', {center: new L.LatLng(20.291320, 85.817298), zoom: 12 }),drawnItems = L.featureGroup().addTo(map);        
+    /* Marker line, keep this in line 218 */
+
+            L.control.layers({
+            },
+                {
+                    "Dem": Dem,
+                    "Water lines": WaterLines,
+                    "Water areas": WaterArea,
+                    "Roads": Roads,
+                    "Buildings": Buildings,
+                    "Current selection": Selection,
+                    "Time map": TimeMap,
+                    "From-points":FromPoints,
+                    "Via-points":ViaPoints,
+                    "To-points":ToPoints,
+                    "Unavailable areas":Areas,
+                    "Query area":Query,
+                    "Drawing": drawnItems
+                },
+                { position: 'topright', collapsed: false }).addTo(map);
+
+            map.addControl(new L.Control.Draw
+                ({
+                    edit: {
+                        featureGroup: drawnItems,
+                        poly: { allowIntersection: false }
+                    },
+                    draw: {
+                        polygon: {
+                            allowIntersection: false,
+                            showArea: true,
+                            fill: '#FFFFFF',
+                        },
+                        polyline: false,
+                        polygon: true,
+                        rectangle: false,
+                        circle: false,
+                        marker: false,
+                        circlemarker: false,
+                    }
+                }));
+
+            /*----- Save drawing -----------------------------------------*/
+
+            var featureGroup = L.featureGroup().addTo(map);
+            map.on('draw:created', function (saving_draw) {
+                /* Creating a new item (polygon, line ... ) will added to the feature group */
+                featureGroup.addLayer(saving_draw.layer);
+            });
+
+            document.getElementById('saving').onclick = function (saving_draw) {
+                /*  making a GeoJson from featureGroup */
+                var data = featureGroup.toGeoJSON();
+
+                /* Convert data to GeoJson string*/
+                var convertedData = 'text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(data));
+                /* saving */
+                document.getElementById('saving').setAttribute('href', 'data:' + convertedData);
+                document.getElementById('saving').setAttribute('download', 'module_01.geojson');
+            }
+
+            /*------------------------------------------------*/
+                
+            map.on(L.Draw.Event.CREATED, function (event) {
+                var layer = event.layer;
+                drawnItems.addLayer(layer);
+            });
+
+            /* Scale bar*/
+            L.control.scale({ maxWidth: 300 }).addTo(map);
+
+            /* North arrow */
+            var north = L.control({ position: "bottomright" });
+            north.onAdd = function (map) {
+
+                var div = L.DomUtil.create("div", "info legend");
+                div.innerHTML = '<img src="../../lib/north.png">';
+                return div;
+            }; north.addTo(map);
+        </script>
+    </body>
 </html>

@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Launch</title>
+        <style>
+            #Launch
+                {
+                position: fixed;
+                border: 2px solid darkgreen;
+                background-color: #fffdfb;
+                width: 15%;
+                height: 15%;
+                top: 0.5%;
+                border-radius: 6px;
+                }
+            
+            #Display
+                {
+                position: absolute;
+                border: 2px solid darkgreen;
+                background-color: #fffdfb;
+                width: 15%;
+                height: 15%;
+                top: 16.5%;
+                border-radius: 6px;
+                }
+                
+            #Query
+                {
+                position: absolute;
+                border: 2px solid darkgreen;
+                background-color: #fffdfb;
+                width: 15%;
+                height: 15%;
+                top: 32.5%;
+                border-radius: 6px;
+                }
+                
+            #Module_description
+                {
+                position: absolute;
+                border: 2px solid darkgreen;
+                background-color: #fffdfb;
+                width: 15%;
+                height: 50.5%;
+                top: 48.5%;
+                border-radius: 6px;
+                }
+                
+            #Map
+                {
+                position: fixed;
+                border: 2px solid darkgreen;
+                background-color: #fffdfb;
+                width: 46%;
+                left:16%;
+                height: 98.5%;
+                top: 0.5%;
+                border-radius: 6px;
+                overflow-y:hidden;
+                }
+
+            #Info
+                {
+                position:absolute;
+                border: 2px solid darkgreen;
+                background-color: #fffdfb;
+                width: 37%;
+                left:62.5%;
+                height: 98.5%;
+                top: 0.5%;
+                font-size:small;
+                border-radius: 6px;
+                }
+                
+            #Select_menu
+                {
+                position: relative;
+                padding: 10px 14px;
+                font-size: 16px;
+                text-align: center;
+                cursor: pointer;
+                outline: none;
+                color: #006600;
+                background-color: #ffffaa;
+                border: 3px solid #006600;
+                border-radius: 6px;
+                top: 10px;
+                left: 6px;
+                }
+                
+            #Display_menu
+                {
+                position: relative;
+                padding: 10px 14px;
+                font-size: 16px;
+                text-align: center;
+                cursor: pointer;
+                outline: none;
+                color: #006600;
+                background-color: #ffffaa;
+                border: 3px solid #006600;
+                border-radius: 6px;
+                top: 10px;
+                left: 6px;
+                }
+                
+            #Query_menu
+                {
+                position: relative;
+                padding: 10px 14px;
+                font-size: 16px;
+                text-align: center;
+                cursor: pointer;
+                outline: none;
+                color: #006600;
+                background-color: #ffffaa;
+                border: 3px solid #006600;
+                border-radius: 6px;
+                top: 10px;
+                left: 6px;
+                }
+            
+            .button
+                {
+                position: relative;
+                padding: 10px 14px;
+                font-size: 24px;
+                text-align: center;
+                cursor: pointer;
+                outline: none;
+                color: #006600;
+                background-color: #aaffaa;
+                border: 3px solid #006600;
+                border-radius: 10px;
+                top: 0.5cm;
+                left: 6px ;
+                }
+
+            .button:hover
+                {
+                background-color: #ddffdd
+                }
+                
+            .button:active
+                {
+                background-color: #ffffdd;
+                box-shadow: 0 2px #886;
+                transform: translateY(2px);
+                }
+      
+        </style>
+    </head>
+    <body>
+        <div id="Launch">
+            <select id="Select_menu">
+                <option selected value="">-- Select a module to launch --</option>
+                <option value="~/cityapp/scripts/base/location_selector/location_selector.sh">Location selector</option>
+                <option value="~/cityapp/scripts/base/add_layer/add_layer.sh">Add new layer</option>
+                <option value="~/cityapp/scripts/modules/module_1/module_1.sh">Time map</option> 
+                <option value="~/cityapp/scripts/modules/module_2/module_2.sh">Query a map</option> 
+            </select>
+                   
+            <a href='#'> <button class="button" onclick="saveFile(value);">Launch</button> </a>
+        </div>
+        
+        
+        <div id="Display">
+            <select id="Display_menu">
+                <option selected value="">-- Select a map to display --</option>
+                <option value="path_to_display_map_1">Map 1</option>
+                <option value="path_to_display_map_2">Map 2</option>
+                <option value="path_to_display_map_3">Map 3</option> 
+            </select>
+            <a href='#'> <button class="button" onclick="saveFile_2(value);">Select</button> </a>
+        </div>
+        
+        
+        
+        <div id="Query">
+             <select id="Query_menu">
+                <option selected value="">-- Select a map to query --</option>
+                <option value="path_to_query_map_1">Map 1</option>
+                <option value="path_to_query_map_2">Map 2</option>
+                <option value="path_to_query_map_3">Map 3</option> 
+            </select>
+            <a href='#'> <button class="button" onclick="saveFile_3(value);">Select</button> </a>
+        </div>
+        
+        <div id="Module_description">
+            <center><h3>Legend</h3></center>
+            <object width="100%" data="/home/titusz/legend.png"></object>
+        </div>
+       
+        <div id='Map'>
+            <object width="100%" height="100%" data="map.html"></object>
+        </div>
+       
+       
+        <div id='Info'>
+            <object ><object>
+        </div>
+        
+        <script>
+            var saveFile = () => {
+                // Get the data from each element on the form.
+                const item_1 = document.getElementById('Select_menu');
+                var data = '' +item_1.value + '\n' ;
+                const textToBLOB = new Blob([data], { type: 'text/plain' });
+                const sFileName = 'launch';
+                var newLink = document.createElement("a");
+                newLink.download = sFileName;
+                if (window.webkitURL != null) {
+                        newLink.href = window.webkitURL.createObjectURL(textToBLOB);
+                    }
+                    else {
+                        newLink.href = window.URL.createObjectURL(textToBLOB);
+                        newLink.style.display = "none";
+                        document.body.appendChild(newLink);
+                    }
+                newLink.click(); 
+            }
+            
+            
+            var saveFile_2 = () => {
+                // Get the data from each element on the form.
+                const item_2 = document.getElementById('Display_menu');
+                var data = '' +item_2.value + '\n' ;
+                const textToBLOB = new Blob([data], { type: 'text/plain' });
+                const sFileName = 'display';
+                var newLink = document.createElement("a");
+                newLink.download = sFileName;
+                if (window.webkitURL != null) {
+                        newLink.href = window.webkitURL.createObjectURL(textToBLOB);
+                    }
+                    else {
+                        newLink.href = window.URL.createObjectURL(textToBLOB);
+                        newLink.style.display = "none";
+                        document.body.appendChild(newLink);
+                    }
+                newLink.click(); 
+            }
+            
+            
+            var saveFile_3 = () => {
+                // Get the data from each element on the form.
+                const item_3 = document.getElementById('Query_menu');
+                var data = '' +item_3.value + '\n' ;
+                const textToBLOB = new Blob([data], { type: 'text/plain' });
+                const sFileName = 'query';
+                var newLink = document.createElement("a");
+                newLink.download = sFileName;
+                if (window.webkitURL != null) {
+                        newLink.href = window.webkitURL.createObjectURL(textToBLOB);
+                    }
+                    else {
+                        newLink.href = window.URL.createObjectURL(textToBLOB);
+                        newLink.style.display = "none";
+                        document.body.appendChild(newLink);
+                    }
+                newLink.click(); 
+            }
+        </script>
+    </body>
+</html>

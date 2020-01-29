@@ -1,0 +1,18 @@
+MALE
+FEMALE
+TOTAL
+TOT_ILL_A,
+NO_MA_EAR
+NO_FE_EAR
+TOT_EARN
+AVG_MON_I
+MON_EXPEN
+
+BPL	Family is below poverty line or not
+LNT Status	Land Tenure Status of land on which slum household is situated (Govt owned/private owned etc)
+STR_House	Structure of house (pukka = permanent; katcha = temporary materials; semi-pukka = mixed materials)
+FUEL_COOK,C,29	Type of cooking fuel used by the family
+SO_DRWATER	Source of drinking water
+PIP_WATER,C,23	Whether piped drinking water supply exists
+TOI_FACIL,C,92	Toilet facility
+BATH_FACI,C,20	Bathroom facility

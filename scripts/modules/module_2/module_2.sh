@@ -15,49 +15,17 @@ GRASS=~/cityapp/grass/global/module_2
 PERMANENT=~/cityapp/grass/global/PERMANENT
 MESSAGES=$(cat ~/cityapp/scripts/shared/variables/lang)/module_2
 BUTTONS=$(cat ~/cityapp/scripts/shared/variables/lang)/module_2_buttons
-# An example message:
-# kdialog --yes-label "$(cat $BUTTONS | head -n1 | tail -n1)" --no-label "$(cat $BUTTONS | head -n3 | tail -n1)" --yesno "$(cat $MESSAGES | head -n1 | tail -n1)"
-
-    function ADD_QUERY_AREA
-        {
-        rm -f $BROWSER/*
-        falkon $MODULES/module_2/module_2_query.html &
-        inotifywait -e close_write ~/cityapp/data_from_browser/
-            for f in $BROWSER/*; do
-            mv "$f" `echo $f | tr ' ' '_'`;
-            done
-        FRESH=$BROWSER/$(ls -ct1 ~/cityapp/data_from_browser/ | head -n1)
-        grass $GRASS --exec v.in.ogr -o input=$FRESH  output=m2_area --overwrite --quiet
-            grass $GRASS --exec v.out.ogr format=GPKG input=m2_area output=$GEOSERVER/m2_area".gpkg" --overwrite --quiet
-        QUERY_AREA_MAP="m2_area"
-        #rm -f $FRESH
-        touch $MODULES/module_2/module_2_query.html
-        }
-    
-    function SELECT_QUERY_MAP
-        {
-        AREA_FILE=$(kdialog --getexistingdirectory $GRASS/vector --title "$(cat $MESSAGES | head -n4 | tail -n1)")
-        QUERY_AREA_MAP=$(echo $AREA_FILE | cut -d"/" -f$(($(echo $AREA_FILE | sed s'/\// /'g | wc -w)+1)))
-        grass $GRASS --exec v.out.ogr format=GPKG input=$QUERY_AREA_MAP output=$GEOSERVER/m2_area".gpkg" --overwrite --quiet
-        }
-
-    function SET_COORDINATES
-        {
-        EAST=$(cat $VARIABLES/coordinate_east)
-        NORTH=$(cat $VARIABLES/coordinate_north)
-        # Replace the line in module_2_query.html containing the coordinates. The next 4 lines is a single expression.
-        sed -e '247d' $MODULES/module_2/module_2_query.html > $MODULES/module_2/module_2_query_temp.html
-        sed -i "247i\
-        var map = new L.Map('map', {center: new L.LatLng($NORTH, $EAST), zoom: 12 }),drawnItems = L.featureGroup().addTo(map);\
-        " $MODULES/module_2/module_2_query_temp.html
-        
-        mv $MODULES/module_2/module_2_query_temp.html $MODULES/module_2/module_2_query.html
-        }
 
 # Module_2 first check if the location settings (and, therefore selection map in PERMANENT) is the same or changed since the last running
 # If no changes, then module_2_query.html will unchanged
 # If new or modified location found, change center coordinates in module_2_query.html.
 # Acknowledgement mnagement
+
+if [ -e $VARIABLES/m2_lock ]
+    then
+        kdialog --error "Module 2 is already running \n before continue, first exit, please."
+fi
+
 if [ -e $VARIABLES/location_new ]
     then
         if [ -e $MODULES/module_2/ack_location_new ]
@@ -96,14 +64,30 @@ if [ -e $VARIABLES/location_new ]
         fi
 fi
 
-kdialog --yes-label "$(cat $BUTTONS | head -n1 | tail -n1)" --no-label "$(cat $BUTTONS | head -n2 | tail -n1)" --cancel-label "$(cat $BUTTONS | head -n3 | tail -n1)" --yesnocancel "$(cat $MESSAGES | head -n2 | tail -n1)"
+# Case 1
+# Query an area
 
-case $? in
-    0)
-        ADD_QUERY_AREA;;
-    1)
-        SELECT_QUERY_MAP;;
-    2)
-        exit;;
-esac
+
+cd $BROWSER
+rm -f ./* 
+touch $VARIABLES/m2_lock
+#until [ $(echo $FRESH | grep exit) ];do
+    inotifywait -e close_write ./
+    FRESH=$BROWSER/$(ls -ct1 ./ | head -n1)
+    mv $"$FRESH" ./data.geojson
+
+    grass $GRASS --exec v.in.ogr -o input=$BROWSER/data.geojson  output=m2_area --overwrite --quiet
+    grass $GRASS --exec v.out.ogr format=GPKG input=m2_area output=$GEOSERVER/m2_area".gpkg" --overwrite --quiet
+    rm -f ~/cityapp/data_from_browser/* 
+    for i in $(cat $MODULES/module_2/qury_this_slum_houses);do
+        
+        # clip centroids only from slum_houses@PERMANENT by m2_area. Result is: clipped
+        # Clip now is without creating attribute table: it is a far faster way.
+        # Therefore the original area elements (houses) have to be queryied by the clipped map, but this is a fast process.
+        
+        v.select -t --overwrite ainput=slum_houses@PERMANENT atype=point,centroid binput=m2_area@module_2 btype=point,line,boundary,centroid,area output=clipped
+        
+    done
+#done
+rm -f $VARIABLES/m2_lock
 exit

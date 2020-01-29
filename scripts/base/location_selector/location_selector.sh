@@ -9,7 +9,7 @@
 cd ~/cityapp
 
 GEOSERVER=~/cityapp/geoserver_data
-MODULES=~/cityapp/scripts/modules
+BASE=~/cityapp/scripts/base
 VARIABLES=~/cityapp/scripts/shared/variables
 GRASS=~/cityapp/grass/global
 MESSAGES=$(cat ~/cityapp/scripts/shared/variables/lang)/location_selector
@@ -31,11 +31,11 @@ if [ $(grass $GRASS/PERMANENT --exec g.list type=vector | grep selection) ]
         NORTH=$(grass $GRASS/PERMANENT --exec g.region -cg vector=polygons_osm | head -n2 | tail -n1 | cut -d"=" -f2)
 fi
 # Replace the line in location_selector.html containing the coordinates
-sed -e '129d' $MODULES/location_selector/location_selector.html > $MODULES/location_selector/location_selector_temp.html
+sed -e '129d' $BASE/location_selector/location_selector.html > $BASE/location_selector/location_selector_temp.html
 sed -i "129i\
 var map = new L.Map('map', {center: new L.LatLng($NORTH, $EAST), zoom: 9 }),drawnItems = L.featureGroup().addTo(map);\
-" $MODULES/location_selector/location_selector_temp.html
-mv $MODULES/location_selector/location_selector_temp.html $MODULES/location_selector/location_selector.html
+" $BASE/location_selector/location_selector_temp.html
+mv $BASE/location_selector/location_selector_temp.html $BASE/location_selector/location_selector.html
 echo $EAST > $VARIABLES/coordinate_east
 echo $NORTH > $VARIABLES/coordinate_north
 }
@@ -113,7 +113,7 @@ coordinates
 # Start location_selector.html
 # Message 6 # 
 kdialog --msgbox "$(cat $MESSAGES | head -n6 | tail -n1)"
-falkon $MODULES/location_selector/location_selector.html &
+falkon $BASE/location_selector/location_selector.html &
  
 inotifywait -e close_write ~/cityapp/data_from_browser/
 

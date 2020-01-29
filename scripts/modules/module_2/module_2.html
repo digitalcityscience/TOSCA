@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Module 1 -- Results</title>
+        <title>Module 2 -- Query </title>
 
         <meta charset="UTF-8">
 
@@ -22,38 +22,67 @@
                 }
             
             #saving {
-                position: fixed;
-                top: 28%;
-                left: 86%;
+                position: absolute;
+                top: 35%;
+                right: 10px;
+                z-index: 10000;
+                }
+            #exit {
+                position: absolute;
+                top: 45%;
+                right: 10px;
                 z-index: 10000;
                 }
             
-            .button1 {
-                padding: 10px 14px;
-                font-size: 24px;
+            .button_save {
+                padding: 28px 18px;
+                font-size: 22px;
                 text-align: center;
                 cursor: pointer;
                 outline: none;
                 color: #006600;
                 background-color: #aaffaa;
                 border: 3px solid #006600;
-                border-radius: 36px;
+                border-radius: 46px;
                 }
 
-            .button1:hover {
+            .button_save:hover {
                 background-color: #ddffdd
                 }
 
-            .button1:active {
+            .button_save:active {
                 background-color: #ffffdd;
                 box-shadow: 0 2px #886;
                 transform: translateY(2px);
                 }
-            
+                
+            .button_exit {
+                padding: 28px 22px;
+                font-size: 22px;
+                text-align: center;
+                cursor: pointer;
+                outline: none;
+                color: #660000;
+                background-color: #ffaaaa;
+                border: 3px solid #660000;
+                border-radius: 46px;
+                }
+
+            .button_exit:hover {
+                background-color: #ffdddd
+                }
+
+            .button_exit:active {
+                background-color: #ffddff;
+                box-shadow: 0 2px #886;
+                transform: translateY(2px);
+                } 
         </style>
     </head>
     <body>
-      <a href='#' id='saving'><button class="button1">Save</button></a>
+        <a href='#' id='saving'><button class="button_save">Save</button></a>
+        <a href='#' id='exit'> <button class="button_exit" onclick="saveFile(value);">Exit</button> </a>
+      
           
         <div id='map'></div>
 
@@ -157,6 +186,15 @@
                 maxZoom: 20,
                 minZoom: 3,
             });
+            Query = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+                layers: 'vector:m2_area',
+                format: 'image/png',
+                transparent: true,
+                attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+                maxZoom: 20,
+                minZoom: 3,
+            });
+
 
     /* Marker line, keep this in line 216 */
     var map = new L.Map('map', {center: new L.LatLng(20.291320, 85.817298), zoom: 12 }),drawnItems = L.featureGroup().addTo(map);        
@@ -176,6 +214,7 @@
                     "Via-points":ViaPoints,
                     "To-points":ToPoints,
                     "Unavailable areas":Areas,
+                    "Query area":Query,
                     "Drawing": drawnItems
                 },
                 { position: 'topright', collapsed: false }).addTo(map);
@@ -197,7 +236,7 @@
                         rectangle: false,
                         circle: false,
                         marker: false,
-                        circlemarker: true,
+                        circlemarker: false,
                     }
                 }));
 
@@ -217,9 +256,32 @@
                 var convertedData = 'text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(data));
                 /* saving */
                 document.getElementById('saving').setAttribute('href', 'data:' + convertedData);
-                document.getElementById('saving').setAttribute('download', 'module_01.geojson');
+                document.getElementById('saving').setAttribute('download', 'module_02.geojson');
             }
 
+            /*------------------------------------------------*/
+            
+            /*-- Save file (exit) ----------------------------*/
+            
+              var saveFile = () => {
+                // Get the data from each element on the form.
+                const item_1 = document.getElementById('exit');
+                var data = '' +item_1.value + '\n' ;
+                const textToBLOB = new Blob([data], { type: 'text/plain' });
+                const sFileName = 'exit';
+                var newLink = document.createElement("a");
+                newLink.download = sFileName;
+                if (window.webkitURL != null) {
+                        newLink.href = window.webkitURL.createObjectURL(textToBLOB);
+                    }
+                    else {
+                        newLink.href = window.URL.createObjectURL(textToBLOB);
+                        newLink.style.display = "none";
+                        document.body.appendChild(newLink);
+                    }
+                newLink.click(); 
+            }
+            
             /*------------------------------------------------*/
                 
             map.on(L.Draw.Event.CREATED, function (event) {

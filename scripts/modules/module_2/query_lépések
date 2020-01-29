@@ -1,0 +1,40 @@
+1.
+Query a sum (of elements, records, etc...)
+
+1. Select map to query (in this example: slum_houses)
+2. Select area to query (draw a polygon, or add a point with radius)
+3. Select field to query (or all, by default?) (In this example: RELIGION)
+
+----------------------
+
+4. Saving area to gojson
+5. Import to GRASS (in this example: area)
+6. v.select -t --overwrite ainput=slum_houses@PERMANENT atype=point,centroid binput=area@module_1 btype=point,line,boundary,centroid,area output=clipped3@module_1
+7. v.vect.stats -p points=clipped3 areas=slum_houses@PERMANENT type=centroid,point area_where="CAT>0" | grep "|1" | wc -l > result_1
+8. Display result_1
+
+
+2.
+Query distribution of data
+
+1. Select map to query (in this example: slum_houses)
+2. Select area to query (draw a polygon, or add a point with radius)
+3. Select field to query (In this example: RELIGION)
+
+----------------------
+4. Saving area to gojson
+5. Import to GRASS (in this example: area)
+
+v.class map=slum_houses@PERMANENT column=AVG_MON_I where="AVG_MON_I<20000" algorithm=int nbclasses=10 | sed s'/  \+/ /'g | sed s'/ /,/'g> kimenet
+
+
+Vagy a felhasználónak, vagy az elkészítőnek értenie kell egy kicsit a dologhoz.
+A felhasználó aligha fog, ezért az előkészítőtől várunk el eg kis plusz tudást.
+
+Korátozások:
+- A csak térképi adattábla kérdezhető le (tehát, klső, csv, akármi, nem)
+- Új térkép (réteg) hozzáadásakor (add_layer modul) meg kell adni, hogy mely adatok (oszlopok) kérdezhetők le.
+- Azt is meg kell adni, hogy a nem numerikus (string) oszlopokban milyen értékek kérdezhetők le (pl: RELIGION mező: Muslim, Hindu). Az értékeket kisbetű/nagybetű helyesen kell megadni
+- Még az is lehet, hogy csak numerikus adat legyen megadható...
+ Ha numerikus, akkor a kimeneti diagram legalább nagyjából megfelelő skálázáshoz le kell kérdezni: min,max, average, median.
+

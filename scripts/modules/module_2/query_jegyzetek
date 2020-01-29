@@ -38,11 +38,11 @@ Az overlay sokkal gyorsabb mint a clip, de ez se elég gyors.
 v.overlay -t --overwrite ainput=slum_houses@PERMANENT binput=area@module_1 operator=and output=clipped
 
 Ez gyors (csak ne legyen kimenő attribútum tábla, és érdemes a kimenetbe csak a pont és centroid objektumokat belefoglalni):
-v.select -t --overwrite ainput=slum_houses@PERMANENT atype=point,centroid binput=area@module_1 btype=point,line,boundary,centroid,area output=clipped3@module_1
+v.select -t --overwrite ainput=slum_houses@PERMANENT atype=point,line,boundary,centroid,area binput=m2_area btype=point,line,boundary,centroid,area output=clipped
 
 Aztán az eredmény összeszámolása:
 
-v.vect.stats -p points=clipped3 areas=slum_houses@PERMANENT type=centroid,point area_where="CAT>0" | grep "|1" | wc -l
+v.vect.stats -p points=clipped3 areas=slum_houses@PERMANENT type=centroid,point area_where="RELIGION="Muslim"" | grep "|1" | wc -l
 
 
 

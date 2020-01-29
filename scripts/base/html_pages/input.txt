@@ -1,0 +1,7 @@
+I have an html paragraph
+(inside a div) in which I want
+to display a simple fixed text.
+The text is a bit long
+so I'd rather the
+text will be in a seperate txt file.
+something like 
