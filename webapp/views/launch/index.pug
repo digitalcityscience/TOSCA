@@ -1,0 +1,58 @@
+html
+  head
+    title Launch
+
+    script(src='/lib/leaflet/leaflet.js')
+    script(src='/lib/leaflet/leaflet.draw.js')
+
+    link(rel='stylesheet' href='/lib/leaflet/leaflet.css')
+    link(rel='stylesheet' href='/lib/leaflet/leaflet.draw.css')
+
+    style
+      include style.css
+      include ../map/style.css
+
+  body
+    div(id='Launch')
+      select(id='Select_menu')
+        option(selected value='') -- Select a module to launch --
+        option(value='~/cityapp/scripts/base/location_selector/location_selector.sh') Location selector
+        option(value='~/cityapp/scripts/base/add_layer/add_layer.sh') Add new layer
+        option(value='~/cityapp/scripts/modules/module_1/module_1.sh') Time map
+        option(value='~/cityapp/scripts/modules/module_2/module_2.sh') Query a map
+
+      a(href='#'): button(class='button' onclick='saveFile(value);') Launch
+
+    div(id='Display')
+      select(id='Display_menu')
+          option(selected value='') -- Select a map to display --
+          option(value='path_to_display_map_1') Map 1
+          option(value='path_to_display_map_2') Map 2
+          option(value='path_to_display_map_3') Map 3
+
+      a(href='#'): button(class='button' onclick='saveFile_2(value);') Select
+
+    div(id='Query')
+      select(id='Query_menu')
+        option(selected value='') -- Select a map to query --
+        option(value='path_to_query_map_1') Map 1
+        option(value='path_to_query_map_2') Map 2
+        option(value='path_to_query_map_3') Map 3
+
+      a(href='#'): button(class='button' onclick='saveFile_3(value);') Select
+
+    div(id='Module_description')
+      h3 Legend
+      object(width='100%' data='/home/titusz/legend.png')
+
+    div(id='Map_container')
+      include ../map/index.pug
+
+    div(id='Info')
+
+    script.
+      const geoserverURL = '#{geoserverUrl}';
+      const [lat, lon] = [#{lat}, #{lon}];
+    script
+      include script.js
+      include ../map/script.js
