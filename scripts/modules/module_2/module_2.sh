@@ -1,93 +1,138 @@
 #! /bin/bash
-# version 0.1
+. ~/cityapp/scripts/shared/functions
+
+# version 1.2
 # CityApp module
-# This module is to query any existing map by a user-defined area or user-selected area map.
-# 2020. január 26.
+# This module is to query any existing map by a user-defined area or user-selected area
+# 2020. február 3.
 # Author: BUGYA Titusz, CityScienceLab -- Hamburg, Germany
+
+#
+#-- Initial settings -------------------
+#
 
 cd ~/cityapp
 
 GEOSERVER=~/cityapp/geoserver_data
 MODULES=~/cityapp/scripts/modules
+MODULE=~/cityapp/scripts/modules/module_2
+GRASS=~/cityapp/grass/global
 VARIABLES=~/cityapp/scripts/shared/variables
 BROWSER=~/cityapp/data_from_browser
-GRASS=~/cityapp/grass/global/module_2
-PERMANENT=~/cityapp/grass/global/PERMANENT
-MESSAGES=$(cat ~/cityapp/scripts/shared/variables/lang)/module_2
-BUTTONS=$(cat ~/cityapp/scripts/shared/variables/lang)/module_2_buttons
+MESSAGE_TEXT=$(cat ~/cityapp/scripts/shared/variables/lang)/module_2
+MESSAGE_SENT=~/cityapp/data_to_client
+MAPSET=module_2
 
-# Module_2 first check if the location settings (and, therefore selection map in PERMANENT) is the same or changed since the last running
-# If no changes, then module_2_query.html will unchanged
-# If new or modified location found, change center coordinates in module_2_query.html.
-# Acknowledgement mnagement
+rm -f $MESSAGE_SENT/*
 
-if [ -e $VARIABLES/m2_lock ]
-    then
-        kdialog --error "Module 2 is already running \n before continue, first exit, please."
-fi
+# Have to chech if the current setting are the same to the PEWRMANENT mapset or not. if not, hawe overwrite the mapset settings
 
-if [ -e $VARIABLES/location_new ]
-    then
-        if [ -e $MODULES/module_2/ack_location_new ]
-            then
-                INIT=3
-            else
-                INIT=1
-                # Scorched earth. Removing the entire module_1 mapset and module_1 browser data directory
-                rm -f $BROWSER/module_2/*
-                mkdir $BROWSER/module_2
-                rm -fR $GRASS
-                mkdir $GRASS
-                cp -r ~/cityapp/grass/skel/* $GRASS
-                
-                SET_COORDINATES
-                
-                touch $MODULES/module_2/ack_location_new
-                rm -f $MODULES/module_2/ack_location_mod
-        fi
-    else
-        if [ -e $VARIABLES/location_mod ]
-            then
-                if [ -e $MODULES/module_2/ack_location_mod ]
-                    then
-                        INIT=3
-                    else
-                        INIT=2
-                        SET_COORDINATES
-                        touch $MODULES/module_2/ack_location_mod
-                        rm -f $MODULES/module_2/ack_location_new
-                fi
-            else
-                # MESSAGE 1
-                kdialog --error "$(cat $MESSAGES | head -n1 | tail -n1)"
-                exit
-        fi
-fi
+#
+#-- Process ------------------
+#
 
-# Case 1
-# Query an area
+# Message 1 Draw an area to qery
+Send_Message 1 module_2.1
+    Get_Geojson
+    QUERY_AREA=$GEOJSON_PATH
+    
+    # copy for archiving -- later, when a saving is not requested, it will deleted
+    cp $GEOJSON_PATH $MODULE/temp_storage
 
+    Add_Vector $QUERY_AREA query_area
+    QUERY_AREA="query_area"
+    
+    Gpkg_Out $QUERY_AREA query_area
 
-cd $BROWSER
-rm -f ./* 
-touch $VARIABLES/m2_lock
-#until [ $(echo $FRESH | grep exit) ];do
-    inotifywait -e close_write ./
-    FRESH=$BROWSER/$(ls -ct1 ./ | head -n1)
-    mv $"$FRESH" ./data.geojson
+# Message 2 What is the mapset you want to query? Available mapsets are:
+Send_Message 2 module_2.2
+    echo "" >> $MESSAGE_SENT/message.module_2.2
+    echo $(ls -ct1 $GRASS) >> $MESSAGE_SENT/message.module_2.2
+    
+    Request
+    MAPSET_TO_QUERY=$REQUEST_CONTENT
+    # copy for achiving
+    echo $MAPSET_TO_QUERY > $MODULE/temp_storage/mapset_to_query
+    
+# Message 3 What is the map you want to query? Available maps are:
+Send_Message 3 module_2.3
+    echo "" >> $MESSAGE_SENT/message.module_2.3
+    grass $GRASS/$MAPSET --exec g.list type=vector >> $MESSAGE_SENT/message.module_2.3
+    
+    Request
+    MAP_TO_QUERY=$REQUEST_CONTENT
+    # copy for achiving
+    echo $MAP_TO_QUERY > $MODULE/temp_storage/map_to_query
 
-    grass $GRASS --exec v.in.ogr -o input=$BROWSER/data.geojson  output=m2_area --overwrite --quiet
-    grass $GRASS --exec v.out.ogr format=GPKG input=m2_area output=$GEOSERVER/m2_area".gpkg" --overwrite --quiet
-    rm -f ~/cityapp/data_from_browser/* 
-    for i in $(cat $MODULES/module_2/qury_this_slum_houses);do
-        
-        # clip centroids only from slum_houses@PERMANENT by m2_area. Result is: clipped
-        # Clip now is without creating attribute table: it is a far faster way.
-        # Therefore the original area elements (houses) have to be queryied by the clipped map, but this is a fast process.
-        
-        v.select -t --overwrite ainput=slum_houses@PERMANENT atype=point,centroid binput=m2_area@module_2 btype=point,line,boundary,centroid,area output=clipped
-        
-    done
-#done
-rm -f $VARIABLES/m2_lock
+    # Now it is possible to chechk if the map to query is in the default mapset (set in the header as MAPSET), or not. If not, the map has to be copied into the module_2 mapset and the further processes will taken in this mapset.
+
+    if [ "$MAPSET_TO_QUERY" != "$MAPSET" ]
+        then
+            grass $GRASS/$MAPSET --exec g.copy vector=$MAP_TO_QUERY"@"$MAPSET_TO_QUERY,$MAP_TO_QUERY"@"$MAPSET --overwrite 
+    fi
+    
+# Message 4 What is the field (column) you want to query? List of columns:
+Send_Message 4 module_2.4    
+    echo "" >> $MESSAGE_SENT/message.module_2.4
+    grass $GRASS/$MAPSET --exec db.columns table=$MAP_TO_QUERY >> $MESSAGE_SENT/message.module_2.4
+
+    Request
+    if [ -z $REQUEST_CONTENT ]
+        then
+            COLUMN_TO_QUERY="all"
+            # copy for achiving
+            echo "all" > $MODULE/temp_storage/column_to_query
+        else
+            COLUMN_TO_QUERY=$REQUEST_CONTENT
+            # copy for achiving
+            echo $COLUMN_TO_QUERY > $MODULE/temp_storage/column_to_query
+    fi
+    
+# Message 5 Do you want to perform a complex query (yes/no)? If yes, give an SQL query (list columns)
+Send_Message 5 module_2.5
+    echo "" >> $MESSAGE_SENT/message.module_2.5
+    grass $GRASS/$MAPSET --exec db.columns table=$MAP_TO_QUERY >> $MESSAGE_SENT/message.module_2.5 
+
+    Request
+    if [ -z $REQUEST_CONTENT ]
+        then
+            CRITERIA="no"
+            # copy for achiving
+            echo "no" > $MODULE/temp_storage/criteria
+        else
+            CRITERIA=$REQUEST_CONTENT
+            # copy for achiving
+            echo $CRITERIA > $MODULE/temp_storage/criteria
+    fi
+    
+#
+#-- Query --------------------
+#
+    
+# Set region to query area, set resolution
+grass $GRASS/$MAPSET --exec g.region vector=$MAP_TO_QUERY res=0.00003 --overwrite
+
+# Set MASK to query area
+grass $GRASS/$MAPSET --exec r.mask vector=$QUERY_AREA --overwrite
+
+# Transform query map in raster format, where $CRITERIA (what if "no"?) value=attr attr field=COLUMN_TO_QUERY
+grass $GRASS/$MAPSET --exec v.to.rast  input=$MAP_TO_QUERY type=centroid where="$CRITERIA" output=$MAP_TO_QUERY"_raster" use=attr attribute_column=$COLUMN_TO_QUERY --overwrite
+
+grass $GRASS/$MAPSET --exec v.select -t --overwrite ainput=$MAP_TO_QUERY atype=centroid binput=$QUERY_AREA output=$MAP_TO_QUERY"_centroid" operator=overlap
+
+# Use Update datatable by raster under centroid -- print only
+grass $GRASS/$MAPSET --exec v.what.rast -p map=$MAP_TO_QUERY"_centroid" type=centroid raster=$MAP_TO_QUERY"_raster" > $MODULE/temp_query_result
+
+cat $MODULE/temp_query_result | cut -d"|" -f2 | grep -v "*" > $MODULE/temp_query_result_numbers
+
+SUM=0
+for i in $(cat $MODULE/temp_query_result_numbers);do
+    SUM=$(($SUM+$i))
+done
+
+echo $SUM > $MODULE/temp_storage/result_sum
+cat $MODULE/temp_query_result_numbers | wc -l > $MODULE/temp_storage/result_counts
+
+Close_Process
+
 exit

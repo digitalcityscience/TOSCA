@@ -1,2 +1,5 @@
-No valid location found. \n Run Location selector to create a valid location
-Now you can draw an area to query, or you can select an existing area to query.
+Draw an area to qery.
+What is the mapset you want to query? Available mapsets are:
+What is the map you want to query?Available maps are:
+What is the field (column) you want to query?  List of columns:
+Do you want to perform a complex query (yes/no)? If yes, give an SQL query (list columns)

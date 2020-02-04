@@ -1,0 +1,157 @@
+# version 1.0
+# CityApp function
+# This file contains functions of CityApp bash scripts. Funcions are in alphabetical order, A short description can be found for each function.
+# 2020. február 1.
+# Author: BUGYA Titusz, CityScienceLab -- Hamburg, Germany
+
+#
+# -- Functions ---------------------------------
+#
+#
+
+Add_Vector ()
+    #This is to import a geojson area file. Parameters: {filename to import,output filename for the GRASS}
+    {
+    grass -f $GRASS/$MAPSET --exec v.in.ogr -o input=$1 output=$2 --overwrite --quiet
+    }
+    
+Area_To_Raster ()
+    # This function is to convert vector area into raster format. Using this, check first the resolution of your GRASS region! Parameters: {vector to convert, raster output name, sql statement, attribute column to get raster values} If the last two parameter is 0, only the input name and output name will considered: a simple vector-raster conversion. In this case GRASS will convert vector input to raster output, and each raster will have the same value: 1.
+    {
+    if [ $3 -eq 0 ] && [ $4 -eq 0 ]
+        then
+            grass -f $GRASS/$MAPSET --exec v.to.rast input=$1 type=area output=$2 val=1 --overwrite --quiet
+        else
+            grass -f $GRASS/$MAPSET --exec v.to.rast input=$1 type=area output=$2 where=$3 use=attr attribute_column=$4 --overwrite --quiet
+    fi
+    }
+    
+Centroid_Query_Raster ()
+    # Query raster values under centroid points of specified vector map. Output will send to a file. Parameters: {Vector map with centroids,raster map to qery,output file for query results}
+    {
+    grass -f $GRASS/$MAPSET --exec  v.what.rast -p map=$1 type=centroid raster=$2 --overwrite --quiet > $3 
+    }
+
+Centroid_To_Raster ()
+    # This function is to convert the centroid of a vector area into raster format. Using this, check first the resolution of your GRASS region! Parameters: {vector to convert, raster output name, sql statement, attribute column to get raster values} If the last two parameter is 0, only the input name and output name will considered: a simple vector-raster conversion. In this case GRASS will convert vector input to raster output, and each raster will have the same value: 1.
+    {
+    if [ $3 -eq 0 ] && [ $4 -eq 0 ]
+        then
+            grass -f $GRASS/$MAPSET --exec v.to.rast input=$1 type=centroid output=$2 val=1 --overwrite --quiet
+        else
+            grass -f $GRASS/$MAPSET --exec v.to.rast input=$1 type=centroid output=$2 where=$3 use=attr attribute_column=$4 --overwrite --quiet
+    fi
+    }
+    
+Close_Process ()
+    {
+    # This is to clean properly after finishing the module.
+    rm -f $BROWSER/*
+    mv $BROWSER/.launch_locked $BROWSER/.launch_open
+    rm -f $MODULE/temp_*
+    }
+    
+Count_Lines ()
+    # This is to count lines which fits to pattern in a file (normally: this file is the output of Centroid_Query_Raster function). Parameters: {file to analyse,field separator,column (first or second etc...,pattern} For example:    Count_Lines kimenet | 2 4     means:   cat kimenet.txt | cut -d"|" -f2 | grep "4" | wc -l    Output is stdout.
+    # There are default values: for field separator: "|". For column number: "2". If you want to use default values, only declare the first two parameter.
+    {
+    if [ $3 ] && [ $4 ]
+        then
+           OUTPUT=$(cat $1 | cut -d"$2" -f$3 | grep $4 | wc -l)
+        else
+            if [ $1 ] && [ $2 ]
+                then
+                   OUTPUT=$(cat $1 | cut -d"|" -f2 | grep "$2" | wc -l)
+            fi
+    fi
+    }
+    
+Get_Geojson ()
+    # Almost the same as Request function, the only diference is, that this function sniffs for the latest geojson file in $BROWSER
+    {
+    rm -f $BROWSER/*
+    inotifywait -e close_write $BROWSER
+    GEOJSON_FILE=""
+    while  [ -z $GEOJSON_FILE ];do
+        GEOJSON_FILE=$(ls -ct1 $BROWSER/ | head -n1 | grep ".geojson")
+    done
+    
+    GEOJSON_PATH=$BROWSER/$(ls -ct1 $BROWSER/ | head -n1)    
+    }
+        
+Gpkg_Out ()
+    # This function export a file in the geoserver data dir. Output fileformat can only GPKG. Parameters: {GRASS are vector to export,filename after export in geoserver dir}
+    {
+    grass -f $GRASS/$MAPSET --exec v.out.ogr format=GPKG input=$1 output=$GEOSERVER/$2".gpkg" --overwrite --quiet
+    }
+        
+Point_To_Raster ()
+    # This function is to convert vector points into raster format. Using this, check first the resolution of your GRASS region! Parameters: {vector to convert, raster output name, sql statement, attribute column to get raster values} If the last two parameter is 0, only the input name and output name will considered: a simple vector-raster conversion. In this case GRASS will convert vector input to raster output, and each raster will have the same value: 1.
+    {
+    if [ $3 -eq 0 ] && [ $4 -eq 0 ]
+        then
+            grass -f $GRASS/$MAPSET --exec v.to.rast input=$1 type=point output=$2 val=1 --overwrite --quiet
+        else
+            grass -f $GRASS/$MAPSET --exec v.to.rast input=$1 type=point output=$2 where=$3 use=attr attribute_column=$4 --overwrite --quiet
+    fi
+    }
+    
+Request ()
+    # This function wait until a new file is written in $BROWSER, the load and pass it to the next process. No parameters, and two output: FRESH_FILE: the name of the file, FRESH_PATH: the full path and the filename.
+    # We have to be sure reading only the appropriate file. Despite the first the is "rm -f", have to manage if the new file is not  the expected one.
+    # Therefore have to check the fiename AND its content too.
+    {
+    rm -f $BROWSER/*
+    inotifywait -e close_write $BROWSER
+    REQUEST_FILE=""
+    while  [ -z $REQUEST_FILE ];do
+        REQUEST_FILE=$(ls -ct1 $BROWSER/ | head -n1 | grep "request")
+    done
+    
+    REQUEST_PATH=$BROWSER/$(ls -ct1 $BROWSER/ | head -n1)
+    REQUEST_CONTENT=$(cat $REQUEST_PATH)
+    }
+    
+Select_Fresh ()
+    #This function is to select the last (freshest) file from data_from_browser directory. No parameters
+    {
+    OUTPUT=$BROWSER/$(ls -ct1 ~/cityapp/data_from_browser/ | head -n1)
+    }
+
+Send_List ()
+    # THis function is to send list, typically issued by GRASS. Normally used send list of available map, or mapsets
+    {
+    echo $(cat $MESSAGE_TEXT | head -n$1 | tail -n1) > $MESSAGE_SENT/list.$2
+    }
+    
+Send_Message ()
+    # Parameters: {line number in message file,message id (string or number) in the current script}
+    {
+    echo $(cat $MESSAGE_TEXT | head -n$1 | tail -n1) > $MESSAGE_SENT/message.$2
+    }
+
+Set_Region ()
+    # Set region. Parameters {vector map,resolution}. First parameter can only a vector map name: If it is defined, the computation region will set to this map. If not defined, region dimensions will not affected, remains as it was. Second option is resolution, have to be defined in decimal degrees (EPSG 4326). Decimal separator is dot (.) If not defined, previously set resolution will not changed. IF you don't want to set vector map, set first parameter to -1. If you don't want to set resolution, set second parameter to -1.
+    {
+    if [ $1 -eq -1 ]
+        then
+            grass -f $GRASS/$MAPSET --exec g.region res=$2 --overwrite --quiet
+    fi
+    
+    if [ $2 -eq -1 ]
+        then
+            grass -f $GRASS/$MAPSET --exec g.region vector=$1 --overwrite --quiet
+    fi
+    }
+    
+Vector_Mask ()
+    # Simple raster mask from a vector map. Parameter: {vector map to use as MASK}. Output is MASK.
+    {
+    grass -f $GRASS/$MAPSET --exec r.mask vector=$1 --overwrite --quiet
+    }
+    
+Wait ()
+    # Wait until writing and closing a file in the data_from browser directory. No parameters.
+    {
+    inotifywait -e close_write $BROWSER
+    }
