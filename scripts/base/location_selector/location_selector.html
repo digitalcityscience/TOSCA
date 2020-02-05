@@ -5,12 +5,12 @@
 
     <meta charset="UTF-8">
 
-    <script src="../../lib/leaflet/leaflet.js"></script>
-    <script src="../../lib/leaflet/leaflet.draw.js"></script>
+    <script src="../../../webapp/public/lib/leaflet/leaflet.js"></script>
+    <script src="../../../webapp/public/lib/leaflet/leaflet.draw.js"></script>
 
-    <link rel="stylesheet" href="../../lib/leaflet/leaflet.css" />
-    <link rel="stylesheet" href="../../lib/leaflet/leaflet.draw.css" />
-    <link rel="shortcut icon" type="image/x-icon" href="../../lib/leaflet/images/favicon.ico" />
+    <link rel="stylesheet" href="../../../webapp/public/lib/leaflet/leaflet.css" />
+    <link rel="stylesheet" href="../../../webapp/public/lib/leaflet/leaflet.draw.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../../../webapp/public/lib/leaflet/images/favicon.ico" />
 
     <style>
         html,
@@ -126,7 +126,7 @@
         });
         
         /* Marker line, keep this in line 128 */
-var map = new L.Map('map', {center: new L.LatLng(20.297129, 85.860944), zoom: 9 }),drawnItems = L.featureGroup().addTo(map);
+var map = new L.Map('map', {center: new L.LatLng(20.297129, 85.860944), zoom: 9 }),drawnItems = L.featureGroup().addTo(map);    
         /* Marker line, keep this in line 130 */
 
         L.control.layers({
@@ -179,7 +179,7 @@ var map = new L.Map('map', {center: new L.LatLng(20.297129, 85.860944), zoom: 9 
             var convertedData = 'text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(data));
             /* saving */
             document.getElementById('saving').setAttribute('href', 'data:' + convertedData);
-            document.getElementById('saving').setAttribute('download', '../../../data_from_browser/selection_1.geojson');
+            document.getElementById('saving').setAttribute('download', 'selection_1.geojson');
         }
 
         /*------------------------------------------------*/

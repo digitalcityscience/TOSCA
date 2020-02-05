@@ -1,89 +1,112 @@
 #! /bin/bash
-# version 1.0
+. ~/cityapp/scripts/shared/functions
+
+# version 1.3
 # CityApp module
 # Import OSM maps into PERMANENT mapset. Points, lines, polygons, relations are only imported. Other maps can be extracted from these in separate modules.
 # To import other maps, use Add Layer module.
-# 2020. január 24.
+#
+# Core module, do not modify.
+#
+# 2020. február 5.
 # Author: BUGYA Titusz, CityScienceLab -- Hamburg, Germany
+
+#
+#-- Initial settings -------------------
+#
 
 cd ~/cityapp
 
 GEOSERVER=~/cityapp/geoserver_data
-BASE=~/cityapp/scripts/base
-VARIABLES=~/cityapp/scripts/shared/variables
+MODULES=~/cityapp/scripts/modules
+MODULE=~/cityapp/scripts/modules/location_selector
 GRASS=~/cityapp/grass/global
-MESSAGES=$(cat ~/cityapp/scripts/shared/variables/lang)/location_selector
-BUTTONS=$(cat ~/cityapp/scripts/shared/variables/lang)/location_selector_buttons
-# An example message:
-# kdialog --yes-label "$(cat $BUTTONS | head -n1 | tail -n1)" --no-label "$(cat $BUTTONS | head -n3 | tail -n1)" --yesno "$(cat $MESSAGES | head -n1 | tail -n1)"
-#yes = 0
-#no = 1
-#cancel = 2
+VARIABLES=~/cityapp/scripts/shared/variables
+BROWSER=~/cityapp/data_from_browser
+LANGUAGE=$(cat ~/cityapp/scripts/shared/variables/lang)
+MESSAGE_TEXT=~/cityapp/scripts/shared/messages/$LANGUAGE/location_selector
+MESSAGE_SENT=~/cityapp/data_to_client
+MAPSET=PERMANENT
 
-function coordinates 
-{
-if [ $(grass $GRASS/PERMANENT --exec g.list type=vector | grep selection) ]
-    then
-        EAST=$(grass $GRASS/PERMANENT --exec g.region -cg vector=selection | head -n1 | cut -d"=" -f2)
-        NORTH=$(grass $GRASS/PERMANENT --exec g.region -cg vector=selection | head -n2 | tail -n1 | cut -d"=" -f2)
-    else
-        EAST=$(grass $GRASS/PERMANENT --exec g.region -cg vector=polygons_osm | head -n1 | cut -d"=" -f2)
-        NORTH=$(grass $GRASS/PERMANENT --exec g.region -cg vector=polygons_osm | head -n2 | tail -n1 | cut -d"=" -f2)
-fi
-# Replace the line in location_selector.html containing the coordinates
-sed -e '129d' $BASE/location_selector/location_selector.html > $BASE/location_selector/location_selector_temp.html
-sed -i "129i\
-var map = new L.Map('map', {center: new L.LatLng($NORTH, $EAST), zoom: 9 }),drawnItems = L.featureGroup().addTo(map);\
-" $BASE/location_selector/location_selector_temp.html
-mv $BASE/location_selector/location_selector_temp.html $BASE/location_selector/location_selector.html
-echo $EAST > $VARIABLES/coordinate_east
-echo $NORTH > $VARIABLES/coordinate_north
-}
+#
+#-- Preprocess, query ------------------
+#
 
-if [ ! -d "$GRASS/PERMANENT/" ]
+function coordinates
+    {
+    if [ $(grass $GRASS/$MAPSET --exec g.list type=vector | grep selection) ]
+        then
+            EAST=$(grass $GRASS/$MAPSET --exec g.region -cg vector=selection | head -n1 | cut -d"=" -f2)
+            NORTH=$(grass $GRASS/$MAPSET --exec g.region -cg vector=selection | head -n2 | tail -n1 | cut -d"=" -f2)
+        else
+            EAST=$(grass $GRASS/$MAPSET --exec g.region -cg vector=polygons_osm | head -n1 | cut -d"=" -f2)
+            NORTH=$(grass $GRASS/$MAPSET --exec g.region -cg vector=polygons_osm | head -n2 | tail -n1 | cut -d"=" -f2)
+    fi
+
+    # Replace the line in location_selector.html containing the coordinates
+    sed -e '129d' $MODULE/location_selector.html > $MODULE/location_selector_temp.html
+    sed -i "129i\
+    var map = new L.Map('map', {center: new L.LatLng($NORTH, $EAST), zoom: 9 }),drawnItems = L.featureGroup().addTo(map);\
+    " $MODULE/location_selector_temp.html
+    mv $MODULE/location_selector_temp.html $MODULE/location_selector.html
+    echo $EAST > $VARIABLES/coordinate_east
+    echo $NORTH > $VARIABLES/coordinate_north
+    }
+
+if [ ! -d "$GRASS/$MAPSET/" ]
     then
         # PERMANENT not found
-        # Message 1 #
-        kdialog --yes-label "$(cat $BUTTONS | head -n1 | tail -n1)" --no-label "$(cat $BUTTONS | head -n3 | tail -n1)" --yesno "$(cat $MESSAGES | head -n1 | tail -n1)"
-        if [ $? -eq 0 ]
-            then
-                INIT=0
-                # Message 2 #
-                NEW_AREA_FILE=$(kdialog --getopenfilename ~/ --title "$(cat $MESSAGES | head -n2 | tail -n1)")
-            else
-                exit
-        fi
+        # Message 1 First have to add an area (such as country) to the dataset. ...
+        Send_Message 1 location_selector.1
+            
+            # A simle yes/no. If no, exit
+            Request
+            if [ "$REQUEST_CONTENT" = "no" -o "$REQUEST_CONTENT" = "No" -o "$REQUEST_CONTENT" = "NO" ]
+                then
+                    exit
+                else
+                    INIT=0
+                    # Message 2 Select a map to add to CityApp
+                    Send_Message 2 location_selector.2
+                
+                    # The map to import
+                    Request osm
+                    NEW_AREA_FILE=$REQUEST_PATH
+            fi
     else
         # PERMANENT found
-        # Message 2 #
-        kdialog --yes-label "$(cat $BUTTONS | head -n1 | tail -n1)" --no-label "$(cat $BUTTONS | head -n2 | tail -n1)" --cancel-label "$(cat $BUTTONS | head -n3 | tail -n1)" --yesnocancel "$(cat $MESSAGES | head -n2 | tail -n1)"
+        # Message 4 There is an already defined area. Do you want to reshape the existing selection? If do not want reshape the selection, bceause you want to replace the entire location, select No.
+        Send_Message 4 location_selector.4
         case $? in
-            0)
+            "yes" | "Yes" | "YES")
                 INIT=0
-                # Message 3 #
-                NEW_AREA_FILE=$(kdialog --getopenfilename ~/ --title "$(cat $MESSAGES | head -n3 | tail -n1)");;
-            1)
+                # Message 5 -- It is the same as Message 2
+                # Therefore the same line will used, but the message is will set to 4.
+                Send_Message 2 location_selector.5
+                    
+                    Request osm
+                    NEW_AREA_FILE=$REQUEST_PATH;;
+                
+            "no" | "No" | "NO")
                 INIT=1;;
-            2)
-                exit;;
         esac
 fi
 
 case $INIT in
     0)
         rm -f $GEOSERVER/*
-        rm -fR $GRASS/PERMANENT/
-        mkdir $GRASS/PERMANENT
-        cp -r ~/cityapp/grass/skel_permanent/* $GRASS/PERMANENT
+        rm -fR $GRASS/$MAPSET/
+        mkdir $GRASS/$MAPSET
+        cp -r ~/cityapp/grass/skel_permanent/* $GRASS/$MAPSET
 
-        grass $GRASS/PERMANENT --exec v.in.ogr -o -e input=$NEW_AREA_FILE layer=points output=points_osm --overwrite
-        grass $GRASS/PERMANENT --exec v.in.ogr -o -e input=$NEW_AREA_FILE layer=lines output=lines_osm --overwrite
-        grass $GRASS/PERMANENT --exec v.in.ogr -o -e input=$NEW_AREA_FILE layer=multipolygons output=polygons_osm --overwrite
-        grass $GRASS/PERMANENT --exec v.in.ogr -o -e input=$NEW_AREA_FILE layer=other_relations output=relations_osm --overwrite
-        grass $GRASS/PERMANENT --exec v.out.ogr format=GPKG input=points_osm output=$GEOSERVER/points".gpkg" --overwrite
-        grass $GRASS/PERMANENT --exec v.out.ogr format=GPKG input=lines_osm output=$GEOSERVER/lines".gpkg" --overwrite
-        grass $GRASS/PERMANENT --exec v.out.ogr format=GPKG input=polygons_osm output=$GEOSERVER/polygons".gpkg" --overwrite
-
+        Add_Osm $NEW_AREA_FILE points points_osm
+        Add_Osm $NEW_AREA_FILE lines lines_osm
+        Add_Osm $NEW_AREA_FILE multipolygons polygons_osm
+        Add_Osm $NEW_AREA_FILE other_relations relations_osm
+        Gpkg_Out points_osm points
+        Gpkg_Out lines_osm lines
+        Gpkg_Out polygons_osm polygons
+        
         # Copy basemaps into $GEOSERVER/saved
         # From now this directory will contains the original, unclipped maps.
         # This may useful for further operations.
@@ -96,43 +119,40 @@ case $INIT in
         # Refine or redefine the area selection
         rm -f $VARIABLES/location_new
         touch $VARIABLES/location_mod;;
-    2)
-        exit;;
 esac
 
-        if [ ! -e $GRASS/PERMANENT/vector/lines_osm ]
-            then
-                # Message 5
-                kdialog --msgbox "$(cat $MESSAGES | head -n5 | tail -n1)"
-                exit
-        fi
+if [ ! -e $GRASS/$MAPSET/vector/lines_osm ]
+    then
+        Send_Message 6 location_selector.6
+        # Message 6 No lines map found in PERMANET mapset, or lines map is damaged.  To resolve this error, add again your location (map) to CityApp.
+        exit
+fi
 
 # Inserting the center coordinates of the new area in the location_selector.html
 coordinates
 
-# Start location_selector.html
-# Message 6 # 
-kdialog --msgbox "$(cat $MESSAGES | head -n6 | tail -n1)"
-falkon $BASE/location_selector/location_selector.html &
- 
-inotifywait -e close_write ~/cityapp/data_from_browser/
+# Message 7 # Now zoom to area of your interest, then use drawing tool to define your location. Next, save your selection.
+Send_Message 7 location_selector.7
+    
+# This geojson is the "selection" drawn by the user. Import to GRASS and export to Geoserver
+Request geojson
+GEOJSON_FILE=$REQUEST_PATH 
+Add_Vector "$GEOJSON_FILE" selection
+Gpkg_Out selection selection
+    
+# Message Now you can set the resolution value (in meters). The value you declare, will used by each CityApp module
+# Actually, now a separate script will run
 
-# Message 7 # 
-kdialog --yesno "$(cat $MESSAGES | head -n7 | tail -n1)"
-if [ $? -eq 0 ]
-    then
-        ~/cityapp/scripts/maintenance/resolution_setting.sh
-fi
+~/cityapp/scripts/maintenance/resolution_setting.sh
 
-# Basic operations in the GRASS
-# Selection import to GRASS and export to Geoserver as gpkg.
-grass $GRASS/PERMANENT --exec v.in.ogr -o -o input=~/cityapp/data_from_browser/"$(ls -ct1 ~/cityapp/data_from_browser | head -n1)" output=selection --overwrite
-grass $GRASS/PERMANENT --exec v.out.ogr format=GPKG input=selection output=$GEOSERVER/selection".gpkg" --overwrite --quiet
-rm -f ~/cityapp/data_from_browser/data.geojson
+#
+#-- Process ----------------------------
+#
 
-grass $GRASS/PERMANENT --exec v.clip input=polygons_osm clip=selection output=polygons --overwrite
-grass $GRASS/PERMANENT --exec v.clip input=lines_osm clip=selection output=lines --overwrite
-grass $GRASS/PERMANENT --exec v.clip input=relations_osm clip=selection output=relations --overwrite
+# Clipping the basemaps by the selection map. Results will used in the calculations and analysis
+grass $GRASS/$MAPSET --exec v.clip input=polygons_osm clip=selection output=polygons --overwrite
+grass $GRASS/$MAPSET --exec v.clip input=lines_osm clip=selection output=lines --overwrite
+grass $GRASS/$MAPSET --exec v.clip input=relations_osm clip=selection output=relations --overwrite
 
 # Finally, have to set Geoserver to display raster outputs (such as time_map) properly.
 # For this end, first have to prepare a "fake time_map". This is a simple geotiff, a raster version of "selection" vector map.
@@ -143,14 +163,19 @@ grass $GRASS/PERMANENT --exec v.clip input=relations_osm clip=selection output=r
 
 if [  $INIT -eq 0 ]
     then
-        grass $GRASS/PERMANENT --exec g.region vector=selection res=$(cat ~/cityapp/scripts/shared/variables/resolution | tail -n1) 
-        grass $GRASS/PERMANENT --exec v.to.rast input=selection output=time_map use=val value=1 --overwrite --quiet
-        grass $GRASS/PERMANENT --exec r.out.gdal input=time_map output=$GEOSERVER/time_map.tif format=GTiff type=Float64 --overwrite --quiet
-
-        kdialog --msgbox "After adding the new location, you have to (re)start Geoserver manually." 
+        grass $GRASS/$MAPSET --exec g.region vector=selection res=$(cat ~/cityapp/scripts/shared/variables/resolution | tail -n1) 
+        grass $GRASS/$MAPSET --exec v.to.rast input=selection output=time_map use=val value=1 --overwrite --quiet
+        grass $GRASS/$MAPSET --exec r.out.gdal input=time_map output=$GEOSERVER/time_map.tif format=GTiff type=Float64 --overwrite --quiet
+        
+        # Restarting Geoserver
+        $MODULES/maintenance/restart_geoserver.sh &
 fi
 
-# Updating center coordinater to the area of selection
+# Updating center coordinates to the area of selection
 coordinates
-kdialog --msgbox "Process finished. No you can exit CityApp Location selector" 
+
+Send_Message 9 location_selector.9
+
+Close_Process
+
 exit

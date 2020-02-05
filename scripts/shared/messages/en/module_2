@@ -1,5 +1,4 @@
 Draw an area to qery.
-What is the mapset you want to query? Available mapsets are:
-What is the map you want to query?Available maps are:
+What is the map you want to query? Available maps are:
 What is the field (column) you want to query?  List of columns:
 Do you want to perform a complex query (yes/no)? If yes, give an SQL query (list columns)

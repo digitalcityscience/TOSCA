@@ -77,6 +77,31 @@ Geotiff_Out ()
     grass $GRASS/$MAPSET --exec r.out.gdal input=$1 output=$GEOSERVER/$2".tif" format=GTiff type=Float64 --overwrite --quiet
     }
     
+Get_Vector_Map ()
+    # Watching for osm, pbf gpkg og geojson files in the $BROWSER directory.
+    {
+    rm -f $BROWSER/*
+    inotifywait -e close_write $BROWSER
+    VECTOR_MAP_FILE=""
+    while  [ -z $VECTOR_MAP_FILE ];do
+        VECTOR_MAP_FILE=$(ls -ct1 $BROWSER/ | head -n1 | grep -E '.osm|.pbf|.gpkg|.geojson')
+    done
+    VECTOR_MAP_PATH=$BROWSER/$(ls -ct1 $BROWSER/ | head -n1)
+    }
+    
+Get_Raster_Map ()
+    # Watching for geotiff files in the $BROWSER directory.
+    {
+    rm -f $BROWSER/*
+    inotifywait -e close_write $BROWSER
+    RASTER_MAP_FILE=""
+    while  [ -z $RASTER_MAP_FILE ];do
+        RASTER_MAP_FILE=$(ls -ct1 $BROWSER/ | head -n1 | grep -E '.tif|.tiff|.gtif|.gtiff')
+    done
+    RASTER_MAP_PATH=$BROWSER/$(ls -ct1 $BROWSER/ | head -n1)    
+    }
+    
+    
 Gpkg_Out ()
     # This function export a file in the geoserver data dir. Output fileformat can only GPKG. Parameters: {GRASS vector to export,filename after export in geoserver dir}
     {
@@ -95,28 +120,19 @@ Point_To_Raster ()
     }
     
 Request ()
-    # This function wait until a new file is written in $BROWSER, the load and pass it to the next process. Parameter: {request type, maximum 4 of them (this is the filename or extension we are waiting for -- Default value: request}.Two output: FRESH_FILE: the name of the file, FRESH_PATH: the full path and the filename.
+    # This function wait until a new file is written in $BROWSER, the load and pass it to the next process. No parameters, and two output: FRESH_FILE: the name of the file, FRESH_PATH: the full path and the filename.
     # We have to be sure reading only the appropriate file. Despite the first the is "rm -f", have to manage if the new file is not  the expected one.
     # Therefore have to check the fiename AND its content too.
     {
-    #rm -f $BROWSER/*
+    rm -f $BROWSER/*
     inotifywait -e close_write $BROWSER
-        if [ -z "$1" ]
-            then
-                REQUEST_FILE=""
-                while  [ -z $REQUEST_FILE ];do
-                    REQUEST_FILE=$(ls -ct1 $BROWSER/ | head -n1 | grep request)
-                done
-                REQUEST_PATH=$BROWSER/$(ls -ct1 $BROWSER/ | head -n1)
-                REQUEST_CONTENT=$(cat $REQUEST_PATH)
-            else
-                REQUEST_FILE="" 
-                while  [ -z $REQUEST_FILE ];do
-                    REQUEST_FILE=$(ls -ct1 $BROWSER/ | head -n1 | grep $1)
-                done
-                REQUEST_PATH=$BROWSER/$(ls -ct1 $BROWSER/ | head -n1)
-                REQUEST_CONTENT=$(cat $REQUEST_PATH)
-        fi
+    REQUEST_FILE=""
+    while  [ -z $REQUEST_FILE ];do
+        REQUEST_FILE=$(ls -ct1 $BROWSER/ | head -n1 | grep "request")
+    done
+    
+    REQUEST_PATH=$BROWSER/$(ls -ct1 $BROWSER/ | head -n1)
+    REQUEST_CONTENT=$(cat $REQUEST_PATH)
     }
     
 Select_Fresh ()

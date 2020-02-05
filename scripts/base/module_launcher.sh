@@ -20,7 +20,8 @@ MODULES=~/cityapp/scripts/modules
 MODULE=~/cityapp/scripts/base
 VARIABLES=~/cityapp/scripts/shared/variables
 BROWSER=~/cityapp/data_from_browser
-MESSAGE_TEXT=$(cat ~/cityapp/scripts/shared/variables/lang)/module_launcher
+LANGUAGE=$(cat ~/cityapp/scripts/shared/variables/lang)
+MESSAGE_TEXT=~/cityapp/scripts/shared/messages/$LANGUAGE/module_launcher
 MESSAGE_SENT=~/cityapp/data_to_client
 
 #

@@ -1,0 +1,6 @@
+"Selection" map not found. Before adding a new layer, first you have to define a location and a selection. For this end please, use Location Selector tool of CityApp.
+Raster or vector map do you want to add to CityApp mapset?
+Select a map to add CityApp. Only gpkg (geopackage) vector files and geotiff (gtif or tif) raster files are accepted.
+Please, define an output map name.
+More then one layer found. Select a layer (one only) you want to import. Layers:
+Selected map succesfully added to mapset. Do you want to add an other map to current mapset? 

@@ -1,8 +1,9 @@
-First have to add an area (such as country) to the dataset. \n If you do not want to add a new area, you may skip this step.  \n Adding a new area may take a long time, depending on the file size.\n In the selection window, zoom to the sub-area of your interest, then use Polygon drawing tool to exactly define that. \n Finally save your selection, name it, define the resolution and close the window.
-There is an already defined area. \n Now you can refine your selection, or you can import a new map (creating a new location)
+First have to add an area (such as country) to the dataset. Without area CityApp will not work. Adding a new area may take a long time, depending on the file size. Do you want to continue?
+Select a map to add to CityApp. Map has to be in Open Street Map format -- osm is the only accepted format.
+File is not osm file, or filename is without extension. CityApp accept only Open Streetmap files in osm or pbf format. osm or pbf extension is requested.
+There is an already defined area. Do you want to reshape the existing selection? If do not want reshape the selection, bceause you want to replace the entire location, select No.
 Select OSM data
-No requested map found. \n points.gpkg, lines.gpkg and polygons.gpkg has to be found in ~/cityapp/geoserver_data/saved.
-No lines map found in PERMANET mapset, or lines map is damaged. \n To resolve this error, add again your location (map) to CityApp.
-Now the Location Selector is starting. Zoom to area of your interest, then use drawing tool to define your location. Next, save your selection. After saving your selection, close the window.
-Now you can set the resolution value. \n The value you declare, will used by each CityApp module.
-Geoserver administration window will now open. \n Log in and set manually the global_raster coordinates (see CityApp manual)
+No lines map found in PERMANET mapset, or lines map is damaged. To resolve this error, add again your location (map) to CityApp.
+Now zoom to area of your interest, then use drawing tool to define your location. Next, save your selection.
+No core Geoserver components found. Goserver can not be restarted. Chech Geoserver installation
+Process finished. No you can exit CityApp Location selector
