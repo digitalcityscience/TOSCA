@@ -24,5 +24,35 @@ app.get('/', (req, res) => {
   }
   res.render('launch', options)
 })
+app.post('/launch', async (req, res) => {
+  const message = await receiveResponse(req, res)
+  console.log(message)
+})
+app.post('/display', async (req, res) => {
+  const message = await receiveResponse(req, res)
+  console.log(message)
+})
+app.post('/query', async (req, res) => {
+  const message = await receiveResponse(req, res)
+  console.log(message)
+})
 
 app.listen(port, () => console.log(`App listening on port ${port}`))
+
+/*
+ * Wait for the request to complete, then return its message
+ */
+async function receiveResponse(req, res) {
+  let body = ''
+
+  req.on('data', chunk => {
+    body += chunk.toString()
+  })
+
+  return await new Promise((resolve, reject) => {
+    req.on('end', () => {
+      res.end('ok')
+      resolve(JSON.parse(body))
+    })
+  })
+}

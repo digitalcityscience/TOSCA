@@ -1,56 +1,27 @@
-var saveFile = () => {
+function launch() {
   // Get the data from each element on the form.
-  const item_1 = document.getElementById('Select_menu');
-  var data = '' + item_1.value + '\n';
-  const textToBLOB = new Blob([data], { type: 'text/plain' });
-  const sFileName = 'launch';
-  var newLink = document.createElement('a');
-  newLink.download = sFileName;
-  if (window.webkitURL != null) {
-    newLink.href = window.webkitURL.createObjectURL(textToBLOB);
-  }
-  else {
-    newLink.href = window.URL.createObjectURL(textToBLOB);
-    newLink.style.display = 'none';
-    document.body.appendChild(newLink);
-  }
-  newLink.click();
+  const value = document.getElementById('Select_menu').value;
+  const message = { module: value };
+  sendMessage('/launch', message);
 }
 
-var saveFile_2 = () => {
+function display() {
   // Get the data from each element on the form.
-  const item_2 = document.getElementById('Display_menu');
-  var data = '' + item_2.value + '\n';
-  const textToBLOB = new Blob([data], { type: 'text/plain' });
-  const sFileName = 'display';
-  var newLink = document.createElement('a');
-  newLink.download = sFileName;
-  if (window.webkitURL != null) {
-    newLink.href = window.webkitURL.createObjectURL(textToBLOB);
-  }
-  else {
-    newLink.href = window.URL.createObjectURL(textToBLOB);
-    newLink.style.display = 'none';
-    document.body.appendChild(newLink);
-  }
-  newLink.click();
+  const value = document.getElementById('Display_menu').value;
+  const message = { map: value };
+  sendMessage('/display', message);
 }
 
-var saveFile_3 = () => {
+function query() {
   // Get the data from each element on the form.
-  const item_3 = document.getElementById('Query_menu');
-  var data = '' + item_3.value + '\n';
-  const textToBLOB = new Blob([data], { type: 'text/plain' });
-  const sFileName = 'query';
-  var newLink = document.createElement('a');
-  newLink.download = sFileName;
-  if (window.webkitURL != null) {
-    newLink.href = window.webkitURL.createObjectURL(textToBLOB);
-  }
-  else {
-    newLink.href = window.URL.createObjectURL(textToBLOB);
-    newLink.style.display = 'none';
-    document.body.appendChild(newLink);
-  }
-  newLink.click();
+  const value = document.getElementById('Query_menu').value;
+  const message = { map: value };
+  sendMessage('/query', message);
+}
+
+function sendMessage(target, message) {
+  const req = new XMLHttpRequest();
+  req.open('POST', target);
+  req.setRequestHeader('Content-Type', 'application/json');
+  req.send(JSON.stringify(message));
 }
