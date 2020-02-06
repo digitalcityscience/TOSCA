@@ -98,49 +98,11 @@ map.addControl(new L.Control.Draw({
   }
 }));
 
-/*----- Save drawing -----------------------------------------*/
-
 var featureGroup = L.featureGroup().addTo(map);
-map.on('draw:created', function (saving_draw) {
-  /* Creating a new item (polygon, line ... ) will added to the feature group */
+map.on('draw:created', (saving_draw) => {
+  /* Creating a new item (polygon, line ... ) will be added to the feature group */
   featureGroup.addLayer(saving_draw.layer);
 });
-
-function save() {
-  /* making a GeoJson from featureGroup */
-  var data = featureGroup.toGeoJSON();
-
-  /* Convert data to GeoJson string*/
-  var convertedData = 'text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(data));
-  /* saving */
-  document.getElementById('save').setAttribute('href', 'data:' + convertedData);
-  document.getElementById('save').setAttribute('download', '../../../data_from_browser/selection_1.geojson');
-}
-
-/*------------------------------------------------*/
-
-/*-- Save file (exit) ----------------------------*/
-
-var saveFile = () => {
-  // Get the data from each element on the form.
-  const item_1 = document.getElementById('exit');
-  var data = '' + item_1.value + '\n';
-  const textToBLOB = new Blob([data], { type: 'text/plain' });
-  const sFileName = 'exit';
-  var newLink = document.createElement('a');
-  newLink.download = sFileName;
-  if (window.webkitURL != null) {
-    newLink.href = window.webkitURL.createObjectURL(textToBLOB);
-  }
-  else {
-    newLink.href = window.URL.createObjectURL(textToBLOB);
-    newLink.style.display = 'none';
-    document.body.appendChild(newLink);
-  }
-  newLink.click();
-}
-
-/*------------------------------------------------*/
 
 map.on(L.Draw.Event.CREATED, (event) => {
   var layer = event.layer;
@@ -154,3 +116,12 @@ L.control.scale({ maxWidth: 300 }).addTo(map);
 var north = L.control({ position: 'bottomright' });
 north.onAdd = () => document.getElementById('north-arrow');
 north.addTo(map);
+
+/*----- Save drawing -----------------------------------------*/
+
+function save() {
+  /* making a GeoJson from featureGroup */
+  var geojson = featureGroup.toGeoJSON();
+
+  sendMessage('/select_location', { data: geojson });
+}

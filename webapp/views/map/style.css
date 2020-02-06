@@ -1,39 +1,26 @@
-html,
-body {
-  height: 100%;
-  margin: 0;
-}
-
 #map {
-  background-color: #fefefe;
   height: 100%;
   width: 100%;
 }
 
 #save {
   position: absolute;
-  top: 300px;
-  left: 20px;
-  z-index: 10000;
-}
-
-#close {
-  position: absolute;
-  top: 400px;
-  left: 20px;
+  bottom: 50px;
+  left: 10px;
+  margin: 6px;
   z-index: 10000;
 }
 
 .button1 {
   padding: 16px 24px;
-  font-size: 24px;
+  font-size: 16px;
   text-align: center;
   cursor: pointer;
   outline: none;
   color: #006600;
   background-color: #aaffaa;
   border: 3px solid #006600;
-  border-radius: 6px;
+  border-radius: 8px;
 }
 
 .button1:hover {

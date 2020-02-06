@@ -4,6 +4,7 @@ html
 
     script(src='/lib/leaflet/leaflet.js')
     script(src='/lib/leaflet/leaflet.draw.js')
+    script(src='/lib/socket.io/socket.io.js')
 
     link(rel='stylesheet' href='/lib/leaflet/leaflet.css')
     link(rel='stylesheet' href='/lib/leaflet/leaflet.draw.css')
@@ -13,41 +14,47 @@ html
       include ../map/style.css
 
   body
-    div(id='Launch')
-      select(id='Select_menu')
-        option(selected value='') -- Select a module to launch --
-        option(value='location_selector') Location selector
-        option(value='add_layer') Add new layer
-        option(value='module_1') Time map
-        option(value='module_2') Query a map
+    div(class='main')
+      div(class='sidebar' class='card')
+        div(id='Launch')
+          select(id='Select_menu' class='select_menu')
+            option(selected value='') -- Select a module to launch --
+            option(value='location_selector') Location selector
+            option(value='add_layer') Add new layer
+            option(value='module_1') Time map
+            option(value='module_2') Query a map
 
-      a: button(class='button' onclick='launch()') Launch
+          a: button(class='button' onclick='launch()') Launch
 
-    div(id='Display')
-      select(id='Display_menu')
-          option(selected value='') -- Select a map to display --
-          option(value='path_to_display_map_1') Map 1
-          option(value='path_to_display_map_2') Map 2
-          option(value='path_to_display_map_3') Map 3
+        div(id='Display')
+          select(id='Display_menu' class='select_menu')
+            option(selected value='') -- Select a map to display --
+            option(value='path_to_display_map_1') Map 1
+            option(value='path_to_display_map_2') Map 2
+            option(value='path_to_display_map_3') Map 3
 
-      a: button(class='button' onclick='display()') Select
+          a: button(class='button' onclick='display()') Select
 
-    div(id='Query')
-      select(id='Query_menu')
-        option(selected value='') -- Select a map to query --
-        option(value='path_to_query_map_1') Map 1
-        option(value='path_to_query_map_2') Map 2
-        option(value='path_to_query_map_3') Map 3
+        div(id='Query')
+          select(id='Query_menu' class='select_menu')
+            option(selected value='') -- Select a map to query --
+            option(value='path_to_query_map_1') Map 1
+            option(value='path_to_query_map_2') Map 2
+            option(value='path_to_query_map_3') Map 3
 
-      a: button(class='button' onclick='query()') Select
+          a: button(class='button' onclick='query()') Select
 
-    div(id='Module_description')
-      h3 Legend
+        div(id='Module_description')
+          p
+            a: button(class='button' onclick='reply("yes")') Yes
+            a: button(class='button' onclick='reply("no")') No
+          p
+            a: button(class='button' onclick='exit()') Exit
 
-    div(id='Map_container')
-      include ../map/index.pug
+      div(id='Map_container' class='card')
+        include ../map/index.pug
 
-    div(id='Info')
+      div(id='Info' class='card')
 
     script.
       const geoserverURL = '#{geoserverUrl}';
