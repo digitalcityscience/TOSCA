@@ -5,12 +5,12 @@
 
         <meta charset="UTF-8">
 
-        <script src="../../lib/leaflet/leaflet.js"></script>
-        <script src="../../lib/leaflet/leaflet.draw.js"></script>
+        <script src="../../../webapp/public/lib/leaflet/leaflet.js"></script>
+        <script src="../../../webapp/public/lib/leaflet/leaflet.draw.js"></script>
 
-        <link rel="stylesheet" href="../../lib/leaflet/leaflet.css" />
-        <link rel="stylesheet" href="../../lib/leaflet/leaflet.draw.css" />
-        <link rel="shortcut icon" type="image/x-icon" href="../../lib/leaflet/images/favicon.ico" />
+        <link rel="stylesheet" href="../../../webapp/public/lib/leaflet/leaflet.css" />
+        <link rel="stylesheet" href="../../../webapp/public/lib/leaflet/leaflet.draw.css" />
+        <link rel="shortcut icon" type="image/x-icon" href="../../../webapp/public/lib/leaflet/images/favicon.ico" />
         
         <style>
         
@@ -214,7 +214,7 @@
                 var data = featureGroup.toGeoJSON();
 
                 /* Convert data to GeoJson string*/
-                var convertedData = 'text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(data));
+var map = new L.Map('map', {center: new L.LatLng(20.294364, 85.796528), zoom: 12 }),drawnItems = L.featureGroup().addTo(map);        
                 /* saving */
                 document.getElementById('saving').setAttribute('href', 'data:' + convertedData);
                 document.getElementById('saving').setAttribute('download', 'module_01.geojson');

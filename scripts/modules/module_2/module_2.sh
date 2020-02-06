@@ -30,9 +30,7 @@ MAPSET=module_2
 
 rm -f $MESSAGE_SENT/*
 
-echo "1";read
-
-# First overwrite the region of module_2 mapset. If no such mapsetexist, create it
+# First overwrite the region of module_2 mapset. If no such mapset exist, create it
 if [ -d $GRASS/$MAPSET ]
     then
         cp $GRASS/PERMANENT/WIND $GRASS/$MAPSET/WIND
@@ -41,8 +39,6 @@ if [ -d $GRASS/$MAPSET ]
         cp -r ~/cityapp/grass/skel/* $GRASS/$MAPSET
         cp $GRASS/PERMANENT/WIND $GRASS/$MAPSET/WIND
 fi
-
-echo "2";read
 
 # Message 1 Draw an area to qery
 Send_Message 1 module_2.1
@@ -57,8 +53,6 @@ Send_Message 1 module_2.1
     
     Gpkg_Out query_area query_area
     
-echo "3";read
-
 # Message 2 What is the map you want to query? Available maps are:
 Send_Message 2 module_2.2
     echo "" >> $MESSAGE_SENT/message.module_2.2
@@ -69,8 +63,6 @@ Send_Message 2 module_2.2
     # copy for achiving
     echo $MAP_TO_QUERY > $MODULE/temp_storage/map_to_query
 
-echo "4";read
-
     # Now it is possible to chechk if the map to query is in the default mapset (set in the header as MAPSET), or not. If not, the map has to be copied into the module_2 mapset and the further processes will taken in this mapset.
 
     MAPSET_TO_QUERY=$(echo $MAP_TO_QUERY | cut -d"@" -f2)
@@ -80,8 +72,6 @@ echo "4";read
             MAP_TO_QUERY=$(echo $MAP_TO_QUERY | cut -d"@" -f1)
             grass $GRASS/$MAPSET --exec g.copy vector=$MAP_TO_QUERY"@"$MAPSET_TO_QUERY,$MAP_TO_QUERY --overwrite 
     fi
-
-echo "5";read
 
 # Message 3 What is the field (column) you want to query? List of columns:
 Send_Message 3 module_2.3
@@ -99,8 +89,6 @@ Send_Message 3 module_2.3
             # copy for achiving
             echo $COLUMN_TO_QUERY > $MODULE/temp_storage/column_to_query
     fi
-    
-echo "6";read
 
 # Message 4 Do you want to perform a complex query (yes/no)? If yes, give an SQL query (list columns)
 Send_Message 4 module_2.4
@@ -118,8 +106,6 @@ Send_Message 4 module_2.4
             # copy for achiving
             echo $CRITERIA > $MODULE/temp_storage/criteria
     fi
-
-echo "7";read
 
 #
 #-- Process, Query ------------------
