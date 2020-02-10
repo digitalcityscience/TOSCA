@@ -57,7 +57,7 @@ if [ ! -d "$GRASS/$MAPSET/" ]
     then
         # PERMANENT not found
         # Message 1 First have to add an area (such as country) to the dataset. ...
-        Send_Message 1 location_selector.1
+        Send_Message m 1 location_selector.1
             
             # A simle yes/no. If no, exit
             Request
@@ -67,7 +67,7 @@ if [ ! -d "$GRASS/$MAPSET/" ]
                 else
                     INIT=0
                     # Message 2 Select a map to add to CityApp
-                    Send_Message 2 location_selector.2
+                    Send_Message m 2 location_selector.2
                 
                     # The map to import
                     Request osm
@@ -76,13 +76,13 @@ if [ ! -d "$GRASS/$MAPSET/" ]
     else
         # PERMANENT found
         # Message 4 There is an already defined area. Do you want to reshape the existing selection? If do not want reshape the selection, bceause you want to replace the entire location, select No.
-        Send_Message 4 location_selector.4
+        Send_Message m 4 location_selector.4
         case $? in
             "yes" | "Yes" | "YES")
                 INIT=0
                 # Message 5 -- It is the same as Message 2
                 # Therefore the same line will used, but the message is will set to 4.
-                Send_Message 2 location_selector.5
+                Send_Message m 2 location_selector.5
                     
                     Request osm
                     NEW_AREA_FILE=$REQUEST_PATH;;
@@ -123,7 +123,7 @@ esac
 
 if [ ! -e $GRASS/$MAPSET/vector/lines_osm ]
     then
-        Send_Message 6 location_selector.6
+        Send_Message m 6 location_selector.6
         # Message 6 No lines map found in PERMANET mapset, or lines map is damaged.  To resolve this error, add again your location (map) to CityApp.
         exit
 fi
@@ -132,7 +132,7 @@ fi
 coordinates
 
 # Message 7 # Now zoom to area of your interest, then use drawing tool to define your location. Next, save your selection.
-Send_Message 7 location_selector.7
+Send_Message m 7 location_selector.7
     
 # This geojson is the "selection" drawn by the user. Import to GRASS and export to Geoserver
 Request geojson
@@ -174,7 +174,7 @@ fi
 # Updating center coordinates to the area of selection
 coordinates
 
-Send_Message 9 location_selector.9
+Send_Message m 9 location_selector.9
 
 Close_Process
 

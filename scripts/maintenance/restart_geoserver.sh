@@ -25,7 +25,7 @@ if [ -e /usr/share/geoserver/bin/shutdown.sh ]
         ./shutdown.sh  
         ./startup.sh &
     else
-        Send_Message 1 restart_geoserver.1
+        Send_Messagem m 1 restart_geoserver.1
 fi
 
 exit

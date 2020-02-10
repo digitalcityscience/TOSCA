@@ -104,6 +104,16 @@
                 minZoom: 1,
             });
             
+            TimeMapInterpolated = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/raster/wms/", {
+                layers: 'raster:time_map_interpolated',
+                format: 'image/png',
+                transparent: true,
+                attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+                maxZoom: 20,
+                minZoom: 1,
+            });
+
+            
             TimeMap = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/raster/wms/", {
                 layers: 'raster:time_map',
                 format: 'image/png',
@@ -171,6 +181,7 @@
                     "Roads": Roads,
                     "Buildings": Buildings,
                     "Current selection": Selection,
+                    "Interpolated time map": TimeMapInterpolated,
                     "Time map": TimeMap,
                     "From-points":FromPoints,
                     "Via-points":ViaPoints,

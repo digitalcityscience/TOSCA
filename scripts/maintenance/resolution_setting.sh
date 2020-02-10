@@ -29,8 +29,8 @@ RES_VAL=$RES
 # Projection is epsg:4326-ot. Therefore, even the user gives the resolutiion in mteres, we have to pass its value to GRASS in decimal degrees.
 # Therefore, input aluie first goes to "bc". 111322 meters = 1°
 
-# Messages 1 Type the resolution in meters, you want to use. For further details see manual. Current value is (in mteres):
-Send_Message 1 resolution_setting.1
+# Messages 1 Type the resolution in meters, you want to use. For further details see manual.
+Send_Message m 1 resolution_setting.1
 
     Request
     RESOLUTION=$REQUEST_CONTENT
@@ -41,7 +41,7 @@ Send_Message 1 resolution_setting.1
         then
             until [ $RESOLUTION -gt 0 ]; do 
                 # Message 2 Resolution has to be an integer number, greater than 0.  Please, define the resolution for calculations in meters.
-                Send_Message 2 resolution_setting.2
+                Send_Message m 2 resolution_setting.2
                     
                     Request
                     RESOLUTION=$REQUEST_CONTENT

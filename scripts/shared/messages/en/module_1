@@ -5,4 +5,5 @@ Target points are required. If you want to select target points from the map, cl
 Optionally you may define non-accessible area. If you want to draw area on the map, click Yes. If you do not want to draw now, because you want to select a map already containing area, click No. If you do not want to use any area, click Cancel.
 Select a map (only area maps are supported)
 Do you want to set the speed on the road network? If not, the current values will used (km/h). If you want to change the values, you may overwrite those.
+Set speed for roads of stricken area.
 No valid location found. Run Location selector to create a valid location.

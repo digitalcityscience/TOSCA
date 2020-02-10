@@ -30,23 +30,23 @@ MAPSET=PERMANENT
 
 function add_vector_map
     {
-    # Message 3 Select a map to add CityApp. Only gpkg (geopackage) vector files and geotiff (gtif or tif) raster files are accepted.
-    Send_Message 3 add_map.3
+    # Message 3 Select a map to add CityApp. Only gpkg (geopackage) vector files and geotiff (tif) raster files are accepted.
+    Send_Message m 3 add_map.3
         Request gpkg
             IN_FILE=$REQUEST_PATH
             
     # Message 4 Please, define an output map name.
-    Send_Message 4 add_map.4
+    Send_Message m 4 add_map.4
         Request
             OUT_MAP=$REQUEST_CONTENT
     # Check layers: if more then 1 there is in the file, ask user
     if [ $(grass -f $GRASS/$MAPSET --exec v.in.ogr -l input=$IN_FILE | wc -l) -gt 1 ]
         then
-            # List (the name of layers) have to be saved in a separate file, allowing to read the list by any kind of scripts, js as well. 
-            grass -f $GRASS/$MAPSET --exec v.in.ogr -l input=$IN_FILE > $VARIABLES/list
+            grass -f $GRASS/$MAPSET --exec v.in.ogr -l input=$IN_FILE > $MAPSET/temp_layers
             LIST=$(cat $VARIABLES/list)
+
             # Message 5 More then one layer found. Select a layer (one only) you want to import. Layers:
-            Send_Message 5 add_map.5
+            Send_Message l 5 add_map.5  $MAPSET/temp_layers
                 Request
                     OUT_LAYER=$REQUEST_CONTENT
                     grass -f $GRASS/$MAPSET --exec v.in.ogr input=$IN_FILE layer=$OUT_LAYER output=$OUT_MAP --overwrite
@@ -54,7 +54,7 @@ function add_vector_map
             grass -f $GRASS/$MAPSET --exec v.in.ogr input=$IN_FILE output=$OUT_MAP --overwrite
     fi
     # Message 6 Selected map succesfully added to mapset. Do you want to add an other map to current mapset? 
-    Send_Message 6 add_map.6
+    Send_Message m 6 add_map.6
         Request
             DONE=$REQUEST_CONTENT
 }
