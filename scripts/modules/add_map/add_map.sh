@@ -4,7 +4,7 @@
 # version 1.21
 # CityApp module
 # Adding new layers to a selected mapset
-# 2020. február 10.
+# 2020. február 11.
 # Author: BUGYA Titusz, CityScienceLab -- Hamburg, Germany
 
 #
@@ -31,12 +31,12 @@ MAPSET=PERMANENT
 function add_vector_map
     {
     # Message 3 Select a map to add CityApp. Only gpkg (geopackage) vector files and geotiff (tif) raster files are accepted.
-    Send_Message m 3 add_map.3
+    Send_Message m 3 add_map.3 input actions [\"Yes\"]
         Request gpkg
             IN_FILE=$REQUEST_PATH
             
     # Message 4 Please, define an output map name.
-    Send_Message m 4 add_map.4
+    Send_Message m 4 add_map.4 input actions [\"Yes\"]
         Request
             OUT_MAP=$REQUEST_CONTENT
     # Check layers: if more then 1 there is in the file, ask user
@@ -46,7 +46,7 @@ function add_vector_map
             LIST=$(cat $VARIABLES/list)
 
             # Message 5 More then one layer found. Select a layer (one only) you want to import. Layers:
-            Send_Message l 5 add_map.5  $MAPSET/temp_layers
+            Send_Message l 5 add_map.5  input actions [\"Yes\"] $MAPSET/temp_layers
                 Request
                     OUT_LAYER=$REQUEST_CONTENT
                     grass -f $GRASS/$MAPSET --exec v.in.ogr input=$IN_FILE layer=$OUT_LAYER output=$OUT_MAP --overwrite
@@ -54,7 +54,7 @@ function add_vector_map
             grass -f $GRASS/$MAPSET --exec v.in.ogr input=$IN_FILE output=$OUT_MAP --overwrite
     fi
     # Message 6 Selected map succesfully added to mapset. Do you want to add an other map to current mapset? 
-    Send_Message m 6 add_map.6
+    Send_Message m 6 add_map.6 question actions [\"Yes\",\"No\"]
         Request
             DONE=$REQUEST_CONTENT
 }
@@ -72,14 +72,14 @@ if [ $(grass $GRASS/$MAPSET --exec g.list type=vector | grep selection) ]
     then
         echo "ok"
     else
-        # Message 1
-        Send_Message 1 add_map.1
+        # Message 1 "Selection" map not found. Before adding a new layer, first you have to define a location and a selection. For this end please, use Location Selector tool of CityApp.
+        Send_Message m 1 add_map.1 error actions [\"Ok\"]
 fi
 
 # Repeat process. You may add new layers until you select "no".
 until [ "$DONE" = "no" -o "$DONE" = "No" -o "$DONE" = "NO" ]; do
     # Message 2 Do you want to add a VECTOR map to CityApp mapset? If yes, click Yes, otherwise select No
-    Send_Message m 2 add_map.2
+    Send_Message m 2 add_map.2 question actions [\"Yes\",\"No\"]
         Request
         if [ "$REQUEST_CONTENT" = "yes" -o "$REQUEST_CONTENT" = "Yes" -o "$REQUEST_CONTENT" = "YES" ]
             then

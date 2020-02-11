@@ -4,7 +4,7 @@
 # version 1.0
 # CityApp maintenance
 # Select language for CityApp messages
-# 2020. február 5.
+# 2020. február 11.
 # Author: BUGYA Titusz, CityScienceLab -- Hamburg, Germany
 
 #
@@ -13,8 +13,14 @@
 
 cd ~/cityapp
 
+GEOSERVER=~/cityapp/geoserver_data
+MODULES=~/cityapp/scripts/modules
+MODULE=~/cityapp/scripts/modules/select_lang
+GRASS=~/cityapp/grass/global
 VARIABLES=~/cityapp/scripts/shared/variables
 BROWSER=~/cityapp/data_from_browser
+LANGUAGE=$(cat ~/cityapp/scripts/shared/variables/lang)
+MESSAGE_TEXT=~/cityapp/scripts/shared/messages/$LANGUAGE/select_lang
 MESSAGE_SENT=~/cityapp/data_to_client
 
 #
@@ -23,16 +29,15 @@ MESSAGE_SENT=~/cityapp/data_to_client
 
 rm -f $MESSAGE_SENT/*
 
-echo "Select language. Available languages are:" > $MESSAGE_SENT/message.select_lang.1
-echo >> $MESSAGE_SENT/message.select_lang.1
-ls -1 ~/cityapp/scripts/shared/messages >> $MESSAGE_SENT/message.select_lang.1
+ls -1 ~/cityapp/scripts/shared/messages > $MODULE/available_languages
 
-Request
-    if [ -z $REQUEST_CONTENT ]
-        then
-            echo "Network error, language is not set. Please restart Lagnuage Settings module to set a languages." > $MESSAGE_SENT/message.select_lang.1
-            exit
-        else
-            echo $REQUEST_CONTENT > $VARIABLES/lang
-    fi
+Send_Message l 1 select_lang_1 select actions [\"yes\"] $MODULE/available_languages
+    Request
+        if [ -z $REQUEST_CONTENT ]
+            then
+                Send_Message m 2 select_lang_1 error actions [\"ok\"] 
+                exit
+            else
+                echo $REQUEST_CONTENT > $VARIABLES/lang
+        fi
 exit

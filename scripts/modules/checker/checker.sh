@@ -5,6 +5,10 @@
 # 2020. január 22.
 # Author: BUGYA Titusz, CityScienceLab -- Hamburg, Germany
 
+
+# Checker has no frontend. It is used only at the installation to check if all the requeted components are available.
+# Checker's messages are sent to the console the checker running in.
+
 ERROR=~/cityapp/error_log
 rm -f $ERROR
 touch $ERROR

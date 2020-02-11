@@ -5,7 +5,7 @@
 # CityApp module
 # Stop and start  -- in this order -- Geoserver
 # Only have to do when a new map is defined, so normally not too often... :)
-# 2020. február 4.
+# 2020. február 11.
 # Author: BUGYA Titusz, CityScienceLab -- Hamburg, Germany
 
 #
@@ -25,7 +25,7 @@ if [ -e /usr/share/geoserver/bin/shutdown.sh ]
         ./shutdown.sh  
         ./startup.sh &
     else
-        Send_Messagem m 1 restart_geoserver.1 error actions [\"yes\"]
+        Send_Messagem m 1 restart_geoserver.1 error actions [\"ok\"]
 fi
 
 exit
