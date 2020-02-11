@@ -15,7 +15,7 @@ cd ~/cityapp
 
 GEOSERVER=~/cityapp/geoserver_data
 MODULES=~/cityapp/scripts/modules
-MODULE=~/cityapp/scripts/base/add_map
+MODULE=~/cityapp/scripts/modules/add_map
 GRASS=~/cityapp/grass/global
 VARIABLES=~/cityapp/scripts/shared/variables
 BROWSER=~/cityapp/data_from_browser
@@ -31,7 +31,7 @@ MAPSET=PERMANENT
 function add_vector_map
     {
     # Message 3 Select a map to add CityApp. Only gpkg (geopackage) vector files and geotiff (tif) raster files are accepted.
-    Send_Message m 3 add_map.3 input actions [\"Yes\"]
+    Send_Message m 3 add_map.3 fileupload actions [\"Yes\"]
         Request gpkg
             IN_FILE=$REQUEST_PATH
             

@@ -47,7 +47,7 @@ if [ ! -d $GRASS/PERMANENT ]
     then
     # check if PERMANENT mapeset exist
         # Message 6 No valid location found. Run Location selector to create a valid location
-        Send_Message m 9 module_1.10
+        Send_Message m 9 module_1.10 error actions [\"Ok\"]
 fi
 
 # First overwrite the region of module_1 mapset. If no such mapset exist, create it
@@ -74,7 +74,7 @@ fi
 
 # Message 1 Start points are required. Do you want to draw start points on the basemap now? If yes, click Yes. If you do not want to draw points, becuse you want to use an already existing map, select No. To exit this module click Cancel. Avilable maps are:
     grass $GRASS/$MAPSET --exec g.list -m type=vector > $MODULE/temp_list
-    Send_Message l 1 module_1.1 $MODULE/temp_list
+    Send_Message l 1 module_1.1 input actions [\"yes\"] $MODULE/temp_list
         Request
             case $REQUEST_CONTENT in
                 "yes"|"Yes"|"YES")
