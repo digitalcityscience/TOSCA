@@ -1,7 +1,7 @@
-# version 1.0
+# version 1.1
 # CityApp function
 # This file contains functions of CityApp bash scripts. Funcions are in alphabetical order, A short description can be found for each function.
-# 2020. február 1.
+# 2020. február 11.
 # Author: BUGYA Titusz, CityScienceLab -- Hamburg, Germany
 
 #
@@ -169,7 +169,7 @@ Send_List ()
             echo "\"text\":" >> $MODULE/temp_message
             echo "\"$(cat $MESSAGE_TEXT | head -n$2 | tail -n1) \"," >> $MODULE/temp_message
             echo "\"modalType\": \"$4\"," >> $MODULE/temp_message
-            echo "\"$5\": $6," >> $MODULE/temp_message
+            echo "\"$5\": $6" >> $MODULE/temp_message
             echo "}" >> $MODULE/temp_message
             mv $MODULE/temp_message $MESSAGE_SENT/message.$3;;
         "l")        
@@ -187,28 +187,42 @@ Send_List ()
 
             i=1
             until [ $i -gt $LINE ];do
-                echo "\""$(cat $7 | head -n$i | tail -n1) | sed s'/:/":/'g | sed "/[a-zA-Z0-9]$/s/$/\",/" >> $MODULE/temp_message
+                if [ $i -lt $LINE ]
+                    then
+                        echo "\""$(cat $7 | head -n$i | tail -n1) | sed s'/:/":"/'g | sed s'/ //'g | sed "/[a-zA-Z0-9]$/s/$/\",/" >> $MODULE/temp_message
+                fi
+                if [ $i -eq $LINE ]
+                    then
+                        echo "\""$(cat $7 | head -n$i | tail -n1) | sed s'/:/":"/'g | sed s'/ //'g | sed "/[a-zA-Z0-9]$/s/$/\"/" >> $MODULE/temp_message
+                fi
                 i=$(($i+1))
             done
             echo "}" >> $MODULE/temp_message
             echo "}" >> $MODULE/temp_message
             mv $MODULE/temp_message $MESSAGE_SENT/message.$3;;
         "s")
+
             LINES=$(cat $7 | wc -l)
             LINE=$(echo $LINES)
-            echo "lines " $LINES
 
-            echo "[" > $MODULE/temp_message
+            echo "{" > $MODULE/temp_message
             echo "\"text\":" >> $MODULE/temp_message
             echo "\"$(cat $MESSAGE_TEXT | head -n$2 | tail -n1) \"," >> $MODULE/temp_message
             echo "\"modalType\": \"$4\"," >> $MODULE/temp_message
             echo "\"$5\": $6," >> $MODULE/temp_message
             echo "\"list\":" >> $MODULE/temp_message
-            echo "{" >> $MODULE/temp_message
+            echo "[" >> $MODULE/temp_message
 
             i=1
             until [ $i -gt $LINE ];do
-                echo "\""$(cat $7 | head -n$i | tail -n1) | sed s'/:/":/'g | sed "/[a-zA-Z0-9]$/s/$/\",/" >> $MODULE/temp_message
+                if [ $i -lt $LINE ]
+                    then
+                        echo "\""$(cat $7 | head -n$i | tail -n1) | sed s'/:/":"/'g | sed s'/ //'g | sed "/[a-zA-Z0-9]$/s/$/\",/" >> $MODULE/temp_message
+                fi
+                if [ $i -eq $LINE ]
+                    then
+                        echo "\""$(cat $7 | head -n$i | tail -n1) | sed s'/:/":"/'g | sed s'/ //'g | sed "/[a-zA-Z0-9]$/s/$/\"/" >> $MODULE/temp_message
+                fi
                 i=$(($i+1))
             done
             echo "]" >> $MODULE/temp_message

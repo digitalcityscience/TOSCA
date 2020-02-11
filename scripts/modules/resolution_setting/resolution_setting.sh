@@ -32,7 +32,7 @@ RES_VAL=$RES
 # Therefore, input aluie first goes to "bc". 111322 meters = 1°
 
 # Messages 1 Type the resolution in meters, you want to use. For further details see manual.
-Send_Message m 1 resolution_setting.1 entry entry [\"yes\"]
+Send_Message s 1 resolution_setting.1 input actions [\"yes\"] $VARIABLES/roads_speed
     Request
     RESOLUTION=$REQUEST_CONTENT
     RESOLUTION=$(echo $RESOLUTION | cut -d"," -f1)
