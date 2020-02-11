@@ -92,7 +92,7 @@ Json_To_Text ()
         else
             if [[ $(cat $1 | grep '\[') ]]
                 then
-                    cat $1 | sed s'/","/\n/'g | sed s'/\[//'g | sed s'/\]//'g | sed s'/"//'g | sed s'/ //'g > $2
+                    cat $1 | sed s'/","/\n/'g | sed s'/\[//'g | sed s'/\]//'g | sed s'/"//'g | sed s'/ //'g | sed s'/,//'g > $2
             fi
     fi
     }

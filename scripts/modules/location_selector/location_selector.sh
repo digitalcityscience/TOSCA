@@ -43,14 +43,13 @@ function coordinates
             NORTH=$(grass $GRASS/$MAPSET --exec g.region -cg vector=polygons_osm | head -n2 | tail -n1 | cut -d"=" -f2)
     fi
 
-    # Replace the line in location_selector.html containing the coordinates
-    sed -e '129d' $MODULE/location_selector.html > $MODULE/location_selector_temp.html
-    sed -i "129i\
-    var map = new L.Map('map', {center: new L.LatLng($NORTH, $EAST), zoom: 9 }),drawnItems = L.featureGroup().addTo(map);\
-    " $MODULE/location_selector_temp.html
-    mv $MODULE/location_selector_temp.html $MODULE/location_selector.html
-    echo $EAST > $VARIABLES/coordinate_east
-    echo $NORTH > $VARIABLES/coordinate_north
+    # Replace the line in map_display.html containing the coordinates
+    sed -e '245d' $MODULE/map_display.html > $MODULE/map_display_temp.html
+    sed -i "245i\
+    var map = new L.Map('map', {center: new L.LatLng($NORTH, $EAST), zoom: 12 }),drawnItems = L.featureGroup().addTo(map);\
+    " $MODULE/map_display_temp.html
+    
+    mv $MODULE/map_display_temp.html $MODULE/map_display.html
     }
 
 if [ ! -d "$GRASS/$MAPSET/" ]
@@ -77,44 +76,49 @@ if [ ! -d "$GRASS/$MAPSET/" ]
         # PERMANENT found
         # Message 4 There is an already defined area. Do you want to reshape the existing selection? If do not want reshape the selection, bceause you want to replace the entire location, select No.
         Send_Message m 4 location_selector.4
-        case $? in
-            "yes" | "Yes" | "YES")
-                INIT=0
-                # Message 5 -- It is the same as Message 2
-                # Therefore the same line will used, but the message is will set to 4.
-                Send_Message m 2 location_selector.5
+        Request
+            case $REQUEST_CONTENT in
+                "yes" | "Yes" | "YES")
+                    INIT=1
+                    # Message 5 -- It is the same as Message 2
+                    # Therefore the same line will used, but the message is will set to 4.
+                    Send_Message m 2 location_selector.5
+                        
+                        Request osm
+                        NEW_AREA_FILE=$REQUEST_PATH;;
                     
-                    Request osm
-                    NEW_AREA_FILE=$REQUEST_PATH;;
-                
-            "no" | "No" | "NO")
-                INIT=1;;
-        esac
+                "no" | "No" | "NO")
+                    INIT=0;;
+            esac
 fi
 
 case $INIT in
     0)
-        rm -f $GEOSERVER/*
-        rm -fR $GRASS/$MAPSET/
-        mkdir $GRASS/$MAPSET
-        cp -r ~/cityapp/grass/skel_permanent/* $GRASS/$MAPSET
+        Send_Message m 2 location_selector.6
+            Request osm
+                NEW_AREA_FILE=$REQUEST_PATH
+                rm -f $GEOSERVER/*
+                rm -fR $GRASS/$MAPSET
+                rm -fR $GRASS/module*
+                mkdir $GRASS/$MAPSET
+                cp -r ~/cityapp/grass/skel_permanent/* $GRASS/$MAPSET
 
-        Add_Osm $NEW_AREA_FILE points points_osm
-        Add_Osm $NEW_AREA_FILE lines lines_osm
-        Add_Osm $NEW_AREA_FILE multipolygons polygons_osm
-        Add_Osm $NEW_AREA_FILE other_relations relations_osm
-        Gpkg_Out points_osm points
-        Gpkg_Out lines_osm lines
-        Gpkg_Out polygons_osm polygons
-        
-        # Copy basemaps into $GEOSERVER/saved
-        # From now this directory will contains the original, unclipped maps.
-        # This may useful for further operations.
-        cp $GEOSERVER/points.gpkg $GEOSERVER/saved/
-        cp $GEOSERVER/lines.gpkg $GEOSERVER/saved/
-        cp $GEOSERVER/polygons.gpkg $GEOSERVER/saved/
-        rm -f $VARIABLES/location_mod
-        touch $VARIABLES/location_new;;
+                Add_Osm $NEW_AREA_FILE points points_osm
+                Add_Osm $NEW_AREA_FILE lines lines_osm
+                Add_Osm $NEW_AREA_FILE multipolygons polygons_osm
+                Add_Osm $NEW_AREA_FILE other_relations relations_osm
+                Gpkg_Out points_osm points
+                Gpkg_Out lines_osm lines
+                Gpkg_Out polygons_osm polygons
+                
+                # Copy basemaps into $GEOSERVER/saved
+                # From now this directory will contains the original, unclipped maps.
+                # This may useful for further operations.
+                cp $GEOSERVER/points.gpkg $GEOSERVER/saved/
+                cp $GEOSERVER/lines.gpkg $GEOSERVER/saved/
+                cp $GEOSERVER/polygons.gpkg $GEOSERVER/saved/
+                rm -f $VARIABLES/location_mod
+                touch $VARIABLES/location_new;;
     1)
         # Refine or redefine the area selection
         rm -f $VARIABLES/location_new
@@ -123,7 +127,7 @@ esac
 
 if [ ! -e $GRASS/$MAPSET/vector/lines_osm ]
     then
-        Send_Message m 6 location_selector.6
+        Send_Message m 6 location_selector.7
         # Message 6 No lines map found in PERMANET mapset, or lines map is damaged.  To resolve this error, add again your location (map) to CityApp.
         exit
 fi
@@ -132,7 +136,7 @@ fi
 coordinates
 
 # Message 7 # Now zoom to area of your interest, then use drawing tool to define your location. Next, save your selection.
-Send_Message m 7 location_selector.7
+Send_Message m 7 location_selector.8
     
 # This geojson is the "selection" drawn by the user. Import to GRASS and export to Geoserver
 Request geojson
@@ -164,8 +168,8 @@ grass $GRASS/$MAPSET --exec v.clip input=relations_osm clip=selection output=rel
 if [  $INIT -eq 0 ]
     then
         grass $GRASS/$MAPSET --exec g.region vector=selection res=$(cat ~/cityapp/scripts/shared/variables/resolution | tail -n1) 
-        grass $GRASS/$MAPSET --exec v.to.rast input=selection output=time_map use=val value=1 --overwrite --quiet
-        grass $GRASS/$MAPSET --exec r.out.gdal input=time_map output=$GEOSERVER/time_map.tif format=GTiff type=Float64 --overwrite --quiet
+        grass $GRASS/$MAPSET --exec v.to.rast input=selection output=m1_time_map use=val value=1 --overwrite --quiet
+        grass $GRASS/$MAPSET --exec r.out.gdal input=m1_time_map output=$GEOSERVER/m1_time_map.tif format=GTiff type=Float64 --overwrite --quiet
         
         # Restarting Geoserver
         $MODULES/maintenance/restart_geoserver.sh &

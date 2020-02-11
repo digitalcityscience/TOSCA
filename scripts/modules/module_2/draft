@@ -1,0 +1,20 @@
+v.to.rast --overwrite input=slum_houses@module_2 where=FEMALE>0 AND AVG_MON_I<5000 output=query_1 use=attr attribute_column=TOTAL
+
+r.stats -c -n input=query_1@module_2 separator=comma sort=asc
+
+r.stats -c -n input=query_1@module_2 separator=comma sort=asc | sed s'/,/*/'g | sed "/[a-zA-Z0-9]$/s/$/\",/"
+
+j=0
+for i in $kimenet;
+do
+    j=$(  echo "$j+$i" | bc )
+
+done
+
+
+j=0
+for i in $kimenet;
+do
+    j=$(  echo "$j+$i" | bc )
+
+done

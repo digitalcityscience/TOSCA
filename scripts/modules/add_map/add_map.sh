@@ -1,10 +1,10 @@
 #! /bin/bash
 . ~/cityapp/scripts/shared/functions
 
-# version 1.2
+# version 1.21
 # CityApp module
 # Adding new layers to a selected mapset
-# 2020. február 3.
+# 2020. február 10.
 # Author: BUGYA Titusz, CityScienceLab -- Hamburg, Germany
 
 #
@@ -78,14 +78,14 @@ fi
 
 # Repeat process. You may add new layers until you select "no".
 until [ "$DONE" = "no" -o "$DONE" = "No" -o "$DONE" = "NO" ]; do
-    # Message 2 Raster or vector map do you want to add to CityApp mapset?
-    Send_Message 2 add_map.2
+    # Message 2 Do you want to add a VECTOR map to CityApp mapset? If yes, click Yes, otherwise select No
+    Send_Message m 2 add_map.2
         Request
-        if [ "$REQUEST_CONTENT" = "vector" -o "$REQUEST_CONTENT" = "Vector" -o "$REQUEST_CONTENT" = "VECTOR" ]
+        if [ "$REQUEST_CONTENT" = "yes" -o "$REQUEST_CONTENT" = "Yes" -o "$REQUEST_CONTENT" = "YES" ]
             then
                 add_vector_map
             else
-                if [ "$REQUEST_CONTENT" = "raster" -o "$REQUEST_CONTENT" = "Raster" -o "$REQUEST_CONTENT" = "RASTER" ]
+                if [ "$REQUEST_CONTENT" = "no" -o "$REQUEST_CONTENT" = "No" -o "$REQUEST_CONTENT" = "NO" ]
                     then
                         add_raster_map
                 fi

@@ -1,4 +1,18 @@
 Draw an area to qery.
 What is the map you want to query? Available maps are:
-What is the field (column) you want to query?  List of columns:
-Do you want to perform a complex query (yes/no)? If yes, give an SQL query (list columns)
+Fill the form and press save.
+Number of features match to criterias:
+Sum of values:
+minimum value:
+maximum value:
+range of values:
+mean:
+median:
+mean of absolute values:
+standard deviation:
+variance:
+relative standard deviation:
+1st quartile:
+2nd quartile:
+3rd quartile:
+90th percentile:

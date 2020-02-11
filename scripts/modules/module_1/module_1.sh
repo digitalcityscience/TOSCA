@@ -1,13 +1,13 @@
 #! /bin/bash
 . ~/cityapp/scripts/shared/functions
 
-# version 1.5
+# version 1.52
 # CityApp module
 # This module is to calculate the fastest way from "from_points" to "to_points" thru "via_points".
 # The network is the road network, with user-defined average speed.
 # Defining "from_points" is mandatory, "via_points" and "to_points" are optional.
 # If no "to_points" are selected, the default "to_points" will used: points along the roads, calculated by the application. 
-# 2020. február 8.
+# 2020. február 10.
 # Author: BUGYA Titusz, CityScienceLab -- Hamburg, Germany
 
 #
@@ -31,8 +31,8 @@ MAPSET=module_1
 #-- Default constants values for the interpolation and time calculations. Only modify when you know what is the effects of these variables -------------------
 #
 
-SMOOTH=8
-TENSION=50
+SMOOTH=4
+TENSION=30
 BASE_RESOLUTION=0.0005
 AVERAGE_SPEED=40
 ROAD_POINTS=0.003
@@ -70,21 +70,6 @@ fi
                 EAST=$(cat $VARIABLES/coordinate_east)
                 NORTH=$(cat $VARIABLES/coordinate_north)
 
-            # Replace the line in module_1_query.html containing the coordinates. The next 4 lines is a single expression.
-                sed -e '175d' $MODULES/module_1/module_1_query.html > $MODULES/module_1/module_1_query_temp.html
-                sed -i "175i\
-                var map = new L.Map('map', {center: new L.LatLng($NORTH, $EAST), zoom: 12 }),drawnItems = L.featureGroup().addTo(map);\
-                " $MODULES/module_1/module_1_query_temp.html
-                
-                mv $MODULES/module_1/module_1_query_temp.html $MODULES/module_1/module_1_query.html
-                
-            # Now the same for the module_1_result.html
-                sed -e '217d' $MODULES/module_1/module_1_result.html > $MODULES/module_1/module_1_result_temp.html
-                sed -i "217i\
-                var map = new L.Map('map', {center: new L.LatLng($NORTH, $EAST), zoom: 12 }),drawnItems = L.featureGroup().addTo(map);\
-                " $MODULES/module_1/module_1_result_temp.html
-                
-                mv $MODULES/module_1/module_1_result_temp.html $MODULES/module_1/module_1_result.html
     fi        
 
 # Message 1 Start points are required. Do you want to draw start points on the basemap now? If yes, click Yes. If you do not want to draw points, becuse you want to use an already existing map, select No. To exit this module click Cancel. Avilable maps are:
@@ -95,9 +80,9 @@ fi
                 "yes"|"Yes"|"YES")
                     Request geojson
                         FRESH=$REQUEST_PATH
-                        Add_Vector $FRESH from_points
-                        Gpkg_Out from_points from_points
-                        FROM_POINT=from_points;;
+                        Add_Vector $FRESH m1_from_points
+                        Gpkg_Out m1_from_points m1_from_points
+                        FROM_POINT=m1_from_points;;
                 "no"|"No"|"NO")
                     Send_Message l 2 module_1.2 $MODULE/temp_list # Waiting for a map name (map already have to exist in GRASS)
                     Request
@@ -114,9 +99,9 @@ fi
                     VIA=0
                     Request geojson
                         FRESH=$REQUEST_PATH
-                        Add_Vector $FRESH via_points
-                        Gpkg_Out via_points via_points
-                        VIA_POINT=via_points;;
+                        Add_Vector $FRESH m1_via_points
+                        Gpkg_Out m1_via_points m1_via_points
+                        VIA_POINT=m1_via_points;;
                 "no"|"No"|"NO")
                     VIA=1
                     Send_Message m 2 module_1.4  # Waiting for a map name (map already have to exist in GRASS)
@@ -124,7 +109,7 @@ fi
                         VIA_POINT=$REQUEST_CONTENT;;
                 "cancel"|"Cancel"|"CANCEL")
                     VIA=2
-                    rm -f $GEOSERVER/via_points".gpkg";;
+                    rm -f $GEOSERVER/m1_via_points".gpkg";;
             esac
     
 # Message 3 Target points are required. If you want to select target points from the map, click Yes. If you do not want to draw points, because you want to use an already existing map containing via points, click No. If you want to use the default target points map, click Cancel.
@@ -135,9 +120,9 @@ fi
                     TO=0
                     Request geojson
                         FRESH=$REQUEST_PATH
-                        Add_Vector $FRESH to_points
-                        Gpkg_Out to_points to_points
-                        TO_POINT=to_points;;
+                        Add_Vector $FRESH m1_to_points
+                        Gpkg_Out m1_to_points m1_to_points
+                        TO_POINT=m1_to_points;;
                 "no"|"No"|"NO")
                     TO=1
                     Send_Message m 2 module_1.6  # Waiting for a map name (map already have to exist in GRASS)
@@ -145,19 +130,19 @@ fi
                         TO_POINT=$REQUEST_CONTENT;;
                 "cancel"|"Cancel"|"CANCEL")
                     TO=2
-                    rm -f $GEOSERVER/to_points".gpkg";;
+                    rm -f $GEOSERVER/m1_to_points".gpkg";;
             esac
     
-# Message 4 Optionally you may define non-accessible area. If you want to draw area on the map, click Yes. If you do not want to draw now, because you want to select a map already containing area, click No. If you do not want to use any area, click Cancel.
+# Message 4 Optionally you may define stricken area. If you want to draw area on the map, click Yes. If you do not want to draw now, because you want to select a map already containing area, click No. If you do not want to use any area, click Cancel.
     Send_Message m 5 module_1.7
         Request
             case $REQUEST_CONTENT in
                 "yes"|"Yes"|"YES")
                     Request geojson
                         FRESH=$REQUEST_PATH
-                        Add_Vector $FRESH area
-                        Gpkg_Out area area
-                        AREA_MAP="area"
+                        Add_Vector $FRESH m1_stricken_area
+                        Gpkg_Out m1_stricken_area m1_stricken_area
+                        AREA_MAP="m1_stricken_area"
                     Send_Message m 8 module_1.11
                         Request
                             REDUCING_RATIO=$REQUEST_CONTENT;;
@@ -169,7 +154,7 @@ fi
                         Request
                             REDUCING_RATIO=$REQUEST_CONTENT;;
                 "cancel"|"Cancel"|"CANCEL")
-                    rm -f $GEOSERVER/area".gpkg";;
+                    rm -f $GEOSERVER/m1_stricken_area".gpkg";;
             esac
 
 # Values are stores in file variables/roads_speed.
@@ -195,7 +180,7 @@ fi
     grass $GRASS/$MAPSET --exec v.extract input=lines@PERMANENT type=line where="highway>0" output=highways --overwrite --quiet 
     
 # True data processing Setting region to fit the "selection" map (taken by location_selector), and resolution
-    grass $GRASS/$MAPSET --exec g.region vector=selection@PERMANENT res=$(cat $VARIABLES/resolution | tail -n1)
+    grass $GRASS/$MAPSET --exec g.region vector=selection@PERMANENT res=$(cat $VARIABLES/resolution | tail -n1) --overwrite
 
 # connecting from/via/to points to the clipped network, if neccessary. Via points are optional, first have to check if user previously has selected those or not.
     grass $GRASS/$MAPSET --exec g.copy vector=$FROM_POINT,from_via_to_points --overwrite --quiet
@@ -241,16 +226,23 @@ grass $GRASS/$MAPSET --exec v.net input=highways points=from_via_to_points outpu
         n=$(($n+1))
     done
 
-# Converting clipped and connected road network map into raster format
+# Converting clipped and connected road network map into raster format and float number
     grass $GRASS/$MAPSET --exec v.to.rast input=highways_points_connected output=highways_points_connected use=attr attribute_column=avg_speed --overwrite --quiet
-    
-# Now the Supplementary lines (formerly CAT_SUPP_LINES) raster map have to be added to map highways_from_points. First I convert highways_points_connected into raster setting value to 0(zero). Resultant map: temp. After I patch temp and highways_points_connected, result is:highways_points_connected_temp. Now have to reclass highways_points_connected_temp, setting 0 values to the speed value of residentals
-   
     grass $GRASS/$MAPSET --exec r.mapcalc expression="highways_points_connected=float(highways_points_connected)" --overwrite --quiet
-    grass $GRASS/$MAPSET --exec v.to.rast input=highways_points_connected output=temp use=val val=$AVERAGE_SPEED --overwrite --quiet
-    grass $GRASS/$MAPSET --exec r.patch input=highways_points_connected,temp output=highways_points_connected_temp --overwrite --quiet
+    
+# Now vector zones are created around from, via and to points (its radius is equal to the curren resolution),
+# converted into raster format, and patched to raster map 'temp' (just created in the previous step)
+# zones:
+    grass $GRASS/$MAPSET --exec v.buffer input=from_via_to_points output=from_via_to_zones distance=$(cat $VARIABLES/resolution | tail -n1) minordistance=$(cat $VARIABLES/resolution | tail -n1) --overwrite --quiet 
+    grass $GRASS/$MAPSET --exec r.mapcalc expression="from_via_to_zones=float(from_via_to_zones)" --overwrite --quiet
+    grass $GRASS/$MAPSET --exec v.to.rast input=from_via_to_zones output=from_via_to_zones use=val val=$AVERAGE_SPEED --overwrite --quiet
+    grass $GRASS/$MAPSET --exec r.patch input=highways_points_connected,from_via_to_zones output=highways_points_connected_zones --overwrite --quiet
+
+# Now the Supplementary lines (formerly CAT_SUPP_LINES) raster map have to be added to map highways_from_points. First I convert highways_points_connected into raster setting value to 0(zero). Resultant map: temp. After I patch temp and highways_points_connected, result is:highways_points_connected_temp. Now have to reclass highways_points_connected_temp, setting 0 values to the speed value of residentals
+    grass $GRASS/$MAPSET --exec v.to.rast input=highways_points_connected_zones output=temp use=val val=$AVERAGE_SPEED --overwrite --quiet
+    grass $GRASS/$MAPSET --exec r.patch input=highways_points_connected_zones,temp output=highways_points_connected_temp --overwrite --quiet
     grass $GRASS/$MAPSET --exec v.to.rast input=$AREA_MAP output=$AREA_MAP use=val value=$REDUCING_RATIO --overwrite
-    grass $GRASS/$MAPSET --exec r.null map=area null=1 --overwrite    
+    grass $GRASS/$MAPSET --exec r.null map=$AREA_MAP null=1 --overwrite    
     grass $GRASS/$MAPSET --exec r.mapcalc expression="highways_points_connected_full=(highways_points_connected_temp*$AREA_MAP)" --overwrite --quiet
 
 # specific_time here is the time requested to cross a cell, where the resolution is as defined in resolution file
@@ -262,26 +254,26 @@ grass $GRASS/$MAPSET --exec v.net input=highways points=from_via_to_points outpu
             grass $GRASS/$MAPSET --exec r.cost input=specific_time output=from_via_cost start_points=$FROM_POINT stop_points=$VIA_POINT --overwrite --quiet 
             grass $GRASS/$MAPSET --exec r.null map=from_via_cost null=0 --overwrite
             grass $GRASS/$MAPSET --exec r.cost input=specific_time output=via_to_cost start_points=$VIA_POINT stop_points=$TO_POINT --overwrite --quiet
-            grass $GRASS/$MAPSET --exec r.null map=via_to_cost null=0
+            grass $GRASS/$MAPSET --exec r.null map=via_to_cost null=0 --overwrite
             grass $GRASS/$MAPSET --exec r.mapcalc expression="time_map_temp=from_via_cost+via_to_cost" --overwrite --quiet
             grass $GRASS/$MAPSET --exec r.mapcalc expression="time_map=time_map_temp/60" --overwrite --quiet
         else
             grass $GRASS/$MAPSET --exec r.cost input=specific_time output=from_to_cost start_points=$FROM_POINT stop_points=$TO_POINT --overwrite --quiet
             grass $GRASS/$MAPSET --exec r.mapcalc expression="time_map_temp=from_to_cost/60" --overwrite --quiet
-            grass $GRASS/$MAPSET --exec g.rename raster=time_map_temp,time_map --overwrite --quiet
+            grass $GRASS/$MAPSET --exec g.rename raster=time_map_temp,m1_time_map --overwrite --quiet
     fi
 
-    grass $GRASS/$MAPSET --exec r.null map=time_map setnull=0
-    grass $GRASS/$MAPSET --exec r.out.gdal input=time_map output=$GEOSERVER/time_map.tif format=GTiff --overwrite --quiet
+    grass $GRASS/$MAPSET --exec r.null map=m1_time_map setnull=0
+    grass $GRASS/$MAPSET --exec r.out.gdal input=m1_time_map output=$GEOSERVER/m1_time_map.tif format=GTiff --overwrite --quiet
 
 # Interpolation for the entire area of selection map
 
-    grass $GRASS/$MAPSET --exec g.region res=$BASE_RESOLUTION
-    grass $GRASS/$MAPSET --exec r.mask vector=selection
-    grass $GRASS/$MAPSET --exec v.db.addcolumn map=highway_points layer=2 columns="time DOUBLE PRECISION"
-    grass $GRASS/$MAPSET --exec v.what.rast map=highway_points@module_1 raster=time_map layer=2 column=time
-    grass $GRASS/$MAPSET --exec v.surf.rst input=highway_points@module_1 layer=2 zcolumn=time where="time>0" elevation=time_map_interpolated tension=$TENSION smooth=$SMOOTH nprocs=4 --overwrite 
-    grass $GRASS/$MAPSET --exec r.out.gdal input=time_map_interpolated output=$GEOSERVER/time_map_interpolated.tif format=GTiff --overwrite --quiet
+    grass $GRASS/$MAPSET --exec g.region res=$BASE_RESOLUTION --overwrite
+    grass $GRASS/$MAPSET --exec r.mask vector=selection --overwrite
+    grass $GRASS/$MAPSET --exec v.db.addcolumn map=highway_points layer=2 columns="time DOUBLE PRECISION" --overwrite
+    grass $GRASS/$MAPSET --exec v.what.rast map=highway_points@module_1 raster=m1_time_map layer=2 column=time --overwrite
+    grass $GRASS/$MAPSET --exec v.surf.rst input=highway_points@module_1 layer=2 zcolumn=time where="time>0" elevation=m1_time_map_interpolated tension=$TENSION smooth=$SMOOTH nprocs=4 --overwrite 
+    grass $GRASS/$MAPSET --exec r.out.gdal input=m1_time_map_interpolated output=$GEOSERVER/m1_time_map_interpolated.tif format=GTiff --overwrite --quiet
 
     Close_Process
 
