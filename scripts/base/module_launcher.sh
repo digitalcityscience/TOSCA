@@ -8,7 +8,7 @@
 #
 # Core module, do not modify!
 #
-# 2020. február 3.
+# 2020. február 10.
 # Author: BUGYA Titusz, CityScienceLab -- Hamburg, Germany
 
 #
@@ -38,7 +38,8 @@ while inotifywait -e close_write $BROWSER/; do
             if [ -e $BROWSER/.launch_locked ]
                 then
                     # Message 1 CityApp is already running in the selected userbox. You may manually override this warning removing the .launch.locked file. For this purpose select CityApp Restart tool.
-                    Send_Message 1 sytem_error.1
+                    Send_Message m 1 sytem_error.1 error actions [\"yes\"]
+                    Request
                     rm -f $FRESH_FILE
                 else
                     $MODULES/$FRESH/$FRESH".sh" &
@@ -50,7 +51,8 @@ while inotifywait -e close_write $BROWSER/; do
     if [ $(echo $FRESH_FILE | grep EXIT) ]
         then
             # Message 2 CityApp is now exiting. To restart CityApp, use Restart tool.
-            Send_Message 2 system_error.2
+            Send_Message m 2 system_error.2 error actions [\"yes\"]
+            Request
             rm -f $MESSAGE_SENT/*
             rm -f $BROWSER/.*
             rm -f $BROWSER/*
@@ -58,7 +60,8 @@ while inotifywait -e close_write $BROWSER/; do
     fi
 done
 
-Send_Message 2 system_error.2
+Send_Message m 2 system_error.2 error actions [\"yes\"]
+Request
 rm -f $MESSAGE_SENT/*
 rm -f $BROWSER/.*
 rm -f $BROWSER/*

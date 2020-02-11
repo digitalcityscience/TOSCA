@@ -26,25 +26,17 @@ MAPSET=module_2
 
 #felirat 4
 #adat 6
-rm -f $MODULE/temp_storage/statistic_1
-touch $MODULE/temp_storage/statistic_1
 
-echo $(head -n4 < $MESSAGE_TEXT | tail -n1)" "$(head -n6 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistic_1
-echo $(head -n5 < $MESSAGE_TEXT | tail -n1)" "$(head -n15 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistic_1 
-echo $(head -n6 < $MESSAGE_TEXT | tail -n1)" "$(head -n7 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistic_1 
-echo $(head -n7 < $MESSAGE_TEXT | tail -n1)" "$(head -n8 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistic_1 
-echo $(head -n8 < $MESSAGE_TEXT | tail -n1)" "$(head -n9 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistic_1
-echo $(head -n9 < $MESSAGE_TEXT | tail -n1)" "$(head -n10 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistic_1
-echo $(head -n10 < $MESSAGE_TEXT | tail -n1)" "$(head -n17 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistic_1
-echo $(head -n11 < $MESSAGE_TEXT | tail -n1)" "$(head -n11 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistic_1
-echo $(head -n12 < $MESSAGE_TEXT | tail -n1)" "$(head -n12 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistic_1
-echo $(head -n13 < $MESSAGE_TEXT | tail -n1)" "$(head -n13 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistic_1
-echo $(head -n14 < $MESSAGE_TEXT | tail -n1)" "$(head -n14 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistic_1
-echo $(head -n15 < $MESSAGE_TEXT | tail -n1)" "$(head -n16 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistic_1
-echo $(head -n16 < $MESSAGE_TEXT | tail -n1)" "$(head -n17 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistic_1
-echo $(head -n17 < $MESSAGE_TEXT | tail -n1)" "$(head -n18 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistic_1
-echo $(head -n18 < $MESSAGE_TEXT | tail -n1)" "$(head -n19 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistic_1
-        
-exit        
-cat $MESSAGE_TEXT | head -n6 | tail -n1 >> $MODULE/temp_storage/statistic_1
-cat $MODULE/temp_statistic | head -n$k | tail -n1 >> $MODULE/temp_storage/statistic_1
+    # $1 -- type "m": message only, a single line; "s": simple list, long format "l": complex list with a user dialogue message in the first line;
+    # $2 -- CityApp message (order number of a single line in the message file of current module);
+    # $3 -- Output JSON file (after converting a simple list into JSON);
+    # $4 -- modalType. (actions, list, select)
+    # $5 -- action type. Simple "action" for yesnocancel like questions , and "select" for list and other selections
+    # $6 -- possible outcomes. format is: ["yes","no","cancel"]
+    # $7 -- previously it was $4 -- list file: this is a list have to transform ito JSON format for the Browser;  }
+
+# What is the map you want to query? Available maps are:
+
+Send_Message l 2 test_1.1 actions action [\"yes\",\"no\",\"cancel\"] $VARIABLES/roads_speed
+
+exit

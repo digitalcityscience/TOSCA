@@ -151,68 +151,47 @@ Send_List ()
     # $2 -- CityApp message (order number of a single line in the message file of current module);
     # $3 -- Output JSON file (after converting a simple list into JSON);
     # $4 -- list file: this is a list have to transform ito JSON format for the Browser;  }
-    
-    # New structure:
-    
-    # $1 -- type "m": message only, a single line; "s": simple list with a user dialogue message in the first line,"l": long format complex list with proprieties and a user dialogue message in the first line;
-    # $2 -- CityApp message (order number of a single line in the message file of current module);
-    # $3 -- Output JSON file (after converting a simple list into JSON);
-    # $4 -- modalType. (actions, list, select)
-    # $5 -- action type. Simple "action" for yesnocancel like questions , and "select" for list and other selections
-    # $6 -- possible outcomes. format is: ["yes","no","cancel"]
-    # $7 -- previously it was $4 -- list file: this is a list have to transform ito JSON format for the Browser;  }
-
     {
     case $1 in
         "m")
             echo "{" > $MESSAGE_SENT/message.$3
-            echo "\"text\":" >> $MESSAGE_SENT/message.$3
+            echo "text:" >> $MESSAGE_SENT/message.$3
+            echo $(cat $MESSAGE_TEXT | head -n$2 | tail -n1) >> $MESSAGE_SENT/message.$3;;
             echo "\"$(cat $MESSAGE_TEXT | head -n$2 | tail -n1) \"," >> $MESSAGE_SENT/message.$3
-            echo "\"modalType\": \"$4\"," >> $MESSAGE_SENT/message.$3
-            echo "\"$5\": $6," >> $MESSAGE_SENT/message.$3
-            echo "}" >> $MESSAGE_SENT/message.$3;;
+            echo "\"modalType\": \"actions\"," >> $MESSAGE_SENT/message.$3
+            echo "\"actions\": ["yes", "no"],
         "l")        
-            echo "hetes "$7
-            LINES=$(cat $7 | wc -l)
+            LINES=$(cat $4 | wc -l)
             LINE=$(echo $LINES)
-            echo "lines " $LINES
 
             echo "{" > $MESSAGE_SENT/message.$3
-            echo "\"text\":" >> $MESSAGE_SENT/message.$3
+            echo "text:" >> $MESSAGE_SENT/message.$3
             echo "\"$(cat $MESSAGE_TEXT | head -n$2 | tail -n1) \"," >> $MESSAGE_SENT/message.$3
-            echo "\"modalType\": \"$4\"," >> $MESSAGE_SENT/message.$3
-            echo "\"$5\": $6," >> $MESSAGE_SENT/message.$3
             echo "\"list\":" >> $MESSAGE_SENT/message.$3
             echo "{" >> $MESSAGE_SENT/message.$3
 
             i=1
             until [ $i -gt $LINE ];do
-                echo "\""$(cat $7 | head -n$i | tail -n1) | sed s'/:/":/'g | sed "/[a-zA-Z0-9]$/s/$/\",/" >> $MESSAGE_SENT/message.$3
+                echo "\""$(cat $4 | head -n$i | tail -n1) | sed s'/:/":/'g | sed "/[a-zA-Z0-9]$/s/$/\",/" >> $MESSAGE_SENT/message.$3
                 i=$(($i+1))
             done
             echo "}" >> $MESSAGE_SENT/message.$3
             echo "}" >> $MESSAGE_SENT/message.$3;;
         "s")
-             echo "hetes "$7
-            LINES=$(cat $7 | wc -l)
+            var3=$2
+            var4=$3
+            
+            LINES=$(cat $var4 | wc -l)
             LINE=$(echo $LINES)
-            echo "lines " $LINES
-
-            echo "[" > $MESSAGE_SENT/message.$3
-            echo "\"text\":" >> $MESSAGE_SENT/message.$3
-            echo "\"$(cat $MESSAGE_TEXT | head -n$2 | tail -n1) \"," >> $MESSAGE_SENT/message.$3
-            echo "\"modalType\": \"$4\"," >> $MESSAGE_SENT/message.$3
-            echo "\"$5\": $6," >> $MESSAGE_SENT/message.$3
-            echo "\"list\":" >> $MESSAGE_SENT/message.$3
-            echo "{" >> $MESSAGE_SENT/message.$3
-
+            
+            echo "[" > $MESSAGE_SENT/message.$var3
+            
             i=1
             until [ $i -gt $LINE ];do
-                echo "\""$(cat $7 | head -n$i | tail -n1) | sed s'/:/":/'g | sed "/[a-zA-Z0-9]$/s/$/\",/" >> $MESSAGE_SENT/message.$3
+                echo "\""$(cat $var4 | head -n$i | tail -n1) | sed s'/:/":/'g | sed "/[a-zA-Z0-9]$/s/$/\",/" >> $MESSAGE_SENT/message.$var3
                 i=$(($i+1))
             done
-            echo "]" >> $MESSAGE_SENT/message.$3
-            echo "}" >> $MESSAGE_SENT/message.$3;;
+            echo "]" >> $MESSAGE_SENT/message.$var3;;
     esac
     }
     
