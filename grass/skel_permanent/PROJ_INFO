@@ -1,0 +1,6 @@
+name: WGS 84
+datum: wgs84
+ellps: wgs84
+proj: ll
+no_defs: defined
+towgs84: 0.000,0.000,0.000
