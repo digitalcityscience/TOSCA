@@ -18,6 +18,8 @@ BROWSER=~/cityapp/data_from_browser
 LANGUAGE=$(cat ~/cityapp/scripts/shared/variables/lang)
 MESSAGE_TEXT=~/cityapp/scripts/shared/messages/$LANGUAGE/resolution_setting
 MESSAGE_SENT=~/cityapp/data_to_client
+MODULES=~/cityapp/scripts/modules
+MODULE=~/cityapp/scripts/modules/resolution_setting
 
 #
 #-- Process ----------------------------
