@@ -136,7 +136,7 @@ Request ()
 Select_Fresh ()
     #This function is to select the last (freshest) file from data_from_browser directory. No parameters
     {
-    OUTPUT=$BROWSER/$(ls -ct1 ~/cityapp/data_from_browser/ | head -n1)
+    OUTPUT=$BROWSER/$(ls -ct1 $BROWSER | head -n1)
     }
 
 Send_List ()
@@ -165,54 +165,55 @@ Send_List ()
     {
     case $1 in
         "m")
-            echo "{" > $MESSAGE_SENT/message.$3
-            echo "\"text\":" >> $MESSAGE_SENT/message.$3
-            echo "\"$(cat $MESSAGE_TEXT | head -n$2 | tail -n1) \"," >> $MESSAGE_SENT/message.$3
-            echo "\"modalType\": \"$4\"," >> $MESSAGE_SENT/message.$3
-            echo "\"$5\": $6," >> $MESSAGE_SENT/message.$3
-            echo "}" >> $MESSAGE_SENT/message.$3;;
+            echo "{" > $MODULE/temp_message
+            echo "\"text\":" >> $MODULE/temp_message
+            echo "\"$(cat $MESSAGE_TEXT | head -n$2 | tail -n1) \"," >> $MODULE/temp_message
+            echo "\"modalType\": \"$4\"," >> $MODULE/temp_message
+            echo "\"$5\": $6," >> $MODULE/temp_message
+            echo "}" >> $MODULE/temp_message
+            mv $MODULE/temp_message $MESSAGE_SENT/message.$3;;
         "l")        
-            echo "hetes "$7
+
             LINES=$(cat $7 | wc -l)
             LINE=$(echo $LINES)
-            echo "lines " $LINES
 
-            echo "{" > $MESSAGE_SENT/message.$3
-            echo "\"text\":" >> $MESSAGE_SENT/message.$3
-            echo "\"$(cat $MESSAGE_TEXT | head -n$2 | tail -n1) \"," >> $MESSAGE_SENT/message.$3
-            echo "\"modalType\": \"$4\"," >> $MESSAGE_SENT/message.$3
-            echo "\"$5\": $6," >> $MESSAGE_SENT/message.$3
-            echo "\"list\":" >> $MESSAGE_SENT/message.$3
-            echo "{" >> $MESSAGE_SENT/message.$3
+            echo "{" > $MODULE/temp_message
+            echo "\"text\":" >> $MODULE/temp_message
+            echo "\"$(cat $MESSAGE_TEXT | head -n$2 | tail -n1) \"," >> $MODULE/temp_message
+            echo "\"modalType\": \"$4\"," >> $MODULE/temp_message
+            echo "\"$5\": $6," >> $MODULE/temp_message
+            echo "\"list\":" >> $MODULE/temp_message
+            echo "{" >> $MODULE/temp_message
 
             i=1
             until [ $i -gt $LINE ];do
-                echo "\""$(cat $7 | head -n$i | tail -n1) | sed s'/:/":/'g | sed "/[a-zA-Z0-9]$/s/$/\",/" >> $MESSAGE_SENT/message.$3
+                echo "\""$(cat $7 | head -n$i | tail -n1) | sed s'/:/":/'g | sed "/[a-zA-Z0-9]$/s/$/\",/" >> $MODULE/temp_message
                 i=$(($i+1))
             done
-            echo "}" >> $MESSAGE_SENT/message.$3
-            echo "}" >> $MESSAGE_SENT/message.$3;;
+            echo "}" >> $MODULE/temp_message
+            echo "}" >> $MODULE/temp_message
+            mv $MODULE/temp_message $MESSAGE_SENT/message.$3;;
         "s")
-             echo "hetes "$7
             LINES=$(cat $7 | wc -l)
             LINE=$(echo $LINES)
             echo "lines " $LINES
 
-            echo "[" > $MESSAGE_SENT/message.$3
-            echo "\"text\":" >> $MESSAGE_SENT/message.$3
-            echo "\"$(cat $MESSAGE_TEXT | head -n$2 | tail -n1) \"," >> $MESSAGE_SENT/message.$3
-            echo "\"modalType\": \"$4\"," >> $MESSAGE_SENT/message.$3
-            echo "\"$5\": $6," >> $MESSAGE_SENT/message.$3
-            echo "\"list\":" >> $MESSAGE_SENT/message.$3
-            echo "{" >> $MESSAGE_SENT/message.$3
+            echo "[" > $MODULE/temp_message
+            echo "\"text\":" >> $MODULE/temp_message
+            echo "\"$(cat $MESSAGE_TEXT | head -n$2 | tail -n1) \"," >> $MODULE/temp_message
+            echo "\"modalType\": \"$4\"," >> $MODULE/temp_message
+            echo "\"$5\": $6," >> $MODULE/temp_message
+            echo "\"list\":" >> $MODULE/temp_message
+            echo "{" >> $MODULE/temp_message
 
             i=1
             until [ $i -gt $LINE ];do
-                echo "\""$(cat $7 | head -n$i | tail -n1) | sed s'/:/":/'g | sed "/[a-zA-Z0-9]$/s/$/\",/" >> $MESSAGE_SENT/message.$3
+                echo "\""$(cat $7 | head -n$i | tail -n1) | sed s'/:/":/'g | sed "/[a-zA-Z0-9]$/s/$/\",/" >> $MODULE/temp_message
                 i=$(($i+1))
             done
-            echo "]" >> $MESSAGE_SENT/message.$3
-            echo "}" >> $MESSAGE_SENT/message.$3;;
+            echo "]" >> $MODULE/temp_message
+            echo "}" >> $MODULE/temp_message
+            mv $MODULE/temp_message $MESSAGE_SENT/message.$3;;
     esac
     }
     
