@@ -1,7 +1,10 @@
-# user data
+# temporary
 /data_from_browser
+/data_to_client
+
+# user data
 /geoserver_data
-/grass
+/grass/global
 
 # Node.js dependencies
 node_modules
