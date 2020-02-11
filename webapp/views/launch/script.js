@@ -3,15 +3,35 @@ const socket = io('http://localhost:3001');
 /* Incoming */
 
 socket.on('response', (message) => {
-  // Later:
-  // message.text
-  // message.modalType
-  // etc.
-  $('#yesNoDialog').modal({ backdrop: 'static' });
-  $('#yesNoDialog .modal-body-text').html(message);
+  json = JSON.parse(message)
+  console.log(json)
+
+  switch (json.modalType) {
+    case 'input':
+      $('#inputModal').modal({ backdrop: 'static' });
+      $('#inputModal .modal-body-text').html(json.text);
+      $('#inputModal .modal-footer').empty()
+
+      const buttons = json.actions.map(action => {
+        let btn = $(`<button type="button" class="btn btn-primary" data-dismiss="modal"></button`).text(action);
+        btn.click(() => reply($('#inputModalInput').val()));
+        return btn;
+      });
+
+      $('#inputModal .modal-footer').append(buttons)
+      break;
+
+    default:
+      $('#yesNoModal').modal({ backdrop: 'static' });
+      $('#yesNoModal .modal-body-text').html(json.text);
+  }
 });
 
 /* Outgoing */
+
+function setResolution() {
+  sendMessage('/launch', { module: 'resolution_setting' });
+}
 
 function launch() {
   // Get the selected item
@@ -44,8 +64,8 @@ function exit() {
   sendMessage('/exit');
 }
 
-function reply(yesOrNo) {
-  sendMessage('/request', yesOrNo);
+function reply(message) {
+  sendMessage('/request', message);
 }
 
 function sendMessage(target, message) {

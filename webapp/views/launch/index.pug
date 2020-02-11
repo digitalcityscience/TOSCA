@@ -51,13 +51,16 @@ html
         div(id='Module_description')
           p
             a: button(class='button' onclick='exit()') Exit
+          p
+            a: button(class='button' onclick='setResolution()') Set resolution
 
       div(id='Map_container' class='card')
         include ../map/index.pug
 
       div(id='Info' class='card')
 
-    div(id='yesNoDialog' class='modal fade' tabindex='-1' role='dialog')
+    //- A simple modal
+    div(id='yesNoModal' class='modal fade' tabindex='-1' role='dialog')
       div(class='modal-dialog' role='document')
         div(class='modal-content')
           div(class='modal-body')
@@ -65,6 +68,15 @@ html
           div(class='modal-footer')
             button(type='button' class='btn btn-primary' onclick='reply(\'yes\')') Yes
             button(type='button' class='btn btn-secondary' data-dismiss='modal' onclick='reply(\'no\')') No
+
+    //- A modal with an input field
+    div(id='inputModal' class='modal fade' tabindex='-1' role='dialog')
+      div(class='modal-dialog' role='document')
+        div(class='modal-content')
+          div(class='modal-body')
+            p(class='modal-body-text') Modal body text goes here.
+            p(class='modal-body-input'): input(id='inputModalInput')
+          div(class='modal-footer')
 
     script.
       const geoserverURL = '#{geoserverUrl}';
