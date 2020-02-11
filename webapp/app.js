@@ -148,7 +148,7 @@ function writeMessageToFile(filename, msg) {
  */
 function readMessageFromFile(callback) {
   const watcher = fs.watch(dataToClient, {}, (eventType, filename) => {
-    if (eventType === 'change') {
+    if (eventType === 'change' || eventType === 'rename') {
       let message = fs.readFileSync(`${dataToClient}/${filename}`, { encoding: 'utf-8' })
       callback(message, filename)
       watcher.close()
