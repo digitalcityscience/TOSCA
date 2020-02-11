@@ -2,12 +2,16 @@ html
   head
     title Launch
 
+    link(rel='stylesheet' href='/lib/leaflet/leaflet.css')
+    link(rel='stylesheet' href='/lib/leaflet/leaflet.draw.css')
+    link(rel='stylesheet' href='/lib/bootstrap/bootstrap.min.css')
+
+    script(src='/lib/bootstrap/jquery-3.2.1.slim.min.js')
+    script(src='/lib/bootstrap/popper.min.js')
+    script(src='/lib/bootstrap/bootstrap.min.js')
     script(src='/lib/leaflet/leaflet.js')
     script(src='/lib/leaflet/leaflet.draw.js')
     script(src='/lib/socket.io/socket.io.js')
-
-    link(rel='stylesheet' href='/lib/leaflet/leaflet.css')
-    link(rel='stylesheet' href='/lib/leaflet/leaflet.draw.css')
 
     style
       include style.css
@@ -46,15 +50,21 @@ html
 
         div(id='Module_description')
           p
-            a: button(class='button' onclick='reply("yes")') Yes
-            a: button(class='button' onclick='reply("no")') No
-          p
             a: button(class='button' onclick='exit()') Exit
 
       div(id='Map_container' class='card')
         include ../map/index.pug
 
       div(id='Info' class='card')
+
+    div(id='yesNoDialog' class='modal fade' tabindex='-1' role='dialog')
+      div(class='modal-dialog' role='document')
+        div(class='modal-content')
+          div(class='modal-body')
+            p(class='modal-body-text') Modal body text goes here.
+          div(class='modal-footer')
+            button(type='button' class='btn btn-primary' onclick='reply(\'yes\')') Yes
+            button(type='button' class='btn btn-secondary' data-dismiss='modal' onclick='reply(\'no\')') No
 
     script.
       const geoserverURL = '#{geoserverUrl}';

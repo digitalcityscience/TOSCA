@@ -2,22 +2,19 @@ const socket = io('http://localhost:3001');
 
 /* Incoming */
 
-socket.on('launch_response', (message) => {
-  alert(message);
-});
-
-socket.on('display_response', (message) => {
-  alert(message);
-});
-
-socket.on('query_response', (message) => {
-  alert(message);
+socket.on('response', (message) => {
+  // Later:
+  // message.text
+  // message.modalType
+  // etc.
+  $('#yesNoDialog').modal({ backdrop: 'static' });
+  $('#yesNoDialog .modal-body-text').html(message);
 });
 
 /* Outgoing */
 
 function launch() {
-  // Get the data from each element on the form.
+  // Get the selected item
   const value = document.getElementById('Select_menu').value;
   if (value) {
     const message = { module: value };
@@ -26,7 +23,7 @@ function launch() {
 }
 
 function display() {
-  // Get the data from each element on the form.
+  // Get the selected item
   const value = document.getElementById('Display_menu').value;
   if (value) {
     const message = { map: value };
@@ -35,7 +32,7 @@ function display() {
 }
 
 function query() {
-  // Get the data from each element on the form.
+  // Get the selected item
   const value = document.getElementById('Query_menu').value;
   if (value) {
     const message = { map: value };
@@ -50,7 +47,6 @@ function exit() {
 function reply(yesOrNo) {
   sendMessage('/request', yesOrNo);
 }
-
 
 function sendMessage(target, message) {
   const req = new XMLHttpRequest();

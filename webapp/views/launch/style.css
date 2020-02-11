@@ -7,6 +7,7 @@
 .sidebar {
   display: flex;
   flex-direction: column;
+  width: 280px;
 }
 
 .card {
@@ -33,7 +34,7 @@
 }
 
 #Map_container {
-  flex-grow: 1;
+  flex-grow: 2;
   position: relative;
   overflow-y: hidden;
 }
