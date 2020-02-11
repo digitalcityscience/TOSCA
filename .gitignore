@@ -1,6 +1,7 @@
 # temporary
 /data_from_browser
 /data_to_client
+temp_*
 
 # user data
 /geoserver_data
