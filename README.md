@@ -2,9 +2,16 @@
 
 ## System requirements
 
+### GIS backend
+
 - Linux system equipped with:
   - bash
-  - kdialog
-  - inotifywait
-  - grass
-  - falkon
+  - Coreutils
+  - sed
+  - grep
+  - inotify-tools
+  - GRASS GIS
+
+### User interface
+
+- Node.js version >=12
