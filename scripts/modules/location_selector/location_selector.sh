@@ -1,14 +1,14 @@
 #! /bin/bash
 . ~/cityapp/scripts/shared/functions
 
-# version 1.3
+# version 1.31
 # CityApp module
 # Import OSM maps into PERMANENT mapset. Points, lines, polygons, relations are only imported. Other maps can be extracted from these in separate modules.
 # To import other maps, use Add Layer module.
 #
 # Core module, do not modify.
 #
-# 2020. február 5.
+# 2020. február 13.
 # Author: BUGYA Titusz, CityScienceLab -- Hamburg, Germany
 
 #
@@ -55,8 +55,9 @@ function coordinates
 if [ ! -d "$GRASS/$MAPSET/" ]
     then
         # PERMANENT not found
-        # Message 1 First have to add an area (such as country) to the dataset. ...
-        Send_Message m 1 location_selector.1
+        # Message 1 First have to add an area (such as country) to the dataset. Without area CityApp will not work. Adding a new area may take a long time, depending on the file size. To continue click Yes. To exit, select NO.
+
+        Send_Message m 1 location_selector.1 question actions [\"Yes\",\"No\"]
             
             # A simle yes/no. If no, exit
             Request
@@ -65,36 +66,24 @@ if [ ! -d "$GRASS/$MAPSET/" ]
                     exit
                 else
                     INIT=0
-                    # Message 2 Select a map to add to CityApp
-                    Send_Message m 2 location_selector.2
-                
-                    # The map to import
-                    Request osm
-                    NEW_AREA_FILE=$REQUEST_PATH
             fi
     else
         # PERMANENT found
-        # Message 4 There is an already defined area. Do you want to reshape the existing selection? If do not want reshape the selection, bceause you want to replace the entire location, select No.
-        Send_Message m 4 location_selector.4
-        Request
-            case $REQUEST_CONTENT in
-                "yes" | "Yes" | "YES")
-                    INIT=1
-                    # Message 5 -- It is the same as Message 2
-                    # Therefore the same line will used, but the message is will set to 4.
-                    Send_Message m 2 location_selector.5
-                        
-                        Request osm
-                        NEW_AREA_FILE=$REQUEST_PATH;;
-                    
-                "no" | "No" | "NO")
-                    INIT=0;;
-            esac
+        # Message 3 There is an already defined area. To reshape the existing selection, select Yes. If do not want reshape the selection, beceause you want to replace the entire location, select No.
+        Send_Message m 3 location_selector.3 question actions [\"Yes\",\"No\"]
+            Request
+                case $REQUEST_CONTENT in
+                    "yes" | "Yes" | "YES")
+                        INIT=0;;
+                    "no" | "No" | "NO")
+                        INIT=1;;
+                esac
 fi
 
 case $INIT in
     0)
-        Send_Message m 2 location_selector.6
+        # Message Select a map to add to CityApp. Map has to be in Open Street Map format -- osm is the only accepted format.
+        Send_Message m 2 location_selector.2 upload actions [\"Yes\"]
             Request osm
                 NEW_AREA_FILE=$REQUEST_PATH
                 rm -f $GEOSERVER/*
@@ -127,7 +116,8 @@ esac
 
 if [ ! -e $GRASS/$MAPSET/vector/lines_osm ]
     then
-        Send_Message m 6 location_selector.7
+        # Message 4 No lines map found in PERMANET mapset, or lines map is damaged. To resolve this error, add again your location (map) to CityApp.
+        Send_Message m 4 location_selector.7 error actions [\"Yes\"]
         # Message 6 No lines map found in PERMANET mapset, or lines map is damaged.  To resolve this error, add again your location (map) to CityApp.
         exit
 fi
@@ -135,19 +125,18 @@ fi
 # Inserting the center coordinates of the new area in the location_selector.html
 coordinates
 
-# Message 7 # Now zoom to area of your interest, then use drawing tool to define your location. Next, save your selection.
-Send_Message m 7 location_selector.8
-    
-# This geojson is the "selection" drawn by the user. Import to GRASS and export to Geoserver
-Request geojson
-GEOJSON_FILE=$REQUEST_PATH 
-Add_Vector "$GEOJSON_FILE" selection
-Gpkg_Out selection selection
-    
+# Message 5 # Now zoom to area of your interest, then use drawing tool to define your location. Next, save your selection.
+Send_Message m 5 location_selector.8 question actions [\"Yes\"]
+    # This geojson is the "selection" drawn by the user. Import to GRASS and export to Geoserver
+    Request geojson
+        GEOJSON_FILE=$REQUEST_PATH 
+        Add_Vector "$GEOJSON_FILE" selection
+        Gpkg_Out selection selection
+        
 # Message Now you can set the resolution value (in meters). The value you declare, will used by each CityApp module
 # Actually, now a separate script will run
 
-~/cityapp/scripts/maintenance/resolution_setting.sh
+~/cityapp/scripts/modules/resolution_setting/resolution_setting.sh
 
 #
 #-- Process ----------------------------
@@ -172,13 +161,14 @@ if [  $INIT -eq 0 ]
         grass $GRASS/$MAPSET --exec r.out.gdal input=m1_time_map output=$GEOSERVER/m1_time_map.tif format=GTiff type=Float64 --overwrite --quiet
         
         # Restarting Geoserver
-        $MODULES/maintenance/restart_geoserver.sh &
+        $MODULES/restart_geoserver/restart_geoserver.sh &
 fi
 
 # Updating center coordinates to the area of selection
 coordinates
 
-Send_Message m 9 location_selector.9
+# Message Process finished. No you can exit CityApp Location selector
+Send_Message m 6 location_selector.9 question actions [\"Yes\"]
 
 Close_Process
 

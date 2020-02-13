@@ -74,6 +74,7 @@ if [ $(grass $GRASS/$MAPSET --exec g.list type=vector | grep selection) ]
     else
         # Message 1 "Selection" map not found. Before adding a new layer, first you have to define a location and a selection. For this end please, use Location Selector tool of CityApp.
         Send_Message m 1 add_map.1 error actions [\"Ok\"]
+            Request
 fi
 
 # Repeat process. You may add new layers until you select "no".

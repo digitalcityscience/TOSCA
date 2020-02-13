@@ -1,9 +1,6 @@
-First have to add an area (such as country) to the dataset. Without area CityApp will not work. Adding a new area may take a long time, depending on the file size. Do you want to continue?
+First have to add an area (such as country) to the dataset. Without area CityApp will not work. Adding a new area may take a long time, depending on the file size. To continue click Yes. To exit, select NO.
 Select a map to add to CityApp. Map has to be in Open Street Map format -- osm is the only accepted format.
-File is not osm file, or filename is without extension. CityApp accept only Open Streetmap files in osm or pbf format. osm or pbf extension is requested.
-There is an already defined area. Do you want to reshape the existing selection? If do not want reshape the selection, bceause you want to replace the entire location, select No.
-Select OSM data
+There is an already defined area. To reshape the existing selection, select Yes. If do not want reshape the selection, beceause you want to replace the entire location, select No.
 No lines map found in PERMANET mapset, or lines map is damaged. To resolve this error, add again your location (map) to CityApp.
 Now zoom to area of your interest, then use drawing tool to define your location. Next, save your selection.
-No core Geoserver components found. Goserver can not be restarted. Chech Geoserver installation
 Process finished. No you can exit CityApp Location selector

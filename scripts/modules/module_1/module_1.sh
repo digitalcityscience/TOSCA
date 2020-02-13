@@ -47,7 +47,7 @@ if [ ! -d $GRASS/PERMANENT ]
     then
     # check if PERMANENT mapeset exist
         # Message 6 No valid location found. Run Location selector to create a valid location
-        Send_Message m 9 module_1.10 error actions [\"Ok\"]
+        Send_Message m 10 module_1.11 error actions [\"Ok\"]
 fi
 
 # First overwrite the region of module_1 mapset. If no such mapset exist, create it
@@ -72,9 +72,9 @@ fi
 
     fi        
 
-# Message 1 Start points are required. Do you want to draw start points on the basemap now? If yes, click Yes. If you do not want to draw points, becuse you want to use an already existing map, select No. To exit this module click Cancel. Avilable maps are:
+# Message 1 Start points are required. Do you want to draw start points on the basemap now? If you want to use an already existing map, select No. To exit this module click Cancel. 
     grass $GRASS/$MAPSET --exec g.list -m type=vector > $MODULE/temp_list
-    Send_Message l 1 module_1.1 input actions [\"yes\"] $MODULE/temp_list
+    Send_Message m 1 module_1.1 question actions [\"Yes\",\"No\",\"Cancel\"]
         Request
             case $REQUEST_CONTENT in
                 "yes"|"Yes"|"YES")
@@ -84,15 +84,16 @@ fi
                         Gpkg_Out m1_from_points m1_from_points
                         FROM_POINT=m1_from_points;;
                 "no"|"No"|"NO")
-                    Send_Message l 2 module_1.2 $MODULE/temp_list # Waiting for a map name (map already have to exist in GRASS)
+                    # Message 2 Select a map (only point maps are supported). Avilable maps are:
+                    Send_Message l 2 module_1.2 select actions [\"Yes\"] $MODULE/temp_list # Waiting for a map name (map already have to exist in GRASS)
                     Request
                         FROM_POINT=$REQUEST_CONTENT;;
                 "cancel"|"Cancel"|"CANCEL")
                     exit;;
             esac
         
-# Message 3 Via points are optional. If you want to select 'via' points from the map, click Yes. If you dont want to draw points, because you want to use an already existing ma, select No. If you do not want to use via points, click Cancel.
-    Send_Message m 3 module_1.3
+# Message 3 Via points are optional. If you want to select 'via' points from the map, click Yes. If you want to use an already existing map, select No. If you do not want to use via points, click Cancel.
+    Send_Message m 3 module_1.3 question actions [\"Yes\",\"No\",\"Cancel\"]
         Request
             case $REQUEST_CONTENT in
                 "yes"|"Yes"|"YES")
@@ -104,7 +105,7 @@ fi
                         VIA_POINT=m1_via_points;;
                 "no"|"No"|"NO")
                     VIA=1
-                    Send_Message m 2 module_1.4  # Waiting for a map name (map already have to exist in GRASS)
+                    Send_Message l 2 module_1.4  select actions [\"Yes\"] $MODULE/temp_list # Waiting for a map name (map already have to exist in GRASS)
                     Request
                         VIA_POINT=$REQUEST_CONTENT;;
                 "cancel"|"Cancel"|"CANCEL")
@@ -112,8 +113,8 @@ fi
                     rm -f $GEOSERVER/m1_via_points".gpkg";;
             esac
     
-# Message 3 Target points are required. If you want to select target points from the map, click Yes. If you do not want to draw points, because you want to use an already existing map containing via points, click No. If you want to use the default target points map, click Cancel.
-    Send_Message m 4 module_1.5
+# Message 3 Target points are required. If you want to select target points from the map, click Yes. If you want to use an already existing map containing target points, click No. If you want to use the default target points map, click Cancel.
+    Send_Message m 4 module_1.5 question actions [\"Yes\",\"No\",\"Cancel\"]
         Request
             case $REQUEST_CONTENT in
                 "yes"|"Yes"|"YES")
@@ -125,7 +126,7 @@ fi
                         TO_POINT=m1_to_points;;
                 "no"|"No"|"NO")
                     TO=1
-                    Send_Message m 2 module_1.6  # Waiting for a map name (map already have to exist in GRASS)
+                    Send_Message l 2 module_1.6 select actions [\"Yes\"] $MODULE/temp_list # Waiting for a map name (map already have to exist in GRASS)
                     Request
                         TO_POINT=$REQUEST_CONTENT;;
                 "cancel"|"Cancel"|"CANCEL")
@@ -133,8 +134,8 @@ fi
                     rm -f $GEOSERVER/m1_to_points".gpkg";;
             esac
     
-# Message 4 Optionally you may define stricken area. If you want to draw area on the map, click Yes. If you do not want to draw now, because you want to select a map already containing area, click No. If you do not want to use any area, click Cancel.
-    Send_Message m 5 module_1.7
+# Message 4 Optionally you may define stricken area. If you want to draw area on the map, click Yes. If you want to select a map already containing area, click No. If you do not want to use any area, click Cancel.
+    Send_Message m 5 module_1.7 question actions [\"Yes\",\"No\",\"Cancel\"]
         Request
             case $REQUEST_CONTENT in
                 "yes"|"Yes"|"YES")
@@ -143,14 +144,14 @@ fi
                         Add_Vector $FRESH m1_stricken_area
                         Gpkg_Out m1_stricken_area m1_stricken_area
                         AREA_MAP="m1_stricken_area"
-                    Send_Message m 8 module_1.11
+                    Send_Message m 9 module_1.12 input action [\"Yes\"]
                         Request
                             REDUCING_RATIO=$REQUEST_CONTENT;;
                 "no"|"No"|"NO")
-                    Send_Message m 6 module_1.8  # Waiting for a map name (map already have to exist in GRASS)
+                    Send_Message m 6 module_1.8 select action [\"Yes\"] # Waiting for a map name (map already have to exist in GRASS)
                     Request
                         AREA_MAP=$REQUEST_CONTENT
-                    Send_Message m 8 module_1.11
+                    Send_Message m 9 module_1.12 input action [\"Yes\"]
                         Request
                             REDUCING_RATIO=$REQUEST_CONTENT;;
                 "cancel"|"Cancel"|"CANCEL")
@@ -159,21 +160,23 @@ fi
 
 # Values are stores in file variables/roads_speed.
 # Based on this data, reclass file is also prepared. Will later used in reclass process.
-# Messages 14 Do you want to s    echo $i"="$i >> $MODULES/module_1/reclass_rules_1et the speed on the road network? If not, the current values will used (km/h). If you want to change the values, you may overwrite those. Do not remove semicolons from the end of lines.
-    Send_Message l 7 module_1.9 $VARIABLES/roads_speed
+# Messages 14 Do you want to change the speed on the road network? If not, the current values will used (km/h). If you want to change the values, you may overwrite those.
+    Send_Message l 7 module_1.9 question actions [\"Yes\",\"No\"] 
         Request
             case $REQUEST_CONTENT in
                 "yes"|"Yes"|"YES")
-                    Request
-                        echo $REQUEST_CONTENT > $VARIABLES/roads_speed;;
-                        # Specific value will servs as speed value for non classified elements and newly inserted connecting line segments. Speed of these features will set to speed of service roads
-                        #REDUCING_RATIO=$(cat $VARIABLES/roads_speed | head -n$n | tail -n1 | cut -d":" -f2 | sed s'/ //'g);;
+                    # Message Now you can change the speed values. Current values are:
+                    Send_Message l 8 module_1.10 select actions [\"Yes\",] $VARIABLES/roads_speed
+                        Request
+                            echo $REQUEST_CONTENT > $VARIABLES/roads_speed;;
+                            # Specific value will servs as speed value for non classified elements and newly inserted connecting line segments. Speed of these features will set to speed of service roads
+                            #REDUCING_RATIO=$(cat $VARIABLES/roads_speed | head -n$n | tail -n1 | cut -d":" -f2 | sed s'/ //'g);;
                 "no"|"No"|"NO")
                     ;;
             esac
             
 #
-# -- Processing --------------------------
+# -- Processing --------------------------ˇ
 #
 
 # Creating highways map. This is fundamental for the further work in this module
