@@ -88,7 +88,6 @@ async function appLaunch(req, res) {
 
   readMessageFromFile((message) => {
     io.emit('response', message)
-    fs.unlink(`${dataFromBrowser}/.launch_locked`, () => "don't stop on error")
   })
 }
 
