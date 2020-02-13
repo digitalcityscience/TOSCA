@@ -21,14 +21,13 @@ html
     div(class='main')
       div(class='sidebar' class='card')
         div(id='Launch')
-          select(id='Select_menu' class='select_menu')
-            option(selected value='') -- Select a module to launch --
-            option(value='location_selector') Location selector
-            option(value='add_layer') Add new layer
-            option(value='module_1') Time map
-            option(value='module_2') Query a map
-
-          a: button(class='button' onclick='launch()') Launch
+          p Launch a module
+          p
+            a: button(class='button' onclick='launch(\'location_selector\')') Select location
+            a: button(class='button' onclick='launch(\'resolution_setting\')') Set resolution
+            a: button(class='button' onclick='launch(\'add_map\')') Add map
+          p
+            a: button(class='button' onclick='exit()') Exit
 
         div(id='Display')
           select(id='Display_menu' class='select_menu')
@@ -49,24 +48,29 @@ html
           a: button(class='button' onclick='query()') Select
 
         div(id='Module_description')
-          p
-            a: button(class='button' onclick='exit()') Exit
-          p
-            a: button(class='button' onclick='setResolution()') Set resolution
 
       div(id='Map_container' class='card')
         include ../map/index.pug
 
       div(id='Info' class='card')
 
-    //- A simple modal
+    //- A modal with an error message
+    div(id='errorModal' class='modal fade' tabindex='-1' role='dialog')
+      div(class='modal-dialog' role='document')
+        div(class='modal-content')
+          div(class='modal-body')
+            p(class='modal-body-text') Error message goes here.
+          div(class='modal-footer')
+            button(type='button' class='btn btn-primary' data-dismiss='modal' onclick='reply(\'ok\')') OK
+
+    //- A modal with a question
     div(id='yesNoModal' class='modal fade' tabindex='-1' role='dialog')
       div(class='modal-dialog' role='document')
         div(class='modal-content')
           div(class='modal-body')
-            p(class='modal-body-text') Modal body text goes here.
+            p(class='modal-body-text') Question goes here.
           div(class='modal-footer')
-            button(type='button' class='btn btn-primary' onclick='reply(\'yes\')') Yes
+            button(type='button' class='btn btn-primary' data-dismiss='modal' onclick='reply(\'yes\')') Yes
             button(type='button' class='btn btn-secondary' data-dismiss='modal' onclick='reply(\'no\')') No
 
     //- A modal with an input field
@@ -74,8 +78,17 @@ html
       div(class='modal-dialog' role='document')
         div(class='modal-content')
           div(class='modal-body')
-            p(class='modal-body-text') Modal body text goes here.
+            p(class='modal-body-text') Description goes here.
             p(class='modal-body-input'): input(id='inputModalInput')
+          div(class='modal-footer')
+
+    //- A modal with a file upload
+    div(id='fileUploadModal' class='modal fade' tabindex='-1' role='dialog')
+      div(class='modal-dialog' role='document')
+        div(class='modal-content')
+          div(class='modal-body')
+            p(class='modal-body-text') Description goes here.
+            //- p(class='modal-body-input'): input(id='fileUploadModalInput')
           div(class='modal-footer')
 
     script.

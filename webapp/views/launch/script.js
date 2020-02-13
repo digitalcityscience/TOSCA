@@ -7,6 +7,16 @@ socket.on('response', (message) => {
   console.log(json)
 
   switch (json.modalType) {
+    case 'error':
+      $('#errorModal').modal({ backdrop: 'static' });
+      $('#errorModal .modal-body-text').html(json.text);
+      break;
+
+    case 'question':
+      $('#questionModal').modal({ backdrop: 'static' });
+      $('#questionModal .modal-body-text').html(json.text);
+      break;
+
     case 'input':
       $('#inputModal').modal({ backdrop: 'static' });
       $('#inputModal .modal-body-text').html(json.text);
@@ -21,25 +31,16 @@ socket.on('response', (message) => {
       $('#inputModal .modal-footer').append(buttons)
       break;
 
+    case 'fileupload':
+
     default:
-      $('#yesNoModal').modal({ backdrop: 'static' });
-      $('#yesNoModal .modal-body-text').html(json.text);
   }
 });
 
 /* Outgoing */
 
-function setResolution() {
-  sendMessage('/launch', { module: 'resolution_setting' });
-}
-
-function launch() {
-  // Get the selected item
-  const value = document.getElementById('Select_menu').value;
-  if (value) {
-    const message = { module: value };
-    sendMessage('/launch', message);
-  }
+function launch(module) {
+  sendMessage('/launch', { module: module });
 }
 
 function display() {
