@@ -8,7 +8,7 @@
 #
 # Core module, do not modify!
 #
-# 2020. február 10.
+# 2020. február 13.
 # Author: BUGYA Titusz, CityScienceLab -- Hamburg, Germany
 
 #
@@ -66,4 +66,5 @@ rm -f $MESSAGE_SENT/*
 rm -f $BROWSER/.*
 rm -f $BROWSER/*
 
+Close_Process
 exit

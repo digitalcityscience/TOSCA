@@ -52,6 +52,7 @@ Close_Process ()
     {
     # This is to clean properly after finishing the module.
     rm -f $BROWSER/*
+    rm -f $MESSAGE_SENT/*
     mv $BROWSER/.launch_locked $BROWSER/.launch_open
     rm -f $MODULE/temp_*
     }
