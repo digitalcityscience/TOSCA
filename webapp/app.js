@@ -118,7 +118,7 @@ async function appQuery(req, res) {
 
 async function appExit() {
   console.log('EXIT')
-  writeMessageToFile('EXIT')
+  writeMessageToFile('request_EXIT')
 }
 
 /****** Utility functions ******/
