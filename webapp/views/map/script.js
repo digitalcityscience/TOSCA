@@ -1,7 +1,7 @@
 const attributionCSL = '<a href="https://www.hcu-hamburg.de/research/citysciencelab/?L=1" target=new>HCU CSL</a>';
 const attributionOSM = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 
-const dem = L.tileLayer.wms(geoserverURL + 'geoserver/raster/wms', {
+const dem = L.tileLayer.wms(geoserverUrl + 'geoserver/raster/wms', {
   layers: 'raster:dem',
   format: 'image/png',
   transparent: false,
@@ -10,7 +10,7 @@ const dem = L.tileLayer.wms(geoserverURL + 'geoserver/raster/wms', {
   minZoom: 1,
 });
 
-const waterLines = L.tileLayer.wms(geoserverURL + 'geoserver/vector/wms', {
+const waterLines = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
   layers: 'vector:water_lines_osm',
   format: 'image/png',
   transparent: true,
@@ -19,7 +19,7 @@ const waterLines = L.tileLayer.wms(geoserverURL + 'geoserver/vector/wms', {
   minZoom: 1,
 });
 
-const waterArea = L.tileLayer.wms(geoserverURL + 'geoserver/vector/wms', {
+const waterArea = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
   layers: 'vector:polygons',
   format: 'image/png',
   transparent: true,
@@ -28,7 +28,7 @@ const waterArea = L.tileLayer.wms(geoserverURL + 'geoserver/vector/wms', {
   minZoom: 1,
 });
 
-const roads = L.tileLayer.wms(geoserverURL + 'geoserver/vector/wms', {
+const roads = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
   layers: 'vector:lines_osm',
   format: 'image/png',
   transparent: true,
@@ -37,7 +37,7 @@ const roads = L.tileLayer.wms(geoserverURL + 'geoserver/vector/wms', {
   minZoom: 1,
 });
 
-const buildings = L.tileLayer.wms(geoserverURL + 'geoserver/vector/wms', {
+const buildings = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
   layers: 'vector:polygons_osm',
   format: 'image/png',
   transparent: true,
@@ -46,7 +46,7 @@ const buildings = L.tileLayer.wms(geoserverURL + 'geoserver/vector/wms', {
   minZoom: 1,
 });
 
-const selection = L.tileLayer.wms(geoserverURL + 'geoserver/vector/wms', {
+const selection = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
   layers: 'vector:selection',
   format: 'image/png',
   transparent: true,

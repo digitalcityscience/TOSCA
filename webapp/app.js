@@ -2,6 +2,7 @@
 require('dotenv').config()
 
 const geoserverUrl = process.env.GEOSERVER_URL
+const websocketUrl = process.env.WEBSOCKET_URL
 const dataFromBrowser = process.env.DATA_FROM_BROWSER_DIR
 const dataToClient = process.env.DATA_TO_CLIENT_DIR
 
@@ -15,9 +16,10 @@ const app = express()
 const expressPort = 3000
 
 app.listen(expressPort, () => {
-  console.log(`GEOSERVER_URL:         ${process.env.GEOSERVER_URL}`)
-  console.log(`DATA_FROM_BROWSER_DIR: ${process.env.DATA_FROM_BROWSER_DIR}`)
-  console.log(`DATA_TO_CLIENT_DIR:    ${process.env.DATA_TO_CLIENT_DIR}\n`)
+  console.log(`GEOSERVER_URL:         ${geoserverUrl}`)
+  console.log(`WEBSOCKET_URL:         ${websocketUrl}`)
+  console.log(`DATA_FROM_BROWSER_DIR: ${dataFromBrowser}`)
+  console.log(`DATA_TO_CLIENT_DIR:    ${dataToClient}\n`)
   console.log(`App listening on port ${expressPort}`)
 })
 
@@ -55,6 +57,7 @@ server.listen(websocketPort)
 function appRoot(req, res) {
   let options = {
     geoserverUrl,
+    websocketUrl,
     lat: 20.291320,
     lon: 85.817298
   }
