@@ -30,31 +30,8 @@ app.use(express.static('public'))
 app.set('views', './views')
 app.set('view engine', 'pug')
 
-// Routing - see functions below
-app.get('/', appRoot)
-app.post('/launch', appLaunch)
-app.post('/display', appDisplay)
-app.post('/query', appQuery)
-app.post('/exit', appExit)
-app.post('/request', appRequest)
-app.post('/select_location', appSelectLocation)
-
-// Websocket server
-const server = require('http').createServer()
-const io = require('socket.io')(server)
-const websocketPort = 3001
-
-io.on('connection', client => {
-  console.log('Client connected')
-  client.on('disconnect', () => {
-    console.log('Client disconnected')
-  })
-})
-server.listen(websocketPort)
-
-/****** Communication with the backend and the client ******/
-
-function appRoot(req, res) {
+// index page
+app.get('/', (req, res) => {
   let options = {
     geoserverUrl,
     websocketUrl,
@@ -62,67 +39,85 @@ function appRoot(req, res) {
     lon: 85.817298
   }
   res.render('launch', options)
-}
+})
 
-async function appSelectLocation(req, res) {
+// request to launch a module
+app.post('/launch', async (req, res, next) => {
+  const message = await readRequestFromClient(req, res)
+
+  console.log('launch: ' + message.module)
+  writeMessageToFile('launch', message.module)
+
+  try {
+    const response = await readMessageFromFile(2000)
+    res.send(response)
+  } catch (e) {
+    next('Server is unresponsive')
+  }
+})
+
+// request to display a map
+app.post('/display', async (req, res, next) => {
+  const message = await readRequestFromClient(req, res)
+
+  console.log('display: ' + message.map)
+  writeMessageToFile('display', message.map)
+
+  try {
+    const response = await readMessageFromFile(2000)
+    res.send(response)
+  } catch (e) {
+    next('Server is unresponsive')
+  }
+})
+
+// request to query a map
+app.post('/query', async (req, res, next) => {
+  const message = await readRequestFromClient(req, res)
+
+  console.log('query: ' + message.map)
+  writeMessageToFile('query', message.map)
+
+  try {
+    const response = await readMessageFromFile(2000)
+    res.send(response)
+  } catch (e) {
+    next('Server is unresponsive')
+  }
+})
+
+// user interaction, e.g. through a modal
+app.post('/request', async (req, res, next) => {
+  const message = await readRequestFromClient(req, res)
+
+  console.log('request: ' + message)
+  writeMessageToFile('request', message)
+
+  try {
+    const response = await readMessageFromFile(2000)
+    res.send(response)
+  } catch (e) {
+    next('Server is unresponsive')
+  }
+})
+
+// send a GeoJSON
+app.post('/select_location', async (req, res, next) => {
   const message = await readRequestFromClient(req, res)
 
   console.log(message)
-
   fs.writeFile(`${dataFromBrowser}/selection.geojson`, JSON.stringify(message.data), ec)
-}
+})
 
-async function appRequest(req, res) {
-  const message = await readRequestFromClient(req, res)
-
-  console.log('request:', message)
-  writeMessageToFile('request', message)
-
-  readMessageFromFile((message) => {
-    io.emit('response', message)
-  })
-}
-
-async function appLaunch(req, res) {
-  const message = await readRequestFromClient(req, res)
-
-  console.log('launch:', message.module)
-  writeMessageToFile('launch', message.module)
-
-  readMessageFromFile((message) => {
-    io.emit('response', message)
-  })
-}
-
-async function appDisplay(req, res) {
-  const message = await readRequestFromClient(req, res)
-
-  console.log('display:', message.map)
-  writeMessageToFile('display', message.map)
-
-  readMessageFromFile((message) => {
-    io.emit('response', message)
-  })
-}
-
-async function appQuery(req, res) {
-  const message = await readRequestFromClient(req, res)
-
-  console.log('query:', message.map)
-  writeMessageToFile('query', message.map)
-
-  readMessageFromFile((message) => {
-    io.emit('response', message)
-  })
-}
-
-async function appExit() {
+// request to kill the app
+app.post('/exit', async (req, res, next) => {
   console.log('EXIT')
   writeMessageToFile('request_EXIT')
-}
+})
 
-/****** Utility functions ******/
-
+/*
+ * Request handler
+ */
 async function readRequestFromClient(req, res) {
   let body = ''
 
@@ -132,7 +127,6 @@ async function readRequestFromClient(req, res) {
 
   return await new Promise((resolve, reject) => {
     req.on('end', () => {
-      res.end('ok')
       resolve(JSON.parse(body))
     })
   })
@@ -148,20 +142,29 @@ function writeMessageToFile(filename, msg) {
 /*
  * Create a self-destroying watcher to read messages in the data_to_browser directory
  */
-function readMessageFromFile(callback) {
-  const watcher = fs.watch(dataToClient, {}, (eventType, filename) => {
-    const filepath = `${dataToClient}/${filename}`
+async function readMessageFromFile(timeout) {
+  return await new Promise((resolve, reject) => {
+    const watcher = fs.watch(dataToClient, {}, (eventType, filename) => {
+      const filepath = `${dataToClient}/${filename}`
 
-    if (eventType === 'change' || eventType === 'rename') {
-      let message = fs.readFileSync(filepath, { encoding: 'utf-8' })
-      callback(message, filename)
+      if (eventType === 'change' || eventType === 'rename') {
+        let message
+        try {
+          message = fs.readFileSync(filepath, { encoding: 'utf-8' })
+          fs.unlink(filepath, ec)
+        } catch (e) {
+          console.log(error)
+        }
+        watcher.close()
+        resolve(message)
+      }
+    })
+
+    setTimeout(() => {
       watcher.close()
-      try {
-        fs.unlink(filepath, ec)
-      } catch (e) {}
-    }
+      reject()
+    }, timeout || 60000)
   })
-  return watcher
 }
 
 // error callback

@@ -1,11 +1,6 @@
-const socket = io(websocketUrl);
-
 /* Incoming */
 
-socket.on('response', (message) => {
-  json = JSON.parse(message)
-  console.log(json)
-
+function handleResponse(json) {
   switch (json.modalType) {
     case 'error':
       $('#errorModal').modal({ backdrop: 'static' });
@@ -13,8 +8,8 @@ socket.on('response', (message) => {
       break;
 
     case 'question':
-      $('#questionModal').modal({ backdrop: 'static' });
-      $('#questionModal .modal-body-text').html(json.text);
+      $('#yesNoModal').modal({ backdrop: 'static' });
+      $('#yesNoModal .modal-body-text').html(json.text);
       break;
 
     case 'input':
@@ -31,11 +26,11 @@ socket.on('response', (message) => {
       $('#inputModal .modal-footer').append(buttons)
       break;
 
-    case 'fileupload':
+    case 'upload':
 
     default:
   }
-});
+}
 
 /* Outgoing */
 
@@ -47,8 +42,7 @@ function display() {
   // Get the selected item
   const value = document.getElementById('Display_menu').value;
   if (value) {
-    const message = { map: value };
-    sendMessage('/display', message);
+    sendMessage('/display', { map: value });
   }
 }
 
@@ -56,8 +50,7 @@ function query() {
   // Get the selected item
   const value = document.getElementById('Query_menu').value;
   if (value) {
-    const message = { map: value };
-    sendMessage('/query', message);
+    sendMessage('/query', { map: value });
   }
 }
 
@@ -70,8 +63,16 @@ function reply(message) {
 }
 
 function sendMessage(target, message) {
-  const req = new XMLHttpRequest();
-  req.open('POST', target);
-  req.setRequestHeader('Content-Type', 'application/json');
-  req.send(JSON.stringify(message || {}));
+  $.ajax({
+    type: 'POST',
+    url: target,
+    data: JSON.stringify(message || {}),
+    dataType: 'json'
+  }).done((data) => {
+    handleResponse(data);
+  }).fail(() => {
+    const text = 'The server is not responding. Please check if it is running.';
+    const alert = $(`<div class="alert alert-danger" role="alert">${text}&nbsp;&nbsp;<button class="close" data-dismiss="alert">×</button></div>`);
+    $('#alert-anchor').append(alert);
+  });
 }
