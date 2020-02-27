@@ -101,6 +101,21 @@ app.post('/request', async (req, res, next) => {
   }
 })
 
+// file upload
+app.post('/file_request', async (req, res, next) => {
+  const message = await readRequestFromClient(req, res)
+
+  console.log('request: ' + message)
+  // TODO: do smth
+
+  try {
+    const response = await readMessageFromFile(2000)
+    res.send(response)
+  } catch (e) {
+    next('Server is unresponsive')
+  }
+})
+
 // send a GeoJSON
 app.post('/select_location', async (req, res, next) => {
   const message = await readRequestFromClient(req, res)
@@ -136,7 +151,7 @@ async function readRequestFromClient(req, res) {
  * Write a text message to the data_from_browser directory
  */
 function writeMessageToFile(filename, msg) {
-  fs.writeFile(`${dataFromBrowser}/${filename}`, msg, ec)
+  fs.writeFileSync(`${dataFromBrowser}/${filename}`, msg, ec)
 }
 
 /*
@@ -145,15 +160,17 @@ function writeMessageToFile(filename, msg) {
 async function readMessageFromFile(timeout) {
   return await new Promise((resolve, reject) => {
     const watcher = fs.watch(dataToClient, {}, (eventType, filename) => {
+      console.log(eventType, filename)
+
       const filepath = `${dataToClient}/${filename}`
 
       if (eventType === 'change' || eventType === 'rename') {
         let message
         try {
           message = fs.readFileSync(filepath, { encoding: 'utf-8' })
-          fs.unlink(filepath, ec)
+          fs.unlinkSync(filepath, ec)
         } catch (e) {
-          console.log(error)
+          console.log(e)
         }
         watcher.close()
         resolve(message)

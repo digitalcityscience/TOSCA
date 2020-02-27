@@ -90,19 +90,21 @@ html
     div(id='inputModal' class='modal fade' tabindex='-1' role='dialog')
       div(class='modal-dialog' role='document')
         div(class='modal-content')
-          div(class='modal-body')
-            p(class='modal-body-text') Description goes here.
-            p(class='modal-body-input'): input(id='inputModalInput')
-          div(class='modal-footer')
+          form(id='inputForm')
+            div(class='modal-body')
+              p(class='modal-body-text') Description goes here.
+              p(class='modal-body-input'): input(id='inputModalInput' type='text')
+            div(class='modal-footer')
 
-    //- //- A modal with a file upload
-    //- div(id='fileUploadModal' class='modal fade' tabindex='-1' role='dialog')
-    //-   div(class='modal-dialog' role='document')
-    //-     div(class='modal-content')
-    //-       div(class='modal-body')
-    //-         p(class='modal-body-text') Description goes here.
-    //-         //- p(class='modal-body-input'): input(id='fileUploadModalInput')
-    //-       div(class='modal-footer')
+    //- A modal with a file upload
+    div(id='fileUploadModal' class='modal fade' tabindex='-1' role='dialog')
+      div(class='modal-dialog' role='document')
+        div(class='modal-content')
+          form(id='fileUploadForm' enctype='multipart/form-data')
+            div(class='modal-body')
+              p(class='modal-body-text') Description goes here.
+              p(class='modal-body-input'): input(id='fileUploadModalInput' type='file' name='file')
+            div(class='modal-footer')
 
     div(id='alert-anchor')
 
