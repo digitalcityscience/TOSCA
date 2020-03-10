@@ -1,7 +1,29 @@
+h1 {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  height: 50px;
+  margin-bottom: 5px;
+  padding: 5px;
+}
+
+.logo img {
+  margin: 0 5px 5px;
+}
+
+.logo img:first-child {
+  margin: 10px 5px 5px;
+}
+
 .main {
   display: flex;
   flex-direction: row;
-  height: 100%;
+  height: calc(100% - 55px);
 }
 
 .sidebar {
@@ -78,4 +100,15 @@
   background-color: #ffffdd;
   box-shadow: 0 2px #886;
   transform: translateY(2px);
+}
+
+#alert-anchor {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  z-index: 2000;
+}
+
+.alert {
+  margin: 10px;
 }
