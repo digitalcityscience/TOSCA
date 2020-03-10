@@ -1,14 +1,14 @@
 #! /bin/bash
 . ~/cityapp/scripts/shared/functions
 
-# version 1.31
+# version 1.42
 # CityApp module
 # Import OSM maps into PERMANENT mapset. Points, lines, polygons, relations are only imported. Other maps can be extracted from these in separate modules.
 # To import other maps, use Add Layer module.
 #
 # Core module, do not modify.
 #
-# 2020. február 13.
+# 2020. március 6.
 # Author: BUGYA Titusz, CityScienceLab -- Hamburg, Germany
 
 #
@@ -17,16 +17,20 @@
 
 cd ~/cityapp
 
-GEOSERVER=~/cityapp/geoserver_data
 MODULES=~/cityapp/scripts/modules
 MODULE=~/cityapp/scripts/modules/location_selector
-GRASS=~/cityapp/grass/global
+MODULE_NAME=cityapp_location_selector
 VARIABLES=~/cityapp/scripts/shared/variables
 BROWSER=~/cityapp/data_from_browser
-LANGUAGE=$(cat ~/cityapp/scripts/shared/variables/lang)
 MESSAGE_TEXT=~/cityapp/scripts/shared/messages/$LANGUAGE/location_selector
 MESSAGE_SENT=~/cityapp/data_to_client
+LANGUAGE=$(cat ~/cityapp/scripts/shared/variables/lang)
+GEOSERVER=~/cityapp/geoserver_data
+GRASS=~/cityapp/grass/global
 MAPSET=PERMANENT
+
+touch $VARIABLES/launch_locked
+echo "launch_locked" > $VARIABLES/launch_locked
 
 #
 #-- Preprocess, query ------------------
@@ -43,48 +47,50 @@ function coordinates
             NORTH=$(grass $GRASS/$MAPSET --exec g.region -cg vector=polygons_osm | head -n2 | tail -n1 | cut -d"=" -f2)
     fi
 
-    # Replace the line in map_display.html containing the coordinates
-    sed -e '245d' $MODULE/map_display.html > $MODULE/map_display_temp.html
-    sed -i "245i\
-    var map = new L.Map('map', {center: new L.LatLng($NORTH, $EAST), zoom: 12 }),drawnItems = L.featureGroup().addTo(map);\
-    " $MODULE/map_display_temp.html
+    echo $EAST > $VARIABLES/coordinate_east
+    echo $NORTH > $VARIABLES/coordinate_north
     
-    mv $MODULE/map_display_temp.html $MODULE/map_display.html
+    # Replace the line in base_map.html containing the coordinates
+    cp $MODULES/base_map/base_map_template.html $MODULES/base_map/base_map.html
+    
+    sed -i 's/replacethisline/var map = new L.Map('\''map'\'', {center: new L.LatLng('$NORTH', '$EAST'), zoom: 9 }),drawnItems = L.featureGroup().addTo(map);/' $MODULES/base_map/base_map.html
     }
 
-if [ ! -d "$GRASS/$MAPSET/" ]
-    then
-        # PERMANENT not found
-        # Message 1 First have to add an area (such as country) to the dataset. Without area CityApp will not work. Adding a new area may take a long time, depending on the file size. To continue click Yes. To exit, select NO.
+    if [ ! -d "$GRASS/$MAPSET/" ]
+        then
+            # PERMANENT not found
+            # Message 1 First have to add an area (such as country) to the dataset. Without area CityApp will not work. Adding a new area may take a long time, depending on the file size. To continue click Yes. To exit, select NO.
 
-        Send_Message m 1 location_selector.1 question actions [\"Yes\",\"No\"]
-            
-            # A simle yes/no. If no, exit
-            Request
-            if [ "$REQUEST_CONTENT" = "no" -o "$REQUEST_CONTENT" = "No" -o "$REQUEST_CONTENT" = "NO" ]
-                then
-                    exit
-                else
-                    INIT=0
-            fi
-    else
-        # PERMANENT found
-        # Message 3 There is an already defined area. To reshape the existing selection, select Yes. If do not want reshape the selection, beceause you want to replace the entire location, select No.
-        Send_Message m 3 location_selector.3 question actions [\"Yes\",\"No\"]
-            Request
+            Send_Message m 1 location_selector.1 question actions [\"Yes\",\"No\"]
+                
+                # A simle yes/no. If no, exit
+                Request
+                if [ "$REQUEST_CONTENT" = "no" -o "$REQUEST_CONTENT" = "No" -o "$REQUEST_CONTENT" = "NO" ]
+                    then
+                        exit
+                    else
+                        INIT=0
+                fi
+        else
+            # PERMANENT found
+            # Message 3 There is an already defined area. To reshape the existing selection, select Yes. If do not want reshape the selection, beceause you want to replace the entire location, select No.
+            Send_Message m 3 location_selector.3 question actions [\"Yes\",\"No\"]
+                Request
                 case $REQUEST_CONTENT in
-                    "yes" | "Yes" | "YES")
-                        INIT=0;;
-                    "no" | "No" | "NO")
-                        INIT=1;;
+                    "yes")
+                        INIT=1
+                        ;;
+                    "no")
+                        INIT=0
+                        ;;
                 esac
-fi
+    fi
 
 case $INIT in
-    0)
+    "0")
         # Message Select a map to add to CityApp. Map has to be in Open Street Map format -- osm is the only accepted format.
         Send_Message m 2 location_selector.2 upload actions [\"Yes\"]
-            Request osm
+            Request_Osm
                 NEW_AREA_FILE=$REQUEST_PATH
                 rm -f $GEOSERVER/*
                 rm -fR $GRASS/$MAPSET
@@ -107,11 +113,13 @@ case $INIT in
                 cp $GEOSERVER/lines.gpkg $GEOSERVER/saved/
                 cp $GEOSERVER/polygons.gpkg $GEOSERVER/saved/
                 rm -f $VARIABLES/location_mod
-                touch $VARIABLES/location_new;;
-    1)
+                touch $VARIABLES/location_new
+                ;;
+    "1")
         # Refine or redefine the area selection
         rm -f $VARIABLES/location_new
-        touch $VARIABLES/location_mod;;
+        touch $VARIABLES/location_mod
+        ;;
 esac
 
 if [ ! -e $GRASS/$MAPSET/vector/lines_osm ]
@@ -122,13 +130,13 @@ if [ ! -e $GRASS/$MAPSET/vector/lines_osm ]
         exit
 fi
 
-# Inserting the center coordinates of the new area in the location_selector.html
+# Inserting the center coordinates of the new area in the base_map.html
 coordinates
 
 # Message 5 # Now zoom to area of your interest, then use drawing tool to define your location. Next, save your selection.
 Send_Message m 5 location_selector.8 question actions [\"Yes\"]
     # This geojson is the "selection" drawn by the user. Import to GRASS and export to Geoserver
-    Request geojson
+    Request_Geojson
         GEOJSON_FILE=$REQUEST_PATH 
         Add_Vector "$GEOJSON_FILE" selection
         Gpkg_Out selection selection
@@ -136,7 +144,9 @@ Send_Message m 5 location_selector.8 question actions [\"Yes\"]
 # Message Now you can set the resolution value (in meters). The value you declare, will used by each CityApp module
 # Actually, now a separate script will run
 
-~/cityapp/scripts/modules/resolution_setting/resolution_setting.sh
+touch $VARIABLES/subprocess
+~/cityapp/scripts/modules/resolution_setting/cityapp_resolution_setting.sh
+rm -f $VARIABLES/subprocess
 
 #
 #-- Process ----------------------------
@@ -161,7 +171,7 @@ if [  $INIT -eq 0 ]
         grass $GRASS/$MAPSET --exec r.out.gdal input=m1_time_map output=$GEOSERVER/m1_time_map.tif format=GTiff type=Float64 --overwrite --quiet
         
         # Restarting Geoserver
-        $MODULES/restart_geoserver/restart_geoserver.sh &
+        $MODULES/restart_geoserver/cityapp_restart_geoserver.sh &
 fi
 
 # Updating center coordinates to the area of selection
@@ -169,7 +179,8 @@ coordinates
 
 # Message Process finished. No you can exit CityApp Location selector
 Send_Message m 6 location_selector.9 question actions [\"Yes\"]
-
-Close_Process
-
-exit
+    Request
+        rm -f $VARIABLES/launch_locked
+        Close_Process
+        touch $VARIABLES/launcher_run
+        exit

@@ -16,15 +16,16 @@
 
 cd ~/cityapp
 
-GEOSERVER=~/cityapp/geoserver_data
 MODULES=~/cityapp/scripts/modules
 MODULE=~/cityapp/scripts/modules/module_1
-GRASS=~/cityapp/grass/global
+MODULE_NAME=cityapp_module_1
 VARIABLES=~/cityapp/scripts/shared/variables
 BROWSER=~/cityapp/data_from_browser
-LANGUAGE=$(cat ~/cityapp/scripts/shared/variables/lang)
 MESSAGE_TEXT=~/cityapp/scripts/shared/messages/$LANGUAGE/module_1
 MESSAGE_SENT=~/cityapp/data_to_client
+LANGUAGE=$(cat ~/cityapp/scripts/shared/variables/lang)
+GEOSERVER=~/cityapp/geoserver_data
+GRASS=~/cityapp/grass/global
 MAPSET=module_1
 
 #
@@ -78,7 +79,7 @@ fi
         Request
             case $REQUEST_CONTENT in
                 "yes"|"Yes"|"YES")
-                    Request geojson
+                    Request_Map geojson GEOJSON
                         FRESH=$REQUEST_PATH
                         Add_Vector $FRESH m1_from_points
                         Gpkg_Out m1_from_points m1_from_points
@@ -98,7 +99,7 @@ fi
             case $REQUEST_CONTENT in
                 "yes"|"Yes"|"YES")
                     VIA=0
-                    Request geojson
+                    Request_Map geojson GEOJSON
                         FRESH=$REQUEST_PATH
                         Add_Vector $FRESH m1_via_points
                         Gpkg_Out m1_via_points m1_via_points
@@ -119,7 +120,7 @@ fi
             case $REQUEST_CONTENT in
                 "yes"|"Yes"|"YES")
                     TO=0
-                    Request geojson
+                    Request_Map geojson GEOJSON
                         FRESH=$REQUEST_PATH
                         Add_Vector $FRESH m1_to_points
                         Gpkg_Out m1_to_points m1_to_points
@@ -139,7 +140,7 @@ fi
         Request
             case $REQUEST_CONTENT in
                 "yes"|"Yes"|"YES")
-                    Request geojson
+                    Request_Map geojson GEOJSON
                         FRESH=$REQUEST_PATH
                         Add_Vector $FRESH m1_stricken_area
                         Gpkg_Out m1_stricken_area m1_stricken_area

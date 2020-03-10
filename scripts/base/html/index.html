@@ -1,0 +1,517 @@
+<html>
+    <head>
+        <title>Launch</title>        
+        <meta charset="UTF-8">
+        
+        <script type="text/javascript" src="../../../webapp/public/live.js"></script>
+        <script src="../../../webapp/public/lib/leaflet/leaflet.js"></script>
+        <script src="../../../webapp/public/lib/leaflet/leaflet.draw.js"></script>
+
+        <link rel="stylesheet" href="../../../webapp/public/lib/leaflet/leaflet.css" />
+        <link rel="stylesheet" href="../../../webapp/public/lib/leaflet/leaflet.draw.css" />
+        <link rel="shortcut icon" type="image/x-icon" href="../../../webapp/public/lib/leaflet/images/favicon.ico" />
+        
+        <script src="http://code.jquery.com/jquery-latest.js"></script>
+
+        <style>
+            #Help
+                {
+                position: fixed;
+                font-size:12;
+                width: 4%;
+                height: 4.5%;
+                }
+            
+            #Leave_Session
+                {
+                position: fixed;
+                font-size:12;
+                width: 4%;
+                height: 4.5%;
+                left: 4.5%;
+                }
+            
+            #Exit_All
+                {
+                position: fixed;
+                font-size:12;
+                width: 4%;
+                height: 4.5%;
+                left: 9%;
+                }
+                
+            #Textarea
+                {
+                position: absolute;
+                border: 1px solid red;
+                font-size:10;
+                background-color: #fffdaa;
+                width: 15%;
+                height: 19%;
+                top: 5%;
+                border-radius: 6px;
+                padding:0.25%;
+                }
+                
+            #Buttonarea
+                {
+                position: absolute;
+                width: 15%;
+                height: 3.5%;
+                top: 25%;
+                border-radius: 6px;
+                padding:0.25%;
+                }
+                
+            #Lists
+                {
+                position: absolute;
+                border: 1px solid red;
+                background-color: #fffdaa;
+                font-size:10px;
+                width: 15%;
+                height: 30%;
+                top: 30%;
+                border-radius: 6px;
+                padding:6px;
+                padding:0.25%;
+                }
+            
+            #Launch
+                {
+                position: absolute;
+                border: 1px solid darkgreen;
+                background-color: #fffdfb;
+                width: 15%;
+                height: 6%;
+                top: 62%;
+                border-radius: 6px;
+                padding:0.25%;
+                }
+            
+            #Display
+                {
+                position: absolute;
+                border: 1px solid darkgreen;
+                background-color: #fffdfb;
+                width: 15%;
+                height: 6%;
+                top: 70%;
+                border-radius: 6px;
+                padding:0.25%;
+                }
+                
+            #Query
+                {
+                position: absolute;
+                border: 1px solid darkgreen;
+                background-color: #fffdfb;
+                width: 15%;
+                height: 6%;
+                top: 78%;
+                border-radius: 6px;
+                padding:0.25%;
+                }
+                
+            #Addition
+                {
+                position: absolute;
+                border: 1px solid darkgreen;
+                background-color: #fffdfb;
+                width: 15%;
+                height: 11.5%;
+                top: 86.5%;
+                border-radius: 6px;
+                padding:0.25%;
+                }
+                
+            #Map
+                {
+                position: fixed;
+                border: 1px solid darkgreen;
+                background-color: #fffdfb;
+                width: 46%;
+                left:16.5%;
+                height: 98.5%;
+                top: 0.5%;
+                border-radius: 6px;
+                overflow-y:none;
+                overflow-x:none;
+                }
+
+            #Info
+                {
+                position:absolute;
+                border: 1px solid darkgreen;
+                background-color: #fffdfb;
+                width: 36.5%;
+                left:63%;
+                height: 98.5%;
+                top: 0.5%;
+                font-size:small;
+                border-radius: 6px;
+                overflow-y:none;
+                overflow-x:none;
+                }
+                
+            #Launch_menu
+                {
+                position: relative;
+                padding: 5px;
+                font-size: 10px;
+                text-align: center;
+                cursor: pointer;
+                outline: none;
+                color: #006600;
+                background-color: #ffffaa;
+                border: 1px solid #006600;
+                border-radius: 6px;
+                }
+                
+            #Display_menu
+                {
+                position: relative;
+                padding: 5px;
+                font-size: 10px;
+                text-align: center;
+                cursor: pointer;
+                outline: none;
+                color: #006600;
+                background-color: #ffffaa;
+                border: 1px solid #006600;
+                border-radius: 6px;
+                }
+                
+            #Query_menu
+                {
+                position: relative;
+                padding: 5px;
+                font-size: 10px;
+                text-align: center;
+                cursor: pointer;
+                outline: none;
+                color: #006600;
+                background-color: #ffffaa;
+                border: 1px solid #006600;
+                border-radius: 6px;
+                }
+     
+            .button
+                {
+                position: relative;
+                padding: 8px 8px;
+                font-size: 10px;
+                text-align: center;
+                cursor: pointer;
+                outline: none;
+                color: #006600;
+                background-color: #aaffaa;
+                border: 1px solid #006600;
+                border-radius: 16px;
+                left: 6px ;
+                }
+
+            .button:hover
+                {
+                background-color: #ddffdd
+                }
+                
+            .button:active
+                {
+                background-color: #ffffdd;
+                box-shadow: 0 2px #886;
+                transform: translateY(2px);
+                }
+                
+            .help_button
+                {
+                position: fixed;
+                padding: 12px 6px;
+                font-size: 10px;
+                text-align: center;
+                cursor: pointer;
+                outline: none;
+                color: #006600;
+                background-color: #ffffaa;
+                border: 1px solid #666600;
+                border-radius: 24px;
+                left: 16px ;
+                top: 0.5%;
+                }
+
+            .help_button:hover
+                {
+                background-color: #ffff66
+                }
+                
+            .help_button:active
+                {
+                background-color: #ffff66;
+                box-shadow: 0 2px #886;
+                transform: translateY(2px);
+                }
+            .leave_session_button
+                {
+                position: fixed;
+                padding: 12px 6px;
+                font-size: 10px;
+                text-align: center;
+                cursor: pointer;
+                outline: none;
+                color: #ff0000;
+                background-color: #ffaaaa;
+                border: 1px solid #660000;
+                border-radius: 18px;
+                left: 4%;
+                top: 0.5%;
+                }
+
+            .leave_session_button:hover
+                {
+                background-color: #ffff66
+                }
+                
+            .leave_session_button:active
+                {
+                background-color: #ff6666;
+                box-shadow: 0 2px #886;
+                transform: translateY(2px);
+                }
+            .exit_all_button
+                {
+                position: fixed;
+                padding: 12px 6px;
+                font-size: 10px;
+                text-align: center;
+                cursor: pointer;
+                outline: none;
+                color: #ff0000;
+                background-color: #ffaaaa;
+                border: 1px solid #660000;
+                border-radius: 18px;
+                left: 10%;
+                top: 0.5%;
+                }
+
+            .exit_all_button:hover
+                {
+                background-color: #ffff66
+                }
+                
+            .exit_all_button:active
+                {
+                background-color: #ff6666;
+                box-shadow: 0 2px #886;
+                transform: translateY(2px);
+                }
+        </style>
+        
+        <script>
+            $(document).ready(function(){
+                $("#Textarea").load("message.php");
+                setInterval(function() {
+                $("#Textarea").load("message.php");
+                }, 500);
+            });
+        </script>
+        
+    </head>
+    <body>
+        <div id="Help">
+            <br>
+            <a href='#'> <button class="help_button" onclick="saveFile_0();refreshPage()">HELP</button> </a>
+        </div>
+        <div id="Leave_Session">
+            <br>
+            <a href='#'> <button class="leave_session_button" onclick="saveFile_10();refreshPage()">Exit module</button> </a>
+        </div>
+
+        <div id="#Exit_All">
+            <br>
+            <a href='#'> <button class="exit_all_button" onclick="saveFile_11();refreshPage()">STOP ALL</button> </a>
+        </div>
+        
+        
+        <div id="Textarea">
+            <object data="message.php"></object>
+        </div>
+        
+        <div id="Buttonarea">
+            <object data="buttons.html"></object>
+        </div>
+        
+        <div id="Lists">
+            <object data="list"></object>
+        </div>
+        
+        <div id="Launch">
+            <select id="Launch_menu" style="width:90%">
+                <option selected value="">-- Select a module to launch --</option>
+                <option value="location_selector">Define a new selection</option>
+                <option value="add_map">Add a new map to the mapset</option>
+                <option value="module_1">Calculate a time map</option>
+                <option value="module_2">Query a map</option>
+
+            </select><br>
+            <a href='#'> <button class="button" style="top:5px" onclick="saveFile_1(value);refreshPage()">OK</button> </a>
+        </div>
+        
+        
+        <div id="Display">
+            <select id="Display_menu" style="width:90%">
+                <option selected value="">-- Select a map to display --</option>
+                <option value="base_map">Bubaneshwahr thematic maps</option>
+            </select><br>
+            <a href='#'> <button class="button"  style="top:5px" onclick="saveFile_2(value);refreshPage()">OK</button> </a>
+        </div>
+        
+        <div id="Query" >
+             <select id="Query_menu" style="width:90%">
+                <option selected value=""> -- Select a map to query -- </option>
+                <option value="path_to_query_map_1">Map 1</option>
+                <option value="path_to_query_map_2">Map 2</option>
+                <option value="path_to_query_map_3">Map 3</option> 
+            </select><br>
+            <a href='#'> <button class="button"  style="top:5px" onclick="saveFile_3(value);refreshPage()">OK</button> </a>
+        </div>
+        
+        <div id="Addition">
+        </div>
+        
+       
+        <div id='Map'>
+            <object width="100%" height="100%" data="map.html"></object>
+        </div>
+       
+       
+        <div id='Info'>
+            <object width="100%" height="100%"><object>
+        </div>
+        
+        <script>
+            function refreshPage(){
+            window.location.reload();
+            } 
+        </script>
+            
+        
+        <script>
+            
+            var saveFile_0 = () => {
+                // Get the data from each element on the form.
+                const item_0 = document.getElementById('Help');
+                var data = '' +'help' + '\n' ;
+                const textToBLOB = new Blob([data], { type: 'text/plain' });
+                const sFileName = 'help';
+                var newLink = document.createElement("a");
+                newLink.download = sFileName;
+                if (window.webkitURL != null) {
+                        newLink.href = window.webkitURL.createObjectURL(textToBLOB);
+                    }
+                    else {
+                        newLink.href = window.URL.createObjectURL(textToBLOB);
+                        newLink.style.display = "none";
+                        document.body.appendChild(newLink);
+                    }
+                newLink.click(); 
+            }
+            
+            var saveFile_10 = () => {
+                // Get the data from each element on the form.
+                const item_10 = document.getElementById('Leave_Session');
+                var data = '' +'leave_session' + '\n' ;
+                const textToBLOB = new Blob([data], { type: 'text/plain' });
+                const sFileName = 'leave_session';
+                var newLink = document.createElement("a");
+                newLink.download = sFileName;
+                if (window.webkitURL != null) {
+                        newLink.href = window.webkitURL.createObjectURL(textToBLOB);
+                    }
+                    else {
+                        newLink.href = window.URL.createObjectURL(textToBLOB);
+                        newLink.style.display = "none";
+                        document.body.appendChild(newLink);
+                    }
+                newLink.click(); 
+            }
+        
+            var saveFile_11 = () => {
+                // Get the data from each element on the form.
+                const item_11 = document.getElementById('Exit_All');
+                var data = '' +'exit_all' + '\n' ;
+                const textToBLOB = new Blob([data], { type: 'text/plain' });
+                const sFileName = 'EXIT';
+                var newLink = document.createElement("a");
+                newLink.download = sFileName;
+                if (window.webkitURL != null) {
+                        newLink.href = window.webkitURL.createObjectURL(textToBLOB);
+                    }
+                    else {
+                        newLink.href = window.URL.createObjectURL(textToBLOB);
+                        newLink.style.display = "none";
+                        document.body.appendChild(newLink);
+                    }
+                newLink.click(); 
+            } 
+        
+        
+            var saveFile_1 = () => {
+                // Get the data from each element on the form.
+                const item_1 = document.getElementById('Launch_menu');
+                var data = '' +item_1.value + '\n' ;
+                const textToBLOB = new Blob([data], { type: 'text/plain' });
+                const sFileName = 'launch';
+                var newLink = document.createElement("a");
+                newLink.download = sFileName;
+                if (window.webkitURL != null) {
+                        newLink.href = window.webkitURL.createObjectURL(textToBLOB);
+                    }
+                    else {
+                        newLink.href = window.URL.createObjectURL(textToBLOB);
+                        newLink.style.display = "none";
+                        document.body.appendChild(newLink);
+                    }
+                newLink.click(); 
+            }            
+            
+            var saveFile_2 = () => {
+                // Get the data from each element on the form.
+                const item_2 = document.getElementById('Display_menu');
+                var data = '' +item_2.value + '\n' ;
+                const textToBLOB = new Blob([data], { type: 'text/plain' });
+                const sFileName = 'display';
+                var newLink = document.createElement("a");
+                newLink.download = sFileName;
+                if (window.webkitURL != null) {
+                        newLink.href = window.webkitURL.createObjectURL(textToBLOB);
+                    }
+                    else {
+                        newLink.href = window.URL.createObjectURL(textToBLOB);
+                        newLink.style.display = "none";
+                        document.body.appendChild(newLink);
+                    }
+                newLink.click(); 
+            }
+            
+            
+            var saveFile_3 = () => {
+                // Get the data from each element on the form.
+                const item_3 = document.getElementById('Query_menu');
+                var data = '' +item_3.value + '\n' ;
+                const textToBLOB = new Blob([data], { type: 'text/plain' });
+                const sFileName = 'query';
+                var newLink = document.createElement("a");
+                newLink.download = sFileName;
+                if (window.webkitURL != null) {
+                        newLink.href = window.webkitURL.createObjectURL(textToBLOB);
+                    }
+                    else {
+                        newLink.href = window.URL.createObjectURL(textToBLOB);
+                        newLink.style.display = "none";
+                        document.body.appendChild(newLink);
+                    }
+                newLink.click(); 
+            }
+        </script>
+    </body>
+</html>

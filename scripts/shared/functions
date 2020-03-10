@@ -1,7 +1,7 @@
-# version 1.1
+# version 1.21
 # CityApp function
 # This file contains functions of CityApp bash scripts. Funcions are in alphabetical order, A short description can be found for each function.
-# 2020. február 11.
+# 2020. március 6.
 # Author: BUGYA Titusz, CityScienceLab -- Hamburg, Germany
 
 #
@@ -11,24 +11,40 @@
 Add_Osm ()
     #This is to import an Open street map vector map file. Parameters: {filename to import,layer name, output filename for the GRASS}
     {
+    echo "Add_Osm" > $VARIABLES/still_working
     grass -f $GRASS/$MAPSET --exec v.in.ogr -o input=$1 layer=$2 output=$3 --overwrite --quiet
+    rm -f $VARIABLES/still_working
+    }
+
+Add_Raster ()
+    {
+    #This is to import geotiff raster maps. Parameters: 
+    echo "Add_Raster" > $VARIABLES/still_working
+    grass -f $GRASS/$MAPSET --exec r.import input=$1 output=$2 --overwrite
+    # grass -f $GRASS/$MAPSET --exec r.in.gdal -o -l -a -r input=$1 output=$2 --overwrite
+    rm -f $VARIABLES/still_working
     }
 
 Add_Vector ()
     #This is to import a vector map file. Parameters: {filename to import,output filename for the GRASS}
     {
-    grass -f $GRASS/$MAPSET --exec v.in.ogr -o input=$1 output=$2 --overwrite --quiet
+    echo "Add_Vector" > $VARIABLES/still_working
+    grass -f $GRASS/$MAPSET --exec v.import input=$1 output=$2 --overwrite
+#    grass -f $GRASS/$MAPSET --exec v.in.ogr -o input=$1 output=$2 --overwrite
+    rm -f $VARIABLES/still_working
     }
     
 Area_To_Raster ()
     # This function is to convert vector area into raster format. Using this, check first the resolution of your GRASS region! Parameters: {vector to convert, raster output name, sql statement, attribute column to get raster values} If the last two parameter is 0, only the input name and output name will considered: a simple vector-raster conversion. In this case GRASS will convert vector input to raster output, and each raster will have the same value: 1.
     {
+    echo "Area_To_Raster" > $VARIABLES/still_working
     if [ $3 -eq 0 ] && [ $4 -eq 0 ]
         then
             grass -f $GRASS/$MAPSET --exec v.to.rast input=$1 type=area output=$2 val=1 --overwrite --quiet
         else
             grass -f $GRASS/$MAPSET --exec v.to.rast input=$1 type=area output=$2 where=$3 use=attr attribute_column=$4 --overwrite --quiet
     fi
+    rm -f $VARIABLES/still_working
     }
     
 Centroid_Query_Raster ()
@@ -46,15 +62,56 @@ Centroid_To_Raster ()
         else
             grass -f $GRASS/$MAPSET --exec v.to.rast input=$1 type=centroid output=$2 where=$3 use=attr attribute_column=$4 --overwrite --quiet
     fi
+    touch $VARIABLES/still_working
+    echo "Add_Osm" > $VARIABLES/still_working
     }
     
 Close_Process ()
     {
-    # This is to clean properly after finishing the module.
-    rm -f $BROWSER/*
-    rm -f $MESSAGE_SENT/*
-    mv $BROWSER/.launch_locked $BROWSER/.launch_open
-    rm -f $MODULE/temp_*
+    # This is to clean everything properly after finishing the module.
+
+    if [ -e $VARIABLES/subprocess ]
+        then
+            rm -f $MODULE/temp_*
+            rm -f $MESSAGE_SENT/*
+            rm $BROWSER/leave_session
+            rm -f $BROWSER/request
+    fi
+    
+    if [ -e $VARIABLES/still_working ]
+        then
+            inotifywait -e delete $VARIABLES/still_working
+                            
+            rm -f $MODULE/temp_*
+            rm -f $MESSAGE_SENT/*
+            rm $VARIABLES/launch_locked
+            rm $BROWSER/leave_session
+            rm -f $BROWSER/request
+            
+            PS_ID=$(ps a | grep $MODULE_NAME | sed s'/[a-z _]//'g | cut -d"/" -f1)
+            echo "--------------------"
+            echo "Now killing process"
+            echo "Pocess: -- $MODULE_NAME -- killed"
+            echo "--------------------"
+            kill -9 $PS_ID
+
+            touch $BROWSER/launcher_run
+        else
+            rm -f $MODULE/temp_*
+            rm -f $MESSAGE_SENT/*
+            rm $VARIABLES/launch_locked
+            rm $BROWSER/leave_session
+            rm -f $BROWSER/request
+            
+            PS_ID=$(ps a | grep $MODULE_NAME | sed s'/[a-z _]//'g | cut -d"/" -f1)
+            echo "--------------------"
+            echo "Now killing process"
+            echo "Pocess: -- $MODULE_NAME -- killed"
+            echo "--------------------"
+            kill -9 $PS_ID
+
+            touch $BROWSER/launcher_run
+    fi
     }
     
 Count_Lines ()
@@ -110,30 +167,103 @@ Point_To_Raster ()
     }
     
 Request ()
-    # This function wait until a new file is written in $BROWSER, the load and pass it to the next process. Parameter: {request type, maximum 4 of them (this is the filename or extension we are waiting for -- Default value: request}.Two output: FRESH_FILE: the name of the file, FRESH_PATH: the full path and the filename.
-    # We have to be sure reading only the appropriate file. Despite the first the is "rm -f", have to manage if the new file is not  the expected one.
-    # Therefore have to check the fiename AND its content too.
     {
-    #rm -f $BROWSER/*
-    inotifywait -e close_write $BROWSER
-        if [ -z "$1" ]
-            then
-                REQUEST_FILE=""
-                while  [ -z $REQUEST_FILE ];do
-                    REQUEST_FILE=$(ls -ct1 $BROWSER/ | head -n1 | grep request)
-                done
-                REQUEST_PATH=$BROWSER/$(ls -ct1 $BROWSER/ | head -n1)
+    until [ "$REQUEST_FILE" == "request" -o  "$REQUEST_FILE" == "leave_session" ]; do
+       # REQUEST_FILE=$(ls -ct1 $BROWSER | head -n1)
+        REQUEST_FILE=$(inotifywait -e close_write --format %f $BROWSER)
+        case $REQUEST_FILE in
+            "leave_session")
+                if [ !-e $VARIABLES/subprocess ]
+                    then
+                        Close_Process
+                        exit
+                fi
+                ;;
+            "request")
+                FRESH_FILE=$REQUEST_FILE
+                FRESH_PATH=$BROWSER/$REQUEST_FILE
+                REQUEST_PATH=$BROWSER/$REQUEST_FILE
                 REQUEST_CONTENT=$(cat $REQUEST_PATH)
-            else
-                REQUEST_FILE="" 
-                while  [ -z $REQUEST_FILE ];do
-                    REQUEST_FILE=$(ls -ct1 $BROWSER/ | head -n1 | grep $1)
-                done
-                REQUEST_PATH=$BROWSER/$(ls -ct1 $BROWSER/ | head -n1)
-                REQUEST_CONTENT=$(cat $REQUEST_PATH)
-        fi
+                echo "-----------------"
+                echo $REQUEST_CONTENT
+                echo "-----------------"
+                ;;
+        esac
+    done
+    # rm -f $BROWSER/*
     }
     
+Request_Map ()
+    # Request map is waiting for a map as input file. The map type is user defined. Therefore thera are options to select import file type. Possible options are: osm,geojson,gpkg,tif (tif, tiff, gtif, gtiff are also laoowed to use). The order has no importance nor the number of options: it is allowes do give only one option or all the four.
+    {
+    until [ "$CHECK" == "ok" ];do
+        REQUEST_FILE=$(inotifywait -e create --format %f $BROWSER)
+        if [[ "$REQUEST_FILE" =~ "."$1 ]] || [[ "$REQUEST_FILE" =~ "."$2 ]] || [[ "$REQUEST_FILE" =~ "."$3 ]] || [[ "$REQUEST_FILE" =~ "."$4 ]] || [[ "$REQUEST_FILE" =~ "."$5 ]] || [[ "$REQUEST_FILE" =~ "."$6 ]] || [[ "$REQUEST_FILE" =~ "."$7 ]] || [[ "$REQUEST_FILE" =~ "."$8 ]] || [[ "$REQUEST_FILE" =~ "."$9 ]] || [[ "$REQUEST_FILE" =~ "."$10 ]] || [[ "$REQUEST_FILE" =~ "."$11 ]] || [[ "$REQUEST_FILE" =~ "."$12 ]] 
+            then
+            CHECK="ok"
+            FRESH_FILE=$REQUEST_FILE
+            FRESH_PATH=$BROWSER/$REQUEST_FILE
+            REQUEST_PATH=$BROWSER/$REQUEST_FILE
+            #REQUEST_CONTENT=$(cat $REQUEST_FILE)
+            #rm -f $BROWSER/*
+        fi
+        
+        if [ "$REQUEST_FILE" == "leave_session" ]
+            then
+                CHECK="ok"
+                Close_Process
+                exit
+        fi
+    done
+    }
+
+Request_Geojson ()
+    {
+    until [ "$CHECK" == "ok" ];do
+        REQUEST_FILE=$(inotifywait -e create --format %f $BROWSER)
+        if [[ "$REQUEST_FILE" =~ ".geojson" ]]
+            then
+            CHECK="ok"
+            FRESH_FILE=$REQUEST_FILE
+            FRESH_PATH=$BROWSER/$REQUEST_FILE
+            REQUEST_PATH=$BROWSER/$REQUEST_FILE
+            #REQUEST_CONTENT=$(cat $REQUEST_FILE)
+            #rm -f $BROWSER/*
+        fi
+        
+        if [ "$REQUEST_FILE" == "leave_session" ]
+            then
+                CHECK="ok"
+                Close_Process
+                exit
+        fi
+    done
+    }
+
+Request_Tif ()
+    {
+    until [ "$CHECK" == "ok" ];do
+        REQUEST_FILE=$(inotifywait -e create --format %f $BROWSER)
+        if [[ "$REQUEST_FILE" =~ ".tif" ]] || [[ "$REQUEST_FILE" =~ ".gtif" ]] || [[ "$REQUEST_FILE" =~ ".tiff" ]]
+            then
+            CHECK="ok"
+            FRESH_FILE=$REQUEST_FILE
+            FRESH_PATH=$BROWSER/$REQUEST_FILE
+            REQUEST_PATH=$BROWSER/$REQUEST_FILE
+            #REQUEST_CONTENT=$(cat $REQUEST_FILE)
+            #rm -f $BROWSER/*
+        fi
+        
+        if [ "$REQUEST_FILE" == "leave_session" ]
+            then
+                CHECK="ok"
+                Close_Process
+                exit
+        fi
+    done
+    }
+
+        
 Select_Fresh ()
     #This function is to select the last (freshest) file from data_from_browser directory. No parameters
     {
@@ -146,7 +276,7 @@ Send_List ()
     echo $(cat $MESSAGE_TEXT | head -n$1 | tail -n1) > $MESSAGE_SENT/list.$2
     }
 
- Send_Message ()
+Send_Message ()
     # Encode from simple text to JSON. Parameters: {
     # $1 -- type "m": message only, a single line; "s": simple list, long format "l": complex list with a user dialogue message in the first line;
     # $2 -- CityApp message (order number of a single line in the message file of current module);
@@ -164,6 +294,7 @@ Send_List ()
     # $7 -- previously it was $4 -- list file: this is a list have to transform ito JSON format for the Browser;  }
 
     {
+    rm -f $MESSAGE_SENT/*
     case $1 in
         "m")
             echo "{" > $MODULE/temp_message

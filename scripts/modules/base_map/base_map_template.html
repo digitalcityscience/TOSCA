@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Bubaneshwar themetic maps</title>
+
+        <meta charset="UTF-8">
+
+        <script src="../../../webapp/public/lib/leaflet/leaflet.js"></script>
+        <script src="../../../webapp/public/lib/leaflet/leaflet.draw.js"></script>
+
+        <link rel="stylesheet" href="../../../webapp/public/lib/leaflet/leaflet.css" />
+        <link rel="stylesheet" href="../../../webapp/public/lib/leaflet/leaflet.draw.css" />
+        <link rel="shortcut icon" type="image/x-icon" href="../../../webapp/public/lib/leaflet/images/favicon.ico" />
+
+        <style>
+            html,
+            body {
+                height: 99%;
+                margin: 2px;
+            }
+
+            #map {
+                background-color: #fefefe;
+                height: 100%;
+                width: 100%;
+                margin: 1px;
+                border: 0px solid #666666;
+            }
+
+            #saving {
+                position: absolute;
+                top: 300px;
+                left: 20px;
+                z-index: 10000;
+            }
+            
+            #close {
+                position: absolute;
+                top: 400px;
+                left: 20px;
+                z-index: 10000;
+            }
+            
+            .button1 {
+                padding: 12px 5px;
+                font-size: 10 px;
+                text-align: center;
+                cursor: pointer;
+                outline: none;
+                color: #006600;
+                background-color: #aaffaa;
+                border: 1px solid #006600;
+                border-radius: 22px;
+            }
+
+            .button1:hover {
+                background-color: #ddffdd
+            }
+
+            .button1:active {
+                background-color: #ffffdd;
+                box-shadow: 0 2px #886;
+                transform: translateY(2px);
+            }
+        </style>
+    </head>
+    <body>
+
+        <div id='map'></div>
+        <a href='#' id='saving'><button class="button1">Save</button></a>
+        
+        <script>
+        
+            Bbswr_Metropolitan_Area = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+                layers: 'vector:bubaneshwar_metropolitan_area',
+                format: 'image/png',
+                transparent: true,
+                attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+                maxZoom: 20,
+                minZoom: 1,
+            });
+            
+            Bbswr_City_Zone = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+                    layers: 'vector:bubaneshwar_city_zone',
+                    format: 'image/png',
+                    transparent: true,
+                    attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+                    maxZoom: 20,
+                    minZoom: 1,
+                });
+            Dem = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/raster/wms/", {
+                    layers: 'raster:dem',
+                    format: 'image/png',
+                    transparent: false,
+                    attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+                    maxZoom: 20,
+                    minZoom: 1,
+                });
+
+            Surface_Water = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+                    layers: 'vector:bbswr_surface_waters',
+                    format: 'image/png',
+                    transparent: true,
+                    attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+                    maxZoom: 20,
+                    minZoom: 1,
+                });
+
+            Selection = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+                    layers: 'vector:selection',
+                    format: 'image/png',
+                    transparent: true,
+                    attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+                    maxZoom: 20,
+                    minZoom: 1,
+                });
+            Roads = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+                    layers: 'vector:lines_osm',
+                    format: 'image/png',
+                    transparent: true,
+                    attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+                    maxZoom: 20,
+                    minZoom: 1,
+                });
+                
+            Buildings = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+                    layers: 'vector:polygons_osm',
+                    format: 'image/png',
+                    transparent: true,
+                    attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+                    maxZoom: 20,
+                    minZoom: 1,
+                });
+    
+            Slum_Areas = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+                    layers: 'vector:bbswr_slums',
+                    format: 'image/png',
+                    transparent: true,
+                    attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+                    maxZoom: 20,
+                    minZoom: 1,
+                });
+            Slum_Total_Population = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+                    layers: 'vector:bbswr_slum_total_population_households',
+                    format: 'image/png',
+                    transparent: true,
+                    attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+                    maxZoom: 20,
+                    minZoom: 1,
+                });
+                
+            Female_Population = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+                    layers: 'vector:bbswr_slum_female_population_households',
+                    format: 'image/png',
+                    transparent: true,
+                    attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+                    maxZoom: 20,
+                    minZoom: 1,
+                });
+                
+            Male_Population = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+                    layers: 'vector:bbswr_slum_male_population_households',
+                    format: 'image/png',
+                    transparent: true,
+                    attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+                    maxZoom: 20,
+                    minZoom: 1,
+                });
+            Empty_Place_Types = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+                    layers: 'vector:bbswr_empty_place_types',
+                    format: 'image/png',
+                    transparent: true,
+                    attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+                    maxZoom: 20,
+                    minZoom: 1,
+                });
+                
+            Empty_Place_Category= L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+                    layers: 'vector:bbswr_empty_places_category',
+                    format: 'image/png',
+                    transparent: true,
+                    attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+                    maxZoom: 20,
+                    minZoom: 1,
+                });
+                
+            Land_Ownership = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+                    layers: 'vector:bbswr_land_ownership',
+                    format: 'image/png',
+                    transparent: true,
+                    attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+                    maxZoom: 20,
+                    minZoom: 1,
+                });
+                
+            Slums_Empty_Ownership = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+                    layers: 'vector:empty_places_ownership',
+                    format: 'image/png',
+                    transparent: true,
+                    attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+                    maxZoom: 20,
+                    minZoom: 1,
+                });
+                
+            Slum_Ownerhip = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+                    layers: '	vector:bbswr_slum_ownership',
+                    format: 'image/png',
+                    transparent: true,
+                    attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+                    maxZoom: 20,
+                    minZoom: 1,
+                });
+                
+            Slum_Religions = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+                    layers: 'vector:bbswr_slum_religions',
+                    format: 'image/png',
+                    transparent: true,
+                    attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+                    maxZoom: 20,
+                    minZoom: 1,
+                });
+                
+            Monthly_Incomes = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+                    layers: 'vector:bbswr_slum_average_incomes',
+                    format: 'image/png',
+                    transparent: true,
+                    attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+                    maxZoom: 20,
+                    minZoom: 1,
+                });            
+                
+            Animals = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+                    layers: 'vector:bbswr_slum_animals',
+                    format: 'image/png',
+                    transparent: true,
+                    attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+                    maxZoom: 20,
+                    minZoom: 1,
+                });
+                
+            Slums_Bathrooms = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+                    layers: 'vector:bbswr_slum_bathrooms',
+                    format: 'image/png',
+                    transparent: true,
+                    attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+                    maxZoom: 20,
+                    minZoom: 1,
+                });
+                
+            Slum_Tapwater = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+                    layers: 'vector:bbswr_slum_tapwater',
+                    format: 'image/png',
+                    transparent: true,
+                    attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+                    maxZoom: 20,
+                    minZoom: 1,
+                });
+                
+            Slum_Toilettes = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+                    layers: 'vector:bbswr_slum_toilettes',
+                    format: 'image/png',
+                    transparent: true,
+                    attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+                    maxZoom: 20,
+                    minZoom: 1,
+                });
+            Query_Area_1 = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+                    layers: 'vector:query_area_1',
+                    format: 'image/png',
+                    transparent: true,
+                    attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+                    maxZoom: 20,
+                    minZoom: 3,
+                });
+                
+            Query_Area_2 = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+                    layers: 'vector:query_area_2',
+                    format: 'image/png',
+                    transparent: true,
+                    attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+                    maxZoom: 20,
+                    minZoom: 3,
+                });
+                
+            Stricken_Area = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+                    layers: 'vector:m1_stricken_area',
+                    format: 'image/png',
+                    transparent: true,
+                    attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+                    maxZoom: 20,
+                    minZoom: 3,
+                });
+                            
+            TimeMap = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/raster/wms/", {
+                    layers: 'raster:m1_time_map',
+                    format: 'image/png',
+                    transparent: true,
+                    attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+                    maxZoom: 20,
+                    minZoom: 1,
+                });
+                
+            TimeMapInterpolated = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/raster/wms/", {
+                    layers: 'raster:m1_time_map_interpolated',
+                    format: 'image/png',
+                    transparent: true,
+                    attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+                    maxZoom: 20,
+                    minZoom: 1,
+                });
+            
+            FromPoints = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+                    layers: 'vector:m1_from_points',
+                    format: 'image/png',
+                    transparent: true,
+                    attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+                    maxZoom: 20,
+                    minZoom: 3,
+                });
+                
+            ViaPoints = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+                    layers: 'vector:m1_via_points',
+                    format: 'image/png',
+                    transparent: true,
+                    attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+                    maxZoom: 20,
+                    minZoom: 3,
+                });
+                
+            ToPoints = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+                    layers: 'vector:m1_to_points',
+                    format: 'image/png',
+                    transparent: true,
+                    attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+                    maxZoom: 20,
+                    minZoom: 3,
+                });
+            Query_Result_A = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+                    layers: 'vector:query_result_1',
+                    format: 'image/png',
+                    transparent: true,
+                    attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+                    maxZoom: 20,
+                    minZoom: 1,
+                });
+                
+            Query_Result_B = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+                    layers: 'vector:query_result_2',
+                    format: 'image/png',
+                    transparent: true,
+                    attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+                    maxZoom: 20,
+                    minZoom: 1,
+                });
+                
+            Query_Result_C = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+                    layers: 'vector:query_result_3',
+                    format: 'image/png',
+                    transparent: true,
+                    attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+                    maxZoom: 20,
+                    minZoom: 1,
+                });
+            
+            Result_A = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/raster/wms/", {
+                    layers: 'raster:raster_result_1',
+                    format: 'image/png',
+                    transparent: true,
+                    attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+                    maxZoom: 20,
+                    minZoom: 1,
+                });
+                
+            Result_B = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/raster/wms/", {
+                    layers: 'raster:raster_result_2',
+                    format: 'image/png',
+                    transparent: true,
+                    attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+                    maxZoom: 20,
+                    minZoom: 1,
+                });
+                
+            Result_C = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/raster/wms/", {
+                    layers: 'raster:raster_result_3',
+                    format: 'image/png',
+                    transparent: true,
+                    attribution: "<a href='https://www.hcu-hamburg.de/research/citysciencelab/?L=1' target=new>HCU CSL</a>",
+                    maxZoom: 20,
+                    minZoom: 1,
+                });
+    
+/* Marker line, do not delete this line and the next line */
+replacethisline
+    
+            L.control.layers({
+            },
+                {
+                    "Bubaneshwar metropolitan area":Bbswr_Metropolitan_Area,
+                    "Bubaneshwar city zone":Bbswr_City_Zone,
+                    "Terrain":Dem,
+                    "Surface waters":Surface_Water,
+                    "Selected part of the city": Selection,
+                    "Roads": Roads,
+                    "Buildings": Buildings,
+                    "Slums of Bubaneshwar":Slum_Areas,
+                    "Total population by households":Slum_Total_Population,
+                    "Female habitanst by households":Female_Population,
+                    "Male habitanst by households":Male_Population,
+                    "Open/Vacant empty places":Empty_Place_Types,
+                    "Dry/Green empty places ":Empty_Place_Category,
+                    "Land ownerhipin Bubaneshwar":Land_Ownership,
+                    "Ownership of empty areas":Slums_Empty_Ownership,
+                    "Ownerhips of slum houses":Slum_Ownerhip,
+                    "Religions by households":Slum_Religions,
+                    "Monthly average incomes per household":Monthly_Incomes,
+                    "Household with/without livestocks":Animals,
+                    "Bathroom facilities in the slums":Slums_Bathrooms,
+                    "Water accessibility in slums":Slum_Tapwater,
+                    "Toilette facilities in the slums":Slum_Toilettes,
+                    "Query area 1": Query_Area_1,
+                    "Query area 2": Query_Area_2,
+                    "Stricken area":Stricken_Area,
+                    "Road-level time map": TimeMap,
+                    "Interpolated time map": TimeMapInterpolated,
+                    "From-points":FromPoints,
+                    "Via-points":ViaPoints,
+                    "To-points":ToPoints,
+                    "Query_Result_A": Query_Result_A,
+                    "Query_Result_B": Query_Result_B,
+                    "Query_Result_C": Query_Result_C,
+                    "Result A": Result_A,
+                    "Result B": Result_B,
+                    "Result C": Result_C, 
+                    "Drawing": drawnItems
+                },
+                
+            /* -----------------------------------------------------------*/
+            
+                { position: 'topright', collapsed: true }).addTo(map);
+
+                map.addControl(new L.Control.Draw
+                ({
+                    edit: {
+                        featureGroup: drawnItems,
+                        poly: { allowIntersection: false }
+                    },
+                    draw: {
+                        polygon: {
+                            allowIntersection: false,
+                            showArea: true,
+                            fill: '#FFFFFF',
+                        },
+                        polyline: false,
+                        polygon: true,
+                        rectangle: false,
+                        circle: false,
+                        marker: false,
+                        circlemarker: true,
+                    }
+                }));
+
+            /*----- Save drawing -----------------------------------------*/
+
+            var featureGroup = L.featureGroup().addTo(map);
+            map.on('draw:created', function (saving_draw) {
+                /* Creating a new item (polygon, line ... ) will added to the feature group */
+                featureGroup.addLayer(saving_draw.layer);
+            });
+
+            document.getElementById('saving').onclick = function (saving_draw) {
+                /*  making a GeoJson from featureGroup */
+                var data = featureGroup.toGeoJSON();
+
+                /* Convert data to GeoJson string*/
+                var convertedData = 'text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(data));
+                /* saving */
+                document.getElementById('saving').setAttribute('href', 'data:' + convertedData);
+                document.getElementById('saving').setAttribute('download', 'selection_1.geojson');
+            }
+
+            /*------------------------------------------------*/
+            map.on(L.Draw.Event.CREATED, function (event) {
+                var layer = event.layer;
+                drawnItems.addLayer(layer);
+            });
+
+            /* scale bar */
+            L.control.scale({ maxWidth: 300 }).addTo(map);
+
+            /* north arrow */
+            var north = L.control({ position: "bottomright" });
+            north.onAdd = function (map) {
+
+            var div = L.DomUtil.create("div", "info legend");
+            div.innerHTML = '<img src="../../../webapp/public/images/north.png" width="50%">';
+            return div;
+            }; north.addTo(map);
+            
+        </script>
+    </body>
+</html>
