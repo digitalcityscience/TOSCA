@@ -48,8 +48,6 @@ html
             option(value='path_to_display_map_2') Map 2
             option(value='path_to_display_map_3') Map 3
 
-          //- a: button(class='button' onclick='display()') Select
-
         div(id='Query' class='card')
           p Select a map to query
           select(id='Query_menu' class='select_menu')
@@ -58,55 +56,12 @@ html
             option(value='path_to_query_map_2') Map 2
             option(value='path_to_query_map_3') Map 3
 
-          //- a: button(class='button' onclick='query()') Select
-
         div(id='Module_description' class='card')
 
       div(id='Map_container' class='card')
         include ../map/index.pug
 
       div(id='Info' class='card')
-
-    //- A modal with an error message
-    div(id='errorModal' class='modal fade' tabindex='-1' role='dialog')
-      div(class='modal-dialog' role='document')
-        div(class='modal-content')
-          div(class='modal-body')
-            p(class='modal-body-text') Error message goes here.
-          div(class='modal-footer')
-            button(type='button' class='btn btn-primary' data-dismiss='modal' onclick='reply(\'ok\')') OK
-
-    //- A modal with a question
-    div(id='yesNoModal' class='modal fade' tabindex='-1' role='dialog')
-      div(class='modal-dialog' role='document')
-        div(class='modal-content')
-          div(class='modal-body')
-            p(class='modal-body-text') Question goes here.
-          div(class='modal-footer')
-            button(type='button' class='btn btn-primary' data-dismiss='modal' onclick='reply(\'yes\')') Yes
-            button(type='button' class='btn btn-secondary' data-dismiss='modal' onclick='reply(\'no\')') No
-
-    //- A modal with an input field
-    div(id='inputModal' class='modal fade' tabindex='-1' role='dialog')
-      div(class='modal-dialog' role='document')
-        div(class='modal-content')
-          form(id='inputForm')
-            div(class='modal-body')
-              p(class='modal-body-text') Description goes here.
-              p(class='modal-body-input'): input(id='inputModalInput' type='text')
-            div(class='modal-footer')
-
-    //- A modal with a file upload
-    div(id='fileUploadModal' class='modal fade' tabindex='-1' role='dialog')
-      div(class='modal-dialog' role='document')
-        div(class='modal-content')
-          form(id='fileUploadForm' enctype='multipart/form-data')
-            div(class='modal-body')
-              p(class='modal-body-text') Description goes here.
-              p(class='modal-body-input'): input(id='fileUploadModalInput' type='file' name='file')
-            div(class='modal-footer')
-
-    div(id='alert-anchor')
 
     script.
       const geoserverUrl = '#{geoserverUrl}';

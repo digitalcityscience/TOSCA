@@ -49,8 +49,7 @@ app.get('/', (req, res) => {
 
 // request to launch a module
 app.post('/launch', urlencodedParser, async (req, res, next) => {
-  console.log('launch: ' + req.body.module)
-  writeMessageToFile('launch', req.body.module)
+  writeMessageToFile('launch', req.body)
 
   try {
     const response = await readMessageFromFile(2000)
@@ -62,8 +61,7 @@ app.post('/launch', urlencodedParser, async (req, res, next) => {
 
 // request to display a map
 app.post('/display', urlencodedParser, async (req, res, next) => {
-  console.log('display: ' + req.body.map)
-  writeMessageToFile('display', req.body.map)
+  writeMessageToFile('display', req.body)
 
   try {
     const response = await readMessageFromFile(2000)
@@ -75,8 +73,7 @@ app.post('/display', urlencodedParser, async (req, res, next) => {
 
 // request to query a map
 app.post('/query', urlencodedParser, async (req, res, next) => {
-  console.log('query: ' + req.body.map)
-  writeMessageToFile('query', req.body.map)
+  writeMessageToFile('query', req.body)
 
   try {
     const response = await readMessageFromFile(2000)
@@ -88,7 +85,6 @@ app.post('/query', urlencodedParser, async (req, res, next) => {
 
 // user interaction, e.g. through a modal
 app.post('/request', urlencodedParser, async (req, res, next) => {
-  console.log('request: ' + req.body)
   writeMessageToFile('request', req.body)
 
   try {
@@ -108,7 +104,7 @@ app.post('/file_request', uploadParser.single('file'), async (req, res, next) =>
     writer.close()
 
     try {
-      const response = await readMessageFromFile(2000)
+      const response = await readMessageFromFile(20000)
       res.send(response)
     } catch (e) {
       next('Server is unresponsive')
@@ -122,15 +118,15 @@ app.post('/select_location', uploadParser.single('geojson'), async (req, res, ne
 
 // request to kill the app
 app.post('/exit', async () => {
-  console.log('EXIT')
-  writeMessageToFile('request_EXIT')
+  writeMessageToFile('EXIT', { msg: 'EXIT' })
 })
 
 
 /*
  * Write a text message to the data_from_browser directory
  */
-function writeMessageToFile(filename, msg) {
+function writeMessageToFile(filename, { msg }) {
+  console.log(`echo "${msg}" > ${filename}\n`)
   fs.writeFileSync(`${dataFromBrowser}/${filename}`, msg, ec)
 }
 
@@ -139,26 +135,33 @@ function writeMessageToFile(filename, msg) {
  */
 async function readMessageFromFile(timeout) {
   return await new Promise((resolve, reject) => {
-    const watcher = fs.watch(dataToClient, {}, (eventType, filename) => {
-      const filepath = `${dataToClient}/${filename}`
-
-      if (eventType === 'change' || eventType === 'rename') {
-        let message
-        try {
-          message = fs.readFileSync(filepath, { encoding: 'utf-8' })
-          fs.unlinkSync(filepath, ec)
-        } catch (e) {
-          console.log(e)
-        }
-        watcher.close()
-        resolve(message)
-      }
-    })
+    let trying = true
 
     setTimeout(() => {
+      trying = false
       watcher.close()
       reject()
-    }, timeout || 60000)
+    }, timeout || 10000)
+
+    const watcher = fs.watch(dataToClient, {}, async (event, filename) => {
+      console.log(event, filename)
+
+      while (trying) {
+        try {
+          const filepath = `${dataToClient}/${filename}`
+          const message = fs.readFileSync(filepath, { encoding: 'utf-8' })
+          // fs.unlinkSync(filepath, ec)
+          trying = false
+          watcher.close()
+          resolve({ message: JSON.parse(message), filename })
+        } catch (e) {
+          await new Promise((_resolve) => setTimeout(() => {
+            console.log(`Error: ${e.code} - trying again …`)
+            _resolve()
+          }, 100))
+        }
+      }
+    })
   })
 }
 

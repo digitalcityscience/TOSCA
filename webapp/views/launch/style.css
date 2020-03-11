@@ -102,13 +102,6 @@ h1 {
   transform: translateY(2px);
 }
 
-#alert-anchor {
-  position: absolute;
-  bottom: 10px;
-  left: 10px;
-  z-index: 2000;
-}
-
-.alert {
-  margin: 10px;
+.modal form {
+  margin-bottom: 0;
 }

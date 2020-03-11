@@ -1,18 +1,43 @@
 /* Incoming */
 
 function handleResponse(json) {
-  let buttons;
+  console.log(json.message)
 
-  switch (json.modalType) {
-    case 'error':
-      $('#errorModal').modal({ backdrop: 'static' });
-      $('#errorModal .modal-body-text').html(json.text);
-      break;
+  const modal = generateModal(json.message.modalType, json.message.text, json.filename)
+  modal.modal({ backdrop: 'static' })
 
-    case 'question':
-      $('#yesNoModal').modal({ backdrop: 'static' });
-      $('#yesNoModal .modal-body-text').html(json.text);
-      break;
+  const buttons = json.message.actions.map(action => {
+    const btn = $(`<button type="button" class="btn btn-primary" data-dismiss="modal"></button>`).text(action);
+    action = action.toLowerCase();
+
+    switch (json.message.modalType) {
+      case 'error':
+      case 'question':
+        btn.click(() => reply({ msg: action }));
+        break;
+      case 'input':
+        if (action === 'yes' || action === 'ok') {
+          const input = modal.find('input')[0];
+          btn.click(() => reply({ msg: input.val() }));
+        }
+        break;
+      case 'upload':
+        if (action === 'yes' || action === 'ok') {
+          btn.click(() => {
+            const form = modal.find('form')[0];
+            const input = modal.find('input')[0];
+            if (input.files.length) {
+              upload(form);
+            }
+          });
+        }
+    }
+    return btn;
+  });
+  modal.find('.modal-footer').append(buttons);
+  return;
+
+  switch (json.message.modalType) {
 
     case 'input':
       $('#inputModal').modal({ backdrop: 'static' });
@@ -23,7 +48,7 @@ function handleResponse(json) {
         let btn = $(`<button type="button" class="btn btn-primary" data-dismiss="modal"></button`).text(action);
 
         if (action.toLowerCase() === 'yes') {
-          btn.click(() => reply($('#inputModalInput').val()));
+          btn.click(() => reply({ msg: $('#inputModalInput').val() }));
         }
         return btn;
       });
@@ -58,17 +83,38 @@ function handleResponse(json) {
   }
 }
 
+function generateModal(modalType, text, id) {
+  const modal = $(`<div class="modal fade show" id="${id}" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <form id="${id}-form" enctype="${modalType === 'upload' ? 'multipart/form-data' : ''}">
+        <div class="modal-body">
+          <p class="modal-body-text">${text}</p>
+        </div>
+        <div class="modal-footer"></div>
+      </form>
+    </div>
+  </div>
+</div>`)
+  if (modalType === 'input') {
+    modal.find('.modal-body').append($(`<p class="modal-body-input"><input id="${id}-input" type="text" /></p>`))
+  } else if (modalType === 'upload') {
+    modal.find('.modal-body').append($(`<p class="modal-body-input"><input id="${id}-input" type="file" name="file" /></p>`))
+  }
+  return modal
+}
+
 /* Outgoing */
 
 function launch(module) {
-  sendMessage('/launch', { module: module });
+  sendMessage('/launch', { msg: module });
 }
 
 function display() {
   // Get the selected item
   const value = document.getElementById('Display_menu').value;
   if (value) {
-    sendMessage('/display', { map: value });
+    sendMessage('/display', { msg: value });
   }
 }
 
@@ -76,7 +122,7 @@ function query() {
   // Get the selected item
   const value = document.getElementById('Query_menu').value;
   if (value) {
-    sendMessage('/query', { map: value });
+    sendMessage('/query', { msg: value });
   }
 }
 
@@ -92,7 +138,7 @@ function sendMessage(target, message) {
   $.ajax({
     type: 'POST',
     url: target,
-    data: JSON.stringify(message || {}),
+    data: message,
     dataType: 'json'
   }).done((data) => {
     handleResponse(data);
