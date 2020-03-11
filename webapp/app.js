@@ -15,6 +15,12 @@ require('pug')
 const app = express()
 const expressPort = 3000
 
+// Middleware
+const bodyParser = require('body-parser')
+const urlencodedParser = bodyParser.urlencoded({ extended: false })
+const multer  = require('multer')
+const uploadParser = multer()
+
 app.listen(expressPort, () => {
   console.log(`GEOSERVER_URL:         ${geoserverUrl}`)
   console.log(`WEBSOCKET_URL:         ${websocketUrl}`)
@@ -42,11 +48,9 @@ app.get('/', (req, res) => {
 })
 
 // request to launch a module
-app.post('/launch', async (req, res, next) => {
-  const message = await readRequestFromClient(req, res)
-
-  console.log('launch: ' + message.module)
-  writeMessageToFile('launch', message.module)
+app.post('/launch', urlencodedParser, async (req, res, next) => {
+  console.log('launch: ' + req.body.module)
+  writeMessageToFile('launch', req.body.module)
 
   try {
     const response = await readMessageFromFile(2000)
@@ -57,11 +61,9 @@ app.post('/launch', async (req, res, next) => {
 })
 
 // request to display a map
-app.post('/display', async (req, res, next) => {
-  const message = await readRequestFromClient(req, res)
-
-  console.log('display: ' + message.map)
-  writeMessageToFile('display', message.map)
+app.post('/display', urlencodedParser, async (req, res, next) => {
+  console.log('display: ' + req.body.map)
+  writeMessageToFile('display', req.body.map)
 
   try {
     const response = await readMessageFromFile(2000)
@@ -72,11 +74,9 @@ app.post('/display', async (req, res, next) => {
 })
 
 // request to query a map
-app.post('/query', async (req, res, next) => {
-  const message = await readRequestFromClient(req, res)
-
-  console.log('query: ' + message.map)
-  writeMessageToFile('query', message.map)
+app.post('/query', urlencodedParser, async (req, res, next) => {
+  console.log('query: ' + req.body.map)
+  writeMessageToFile('query', req.body.map)
 
   try {
     const response = await readMessageFromFile(2000)
@@ -87,11 +87,9 @@ app.post('/query', async (req, res, next) => {
 })
 
 // user interaction, e.g. through a modal
-app.post('/request', async (req, res, next) => {
-  const message = await readRequestFromClient(req, res)
-
-  console.log('request: ' + message)
-  writeMessageToFile('request', message)
+app.post('/request', urlencodedParser, async (req, res, next) => {
+  console.log('request: ' + req.body)
+  writeMessageToFile('request', req.body)
 
   try {
     const response = await readMessageFromFile(2000)
@@ -102,50 +100,32 @@ app.post('/request', async (req, res, next) => {
 })
 
 // file upload
-app.post('/file_request', async (req, res, next) => {
-  const message = await readRequestFromClient(req, res)
+app.post('/file_request', uploadParser.single('file'), async (req, res, next) => {
+  const writer = fs.createWriteStream(`${dataFromBrowser}/${req.file.originalname}`)
+  writer.write(req.file.buffer, async (error) => {
+    if (error) throw error
 
-  console.log('request: ' + message)
-  // TODO: do smth
+    writer.close()
 
-  try {
-    const response = await readMessageFromFile(2000)
-    res.send(response)
-  } catch (e) {
-    next('Server is unresponsive')
-  }
+    try {
+      const response = await readMessageFromFile(2000)
+      res.send(response)
+    } catch (e) {
+      next('Server is unresponsive')
+    }
+  })
 })
 
 // send a GeoJSON
-app.post('/select_location', async (req, res, next) => {
-  const message = await readRequestFromClient(req, res)
-
-  console.log(message)
-  fs.writeFile(`${dataFromBrowser}/selection.geojson`, JSON.stringify(message.data), ec)
+app.post('/select_location', uploadParser.single('geojson'), async (req, res, next) => {
 })
 
 // request to kill the app
-app.post('/exit', async (req, res, next) => {
+app.post('/exit', async () => {
   console.log('EXIT')
   writeMessageToFile('request_EXIT')
 })
 
-/*
- * Request handler
- */
-async function readRequestFromClient(req, res) {
-  let body = ''
-
-  req.on('data', chunk => {
-    body += chunk.toString()
-  })
-
-  return await new Promise((resolve, reject) => {
-    req.on('end', () => {
-      resolve(JSON.parse(body))
-    })
-  })
-}
 
 /*
  * Write a text message to the data_from_browser directory
@@ -160,8 +140,6 @@ function writeMessageToFile(filename, msg) {
 async function readMessageFromFile(timeout) {
   return await new Promise((resolve, reject) => {
     const watcher = fs.watch(dataToClient, {}, (eventType, filename) => {
-      console.log(eventType, filename)
-
       const filepath = `${dataToClient}/${filename}`
 
       if (eventType === 'change' || eventType === 'rename') {
