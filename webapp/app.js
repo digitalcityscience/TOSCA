@@ -17,6 +17,7 @@ const expressPort = 3000
 
 // Middleware
 const bodyParser = require('body-parser')
+const jsonParser = bodyParser.json()
 const urlencodedParser = bodyParser.urlencoded({ extended: false })
 const multer  = require('multer')
 const uploadParser = multer()
@@ -41,15 +42,15 @@ app.get('/', (req, res) => {
   let options = {
     geoserverUrl,
     websocketUrl,
-    lat: 20.291320,
-    lon: 85.817298
+    lat: 53.5,
+    lon: 10
   }
   res.render('launch', options)
 })
 
 // request to launch a module
-app.post('/launch', urlencodedParser, async (req, res, next) => {
-  writeMessageToFile('launch', req.body)
+app.post('/launch', jsonParser, async (req, res, next) => {
+  writeMessageToFile('launch', req.body.launch)
 
   try {
     const response = await readMessageFromFile(2000)
@@ -61,7 +62,7 @@ app.post('/launch', urlencodedParser, async (req, res, next) => {
 
 // request to display a map
 app.post('/display', urlencodedParser, async (req, res, next) => {
-  writeMessageToFile('display', req.body)
+  writeMessageToFile('display', req.body.display)
 
   try {
     const response = await readMessageFromFile(2000)
@@ -73,7 +74,7 @@ app.post('/display', urlencodedParser, async (req, res, next) => {
 
 // request to query a map
 app.post('/query', urlencodedParser, async (req, res, next) => {
-  writeMessageToFile('query', req.body)
+  writeMessageToFile('query', req.body.query)
 
   try {
     const response = await readMessageFromFile(2000)
@@ -113,19 +114,28 @@ app.post('/file_request', uploadParser.single('file'), async (req, res, next) =>
 })
 
 // send a GeoJSON
-app.post('/select_location', uploadParser.single('geojson'), async (req, res, next) => {
+app.post('/select_location', jsonParser, async (req, res, next) => {
+  console.log(req.body)
+  writeMessageToFile('selection.geojson', JSON.stringify(req.body))
+
+  try {
+    const response = await readMessageFromFile(10000)
+    res.send(response)
+  } catch (e) {
+    next('Server is unresponsive')
+  }
 })
 
 // request to kill the app
 app.post('/exit', async () => {
-  writeMessageToFile('EXIT', { msg: 'EXIT' })
+  writeMessageToFile('EXIT', 'EXIT')
 })
 
 
 /*
  * Write a text message to the data_from_browser directory
  */
-function writeMessageToFile(filename, { msg }) {
+function writeMessageToFile(filename, msg) {
   console.log(`echo "${msg}" > ${filename}\n`)
   fs.writeFileSync(`${dataFromBrowser}/${filename}`, msg, ec)
 }

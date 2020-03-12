@@ -123,5 +123,5 @@ function save() {
   /* making a GeoJson from featureGroup */
   var geojson = featureGroup.toGeoJSON();
 
-  sendMessage('/select_location', { data: geojson });
+  sendMessage('/select_location', geojson, true);
 }

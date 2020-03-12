@@ -105,3 +105,14 @@ h1 {
 .modal form {
   margin-bottom: 0;
 }
+
+#alert-anchor {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  z-index: 2000;
+}
+
+.alert {
+  margin: 10px;
+}

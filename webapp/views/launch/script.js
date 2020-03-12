@@ -1,85 +1,59 @@
 /* Incoming */
 
 function handleResponse(json) {
-  console.log(json.message)
+  if (json.filename) {
+    console.log(`Received ${json.filename}`);
+    json.filename = json.filename.replace(/\./g, '_');
+  }
 
-  const modal = generateModal(json.message.modalType, json.message.text, json.filename)
-  modal.modal({ backdrop: 'static' })
+  // All messages end up here, so first the type of message needs to be determined.
+  // - Coordinates
+  if (json.message.lat && json.message.lon) {
+    map.panTo(new L.LatLng(json.message.lat, json.message.lon));
+    return;
+  }
 
-  const buttons = json.message.actions.map(action => {
-    const btn = $(`<button type="button" class="btn btn-primary" data-dismiss="modal"></button>`).text(action);
-    action = action.toLowerCase();
+  // - user input
+  if (json.message.modalType) {
+    $(`#${json.filename}`).remove();
 
-    switch (json.message.modalType) {
-      case 'error':
-      case 'question':
-        btn.click(() => reply({ msg: action }));
-        break;
-      case 'input':
-        if (action === 'yes' || action === 'ok') {
-          const input = modal.find('input')[0];
-          btn.click(() => reply({ msg: input.val() }));
-        }
-        break;
-      case 'upload':
-        if (action === 'yes' || action === 'ok') {
+    const modal = generateModal(json.message.modalType, json.message.text, json.filename)
+    modal.modal({ backdrop: 'static' })
+
+    const buttons = json.message.actions.map(action => {
+      const btn = $(`<button type="button" class="btn btn-primary" data-dismiss="modal"></button>`).text(action);
+      action = action.toLowerCase();
+
+      switch (json.message.modalType) {
+        case 'error':
+        case 'question':
           btn.click(() => {
-            const form = modal.find('form')[0];
-            const input = modal.find('input')[0];
-            if (input.files.length) {
-              upload(form);
-            }
+            reply(action)
           });
-        }
-    }
-    return btn;
-  });
-  modal.find('.modal-footer').append(buttons);
-  return;
+          break;
+        case 'input':
+          if (action === 'yes' || action === 'ok') {
+            const input = modal.find(`#${json.filename}-input`);
+            btn.click(() => {
+              reply(input.val());
+            });
+          }
+          break;
+        case 'upload':
+          if (action === 'yes' || action === 'ok') {
+            btn.click(() => {
+              const form = modal.find('form')[0];
+              const input = modal.find(`#${json.filename}-input`)[0];
+              if (input.files.length) {
+                upload(form);
+              }
+            });
+          }
+      }
+      return btn;
+    });
 
-  switch (json.message.modalType) {
-
-    case 'input':
-      $('#inputModal').modal({ backdrop: 'static' });
-      $('#inputModal .modal-body-text').html(json.text);
-      $('#inputModal .modal-footer').empty();
-
-      buttons = json.actions.map(action => {
-        let btn = $(`<button type="button" class="btn btn-primary" data-dismiss="modal"></button`).text(action);
-
-        if (action.toLowerCase() === 'yes') {
-          btn.click(() => reply({ msg: $('#inputModalInput').val() }));
-        }
-        return btn;
-      });
-
-      $('#inputModal .modal-footer').append(buttons);
-      break;
-
-    case 'upload':
-      $('#fileUploadModal').modal({ backdrop: 'static' });
-      $('#fileUploadModal .modal-body-text').html(json.text);
-      $('#fileUploadModal .modal-footer').empty();
-
-      buttons = json.actions.map(action => {
-        let btn = $(`<button type="button" class="btn btn-primary" data-dismiss="modal"></button`).text(action);
-
-        if (action.toLowerCase() === 'yes') {
-          btn.click(() => {
-            const form = $('#fileUploadForm')[0];
-            const fileInput = $('#fileUploadModalInput')[0];
-            if (fileInput.files.length) {
-              // console.log(fileInput.files[0]);
-              console.log(form);
-              upload(form);
-            }
-          });
-        }
-        return btn;
-      });
-
-      $('#fileUploadModal .modal-footer').append(buttons);
-      break;
+    modal.find('.modal-footer').append(buttons);
   }
 }
 
@@ -104,17 +78,17 @@ function generateModal(modalType, text, id) {
   return modal
 }
 
-/* Outgoing */
+/* Backend communication */
 
 function launch(module) {
-  sendMessage('/launch', { msg: module });
+  sendMessage('/launch', { launch: module }, true, handleResponse);
 }
 
 function display() {
   // Get the selected item
   const value = document.getElementById('Display_menu').value;
   if (value) {
-    sendMessage('/display', { msg: value });
+    sendMessage('/display', { display: value }, false);
   }
 }
 
@@ -122,7 +96,7 @@ function query() {
   // Get the selected item
   const value = document.getElementById('Query_menu').value;
   if (value) {
-    sendMessage('/query', { msg: value });
+    sendMessage('/query', { query: value }, false);
   }
 }
 
@@ -131,17 +105,20 @@ function exit() {
 }
 
 function reply(message) {
-  sendMessage('/request', message);
+  sendMessage('/request', { msg: message }, true, handleResponse);
 }
 
-function sendMessage(target, message) {
+function sendMessage(target, message, isJson, callback) {
   $.ajax({
     type: 'POST',
     url: target,
-    data: message,
-    dataType: 'json'
+    data: isJson ? JSON.stringify(message) : message,
+    dataType: 'json',
+    contentType: isJson ? 'application/json; encoding=utf-8' : false
   }).done((data) => {
-    handleResponse(data);
+    if (callback) {
+      callback(data);
+    }
   }).fail(() => {
     const text = 'The server is not responding. Please check if it is running.';
     const alert = $(`<div class="alert alert-danger" role="alert">${text}&nbsp;&nbsp;<button class="close" data-dismiss="alert">×</button></div>`);
