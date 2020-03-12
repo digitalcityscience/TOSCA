@@ -49,6 +49,19 @@ function coordinates
 
     echo $EAST > $VARIABLES/coordinate_east
     echo $NORTH > $VARIABLES/coordinate_north
+   
+    #Sending center coordinates as a regular message
+        touch $MESSAGE_SENT/message.coordinates
+        echo "{" > $MESSAGE_SENT/message.coordinates
+        echo "\"lat\": $NORTH," >> $MESSAGE_SENT/message.coordinates
+        echo "\"lon\": $EAST" >> $MESSAGE_SENT/message.coordinates
+        echo "}" >> $MESSAGE_SENT/message.coordinates
+
+    #{
+    #"lat": 30,
+    #"lon": 21
+    #}
+    
     
     # Replace the line in base_map.html containing the coordinates
     cp $MODULES/base_map/base_map_template.html $MODULES/base_map/base_map.html
@@ -175,13 +188,15 @@ if [  $INIT -eq 0 ]
         $MODULES/restart_geoserver/cityapp_restart_geoserver.sh &
 fi
 
-# Updating center coordinates to the area of selection
-coordinates
 
 # Message Process finished. No you can exit CityApp Location selector
 Send_Message m 6 location_selector.9 question actions [\"Yes\"]
+# Updating center coordinates to the area of selection
     Request
         rm -f $VARIABLES/launch_locked
-        Close_Process
-        touch $VARIABLES/launcher_run
-        exit
+
+    touch $VARIABLES/launcher_run
+coordinates
+sleep 3s
+Close_Process
+exit

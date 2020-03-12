@@ -18,12 +18,12 @@ MODULE=~/cityapp/scripts/modules/add_map
 MODULE_NAME=cityapp_add_map
 VARIABLES=~/cityapp/scripts/shared/variables
 BROWSER=~/cityapp/data_from_browser
+LANGUAGE=$(cat ~/cityapp/scripts/shared/variables/lang)
 MESSAGE_TEXT=~/cityapp/scripts/shared/messages/$LANGUAGE/add_map
 MESSAGE_SENT=~/cityapp/data_to_client
 GRASS=~/cityapp/grass/global
 MAPSET=PERMANENT
 GEOSERVER=~/cityapp/geoserver_data
-LANGUAGE=$(cat ~/cityapp/scripts/shared/variables/lang)
 
 #
 #-- Process -----------------------------

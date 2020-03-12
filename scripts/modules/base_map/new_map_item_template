@@ -1,0 +1,11 @@
+ {
+  "url": "geoserver/vector/wms",
+  "options": {
+    "layers": "vector:lines_osm",
+    "format": "image/png",
+    "transparent": true,
+    "attribution": "attributionCSL",
+    "maxZoom": 20,
+    "minZoom": 1
+  }
+}

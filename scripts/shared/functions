@@ -69,8 +69,6 @@ Centroid_To_Raster ()
 Close_Process ()
     {
     # This is to clean everything properly after finishing the module.
-ts/shared/messages/$LANGUAGE/module_1
-MESSAGE_SENT=~/cityapp/data_
     if [ -e $VARIABLES/subprocess ]
         then
             rm -f $MODULE/temp_*

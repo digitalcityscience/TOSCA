@@ -44,6 +44,7 @@ CONNECT_DISTANCE=0.003
 #
         
 rm -f $MESSAGE_SENT/*
+
 if [ ! -d $GRASS/PERMANENT ]
     then
     # check if PERMANENT mapeset exist
@@ -164,19 +165,20 @@ fi
 # Values are stores in file variables/roads_speed.
 # Based on this data, reclass file is also prepared. Will later used in reclass process.
 # Messages 14 Do you want to change the speed on the road network? If not, the current values will used (km/h). If you want to change the values, you may overwrite those.
-    #Send_Message l 7 module_1.9 question actions [\"Yes\",\"No\"] 
-     #   Request
-      #      case $REQUEST_CONTENT in
-       #         "yes"|"Yes"|"YES")
-        #            # Message Now you can change the speed values. Current values are:
-         #           Send_Message l 8 module_1.10 select actions [\"Yes\",] $VARIABLES/roads_speed
-          #              Request
-           #                 echo $REQUEST_CONTENT > $VARIABLES/roads_speed;;
-            #                # Specific value will servs as speed value for non classified elements and newly inserted connecting line segments. Speed of these features will set to speed of service roads
-             #               #REDUCING_RATIO=$(cat $VARIABLES/roads_speed | head -n$n | tail -n1 | cut -d":" -f2 | sed s'/ //'g);;
-              #  "no"|"No"|"NO")
-               #     ;;
-            #esac
+    Send_Message l 7 module_1.9 question actions [\"Yes\",\"No\"] 
+        Request
+            case $REQUEST_CONTENT in
+                "yes"|"Yes"|"YES")
+                    # Message Now you can change the speed values. Current values are:
+                    Send_Message l 8 module_1.10 select actions [\"Yes\",] $VARIABLES/roads_speed
+                        Request
+                            # echo $REQUEST_CONTENT > $VARIABLES/roads_speed;;
+                    # Specific value will servs as speed value for non classified elements and newly inserted connecting line segments. Speed of these features will set to speed of service roads
+                    #REDUCING_RATIO=$(cat $VARIABLES/roads_speed | head -n$n | tail -n1 | cut -d":" -f2 | sed s'/ //'g)
+                    ;;
+                "no"|"No"|"NO")
+                    ;;
+            esac
 
 #
 # -- Processing --------------------------ˇ
@@ -246,7 +248,7 @@ grass $GRASS/$MAPSET --exec v.net input=highways points=from_via_to_points outpu
     grass $GRASS/$MAPSET --exec r.patch input=highways_points_connected,from_via_to_zones output=highways_points_connected_zones --overwrite --quiet
 
 # Now the Supplementary lines (formerly CAT_SUPP_LINES) raster map have to be added to map highways_from_points. First I convert highways_points_connected into raster setting value to 0(zero). Resultant map: temp. After I patch temp and highways_points_connected, result is:highways_points_connected_temp. Now have to reclass highways_points_connected_temp, setting 0 values to the speed value of residentals
-    grass $GRASS/$MAPSET --exec v.to.rast input=highways_points_connected_zones output=temp use=val val=$AVERAGE_SPEED --overwrite --quiet
+    grass $GRASS/$MAPSET --exec v.to.rast input=highways_points_connected output=temp use=val val=$AVERAGE_SPEED --overwrite --quiet
     grass $GRASS/$MAPSET --exec r.patch input=highways_points_connected_zones,temp output=highways_points_connected_temp --overwrite --quiet
     grass $GRASS/$MAPSET --exec v.to.rast input=$AREA_MAP output=$AREA_MAP use=val value=$REDUCING_RATIO --overwrite
     grass $GRASS/$MAPSET --exec r.null map=$AREA_MAP null=1 --overwrite    
@@ -283,5 +285,4 @@ grass $GRASS/$MAPSET --exec v.net input=highways points=from_via_to_points outpu
     grass $GRASS/$MAPSET --exec r.out.gdal input=m1_time_map_interpolated output=$GEOSERVER/m1_time_map_interpolated.tif format=GTiff --overwrite --quiet
 
     Close_Process
-
 exit
