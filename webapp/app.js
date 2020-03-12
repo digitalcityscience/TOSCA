@@ -61,7 +61,7 @@ app.post('/launch', jsonParser, async (req, res, next) => {
 })
 
 // request to display a map
-app.post('/display', urlencodedParser, async (req, res, next) => {
+app.post('/display', jsonParser, async (req, res, next) => {
   writeMessageToFile('display', req.body.display)
 
   try {
@@ -73,7 +73,7 @@ app.post('/display', urlencodedParser, async (req, res, next) => {
 })
 
 // request to query a map
-app.post('/query', urlencodedParser, async (req, res, next) => {
+app.post('/query', jsonParser, async (req, res, next) => {
   writeMessageToFile('query', req.body.query)
 
   try {
@@ -85,8 +85,8 @@ app.post('/query', urlencodedParser, async (req, res, next) => {
 })
 
 // user interaction, e.g. through a modal
-app.post('/request', urlencodedParser, async (req, res, next) => {
-  writeMessageToFile('request', req.body)
+app.post('/request', jsonParser, async (req, res, next) => {
+  writeMessageToFile('request', req.body.msg)
 
   try {
     const response = await readMessageFromFile(2000)
