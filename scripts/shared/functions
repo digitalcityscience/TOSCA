@@ -69,7 +69,8 @@ Centroid_To_Raster ()
 Close_Process ()
     {
     # This is to clean everything properly after finishing the module.
-
+ts/shared/messages/$LANGUAGE/module_1
+MESSAGE_SENT=~/cityapp/data_
     if [ -e $VARIABLES/subprocess ]
         then
             rm -f $MODULE/temp_*
@@ -168,36 +169,59 @@ Point_To_Raster ()
     
 Request ()
     {
-    until [ "$REQUEST_FILE" == "request" -o  "$REQUEST_FILE" == "leave_session" ]; do
-       # REQUEST_FILE=$(ls -ct1 $BROWSER | head -n1)
-        REQUEST_FILE=$(inotifywait -e close_write --format %f $BROWSER)
-        case $REQUEST_FILE in
-            "leave_session")
-                if [ !-e $VARIABLES/subprocess ]
-                    then
-                        Close_Process
-                        exit
-                fi
-                ;;
-            "request")
-                FRESH_FILE=$REQUEST_FILE
-                FRESH_PATH=$BROWSER/$REQUEST_FILE
-                REQUEST_PATH=$BROWSER/$REQUEST_FILE
+    CHECK=no
+    until [ "$CHECK" == "yes" ];do
+        WATCHED=$(inotifywait -e create --format %f $BROWSER)
+        if [ "$WATCHED" == request ]
+            then
+                REQUEST_FILE=request
+                REQUEST_PATH=$BROWSER/request
                 REQUEST_CONTENT=$(cat $REQUEST_PATH)
-                echo "-----------------"
+                CHECK="yes"
+                echo "-------------------------"
+                echo $REQUEST_FILE
+                echo $REQUEST_PATH
                 echo $REQUEST_CONTENT
-                echo "-----------------"
-                ;;
-        esac
+                echo "-------------------------"
+        fi
+        if [ "$WATCHED" == leave_session ]
+            then
+                CHECK="yes"
+                echo "-------------------------"
+                echo $REQUEST_FILE
+                echo $REQUEST_PATH
+                echo $REQUEST_CONTENT
+                echo "-------------------------"
+                Close_Process
+                exit
+        fi
     done
-    # rm -f $BROWSER/*
+#    until [ "$REQUEST_FILE" == "request" -o  "$REQUEST_FILE" == "leave_session" ]; do
+#        REQUEST_FILE=$(inotifywait -e create --format %f $BROWSER)
+#        case $REQUEST_FILE in
+#            "leave_session")
+#                if [ !-e $VARIABLES/subprocess ]
+#                    then
+#                        Close_Process
+#                        exit
+#                fi
+#                ;;
+#            "request")
+#                # FRESH_FILE=$REQUEST_FILE
+#                # FRESH_PATH=$BROWSER/$REQUEST_FILE
+#                REQUEST_PATH=$BROWSER/request
+#                REQUEST_CONTENT=$(cat $REQUEST_PATH)
+#                ;;
+#        esac
+#    done
+    rm -f $BROWSER/request
     }
     
 Request_Map ()
     # Request map is waiting for a map as input file. The map type is user defined. Therefore thera are options to select import file type. Possible options are: osm,geojson,gpkg,tif (tif, tiff, gtif, gtiff are also laoowed to use). The order has no importance nor the number of options: it is allowes do give only one option or all the four.
     {
     until [ "$CHECK" == "ok" ];do
-        REQUEST_FILE=$(inotifywait -e create --format %f $BROWSER)
+        REQUEST_FILE=$(inotifywait -e close_write --format %f $BROWSER)
         if [[ "$REQUEST_FILE" =~ "."$1 ]] || [[ "$REQUEST_FILE" =~ "."$2 ]] || [[ "$REQUEST_FILE" =~ "."$3 ]] || [[ "$REQUEST_FILE" =~ "."$4 ]] || [[ "$REQUEST_FILE" =~ "."$5 ]] || [[ "$REQUEST_FILE" =~ "."$6 ]] || [[ "$REQUEST_FILE" =~ "."$7 ]] || [[ "$REQUEST_FILE" =~ "."$8 ]] || [[ "$REQUEST_FILE" =~ "."$9 ]] || [[ "$REQUEST_FILE" =~ "."$10 ]] || [[ "$REQUEST_FILE" =~ "."$11 ]] || [[ "$REQUEST_FILE" =~ "."$12 ]] 
             then
             CHECK="ok"
@@ -217,38 +241,38 @@ Request_Map ()
     done
     }
 
-Request_Geojson ()
-    {
-    until [ "$CHECK" == "ok" ];do
-        REQUEST_FILE=$(inotifywait -e create --format %f $BROWSER)
-        if [[ "$REQUEST_FILE" =~ ".geojson" ]]
-            then
-            CHECK="ok"
-            FRESH_FILE=$REQUEST_FILE
-            FRESH_PATH=$BROWSER/$REQUEST_FILE
-            REQUEST_PATH=$BROWSER/$REQUEST_FILE
-            #REQUEST_CONTENT=$(cat $REQUEST_FILE)
-            #rm -f $BROWSER/*
-        fi
-        
-        if [ "$REQUEST_FILE" == "leave_session" ]
-            then
-                CHECK="ok"
-                Close_Process
-                exit
-        fi
-    done
-    }
+#Request_Geojson ()
+#    {
+#    until [ "$CHECK" == "ok" ];do
+#        REQUEST_FILE=$(inotifywait -e close_write --format %f $BROWSER)
+#        if [[ "$REQUEST_FILE" =~ ".geojson" ]]
+#            then
+#            CHECK="ok"
+#            FRESH_FILE=$REQUEST_FILE
+#            FRESH_PATH=$BROWSER/$REQUEST_FILE
+#            REQUEST_PATH=$BROWSER/$REQUEST_FILE
+#            #REQUEST_CONTENT=$(cat $REQUEST_FILE)
+#            #rm -f $BROWSER/*
+#        fi
+#        
+#        if [ "$REQUEST_FILE" == "leave_session" ]
+#            then
+#                CHECK="ok"
+#                Close_Process
+#                exit
+#        fi
+#    done
+#    }
 
 Request_Tif ()
     {
     until [ "$CHECK" == "ok" ];do
-        REQUEST_FILE=$(inotifywait -e create --format %f $BROWSER)
+        REQUEST_FILE=$(inotifywait -e close_write --format %f $BROWSER)
         if [[ "$REQUEST_FILE" =~ ".tif" ]] || [[ "$REQUEST_FILE" =~ ".gtif" ]] || [[ "$REQUEST_FILE" =~ ".tiff" ]]
             then
             CHECK="ok"
-            FRESH_FILE=$REQUEST_FILE
-            FRESH_PATH=$BROWSER/$REQUEST_FILE
+            # FRESH_FILE=$REQUEST_FILE
+            # FRESH_PATH=$BROWSER/$REQUEST_FILE
             REQUEST_PATH=$BROWSER/$REQUEST_FILE
             #REQUEST_CONTENT=$(cat $REQUEST_FILE)
             #rm -f $BROWSER/*

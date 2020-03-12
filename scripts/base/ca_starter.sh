@@ -19,9 +19,9 @@ MODULE=~/cityapp/scripts/base
 MODULE_NAME=ca_starter
 VARIABLES=~/cityapp/scripts/shared/variables
 BROWSER=~/cityapp/data_from_browser
+LANGUAGE=$(cat ~/cityapp/scripts/shared/variables/lang)
 MESSAGE_TEXT=~/cityapp/scripts/shared/messages/$LANGUAGE/ca_starter
 MESSAGE_SENT=~/cityapp/data_to_client
-LANGUAGE=$(cat ~/cityapp/scripts/shared/variables/lang)
 
 #
 #-- Process -------------------
@@ -39,5 +39,4 @@ done
 
 cd  ~/cityapp
 ~/cityapp/scripts/base/cityapp_module_launcher.sh
-
 exit

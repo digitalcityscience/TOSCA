@@ -21,9 +21,9 @@ MODULE=~/cityapp/scripts/modules/module_1
 MODULE_NAME=cityapp_module_1
 VARIABLES=~/cityapp/scripts/shared/variables
 BROWSER=~/cityapp/data_from_browser
+LANGUAGE=$(cat ~/cityapp/scripts/shared/variables/lang)
 MESSAGE_TEXT=~/cityapp/scripts/shared/messages/$LANGUAGE/module_1
 MESSAGE_SENT=~/cityapp/data_to_client
-LANGUAGE=$(cat ~/cityapp/scripts/shared/variables/lang)
 GEOSERVER=~/cityapp/geoserver_data
 GRASS=~/cityapp/grass/global
 MAPSET=module_1
@@ -80,10 +80,10 @@ fi
             case $REQUEST_CONTENT in
                 "yes"|"Yes"|"YES")
                     Request_Map geojson GEOJSON
-                        FRESH=$REQUEST_PATH
-                        Add_Vector $FRESH m1_from_points
+                        Add_Vector $REQUEST_PATH m1_from_points
                         Gpkg_Out m1_from_points m1_from_points
-                        FROM_POINT=m1_from_points;;
+                        FROM_POINT=m1_from_points
+                     ;;
                 "no"|"No"|"NO")
                     # Message 2 Select a map (only point maps are supported). Avilable maps are:
                     Send_Message l 2 module_1.2 select actions [\"Yes\"] $MODULE/temp_list # Waiting for a map name (map already have to exist in GRASS)
@@ -140,6 +140,8 @@ fi
         Request
             case $REQUEST_CONTENT in
                 "yes"|"Yes"|"YES")
+                    #Send_Message m 11 module_1.13 question actions [\"OK\"]
+                    AREA=0
                     Request_Map geojson GEOJSON
                         FRESH=$REQUEST_PATH
                         Add_Vector $FRESH m1_stricken_area
@@ -162,20 +164,20 @@ fi
 # Values are stores in file variables/roads_speed.
 # Based on this data, reclass file is also prepared. Will later used in reclass process.
 # Messages 14 Do you want to change the speed on the road network? If not, the current values will used (km/h). If you want to change the values, you may overwrite those.
-    Send_Message l 7 module_1.9 question actions [\"Yes\",\"No\"] 
-        Request
-            case $REQUEST_CONTENT in
-                "yes"|"Yes"|"YES")
-                    # Message Now you can change the speed values. Current values are:
-                    Send_Message l 8 module_1.10 select actions [\"Yes\",] $VARIABLES/roads_speed
-                        Request
-                            echo $REQUEST_CONTENT > $VARIABLES/roads_speed;;
-                            # Specific value will servs as speed value for non classified elements and newly inserted connecting line segments. Speed of these features will set to speed of service roads
-                            #REDUCING_RATIO=$(cat $VARIABLES/roads_speed | head -n$n | tail -n1 | cut -d":" -f2 | sed s'/ //'g);;
-                "no"|"No"|"NO")
-                    ;;
-            esac
-            
+    #Send_Message l 7 module_1.9 question actions [\"Yes\",\"No\"] 
+     #   Request
+      #      case $REQUEST_CONTENT in
+       #         "yes"|"Yes"|"YES")
+        #            # Message Now you can change the speed values. Current values are:
+         #           Send_Message l 8 module_1.10 select actions [\"Yes\",] $VARIABLES/roads_speed
+          #              Request
+           #                 echo $REQUEST_CONTENT > $VARIABLES/roads_speed;;
+            #                # Specific value will servs as speed value for non classified elements and newly inserted connecting line segments. Speed of these features will set to speed of service roads
+             #               #REDUCING_RATIO=$(cat $VARIABLES/roads_speed | head -n$n | tail -n1 | cut -d":" -f2 | sed s'/ //'g);;
+              #  "no"|"No"|"NO")
+               #     ;;
+            #esac
+
 #
 # -- Processing --------------------------ˇ
 #
@@ -193,7 +195,7 @@ fi
             grass $GRASS/$MAPSET --exec v.patch input=$FROM_POINT,$VIA_POINT output=from_via_to_points --overwrite --quiet 
     fi
 
-# To points are not optional. Optional only to place them on-by-one on the map, or  selecting an already existing map. If there are no user defined/selected to_points, default points (highway_points) are used as to_points. But, because these points are on the road by its origin, therefore no further connecting is requested.
+# "TO" points are not optional. Optional only to place them on-by-one on the map, or  selecting an already existing map. If there are no user defined/selected to_points, default points (highway_points) are used as to_points. But, because these points are on the road by its origin, therefore no further connecting is requested.
     case $TO in
         0|1)
             grass $GRASS/$MAPSET --exec v.patch input=$TO_POINT,$FROM_POINT,$VIA_POINT output=from_via_to_points --overwrite --quiet;;
@@ -218,7 +220,8 @@ grass $GRASS/$MAPSET --exec v.net input=highways points=from_via_to_points outpu
     grass $GRASS/$MAPSET --exec v.db.addcolumn map=highways_points_connected columns='avg_speed INT'
 
 # Fill this new avg_speed column for each highway feature. Values are stored in $VARIABLES/roads_speed
-    if [ $(echo $(stat --printf="%s" $VARIABLES/roads_speed)) -eq 0 -o ! -f $VARIABLES/roads_speed ]
+# 169 is the size of the file when only one digit is rendered to each line. Smaller values are not possible, since the minimal speed is only 0, not a negative number.
+    if [ $(echo $(stat --printf="%s" $VARIABLES/roads_speed)) -lt 169 -o ! -f $VARIABLES/roads_speed ]
         then
             cp $VARIABLES/roads_speed_defaults $VARIABLES/roads_speed
         fi

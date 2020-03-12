@@ -1,13 +1,13 @@
 #! /bin/bash
 . ~/cityapp/scripts/shared/functions
 
-# version 1.3
+# version 1.31
 # CityApp module
 # This module is to shutdown cityapp system
 #
 # Core module, do not modify!
 #
-# 2020. március 6.
+# 2020. március 11.
 # Author: BUGYA Titusz, CityScienceLab -- Hamburg, Germany
 
 #
@@ -19,9 +19,9 @@ MODULE=~/cityapp/scripts/base
 MODULE_NAME=ca_shutdown
 VARIABLES=~/cityapp/scripts/shared/variables
 BROWSER=~/cityapp/data_from_browser
+LANGUAGE=$(cat ~/cityapp/scripts/shared/variables/lang)
 MESSAGE_TEXT=~/cityapp/scripts/shared/messages/$LANGUAGE/ca_shutdown
 MESSAGE_SENT=~/cityapp/data_to_client
-LANGUAGE=$(cat ~/cityapp/scripts/shared/variables/lang)
 
 #
 #-- Process -------------------
@@ -37,12 +37,10 @@ rm -f $BROWSER/*
 kill -9 $(ps -a | grep ca_starter | sed s'/[a-z _]//'g | cut -d"/" -f1)
 
 for i in $(ps -a | grep cityapp | sed s'/[a-z _]//'g | cut -d"/" -f1);do
-    echo $i
     kill -9 $i
 done
 
-for i in $(ps -a | grep inotifywait | sed s'/[a-z _]//'g | cut -d"/" -f1);do
-    echo $i
+for i in $(ps a | grep "inotifywait" | grep "$USER" | cut -d" " -f1);do
     kill -9 $i
 done
 

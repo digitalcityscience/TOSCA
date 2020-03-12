@@ -1,14 +1,14 @@
 #! /bin/bash
 . ~/cityapp/scripts/shared/functions
 
-# version 1.42
+# version 1.43
 # CityApp module
 # Import OSM maps into PERMANENT mapset. Points, lines, polygons, relations are only imported. Other maps can be extracted from these in separate modules.
 # To import other maps, use Add Layer module.
 #
 # Core module, do not modify.
 #
-# 2020. március 6.
+# 2020. március 10.
 # Author: BUGYA Titusz, CityScienceLab -- Hamburg, Germany
 
 #
@@ -22,9 +22,9 @@ MODULE=~/cityapp/scripts/modules/location_selector
 MODULE_NAME=cityapp_location_selector
 VARIABLES=~/cityapp/scripts/shared/variables
 BROWSER=~/cityapp/data_from_browser
+LANGUAGE=$(cat ~/cityapp/scripts/shared/variables/lang)
 MESSAGE_TEXT=~/cityapp/scripts/shared/messages/$LANGUAGE/location_selector
 MESSAGE_SENT=~/cityapp/data_to_client
-LANGUAGE=$(cat ~/cityapp/scripts/shared/variables/lang)
 GEOSERVER=~/cityapp/geoserver_data
 GRASS=~/cityapp/grass/global
 MAPSET=PERMANENT
@@ -67,6 +67,7 @@ function coordinates
                 Request
                 if [ "$REQUEST_CONTENT" = "no" -o "$REQUEST_CONTENT" = "No" -o "$REQUEST_CONTENT" = "NO" ]
                     then
+                        Close_Process
                         exit
                     else
                         INIT=0
@@ -90,7 +91,7 @@ case $INIT in
     "0")
         # Message Select a map to add to CityApp. Map has to be in Open Street Map format -- osm is the only accepted format.
         Send_Message m 2 location_selector.2 upload actions [\"Yes\"]
-            Request_Osm
+            Request_Map osm
                 NEW_AREA_FILE=$REQUEST_PATH
                 rm -f $GEOSERVER/*
                 rm -fR $GRASS/$MAPSET
@@ -136,7 +137,7 @@ coordinates
 # Message 5 # Now zoom to area of your interest, then use drawing tool to define your location. Next, save your selection.
 Send_Message m 5 location_selector.8 question actions [\"Yes\"]
     # This geojson is the "selection" drawn by the user. Import to GRASS and export to Geoserver
-    Request_Geojson
+    Request_Map geojson GEOJSON
         GEOJSON_FILE=$REQUEST_PATH 
         Add_Vector "$GEOJSON_FILE" selection
         Gpkg_Out selection selection
