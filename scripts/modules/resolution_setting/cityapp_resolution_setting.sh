@@ -1,10 +1,10 @@
 #! /bin/bash
 . ~/cityapp/scripts/shared/functions
 
-# version 1.22
+# version 1.3
 # CityApp maintenance
 # Resolution setting
-# 2020. március 2.
+# 2020. március 17.
 # Author: BUGYA Titusz, CityScienceLab -- Hamburg, Germany
 
 #
@@ -56,7 +56,26 @@ Send_Message m 1 resolution_setting.1 input actions [\"yes\"]
             echo "Second data: resolution in decimal degrees, derivated from first data." >> $VARIABLES/resolution
             echo "$RESOLUTION" >> $VARIABLES/resolution
             echo "$RESOLUTION/111322" | bc -l | sed -e 's/^-\./-0./' -e 's/^\./0./' >> $VARIABLES/resolution
+            
+
+            CONTROL_LINE_3=$(cat $VARIABLES/resolution | head -n3 | tail -n1 | grep [0-9] | grep -v [a-z,A-Z] | wc -c)
+            CONTROL_LINE_4=$(cat $VARIABLES/resolution | head -n4 | tail -n1 | grep [0-9] | grep -v [a-z,A-Z] |wc -c)
+                                
+            if [[ $CONTROL_LINE_3 -gt 0 ]] && [[ $CONTROL_LINE_4 -gt 0 ]]
+                then
+                    if [ "$CONTROL_LINE_3" == "$CONTROL_LINE_4" ]
+                        then
+                            touch $MESSAGE_SENT/message.resolution_setting.10
+                            echo "{ "\""success"\"": false }" > $MESSAGE_SENT/message.resolution_setting.10
+                        else
+                            touch $MESSAGE_SENT/message.resolution_setting.10
+                            echo "{ "\""success"\"": true }" > $MESSAGE_SENT/message.resolution_setting.10
+                    fi
+                else
+                    touch $MESSAGE_SENT/message.resolution_setting.10
+                    echo "{ "\""success"\"": false }" > $MESSAGE_SENT/message.resolution_setting.10
+            fi
     fi
-    
+sleep 1s
 Close_Process
 exit
