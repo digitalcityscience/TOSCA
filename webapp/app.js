@@ -18,8 +18,7 @@ const expressPort = 3000
 // Middleware
 const bodyParser = require('body-parser')
 const jsonParser = bodyParser.json()
-const urlencodedParser = bodyParser.urlencoded({ extended: false })
-const multer  = require('multer')
+const multer = require('multer')
 const uploadParser = multer()
 
 app.listen(expressPort, () => {
@@ -42,7 +41,7 @@ app.get('/', (req, res) => {
   let options = {
     geoserverUrl,
     websocketUrl,
-    lat: 53.5,
+    lat: 53.55,
     lon: 10
   }
   res.render('launch', options)
@@ -147,12 +146,14 @@ async function readMessageFromFile(timeout) {
   return await new Promise((resolve, reject) => {
     let trying = true
 
+    // After a timeout (default 10 s) stop waiting for messages
     setTimeout(() => {
       trying = false
       watcher.close()
       reject()
     }, timeout || 10000)
 
+    // Watch the data_to_client directory for file system changes
     const watcher = fs.watch(dataToClient, {}, async (event, filename) => {
       console.log(event, filename)
 
@@ -160,11 +161,13 @@ async function readMessageFromFile(timeout) {
         try {
           const filepath = `${dataToClient}/${filename}`
           const message = fs.readFileSync(filepath, { encoding: 'utf-8' })
-          // fs.unlinkSync(filepath, ec)
+
+          // If a change has been detected, return the contents of the changed file
           trying = false
           watcher.close()
           resolve({ message: JSON.parse(message), filename })
         } catch (e) {
+          // Otherwise wait a moment and try again
           await new Promise((_resolve) => setTimeout(() => {
             console.log(`Error: ${e.code} - trying again …`)
             _resolve()

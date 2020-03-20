@@ -6,11 +6,77 @@ function handleResponse(json) {
     json.filename = json.filename.replace(/\./g, '_');
   }
 
+  // Clear the message area and buttons
+
   // All messages end up here, so first the type of message needs to be determined.
   // - Coordinates
   if (json.message.lat && json.message.lon) {
     map.panTo(new L.LatLng(json.message.lat, json.message.lon));
     return;
+  }
+
+  // - user input
+  if (json.message.modalType) {
+    $('#textarea').empty();
+    $('#buttonarea').empty();
+
+    const text = generateTextarea(json.message.modalType, json.message.text, json.filename);
+    const textarea = $('#textarea');
+    textarea.append(text);
+
+    const buttons = json.message.actions.map(action => {
+      const btn = $(`<button type="button" class="button button-green"></button>`).text(action);
+      action = action.toLowerCase();
+
+      switch (json.message.modalType) {
+        case 'error':
+        case 'question':
+          btn.click(() => {
+            reply(action)
+          });
+          break;
+        case 'input':
+          if (action === 'yes' || action === 'ok') {
+            const input = textarea.find(`#${json.filename}-input`);
+            btn.click(() => {
+              reply(input.val());
+            });
+          }
+          break;
+        case 'upload':
+          if (action === 'yes' || action === 'ok') {
+            btn.click(() => {
+              const form = textarea.find('form')[0];
+              const input = textarea.find(`#${json.filename}-input`)[0];
+              if (input.files.length) {
+                upload(form);
+              }
+            });
+          }
+      }
+      $('<a></a>').append(btn[0]).appendTo($('#buttonarea'));
+    });
+  }
+}
+function generateTextarea(modalType, text, id) {
+  const content = $(`<form id="${id}-form" enctype="${modalType === 'upload' ? 'multipart/form-data' : ''}">
+  <div class="modal-body">
+    <p class="modal-body-text">${text}</p>
+  </div>
+</form>`);
+  if (modalType === 'input') {
+    content.find('.modal-body').append($(`<p class="modal-body-input"><input id="${id}-input" type="text" /></p>`))
+  } else if (modalType === 'upload') {
+    content.find('.modal-body').append($(`<p class="modal-body-input"><input id="${id}-input" type="file" name="file" /></p>`))
+  }
+  return content;
+}
+
+
+function handleResponseInModal(json) {
+  if (json.filename) {
+    console.log(`Received ${json.filename}`);
+    json.filename = json.filename.replace(/\./g, '_');
   }
 
   // - user input
@@ -80,23 +146,27 @@ function generateModal(modalType, text, id) {
 
 /* Backend communication */
 
-function launch(module) {
-  sendMessage('/launch', { launch: module }, true, handleResponse);
+function launch() {
+  // Get the selected item
+  const value = $('#launch-menu')[0].value;
+  if (value) {
+    sendMessage('/launch', { launch: value }, true, handleResponse);
+  }
 }
 
 function display() {
   // Get the selected item
-  const value = document.getElementById('Display_menu').value;
+  const value = $('#maps-menu')[0].value;
   if (value) {
-    sendMessage('/display', { display: value }, false);
+    sendMessage('/display', { display: value }, true, handleResponse);
   }
 }
 
 function query() {
   // Get the selected item
-  const value = document.getElementById('Query_menu').value;
+  const value = $('#query-menu')[0].value;
   if (value) {
-    sendMessage('/query', { query: value }, false);
+    sendMessage('/query', { query: value }, true, handleResponse);
   }
 }
 

@@ -19,49 +19,50 @@ html
 
   body
     div(class='header')
-      div(class='help')
-        a: button(class='button') Help
-
       div(class='title')
         h1 Open City Toolkit
 
       div(class='logo')
-        img(src='images/giz-logo.gif' height='40')
-        img(src='images/hcu-logo.png' height='32')
+        img(src='images/giz-logo.gif' id='giz-logo')
+        img(src='images/hcu-logo.png' id='hcu-logo')
 
     div(class='main')
       div(class='sidebar')
-        div(id='Launch' class='card')
-          p Launch a module
-          p
-            a: button(class='button' onclick='launch(\'location_selector\')') Select location
-            a: button(class='button' onclick='launch(\'resolution_setting\')') Set resolution
-            a: button(class='button' onclick='launch(\'add_map\')') Add map
-          p
-            a: button(class='button' onclick='exit()') Exit
+        div(id='help' class='card card-buttons row')
+          a: button(class='button button-yellow') Help
+          a: button(class='button button-red' onclick='exit()') Exit module
+          a: button(class='button button-red' onclick='exit()') Stop all
 
-        div(id='Display' class='card')
-          p Select a map to display
-          select(id='Display_menu' class='select_menu')
-            option(selected value='') --
-            option(value='path_to_display_map_1') Map 1
-            option(value='path_to_display_map_2') Map 2
-            option(value='path_to_display_map_3') Map 3
+        div(id='textarea' class='card card-border-yellow')
 
-        div(id='Query' class='card')
-          p Select a map to query
-          select(id='Query_menu' class='select_menu')
-            option(selected value='') --
-            option(value='path_to_query_map_1') Map 1
-            option(value='path_to_query_map_2') Map 2
-            option(value='path_to_query_map_3') Map 3
+        div(id='buttonarea' class='card card-buttons row')
 
-        div(id='Module_description' class='card')
+        div(id='lists' class='card card-border-yellow')
 
-      div(id='Map_container' class='card')
+        div(id='launch' class='card card-border')
+          select(id='launch-menu' class='select-menu')
+            option(selected value='') Select a module to launch
+            option(value='location_selector') Select location
+            option(value='resolution_setting') Set resolution
+            option(value='add_map') Add map
+          a: button(class='button button-green' onclick='launch()') OK
+
+        div(id='maps' class='card card-border')
+          select(id='maps-menu' class='select-menu')
+            option(selected value='') Select a map to display
+          a: button(class='button button-green' onclick='display()') OK
+
+        div(id='query' class='card card-border')
+          select(id='query-menu' class='select-menu')
+            option(selected value='') Select a map to query
+          a: button(class='button button-green' onclick='query()') OK
+
+        div(id='additional' class='card card-border')
+
+      div(id='map-container' class='card')
         include ../map/index.pug
 
-      div(id='Info' class='card')
+      div(id='info-container' class='card card-border')
 
       div(id='alert-anchor')
 

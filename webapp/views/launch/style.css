@@ -13,11 +13,17 @@ h1 {
 }
 
 .logo img {
-  margin: 0 5px 5px;
+  margin: 5px 10px;
 }
 
-.logo img:first-child {
-  margin: 10px 5px 5px;
+#giz-logo {
+  height: 40px;
+  margin-top: 10px;
+}
+
+#hcu-logo {
+  height: 32px;
+  margin-top: 0;
 }
 
 .main {
@@ -34,40 +40,55 @@ h1 {
 
 .card {
   margin: 5px;
+  border: 0;
+}
+
+.card.row {
+  flex-direction: row;
+}
+
+.card.card-buttons a {
+  margin: 5px;
+}
+
+.card.card-buttons a:first-child {
+  margin-left: 0;
+}
+
+.card.card-buttons a:last-child {
+  margin-right: 0;
+}
+
+.card.card-border {
   padding: 10px;
-  border: 2px solid darkgreen;
+  border: 1px solid darkgreen;
   border-radius: 6px;
 }
 
-#Launch {
+.card.card-border-yellow {
+  background-color: #fffdaa;
+  border: 1px solid red;
+}
+
+#textarea,
+#lists,
+#additional {
   flex-grow: 1;
 }
 
-#Display {
-  flex-grow: 1;
-}
-
-#Query {
-  flex-grow: 1;
-}
-
-#Module_description {
-  flex-grow: 3;
-}
-
-#Map_container {
+#map-container {
   flex-grow: 2;
   position: relative;
   overflow-y: hidden;
 }
 
-#Info {
+#info-container {
   flex-grow: 1;
   font-size: small;
 }
 
-.select_menu {
-  margin-right: 10px;
+.select-menu {
+  margin-bottom: 10px;
   padding: 10px 14px;
   font-size: 16px;
   text-align: center;
@@ -75,31 +96,45 @@ h1 {
   outline: none;
   color: #006600;
   background-color: #ffffaa;
-  border: 3px solid #006600;
-  border-radius: 8px;
+  border: 1px solid #006600;
+  border-radius: 10px;
 }
 
 .button {
-  margin-right: 10px;
-  padding: 10px 14px;
+  padding: 8px 10px;
   font-size: 16px;
   text-align: center;
   cursor: pointer;
   outline: none;
-  color: #006600;
-  background-color: #aaffaa;
-  border: 3px solid #006600;
-  border-radius: 8px;
+  border-radius: 20px;
 }
 
-.button:hover {
+.button-green {
+  color: #006600;
+  background-color: #aaffaa;
+  border: 1px solid #006600;
+}
+
+.button-green:hover {
   background-color: #ddffdd
 }
 
-.button:active {
+.button-green:active {
   background-color: #ffffdd;
   box-shadow: 0 2px #886;
   transform: translateY(2px);
+}
+
+.button-yellow {
+  color: #666600;
+  background-color: #ffffaa;
+  border: 1px solid #666600;
+}
+
+.button-red {
+  color: #660000;
+  background-color: #ffaaaa;
+  border: 1px solid #660000;
 }
 
 .modal form {

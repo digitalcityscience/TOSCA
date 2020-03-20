@@ -5,30 +5,8 @@
 
 #save {
   position: absolute;
-  bottom: 50px;
-  left: 10px;
-  margin: 6px;
+  top: 180px;
+  left: 0;
+  margin: 10px;
   z-index: 1000;
-}
-
-.button1 {
-  padding: 16px 24px;
-  font-size: 16px;
-  text-align: center;
-  cursor: pointer;
-  outline: none;
-  color: #006600;
-  background-color: #aaffaa;
-  border: 3px solid #006600;
-  border-radius: 8px;
-}
-
-.button1:hover {
-  background-color: #ddffdd
-}
-
-.button1:active {
-  background-color: #ffffdd;
-  box-shadow: 0 2px #886;
-  transform: translateY(2px);
 }
