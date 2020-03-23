@@ -84,3 +84,40 @@ mv /usr/share/geoserver/data_dir/data /usr/share/geoserver/data_dir/data_old
 ```
 ln -s /home/cityapp_user/cityapp/geoserver_data /usr/share/geoserver/data_dir/data
 ```
+
+## 2 Running the app
+
+### 2.1 GIS backend
+
+To start the backend, run:
+```
+~/cityapp/scripts/base/ca_starter.sh
+```
+
+To stop it:
+```
+~/cityapp/scripts/base/ca_shutdown.sh
+```
+
+### 2.2 Web app
+
+First change to the `webapp` directory. Before you start the server for the first time, you must run:
+```
+npm install
+```
+
+Now to start the server, run:
+```
+node app.js
+```
+
+Open a browser at http://localhost:3000 and you should see the app's user interface.
+
+If you want to use the server in production, it is recommended to use the process manager [pm2](https://pm2.keymetrics.io/). To install it, run:
+```
+sudo npm install -g pm2
+```
+To start a process for Cityapp:
+```
+pm2 start ~/cityapp/webapp/app.js --name=cityapp
+```
