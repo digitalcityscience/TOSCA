@@ -8,6 +8,20 @@ The backend has two pillars. GeoServer is to serve maps, and GRASS GIS is to pro
 
 Data are basically stored in GRASS GIS mapsets, allowing direct access for calculations.
 
+## Quick start
+
+You can quickly set up a running system via [Docker](https://docs.docker.com/) – download the contents of this repository, change to its root directory and build the Docker image:
+```
+docker build -t cityapp .
+```
+
+Now start a container using the newly created image:
+```
+docker run -d -p 3000:3000 -p 8080:8080 --name cityapp_1 cityapp
+```
+
+The app will run on http://localhost:3000, and GeoServer will be available at http://localhost:8080/geoserver/.
+
 ## 1 System requirements
 
 ### 1.1 Operating system
