@@ -1,6 +1,6 @@
 # Open City Toolkit
 
-The base idea of the software is reatively simple. There is a frontend communicating to the user and displaying the results as maps, data, and graphs, and a backend, processing calculations, queries, data storage, and serving maps. In between there is a software layer as interface allowing the web-based user interface to communicate with the GIS  backend.
+The base idea of the software is relatively simple. There is a frontend communicating to the user and displaying the results as maps, data, and graphs, and a backend, processing calculations, queries, data storage, and serving maps. In between there is a software layer as interface allowing the web-based user interface to communicate with the GIS  backend.
 
 The frontend is a JavaScript-based dashboard, running in a simple web browser (such as Firefox), using the Leaflet library to display various maps.
 
@@ -17,10 +17,18 @@ docker build -t cityapp .
 
 Now start a container using the newly created image:
 ```
-docker run -d -p 3000:3000 -p 8080:8080 --name cityapp_1 cityapp
+docker run -ti \
+  -v ~/<local path to>/geoserver_data:/root/cityapp/geoserver_data \
+  -v ~/<local path to>/grass:/root/cityapp/grass \
+  -p 3000:3000 \
+  -p 8080:8080 \
+  --name cityapp_1 \
+  cityapp
 ```
 
 The app will run on http://localhost:3000, and GeoServer will be available at http://localhost:8080/geoserver/.
+
+The `geoserver_data` and `grass` directories are mounted as volumes into the container, in order to make their contents persistent.
 
 ## 1 System requirements
 

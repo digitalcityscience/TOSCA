@@ -5,13 +5,15 @@ FROM debian:buster
 RUN apt-get update
 RUN apt-get install -y curl unzip
 
-# Install GeoServer
 WORKDIR /usr/share
+
+# Install GeoServer
 RUN curl -o geoserver.zip https://netcologne.dl.sourceforge.net/project/geoserver/GeoServer/2.16.2/geoserver-2.16.2-bin.zip
 RUN unzip geoserver.zip
 RUN mv geoserver-2.16.2 geoserver
 RUN rm geoserver.zip
 ENV GEOSERVER_HOME=/usr/share/geoserver
+ENV GEOSERVER_DATA_DIR=/root/cityapp/geoserver_data
 
 # Install GRASS GIS
 RUN apt-get install -y grass
@@ -24,37 +26,33 @@ RUN curl -L https://deb.nodesource.com/setup_12.x | bash -
 RUN apt-get install -y nodejs
 
 # Install other required packages
-RUN apt-get install -y procps inotify-tools default-jre
+RUN apt-get install -y procps bc inotify-tools openjdk-11-jre
 RUN apt-get clean
 
-# Copy the app
 WORKDIR /root/cityapp
+
+# Configure persistent volumes
+VOLUME ./geoserver_data
+VOLUME ./grass
+
+# Copy scripts
+COPY scripts ./scripts
 RUN mkdir data_from_browser
 RUN mkdir data_to_client
-RUN mkdir geoserver_data
-RUN mkdir -p grass/global
-RUN mkdir -p grass/skel
 RUN mkdir webapp
-COPY grass/skel_permanent ./grass/skel_permanent
-COPY scripts ./scripts
-COPY webapp/public ./webapp/public
-COPY webapp/views ./webapp/views
-COPY webapp/app.js ./webapp/
-COPY webapp/package*.json ./webapp/
-COPY webapp/.env ./webapp/
-COPY run.sh ./
 
-# Link the GeoServer data directory
-RUN rm -r /usr/share/geoserver/data_dir/data
-RUN ln -s /root/cityapp/geoserver_data /usr/share/geoserver/data_dir/data
+WORKDIR /root/cityapp/webapp
 
 # Install webapp
-WORKDIR /root/cityapp/webapp
+COPY webapp/public ./public
+COPY webapp/views ./views
+COPY webapp/app.js ./
+COPY webapp/package*.json ./
+COPY webapp/.env ./
 RUN npm i --only=production
 
 WORKDIR /root/cityapp
 
-EXPOSE 3000
-EXPOSE 8080
-
+# Start scripts
+COPY run.sh ./
 CMD [ "bash", "run.sh" ]

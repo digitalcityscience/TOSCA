@@ -22,10 +22,6 @@ const multer = require('multer')
 const uploadParser = multer()
 
 app.listen(expressPort, () => {
-  console.log(`GEOSERVER_URL:         ${geoserverUrl}`)
-  console.log(`WEBSOCKET_URL:         ${websocketUrl}`)
-  console.log(`DATA_FROM_BROWSER_DIR: ${dataFromBrowser}`)
-  console.log(`DATA_TO_CLIENT_DIR:    ${dataToClient}\n`)
   console.log(`App listening on port ${expressPort}`)
 })
 
@@ -113,15 +109,14 @@ app.post('/file_request', uploadParser.single('file'), async (req, res, next) =>
 })
 
 // send a GeoJSON
-app.post('/select_location', jsonParser, async (req, res, next) => {
-  console.log(req.body)
+app.post('/select_location', jsonParser, async (req, res) => {
   writeMessageToFile('selection.geojson', JSON.stringify(req.body))
 
   try {
     const response = await readMessageFromFile(10000)
     res.send(response)
   } catch (e) {
-    next('Server is unresponsive')
+    console.error('Server is unresponsive')
   }
 })
 
@@ -130,12 +125,11 @@ app.post('/exit', async () => {
   writeMessageToFile('EXIT', 'EXIT')
 })
 
-
 /*
  * Write a text message to the data_from_browser directory
  */
 function writeMessageToFile(filename, msg) {
-  console.log(`echo "${msg}" > ${filename}\n`)
+  console.log(`echo "${msg}" > ${filename}`)
   fs.writeFileSync(`${dataFromBrowser}/${filename}`, msg, ec)
 }
 
@@ -169,7 +163,6 @@ async function readMessageFromFile(timeout) {
         } catch (e) {
           // Otherwise wait a moment and try again
           await new Promise((_resolve) => setTimeout(() => {
-            console.log(`Error: ${e.code} - trying again …`)
             _resolve()
           }, 100))
         }
