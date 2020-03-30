@@ -27,6 +27,8 @@ MESSAGE_SENT=~/cityapp/data_to_client
 #-- Process -------------------
 #
 
+/usr/share/geoserver/bin/shutdown.sh
+
 rm -f ~/cityapp/scripts/shared/temp/*
 rm -f $MESSAGE_SENT/*
 rm -f $VARIABLES/launcher_run
@@ -44,5 +46,10 @@ for i in $(ps a | grep "inotifywait" | grep "$USER" | cut -d" " -f1);do
     kill -9 $i
 done
 
+for i in $(ps a | grep "node app.js" | grep -v grep | cut -d" " -f1);do
+    kill -9 $i
+done
+
 Send_Message m 1 ca_shutdown.1 question actions [\"Yes\"]
+
 exit

@@ -1,14 +1,14 @@
 #! /bin/bash
 . ~/cityapp/scripts/shared/functions
 
-# version 1.31
+# version 1.32
 # CityApp module
 # This module is to check launcer.html
 # when file "launch" exist, execute its content
 #
 # Core module, do not modify!
 #
-# 2020. március 10.
+# 2020. március 26.
 # Author: BUGYA Titusz, CityScienceLab -- Hamburg, Germany
 
 #
@@ -55,7 +55,7 @@ while NEW_FILE=$(inotifywait -e create --format %f $BROWSER); do
                 else
                     rm -f $BROWSER/*
                     $MODULES/$NEW_CONTENT/"cityapp_"$NEW_CONTENT".sh" &
-                    ps a | grep "inotifywait" | grep -v "grep" | sed -d" " -f1 > $VARIABLES/launcher_watcher
+                    ps a | grep "inotifywait" | grep -v "grep" | cut -d" " -f1 > $VARIABLES/launcher_watcher
             fi
             ;;
     esac

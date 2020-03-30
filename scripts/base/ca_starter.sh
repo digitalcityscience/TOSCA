@@ -27,16 +27,31 @@ MESSAGE_SENT=~/cityapp/data_to_client
 #-- Process -------------------
 #
 
-for i in $(ps -a | grep cityapp | sed s'/[a-z _]//'g | cut -d"/" -f1);do
-    echo $i
-    kill -9 $i
-done
+# Restart Geoserver -- first stop, then start. xterm is only for testing purpose
+    xterm -e /usr/share/geoserver/bin/shutdown.sh &
+    xterm -e /usr/share/geoserver/bin/startup.sh &
 
-for i in $(ps -a | grep inotifywait | sed s'/[a-z _]//'g | cut -d"/" -f1);do
-    echo $i
-    kill -9 $i
-done
+# Starting the node.js (xterm only for testing)
+    cd ~/cityapp/webapp
+    xterm -e node app.js &
 
-cd  ~/cityapp
-~/cityapp/scripts/base/cityapp_module_launcher.sh
+cd ~/cityapp
+
+# Killing any previous version of cityapp, avoiding to run a non-expected copy of inotifywait
+    for i in $(ps -a | grep cityapp | sed s'/[a-z _]//'g | cut -d"/" -f1);do
+        echo $i
+        kill -9 $i
+    done
+
+    for i in $(ps -a | grep inotifywait | sed s'/[a-z _]//'g | cut -d"/" -f1);do
+        echo $i
+        kill -9 $i
+    done
+
+# Starting the onesecond app -- this is to touch the "running" file (requested by nod.js) in data_to_client 
+    ~/cityapp/scripts/base/cityapp_onesecond.sh &
+
+# Finally, launching the module_launcher
+    ~/cityapp/scripts/base/cityapp_module_launcher.sh
+
 exit

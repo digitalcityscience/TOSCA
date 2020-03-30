@@ -65,15 +65,15 @@ Send_Message m 1 resolution_setting.1 input actions [\"yes\"]
                 then
                     if [ "$CONTROL_LINE_3" == "$CONTROL_LINE_4" ]
                         then
-                            touch $MESSAGE_SENT/message.resolution_setting.10
-                            echo "{ "\""success"\"": false }" > $MESSAGE_SENT/message.resolution_setting.10
+                            touch $MESSAGE_SENT/message.resolution_setting.3
+                            echo "{ "\""success"\"": false }" > $MESSAGE_SENT/message.resolution_setting.3
                         else
-                            touch $MESSAGE_SENT/message.resolution_setting.10
-                            echo "{ "\""success"\"": true }" > $MESSAGE_SENT/message.resolution_setting.10
+                            touch $MESSAGE_SENT/message.resolution_setting.3
+                            echo "{ "\""success"\"": true }" > $MESSAGE_SENT/message.resolution_setting.3
                     fi
                 else
-                    touch $MESSAGE_SENT/message.resolution_setting.10
-                    echo "{ "\""success"\"": false }" > $MESSAGE_SENT/message.resolution_setting.10
+                    touch $MESSAGE_SENT/message.resolution_setting.3
+                    echo "{ "\""success"\"": false }" > $MESSAGE_SENT/message.resolution_setting.3
             fi
     fi
 sleep 1s
