@@ -2,10 +2,12 @@
 /data_from_browser
 /data_to_client
 temp_*
+.launch_locked
 
 # user data
 /geoserver_data
 /grass/global
+/grass/skel
 
 # Node.js dependencies
 node_modules
