@@ -1,10 +1,10 @@
 #! /bin/bash
 . ~/cityapp/scripts/shared/functions
 
-# version 1.3
+# version 1.31
 # CityApp module
 # Adding new layers to a selected mapset
-# 2020. március 8.
+# 2020. április 5.
 # Author: BUGYA Titusz, CityScienceLab -- Hamburg, Germany
 
 #
@@ -45,14 +45,14 @@ if [ ! $(grass $GRASS/$MAPSET --exec g.list type=vector | grep selection) ]
             Request
                 if [ "$REQUEST_CONTENT" == "yes" ]
                     then
-                        #Message: Select a map to add CityApp. Only gpkg (geopackage) and openstreetmap vector files and geotiff (gtif or tif) raster files are accepted.
+                        #Message: Select a map to add CityApp. Only gpkg (geopackage), geojson and openstreetmap vector files and geotiff (gtif or tif) raster files are accepted.
                         Send_Message m 3 add_map.3 upload actions [\"Yes\"]
-                            Request_Map geojson GEOJSON gpkg GPKG tif TIF tiff TIFF gtif GTIF
-                                if [[ $REQUEST_FILE =~ ".geojson" ]] || [[ $REQUEST_FILE =~ ".GEOJSON" ]] || [[ $REQUEST_FILE =~ ".gpkg" ]] || [[ $REQUEST_FILE =~ ".GPKG" ]]
+                            Request_Map geojson GEOJSON gpkg GPKG osm OSM tif TIF tiff TIFF gtif GTIF
+                                if [[ $REQUEST_FILE =~ ".geojson" ]] || [[ $REQUEST_FILE =~ ".GEOJSON" ]] || [[ $REQUEST_FILE =~ ".gpkg" ]] || [[ $REQUEST_FILE =~ ".GPKG" ]] || [[ $REQUEST_FILE =~ ".osm" ]] || [[ $REQUEST_FILE =~ ".OSM" ]]
                                     then
                                         FILE_TO_IMPORT=$REQUEST_PATH
-                                        #Message: Please, define an output map name.
-                                        Send_Message m 4 add_map.4 input actions [\"Yes\"]
+                                        #Message: Please, define an output map name. Name can contain only english characters, numbers, or underline character. Space and other specific characters are not allowed. For first character a letter only accepted.
+                                        Send_Message m 4 add_map.4 input actions [\"OK\"]
                                             Request
                                                 MAP_NAME=$REQUEST_CONTENT
                                                 Add_Vector $FILE_TO_IMPORT $MAP_NAME
@@ -61,18 +61,21 @@ if [ ! $(grass $GRASS/$MAPSET --exec g.list type=vector | grep selection) ]
                                 if  [[ $REQUEST_FILE =~ ".tif" ]] || [[ $REQUEST_FILE =~ ".TIF" ]] || [[ $REQUEST_FILE =~ ".tiff" ]] || [[ $REQUEST_FILE =~ ".TIFF" ]] || [[ $REQUEST_FILE =~ ".gtif" ]] || [[ $REQUEST_FILE =~ ".GTIF" ]]
                                     then
                                         FILE_TO_IMPORT=$REQUEST_PATH
-                                        #Message: Please, define an output map name.
-                                        Send_Message m 4 add_map.4 input actions [\"Yes\"]
+                                        #Message: Please, define an output map name. Name can contain only english characters, numbers, or underline character. Space and other specific characters are not allowed. For first character a letter only accepted.
+                                        Send_Message m 4 add_map.4 input actions [\"OK\"]
                                             Request
                                                 MAP_NAME=$REQUEST_CONTENT
                                                 Add_Raster $FILE_TO_IMPORT $MAP_NAME
                                 fi
                         else
-                            Close_Process
+                            # Message: Add map module is now exit.
+                            Send_Message m 7 add_map.5 question actions [\"OK\"]
+                                Request
+                                    Close_Process
                             exit
                     fi
-        # Message: Selected map is now succesfully added to your mapset
-        Send_Message m 6 add_map.5 question actions [\"OK\"]
+        # Message: Selected map is now succesfully added to your mapset. Add map module now exit
+        Send_Message m 6 add_map.6 question actions [\"OK\"]
             Request
                 Close_Process
                 exit

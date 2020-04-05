@@ -72,7 +72,7 @@ function coordinates
     if [ ! -d "$GRASS/$MAPSET/" ]
         then
             # PERMANENT not found
-            # Message 1 First have to add an area (such as country) to the dataset. Without area CityApp will not work. Adding a new area may take a long time, depending on the file size. To continue click Yes. To exit, select NO.
+            # Message 1 No valid location found. First have to add a location to the dataset. Without such location, CityApp will not work. Adding a new location may take a long time, depending on the file size. If you want to continue, click Yes.
 
             Send_Message m 1 location_selector.1 question actions [\"Yes\",\"No\"]
                 
@@ -80,7 +80,10 @@ function coordinates
                 Request
                 if [ "$REQUEST_CONTENT" = "no" -o "$REQUEST_CONTENT" = "No" -o "$REQUEST_CONTENT" = "NO" ]
                     then
-                        Close_Process
+                        # Message Location selector is now exiting.
+                        Send_Message m 7 location_selector.10 question actions [\"OK\"]
+                            Request
+                                Close_Process
                         exit
                     else
                         INIT=0
@@ -103,7 +106,7 @@ function coordinates
 case $INIT in
     "0")
         # Message Select a map to add to CityApp. Map has to be in Open Street Map format -- osm is the only accepted format.
-        Send_Message m 2 location_selector.2 upload actions [\"Yes\"]
+        Send_Message m 2 location_selector.2 upload actions [\"OK\"]
             Request_Map osm
                 NEW_AREA_FILE=$REQUEST_PATH
                 rm -f $GEOSERVER/*
@@ -139,8 +142,9 @@ esac
 if [ ! -e $GRASS/$MAPSET/vector/lines_osm ]
     then
         # Message 4 No lines map found in PERMANET mapset, or lines map is damaged. To resolve this error, add again your location (map) to CityApp.
-        Send_Message m 4 location_selector.7 error actions [\"Yes\"]
-        # Message 6 No lines map found in PERMANET mapset, or lines map is damaged.  To resolve this error, add again your location (map) to CityApp.
+        Send_Message m 4 location_selector.7 error actions [\"OK\"]
+            RequestLocation selector is now exiting.
+                Close_Process
         exit
 fi
 
@@ -148,7 +152,7 @@ fi
 coordinates
 
 # Message 5 # Now zoom to area of your interest, then use drawing tool to define your location. Next, save your selection.
-Send_Message m 5 location_selector.8 question actions [\"Yes\"]
+Send_Message m 5 location_selector.8 question actions [\"OK\"]
     # This geojson is the "selection" drawn by the user. Import to GRASS and export to Geoserver
     Request_Map geojson GEOJSON
         GEOJSON_FILE=$REQUEST_PATH 
@@ -189,8 +193,8 @@ if [  $INIT -eq 0 ]
 fi
 
 
-# Message Process finished. No you can exit CityApp Location selector
-Send_Message m 6 location_selector.9 question actions [\"Yes\"]
+# Message Process finished. Now CityApp Location selector exit
+Send_Message m 6 location_selector.9 question actions [\"OK\"]
 # Updating center coordinates to the area of selection
     Request
         rm -f $VARIABLES/launch_locked

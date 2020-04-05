@@ -1,13 +1,13 @@
 #! /bin/bash
 . ~/cityapp/scripts/shared/functions
 
-# version 1.52
+# version 1.54
 # CityApp module
 # This module is to calculate the fastest way from "from_points" to "to_points" thru "via_points".
 # The network is the road network, with user-defined average speed.
 # Defining "from_points" is mandatory, "via_points" and "to_points" are optional.
 # If no "to_points" are selected, the default "to_points" will used: points along the roads, calculated by the application. 
-# 2020. február 10.
+# 2020. április 1.
 # Author: BUGYA Titusz, CityScienceLab -- Hamburg, Germany
 
 #
@@ -50,6 +50,7 @@ if [ ! -d $GRASS/PERMANENT ]
     # check if PERMANENT mapeset exist
         # Message 6 No valid location found. Run Location selector to create a valid location
         Send_Message m 10 module_1.11 error actions [\"Ok\"]
+        Close_Process
 fi
 
 # First overwrite the region of module_1 mapset. If no such mapset exist, create it
@@ -74,9 +75,9 @@ fi
 
     fi        
 
-# Message 1 Start points are required. Do you want to draw start points on the basemap now? If you want to use an already existing map, select No. To exit this module click Cancel. 
+# Message 1 Start points are required. Do you want to draw start points on the basemap now? If yes, click Yes, then draw one or more point and click Save button. If you want to use an already existing map, select No.
     grass $GRASS/$MAPSET --exec g.list -m type=vector > $MODULE/temp_list
-    Send_Message m 1 module_1.1 question actions [\"Yes\",\"No\",\"Cancel\"]
+    Send_Message m 1 module_1.1 question actions [\"Yes\",\"No\"]
         Request
             case $REQUEST_CONTENT in
                 "yes"|"Yes"|"YES")
@@ -141,7 +142,6 @@ fi
         Request
             case $REQUEST_CONTENT in
                 "yes"|"Yes"|"YES")
-                    #Send_Message m 11 module_1.13 question actions [\"OK\"]
                     AREA=0
                     Request_Map geojson GEOJSON
                         FRESH=$REQUEST_PATH
@@ -173,7 +173,7 @@ fi
                     Send_Message l 8 module_1.10 select actions [\"Yes\",] $VARIABLES/roads_speed
                         Request
                             # echo $REQUEST_CONTENT > $VARIABLES/roads_speed;;
-                    # Specific value will servs as speed value for non classified elements and newly inserted connecting line segments. Speed of these features will set to speed of service roads
+                    # Specific value will serves as speed value for non classified elements and newly inserted connecting line segments. Speed of these features will set to speed of service roads
                     #REDUCING_RATIO=$(cat $VARIABLES/roads_speed | head -n$n | tail -n1 | cut -d":" -f2 | sed s'/ //'g)
                     ;;
                 "no"|"No"|"NO")
@@ -283,6 +283,9 @@ grass $GRASS/$MAPSET --exec v.net input=highways points=from_via_to_points outpu
     grass $GRASS/$MAPSET --exec v.what.rast map=highway_points@module_1 raster=m1_time_map layer=2 column=time --overwrite
     grass $GRASS/$MAPSET --exec v.surf.rst input=highway_points@module_1 layer=2 zcolumn=time where="time>0" elevation=m1_time_map_interpolated tension=$TENSION smooth=$SMOOTH nprocs=4 --overwrite 
     grass $GRASS/$MAPSET --exec r.out.gdal input=m1_time_map_interpolated output=$GEOSERVER/m1_time_map_interpolated.tif format=GTiff --overwrite --quiet
+    
+Send_Message m 12 module_1.14 question actions [\"OK\"]
+    Request
+        Close_Process
 
-    Close_Process
 exit
