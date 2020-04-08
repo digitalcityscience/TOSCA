@@ -27,6 +27,10 @@ app.listen(expressPort, () => {
 
 // Static files
 app.use(express.static('public'))
+app.use('/lib/jquery', express.static('node_modules/jquery/dist'));
+app.use('/lib/bootstrap', express.static('node_modules/bootstrap/dist'));
+app.use('/lib/leaflet', express.static('node_modules/leaflet/dist'));
+app.use('/lib/leaflet-draw', express.static('node_modules/leaflet-draw/dist'));
 
 // Views (using Pug template engine)
 app.set('views', './views')
