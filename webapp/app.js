@@ -47,7 +47,7 @@ app.get('/', (req, res) => {
   res.render('launch', options)
 })
 
-// request to launch a module
+// launch a module
 app.post('/launch', jsonParser, async (req, res, next) => {
   writeMessageToFile('launch', req.body.launch)
 
@@ -59,7 +59,7 @@ app.post('/launch', jsonParser, async (req, res, next) => {
   }
 })
 
-// request to display a map
+// display a map
 app.post('/display', jsonParser, async (req, res, next) => {
   writeMessageToFile('display', req.body.display)
 
@@ -71,7 +71,7 @@ app.post('/display', jsonParser, async (req, res, next) => {
   }
 })
 
-// request to query a map
+// query a map
 app.post('/query', jsonParser, async (req, res, next) => {
   writeMessageToFile('query', req.body.query)
 
@@ -83,12 +83,16 @@ app.post('/query', jsonParser, async (req, res, next) => {
   }
 })
 
-// user interaction, e.g. through a modal
+// send generic request
 app.post('/request', jsonParser, async (req, res, next) => {
   writeMessageToFile('request', req.body.msg)
 
+  if (req.body.noCallback) {
+    return
+  }
+
   try {
-    const response = await readMessageFromFile(2000)
+    const response = await readMessageFromFile(4000)
     res.send(response)
   } catch (e) {
     next('Server is unresponsive')
@@ -113,14 +117,14 @@ app.post('/file_request', uploadParser.single('file'), async (req, res, next) =>
 })
 
 // send a GeoJSON
-app.post('/select_location', jsonParser, async (req, res) => {
+app.post('/select_location', jsonParser, async (req, res, next) => {
   writeMessageToFile('selection.geojson', JSON.stringify(req.body))
 
   try {
     const response = await readMessageFromFile(10000)
     res.send(response)
   } catch (e) {
-    console.error('Server is unresponsive')
+    next('Server is unresponsive')
   }
 })
 
@@ -153,7 +157,7 @@ async function readMessageFromFile(timeout) {
 
     // Watch the data_to_client directory for file system changes
     const watcher = fs.watch(dataToClient, {}, async (event, filename) => {
-      console.log(event, filename)
+      console.log(`detected ${filename}`)
 
       while (trying) {
         try {

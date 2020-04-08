@@ -90,7 +90,6 @@ map.addControl(new L.Control.Draw({
       fill: '#FFFFFF',
     },
     polyline: false,
-    polygon: true,
     rectangle: false,
     circle: false,
     marker: false,

@@ -1,156 +1,155 @@
-/* Incoming */
+/* Handle incoming messages from backend */
 
-function handleResponse(json) {
-  if (json.filename) {
-    console.log(`Received ${json.filename}`);
-    json.filename = json.filename.replace(/\./g, '_');
-  }
+function handleResponse({ filename, message }) {
+  const messageId = filename.replace(/\./g, '_');
 
-  // Clear the message area and buttons
-
-  // All messages end up here, so first the type of message needs to be determined.
-  // - Coordinates
-  if (json.message.lat && json.message.lon) {
-    map.panTo(new L.LatLng(json.message.lat, json.message.lon));
+  if (message.lat && message.lon) {
+    map.panTo(new L.LatLng(message.lat, message.lon));
     return;
   }
 
-  // - user input
-  if (json.message.modalType) {
-    $('#textarea').empty();
-    $('#buttonarea').empty();
+  if (!message.text) {
+    console.error('Error: Empty message');
+    return;
+  }
 
-    const text = generateTextarea(json.message.modalType, json.message.text, json.filename);
-    const textarea = $('#textarea');
-    textarea.append(text);
+  const textarea = $('#textarea');
+  const buttonarea = $('#buttonarea');
 
-    const buttons = json.message.actions.map(action => {
-      const btn = $(`<button type="button" class="button button-green"></button>`).text(action);
-      action = action.toLowerCase();
+  const close = () => {
+    textarea.empty();
+    buttonarea.empty();
+  }
 
-      switch (json.message.modalType) {
-        case 'error':
-        case 'question':
-          btn.click(() => {
-            reply(action)
-          });
-          break;
-        case 'input':
-          if (action === 'yes' || action === 'ok') {
-            const input = textarea.find(`#${json.filename}-input`);
-            btn.click(() => {
-              reply(input.val());
-            });
+  close();
+
+  let text = textElement(message.text), form, buttons;
+
+  switch (filename) {
+    // add_map
+    case 'message.add_map.1':
+      buttons = [
+        buttonElement('OK').click(() => {
+          reply('OK', true);
+          close();
+        })
+      ];
+      break;
+    case 'message.add_map.2':
+      buttons = [
+        buttonElement('Yes').click(() => {
+          reply('Yes', true);
+          close();
+        }),
+        buttonElement('No').click(() => {
+          reply('No', true);
+          close();
+        })
+      ];
+      break;
+    case 'message.add_map.5':
+      buttons = [
+        buttonElement('OK').click(() => {
+          reply('OK', false);
+          close();
+        })
+      ];
+      break;
+
+    // location_selector
+    case 'message.location_selector.1':
+      buttons = [
+        buttonElement('Yes').click(() => {
+          reply('Yes', true);
+          close();
+        }),
+        buttonElement('No').click(() => {
+          reply('No', true);
+          close();
+        })
+      ];
+      break;
+    case 'message.location_selector.2':
+      form = formElement(messageId);
+      form.append($(`<input id="${messageId}-input" type="file" name="file" />`));
+      buttons = [
+        buttonElement('Submit').click(() => {
+          const input = $(`#${messageId}-input`);
+          if (input[0].files.length) {
+            upload(form[0], handleResponse);
           }
-          break;
-        case 'upload':
-          if (action === 'yes' || action === 'ok') {
-            btn.click(() => {
-              const form = textarea.find('form')[0];
-              const input = textarea.find(`#${json.filename}-input`)[0];
-              if (input.files.length) {
-                upload(form);
-              }
-            });
-          }
-      }
-      $('<a></a>').append(btn[0]).appendTo($('#buttonarea'));
+          close();
+        })
+      ];
+      break;
+    case 'message.location_selector.3':
+      buttons = [
+        buttonElement('Yes').click(() => {
+          reply('Yes', true);
+          close();
+        }),
+        buttonElement('No').click(() => {
+          reply('No', true);
+          close();
+        })
+      ];
+      break;
+    case 'message.location_selector.10':
+      buttons = [
+        buttonElement('OK').click(() => {
+          reply('OK', false);
+          close();
+        })
+      ];
+      break;
+
+    // resolution_setting
+    case 'message.resolution_setting.1':
+    case 'message.resolution_setting.2':
+      form = formElement(messageId);
+      form.append($(`<input id="${messageId}-input" type="number" />`));
+      buttons = [
+        buttonElement('Submit').click(() => {
+          const input = $(`#${messageId}-input`);
+          reply(input.val(), true);
+          close();
+        })
+      ];
+      break;
+  }
+
+  textarea.append(text);
+
+  if (form) {
+    textarea.append(form);
+  }
+
+  if (buttons) {
+    buttons.forEach((button) => {
+      buttonarea.append(button);
     });
   }
 }
-function generateTextarea(modalType, text, id) {
-  const content = $(`<form id="${id}-form" enctype="${modalType === 'upload' ? 'multipart/form-data' : ''}">
-  <div class="modal-body">
-    <p class="modal-body-text">${text}</p>
-  </div>
-</form>`);
-  if (modalType === 'input') {
-    content.find('.modal-body').append($(`<p class="modal-body-input"><input id="${id}-input" type="text" /></p>`))
-  } else if (modalType === 'upload') {
-    content.find('.modal-body').append($(`<p class="modal-body-input"><input id="${id}-input" type="file" name="file" /></p>`))
-  }
-  return content;
+
+function textElement(text) {
+  return $(`<div class="textarea-text">${text}</div>`);
 }
 
-
-function handleResponseInModal(json) {
-  if (json.filename) {
-    console.log(`Received ${json.filename}`);
-    json.filename = json.filename.replace(/\./g, '_');
-  }
-
-  // - user input
-  if (json.message.modalType) {
-    $(`#${json.filename}`).remove();
-
-    const modal = generateModal(json.message.modalType, json.message.text, json.filename)
-    modal.modal({ backdrop: 'static' })
-
-    const buttons = json.message.actions.map(action => {
-      const btn = $(`<button type="button" class="btn btn-primary" data-dismiss="modal"></button>`).text(action);
-      action = action.toLowerCase();
-
-      switch (json.message.modalType) {
-        case 'error':
-        case 'question':
-          btn.click(() => {
-            reply(action)
-          });
-          break;
-        case 'input':
-          if (action === 'yes' || action === 'ok') {
-            const input = modal.find(`#${json.filename}-input`);
-            btn.click(() => {
-              reply(input.val());
-            });
-          }
-          break;
-        case 'upload':
-          if (action === 'yes' || action === 'ok') {
-            btn.click(() => {
-              const form = modal.find('form')[0];
-              const input = modal.find(`#${json.filename}-input`)[0];
-              if (input.files.length) {
-                upload(form);
-              }
-            });
-          }
-      }
-      return btn;
-    });
-
-    modal.find('.modal-footer').append(buttons);
-  }
+function formElement(id, isMultipart) {
+  return $(`<form id="${id}-form" enctype="${isMultipart ? 'multipart/form-data' : ''}"></form>`);
 }
 
-function generateModal(modalType, text, id) {
-  const modal = $(`<div class="modal fade show" id="${id}" tabindex="-1" role="dialog">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <form id="${id}-form" enctype="${modalType === 'upload' ? 'multipart/form-data' : ''}">
-        <div class="modal-body">
-          <p class="modal-body-text">${text}</p>
-        </div>
-        <div class="modal-footer"></div>
-      </form>
-    </div>
-  </div>
-</div>`)
-  if (modalType === 'input') {
-    modal.find('.modal-body').append($(`<p class="modal-body-input"><input id="${id}-input" type="text" /></p>`))
-  } else if (modalType === 'upload') {
-    modal.find('.modal-body').append($(`<p class="modal-body-input"><input id="${id}-input" type="file" name="file" /></p>`))
-  }
-  return modal
+function buttonElement(action) {
+  return $(`<button type="button" class="button button-green">${action}</button>`);
 }
 
-/* Backend communication */
+/* Send messages to the backend */
 
 function launch() {
   // Get the selected item
   const value = $('#launch-menu')[0].value;
   if (value) {
-    sendMessage('/launch', { launch: value }, true, handleResponse);
+    sendMessage('/launch', { launch: value }, handleResponse);
   }
 }
 
@@ -158,7 +157,7 @@ function display() {
   // Get the selected item
   const value = $('#maps-menu')[0].value;
   if (value) {
-    sendMessage('/display', { display: value }, true, handleResponse);
+    sendMessage('/display', { display: value }, handleResponse);
   }
 }
 
@@ -166,25 +165,25 @@ function query() {
   // Get the selected item
   const value = $('#query-menu')[0].value;
   if (value) {
-    sendMessage('/query', { query: value }, true, handleResponse);
+    sendMessage('/query', { query: value }, handleResponse);
   }
 }
 
-function exit() {
-  sendMessage('/exit');
+function reply(message, expectResponse) {
+  sendMessage('/request', { msg: message }, expectResponse ? handleResponse : null);
 }
 
-function reply(message) {
-  sendMessage('/request', { msg: message }, true, handleResponse);
-}
+function sendMessage(target, message, callback) {
+  if (!callback) {
+    message.noCallback = true;
+  }
 
-function sendMessage(target, message, isJson, callback) {
   $.ajax({
     type: 'POST',
     url: target,
-    data: isJson ? JSON.stringify(message) : message,
+    data: JSON.stringify(message),
     dataType: 'json',
-    contentType: isJson ? 'application/json; encoding=utf-8' : false
+    contentType: 'application/json; encoding=utf-8'
   }).done((data) => {
     if (callback) {
       callback(data);
@@ -196,7 +195,7 @@ function sendMessage(target, message, isJson, callback) {
   });
 }
 
-function upload(form) {
+function upload(form, callback) {
   $.ajax({
     type: 'POST',
     url: '/file_request',
@@ -206,7 +205,9 @@ function upload(form) {
     contentType: false,
     processData: false
   }).done((data) => {
-    handleResponse(data);
+    if (callback) {
+      callback(data);
+    }
   }).fail(() => {
     const text = 'The server is not responding. Please check if it is running.';
     const alert = $(`<div class="alert alert-danger" role="alert">${text}&nbsp;&nbsp;<button class="close" data-dismiss="alert">×</button></div>`);

@@ -52,27 +52,29 @@ h1 {
   flex-direction: row;
 }
 
-.card.card-buttons a {
+.card.card-buttons button {
   margin: 5px;
 }
 
-.card.card-buttons a:first-child {
+.card.card-buttons button:first-child {
   margin-left: 0;
 }
 
-.card.card-buttons a:last-child {
+.card.card-buttons button:last-child {
   margin-right: 0;
 }
 
 .card.card-border {
   padding: 10px;
-  border: 1px solid darkgreen;
+  border-width: 1px;
+  border-style: solid;
   border-radius: 6px;
+  border-color: darkgreen;
 }
 
-.card.card-border-yellow {
+.card.card-border.card-border-yellow {
   background-color: #fffdaa;
-  border: 1px solid red;
+  border-color: red;
 }
 
 #textarea,
@@ -140,10 +142,6 @@ h1 {
   color: #660000;
   background-color: #ffaaaa;
   border: 1px solid #660000;
-}
-
-.modal form {
-  margin-bottom: 0;
 }
 
 #alert-anchor {

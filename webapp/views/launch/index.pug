@@ -1,6 +1,6 @@
 html
   head
-    title Launch
+    title Open City Toolkit
 
     link(rel='stylesheet' href='/lib/bootstrap/css/bootstrap.min.css')
     link(rel='stylesheet' href='/lib/leaflet/leaflet.css')
@@ -28,14 +28,12 @@ html
       div(class='sidebar')
         div(id='help' class='card card-buttons row')
           a: button(class='button button-yellow') Help
-          a: button(class='button button-red' onclick='exit()') Exit module
-          a: button(class='button button-red' onclick='exit()') Stop all
 
-        div(id='textarea' class='card card-border-yellow')
+        div(id='textarea' class='card card-border card-border-yellow')
 
         div(id='buttonarea' class='card card-buttons row')
 
-        div(id='lists' class='card card-border-yellow')
+        div(id='lists' class='card card-border card-border-yellow')
 
         div(id='launch' class='card card-border')
           select(id='launch-menu' class='select-menu')
