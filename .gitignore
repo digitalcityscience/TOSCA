@@ -1,11 +1,14 @@
-# temporary
+# runtime files
 /data_from_browser
 /data_to_client
 temp_*
 .launch_locked
+launch_locked
 
 # user data
-/geoserver_data
+/geoserver_data/*
+!/geoserver_data/workspaces
+!/geoserver_data/logging.xml
 /grass/global
 /grass/skel
 
