@@ -1,5 +1,5 @@
 #! /bin/bash
-. ~/cityapp/scripts/shared/functions
+. ~/cityapp/scripts/shared/functions.sh
 
 # version 1.0
 # CityApp module

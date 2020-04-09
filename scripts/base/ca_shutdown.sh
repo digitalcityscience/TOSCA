@@ -1,13 +1,13 @@
 #! /bin/bash
-. ~/cityapp/scripts/shared/functions
+. ~/cityapp/scripts/shared/functions.sh
 
-# version 1.31
+# version 1.32
 # CityApp module
 # This module is to shutdown cityapp system
 #
 # Core module, do not modify!
 #
-# 2020. március 11.
+# 2020. április 9.
 # Author: BUGYA Titusz, CityScienceLab -- Hamburg, Germany
 
 #
@@ -46,9 +46,9 @@ for i in $(ps a | grep "inotifywait" | grep "$USER" | cut -d" " -f1);do
     kill -9 $i
 done
 
-for i in $(ps a | grep "node app.js" | grep -v grep | cut -d" " -f1);do
-    kill -9 $i
-done
+#for i in $(ps a | grep "node app.js" | grep -v grep | cut -d" " -f1);do
+#    kill -9 $i
+#done
 
 Send_Message m 1 ca_shutdown.1 question actions [\"Yes\"]
 

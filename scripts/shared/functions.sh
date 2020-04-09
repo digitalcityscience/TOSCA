@@ -143,13 +143,15 @@ Gpkg_Out ()
 Json_To_Text ()
     # Decode from JSON to simle text; Parameters: {$1 -- JSON file in (it is practically the content of the last request), ; $2 -- text file out}
     {
+    touch $2
     if [[ $(cat $1 | grep '\{') ]]
         then
             cat $J1 | sed s'/,"/\n/'g | sed s'/{/\n/'g | sed s'/"//'g | sed s'/text://'g | sed s'/list://'g | sed s'/}//'g | sed s'/ //'g | tail -n9 | cut -d":" -f2 > $2
         else
             if [[ $(cat $1 | grep '\[') ]]
                 then
-                    cat $1 | sed s'/","/\n/'g | sed s'/\[//'g | sed s'/\]//'g | sed s'/"//'g | sed s'/ //'g | sed s'/,//'g > $2
+                    cat $1 | sed s'/","/\n/'g | sed s'/\[//'g | sed s'/\]//'g | sed s'/"//'g | sed s'/ //'g > $2
+                    #cat $1 | sed s'/","/\n/'g | sed s'/\[//'g | sed s'/\]//'g | sed s'/"//'g | sed s'/ //'g | sed s'/,//'g > $2
             fi
     fi
     }

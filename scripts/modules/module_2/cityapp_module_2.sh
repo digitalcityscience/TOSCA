@@ -1,5 +1,5 @@
 #! /bin/bash
-. ~/cityapp/scripts/shared/functions
+. ~/cityapp/scripts/shared/functions.sh
 
 # version 1.2
 # CityApp module
@@ -42,22 +42,22 @@ rm -f $MESSAGE_SENT/*
             cp $GRASS/PERMANENT/WIND $GRASS/$MAPSET/WIND
     fi
 
-# Message 1 Draw an area to qery
-    Send_Message m 1 module_2.1
-        Request geojson
+# Message 1 Draw an area to query
+    Send_Message m 1 module_2.1 question actions [\"OK\"]
+        Request_Map geojson
             QUERY_AREA=$REQUEST_PATH
             
             # copy for archiving -- later, when a saving is not requested, it will deleted
-            cp $REQUEST_PATH $MODULE/temp_storage
+            cp $REQUEST_PATH $MODULE/temp_storage/query_area
 
             Add_Vector $QUERY_AREA query_area_1
             QUERY_AREA="query_area_1"
             
             Gpkg_Out query_area_1 query_area_1
     
-# Message 2 Only can query maps of PERMANENT mapset. Maps in What is the map you want to query? Available maps are:
+# Message 2 Only can query maps of PERMANENT mapset. What is the map you want to query? Available maps are:
     grass $GRASS/$MAPSET --exec g.list mapset=PERMANENT type=vector > $MODULE/temp_maps
-    Send_Message l 2 module_2.2 $MODULE/temp_maps
+    Send_Message l 2 module_2.2 select actions [\"OK\"] $MODULE/temp_maps
         Request
             MAP_TO_QUERY=$REQUEST_CONTENT
             # copy for achiving
@@ -65,34 +65,38 @@ rm -f $MESSAGE_SENT/*
 
             # Now it is possible to chechk if the map to query is in the default mapset (set in the header as MAPSET), or not. If not, the map has to be copied into the module_2 mapset and the further processes will taken in this mapset.
             
-            if [ ! grass $GRASS/$MAPSET --exec g.list type=vector mapset=module_2 | grep "$MAP_TO_QUERY" ]
+            if [ grass $GRASS/$MAPSET --exec g.list type=vector mapset=module_2 | grep "$MAP_TO_QUERY" ]
                 then
+                    echo ""
+                else
                     grass $GRASS/$MAPSET --exec g.copy vector=$MAP_TO_QUERY"@"PERMANENT,$MAP_TO_QUERY
             fi
 
 # Message 3 Fill the form and press save.
     grass $GRASS/$MAPSET --exec db.columns table=$MAP_TO_QUERY > $MODULE/temp_columns
-    Send_Message l 3 module_2.3 $MODULE/temp_columns
+    Send_Message l 3 module_2.3 select actions [\"OK\"] $MODULE/temp_columns
         Request
-            Json_To_Text $REQUEST_PATH $MODULE/temp_request
+            echo $REQUEST_CONTENT > $MODULE/temp_storage/query_request
 
-            QUERY_COLUMN_A=$(cat $MODULE/temp_request | head -n3 | tail -n1)
+            Json_To_Text $MODULE/temp_storage/query_request $MODULE/temp_request
 
-            WHERE_COLUMN_1=$(cat $MODULE/temp_request | head -n4 | tail -n1)
-            RELATION_1=$(cat $MODULE/temp_request | head -n5 | tail -n1)
-            VALUE_1=$(cat $MODULE/temp_request | head -n6 | tail -n1)
+            QUERY_COLUMN_A=$(cat $MODULE/temp_request | cut -d"," -f2)
 
-            LOGICAL_1=$(cat $MODULE/temp_request | head -n7 | tail -n1)
+            WHERE_COLUMN_1=$(cat $MODULE/temp_request | cut -d"," -f3)
+            RELATION_1=$(cat $MODULE/temp_request | cut -d"," -f4)
+            VALUE_1=$(cat $MODULE/temp_request | cut -d"," -f5)
 
-            WHERE_COLUMN_2=$(cat $MODULE/temp_request | head -n8 | tail -n1)
-            RELATION_2=$(cat $MODULE/temp_request | head -n9 | tail -n1)
-            VALUE_2=$(cat $MODULE/temp_request | head -n10 | tail -n1)
+            LOGICAL_1=$(cat $MODULE/temp_request | cut -d"," -f6)
 
-            LOGICAL_2=$(cat $MODULE/temp_request | head -n11 | tail -n1)
+            WHERE_COLUMN_2=$(cat $MODULE/temp_request | cut -d"," -f7)
+            RELATION_2=$(cat $MODULE/temp_request | cut -d"," -f8)
+            VALUE_2=$(cat $MODULE/temp_request | cut -d"," -f9)
 
-            WHERE_COLUMN_3=$(cat $MODULE/temp_request | head -n12 | tail -n1)
-            RELATION_3=$(cat $MODULE/temp_request | head -n13 | tail -n1)
-            VALUE_3=$(cat $MODULE/temp_request | head -n14 | tail -n1)
+            LOGICAL_2=$(cat $MODULE/temp_request | cut -d"," -f10)
+
+            WHERE_COLUMN_3=$(cat $MODULE/temp_request | cut -d"," -f11)
+            RELATION_3=$(cat $MODULE/temp_request | cut -d"," -f12)
+            VALUE_3=$(cat $MODULE/temp_request | cut -d"," -f13)
 
             WHERE=$(echo $WHERE_COLUMN_1 $RELATION_1 $VALUE_1 $LOGICAL_1 $WHERE_COLUMN_2 $RELATION_2 $VALUE_2 $LOGICAL_2 $WHERE_COLUMN_3 $RELATION_3 $VALUE_3 | sed s'/,//'g)
     

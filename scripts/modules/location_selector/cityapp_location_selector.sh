@@ -1,14 +1,14 @@
 #! /bin/bash
-. ~/cityapp/scripts/shared/functions
+. ~/cityapp/scripts/shared/functions.sh
 
-# version 1.43
+# version 1.44
 # CityApp module
 # Import OSM maps into PERMANENT mapset. Points, lines, polygons, relations are only imported. Other maps can be extracted from these in separate modules.
 # To import other maps, use Add Layer module.
 #
 # Core module, do not modify.
 #
-# 2020. március 10.
+# 2020. április 9.
 # Author: BUGYA Titusz, CityScienceLab -- Hamburg, Germany
 
 #
@@ -126,9 +126,9 @@ case $INIT in
                 # Copy basemaps into $GEOSERVER/saved
                 # From now this directory will contains the original, unclipped maps.
                 # This may useful for further operations.
-                cp $GEOSERVER/points.gpkg $GEOSERVER/saved/
-                cp $GEOSERVER/lines.gpkg $GEOSERVER/saved/
-                cp $GEOSERVER/polygons.gpkg $GEOSERVER/saved/
+                #cp $GEOSERVER/points.gpkg $GEOSERVER/saved/
+                #cp $GEOSERVER/lines.gpkg $GEOSERVER/saved/
+                #cp $GEOSERVER/polygons.gpkg $GEOSERVER/saved/
                 rm -f $VARIABLES/location_mod
                 touch $VARIABLES/location_new
                 ;;
@@ -141,7 +141,7 @@ esac
 
 if [ ! -e $GRASS/$MAPSET/vector/lines_osm ]
     then
-        # Message 4 No lines map found in PERMANET mapset, or lines map is damaged. To resolve this error, add again your location (map) to CityApp.
+        # Message 4 No lines map found in PERMANET mapset, or lines map is damaged. To resolve this error, add again your location (map) to CityApp. Modul is now exiting.
         Send_Message m 4 location_selector.7 error actions [\"OK\"]
             RequestLocation selector is now exiting.
                 Close_Process

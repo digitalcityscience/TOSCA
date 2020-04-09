@@ -1,13 +1,13 @@
 #! /bin/bash
-. ~/cityapp/scripts/shared/functions
+. ~/cityapp/scripts/shared/functions.sh
 
-# version 1.3
+# version 1.31
 # CityApp module
 # This module is to start cityapp system
 #
 # Core module, do not modify!
 #
-# 2020. március 6.
+# 2020. április 9.
 # Author: BUGYA Titusz, CityScienceLab -- Hamburg, Germany
 
 #
@@ -28,12 +28,12 @@ MESSAGE_SENT=~/cityapp/data_to_client
 #
 
 # Restart Geoserver -- first stop, then start. xterm is only for testing purpose
-    xterm -e /usr/share/geoserver/bin/shutdown.sh &
-    xterm -e /usr/share/geoserver/bin/startup.sh &
+    /usr/share/geoserver/bin/shutdown.sh &
+    /usr/share/geoserver/bin/startup.sh &
 
 # Starting the node.js (xterm only for testing)
     cd ~/cityapp/webapp
-    xterm -e node app.js &
+     node app.js &
 
 cd ~/cityapp
 

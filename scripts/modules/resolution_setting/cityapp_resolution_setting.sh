@@ -1,10 +1,10 @@
 #! /bin/bash
-. ~/cityapp/scripts/shared/functions
+. ~/cityapp/scripts/shared/functions.sh
 
-# version 1.3
+# version 1.31
 # CityApp maintenance
 # Resolution setting
-# 2020. március 17.
+# 2020. április 9.
 # Author: BUGYA Titusz, CityScienceLab -- Hamburg, Germany
 
 #
@@ -18,9 +18,9 @@ MODULE=~/cityapp/scripts/modules/resolution_setting
 MODULE_NAME=cityapp_resolution_setting
 VARIABLES=~/cityapp/scripts/shared/variables
 BROWSER=~/cityapp/data_from_browser
+LANGUAGE=$(cat ~/cityapp/scripts/shared/variables/lang)
 MESSAGE_TEXT=~/cityapp/scripts/shared/messages/$LANGUAGE/resolution_setting
 MESSAGE_SENT=~/cityapp/data_to_client
-LANGUAGE=$(cat ~/cityapp/scripts/shared/variables/lang)
 
 touch $VARIABLES/.launch_locked
 

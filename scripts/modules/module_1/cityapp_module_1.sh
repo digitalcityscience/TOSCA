@@ -1,5 +1,5 @@
 #! /bin/bash
-. ~/cityapp/scripts/shared/functions
+. ~/cityapp/scripts/shared/functions.sh
 
 # version 1.54
 # CityApp module
@@ -108,7 +108,7 @@ fi
                         VIA_POINT=m1_via_points;;
                 "no"|"No"|"NO")
                     VIA=1
-                    Send_Message l 2 module_1.4  select actions [\"Yes\"] $MODULE/temp_list # Waiting for a map name (map already have to exist in GRASS)
+                    Send_Message l 2 module_1.4  select actions [\"OK\"] $MODULE/temp_list # Waiting for a map name (map already have to exist in GRASS)
                     Request
                         VIA_POINT=$REQUEST_CONTENT;;
                 "cancel"|"Cancel"|"CANCEL")
@@ -129,7 +129,7 @@ fi
                         TO_POINT=m1_to_points;;
                 "no"|"No"|"NO")
                     TO=1
-                    Send_Message l 2 module_1.6 select actions [\"Yes\"] $MODULE/temp_list # Waiting for a map name (map already have to exist in GRASS)
+                    Send_Message l 2 module_1.6 select actions [\"OK\"] $MODULE/temp_list # Waiting for a map name (map already have to exist in GRASS)
                     Request
                         TO_POINT=$REQUEST_CONTENT;;
                 "cancel"|"Cancel"|"CANCEL")
@@ -148,14 +148,14 @@ fi
                         Add_Vector $FRESH m1_stricken_area
                         Gpkg_Out m1_stricken_area m1_stricken_area
                         AREA_MAP="m1_stricken_area"
-                    Send_Message m 9 module_1.12 input action [\"Yes\"]
+                    Send_Message m 9 module_1.12 input action [\"OK\"]
                         Request
                             REDUCING_RATIO=$REQUEST_CONTENT;;
                 "no"|"No"|"NO")
-                    Send_Message m 6 module_1.8 select action [\"Yes\"] # Waiting for a map name (map already have to exist in GRASS)
+                    Send_Message m 6 module_1.8 select action [\"OK\"] # Waiting for a map name (map already have to exist in GRASS)
                     Request
                         AREA_MAP=$REQUEST_CONTENT
-                    Send_Message m 9 module_1.12 input action [\"Yes\"]
+                    Send_Message m 9 module_1.12 input action [\"OK\"]
                         Request
                             REDUCING_RATIO=$REQUEST_CONTENT;;
                 "cancel"|"Cancel"|"CANCEL")
@@ -170,7 +170,7 @@ fi
             case $REQUEST_CONTENT in
                 "yes"|"Yes"|"YES")
                     # Message Now you can change the speed values. Current values are:
-                    Send_Message l 8 module_1.10 select actions [\"Yes\",] $VARIABLES/roads_speed
+                    Send_Message l 8 module_1.10 select actions [\"OK\",] $VARIABLES/roads_speed
                         Request
                             # echo $REQUEST_CONTENT > $VARIABLES/roads_speed;;
                     # Specific value will serves as speed value for non classified elements and newly inserted connecting line segments. Speed of these features will set to speed of service roads
