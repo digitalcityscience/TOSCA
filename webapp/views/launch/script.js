@@ -30,7 +30,7 @@ function handleResponse({ filename, message }) {
     case 'message.add_map.1':
       buttons = [
         buttonElement('OK').click(() => {
-          reply('OK', true);
+          reply('ok', true);
           close();
         })
       ];
@@ -38,11 +38,35 @@ function handleResponse({ filename, message }) {
     case 'message.add_map.2':
       buttons = [
         buttonElement('Yes').click(() => {
-          reply('Yes', true);
+          reply('yes', true);
           close();
         }),
         buttonElement('No').click(() => {
-          reply('No', true);
+          reply('no', true);
+          close();
+        })
+      ];
+      break;
+    case 'message.add_map.3':
+      form = formElement(messageId);
+      form.append($(`<input id="${messageId}-input" type="file" name="file" />`));
+      buttons = [
+        buttonElement('Submit').click(() => {
+          const input = $(`#${messageId}-input`);
+          if (input[0].files.length) {
+            upload(form[0], handleResponse);
+          }
+          close();
+        })
+      ];
+      break;
+    case 'message.add_map.4':
+      form = formElement(messageId);
+      form.append($(`<input id="${messageId}-input" type="text" />`));
+      buttons = [
+        buttonElement('Submit').click(() => {
+          const input = $(`#${messageId}-input`);
+          reply(input.val(), true);
           close();
         })
       ];
@@ -50,7 +74,7 @@ function handleResponse({ filename, message }) {
     case 'message.add_map.5':
       buttons = [
         buttonElement('OK').click(() => {
-          reply('OK', false);
+          reply('ok', false);
           close();
         })
       ];
@@ -60,11 +84,11 @@ function handleResponse({ filename, message }) {
     case 'message.location_selector.1':
       buttons = [
         buttonElement('Yes').click(() => {
-          reply('Yes', true);
+          reply('yes', true);
           close();
         }),
         buttonElement('No').click(() => {
-          reply('No', true);
+          reply('no', true);
           close();
         })
       ];
@@ -85,11 +109,11 @@ function handleResponse({ filename, message }) {
     case 'message.location_selector.3':
       buttons = [
         buttonElement('Yes').click(() => {
-          reply('Yes', true);
+          reply('yes', true);
           close();
         }),
         buttonElement('No').click(() => {
-          reply('No', true);
+          reply('no', true);
           close();
         })
       ];
@@ -97,7 +121,7 @@ function handleResponse({ filename, message }) {
     case 'message.location_selector.10':
       buttons = [
         buttonElement('OK').click(() => {
-          reply('OK', false);
+          reply('ok', false);
           close();
         })
       ];

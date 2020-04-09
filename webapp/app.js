@@ -52,7 +52,7 @@ app.post('/launch', jsonParser, async (req, res, next) => {
   writeMessageToFile('launch', req.body.launch)
 
   try {
-    const response = await readMessageFromFile(2000)
+    const response = await readMessageFromFile()
     res.send(response)
   } catch (e) {
     next('Server is unresponsive')
@@ -64,7 +64,7 @@ app.post('/display', jsonParser, async (req, res, next) => {
   writeMessageToFile('display', req.body.display)
 
   try {
-    const response = await readMessageFromFile(2000)
+    const response = await readMessageFromFile()
     res.send(response)
   } catch (e) {
     next('Server is unresponsive')
@@ -76,7 +76,7 @@ app.post('/query', jsonParser, async (req, res, next) => {
   writeMessageToFile('query', req.body.query)
 
   try {
-    const response = await readMessageFromFile(2000)
+    const response = await readMessageFromFile()
     res.send(response)
   } catch (e) {
     next('Server is unresponsive')
@@ -92,7 +92,7 @@ app.post('/request', jsonParser, async (req, res, next) => {
   }
 
   try {
-    const response = await readMessageFromFile(4000)
+    const response = await readMessageFromFile()
     res.send(response)
   } catch (e) {
     next('Server is unresponsive')
@@ -121,7 +121,7 @@ app.post('/select_location', jsonParser, async (req, res, next) => {
   writeMessageToFile('selection.geojson', JSON.stringify(req.body))
 
   try {
-    const response = await readMessageFromFile(10000)
+    const response = await readMessageFromFile()
     res.send(response)
   } catch (e) {
     next('Server is unresponsive')
