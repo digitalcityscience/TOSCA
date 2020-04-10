@@ -36,18 +36,6 @@ function handleResponse({ filename, message }) {
       ];
       break;
     case 'message.add_map.2':
-      buttons = [
-        buttonElement('Yes').click(() => {
-          reply('yes', true);
-          close();
-        }),
-        buttonElement('No').click(() => {
-          reply('no', true);
-          close();
-        })
-      ];
-      break;
-    case 'message.add_map.3':
       form = formElement(messageId);
       form.append($(`<input id="${messageId}-input" type="file" name="file" />`));
       buttons = [
@@ -60,7 +48,7 @@ function handleResponse({ filename, message }) {
         })
       ];
       break;
-    case 'message.add_map.4':
+    case 'message.add_map.3':
       form = formElement(messageId);
       form.append($(`<input id="${messageId}-input" type="text" />`));
       buttons = [

@@ -146,11 +146,8 @@ function writeMessageToFile(filename, msg) {
  */
 async function readMessageFromFile(timeout) {
   return await new Promise((resolve, reject) => {
-    let trying = true
-
     // After a timeout (default 10 s) stop waiting for messages
     setTimeout(() => {
-      trying = false
       watcher.close()
       reject()
     }, timeout || 10000)
@@ -159,21 +156,19 @@ async function readMessageFromFile(timeout) {
     const watcher = fs.watch(dataToClient, {}, async (event, filename) => {
       console.log(`detected ${filename}`)
 
-      while (trying) {
-        try {
-          const filepath = `${dataToClient}/${filename}`
-          const message = fs.readFileSync(filepath, { encoding: 'utf-8' })
+      try {
+        const filepath = `${dataToClient}/${filename}`
+        const message = fs.readFileSync(filepath, { encoding: 'utf-8' })
 
-          // If a change has been detected, return the contents of the changed file
-          trying = false
-          watcher.close()
-          resolve({ message: JSON.parse(message), filename })
-        } catch (e) {
-          // Otherwise wait a moment and try again
-          await new Promise((_resolve) => setTimeout(() => {
-            _resolve()
-          }, 100))
-        }
+        // If a change has been detected, return the contents of the changed file
+        resolve({ message: JSON.parse(message), filename })
+
+        watcher.close()
+      } catch (e) {
+        // Otherwise wait a moment and try again
+        await new Promise((_resolve) => setTimeout(() => {
+          _resolve()
+        }, 100))
       }
     })
   })
