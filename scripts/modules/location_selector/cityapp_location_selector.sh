@@ -1,14 +1,14 @@
 #! /bin/bash
 . ~/cityapp/scripts/shared/functions.sh
 
-# version 1.44
+# version 1.5
 # CityApp module
 # Import OSM maps into PERMANENT mapset. Points, lines, polygons, relations are only imported. Other maps can be extracted from these in separate modules.
 # To import other maps, use Add Layer module.
 #
 # Core module, do not modify.
 #
-# 2020. április 9.
+# 2020. április 10.
 # Author: BUGYA Titusz, CityScienceLab -- Hamburg, Germany
 
 #
@@ -31,6 +31,8 @@ MAPSET=PERMANENT
 
 touch $VARIABLES/launch_locked
 echo "launch_locked" > $VARIABLES/launch_locked
+
+Running_Check start
 
 #
 #-- Preprocess, query ------------------
@@ -115,6 +117,8 @@ case $INIT in
                 mkdir $GRASS/$MAPSET
                 cp -r ~/cityapp/grass/skel_permanent/* $GRASS/$MAPSET
 
+                Process_Check start add_map
+                
                 Add_Osm $NEW_AREA_FILE points points_osm
                 Add_Osm $NEW_AREA_FILE lines lines_osm
                 Add_Osm $NEW_AREA_FILE multipolygons polygons_osm
@@ -122,6 +126,8 @@ case $INIT in
                 Gpkg_Out points_osm points
                 Gpkg_Out lines_osm lines
                 Gpkg_Out polygons_osm polygons
+                
+                Process_Check stop add_map
                 
                 # Copy basemaps into $GEOSERVER/saved
                 # From now this directory will contains the original, unclipped maps.
@@ -155,9 +161,14 @@ coordinates
 Send_Message m 5 location_selector.8 question actions [\"OK\"]
     # This geojson is the "selection" drawn by the user. Import to GRASS and export to Geoserver
     Request_Map geojson GEOJSON
-        GEOJSON_FILE=$REQUEST_PATH 
+        GEOJSON_FILE=$REQUEST_PATH
+        
+        Process_Check start add_vector
+        
         Add_Vector "$GEOJSON_FILE" selection
         Gpkg_Out selection selection
+        
+        Process_Check stop add_vector
         
 # Message Now you can set the resolution value (in meters). The value you declare, will used by each CityApp module
 # Actually, now a separate script will run
@@ -171,9 +182,14 @@ rm -f $VARIABLES/subprocess
 #
 
 # Clipping the basemaps by the selection map. Results will used in the calculations and analysis
+
+Process_Check start map_calculations
+
 grass $GRASS/$MAPSET --exec v.clip input=polygons_osm clip=selection output=polygons --overwrite
 grass $GRASS/$MAPSET --exec v.clip input=lines_osm clip=selection output=lines --overwrite
 grass $GRASS/$MAPSET --exec v.clip input=relations_osm clip=selection output=relations --overwrite
+
+Process_Check stop map_calculations
 
 # Finally, have to set Geoserver to display raster outputs (such as time_map) properly.
 # For this end, first have to prepare a "fake time_map". This is a simple geotiff, a raster version of "selection" vector map.
@@ -184,12 +200,18 @@ grass $GRASS/$MAPSET --exec v.clip input=relations_osm clip=selection output=rel
 
 if [  $INIT -eq 0 ]
     then
+    
+        Process_Check start map_calculations
+    
         grass $GRASS/$MAPSET --exec g.region vector=selection res=$(cat ~/cityapp/scripts/shared/variables/resolution | tail -n1) 
         grass $GRASS/$MAPSET --exec v.to.rast input=selection output=m1_time_map use=val value=1 --overwrite --quiet
         grass $GRASS/$MAPSET --exec r.out.gdal input=m1_time_map output=$GEOSERVER/m1_time_map.tif format=GTiff type=Float64 --overwrite --quiet
         
         # Restarting Geoserver
         $MODULES/restart_geoserver/cityapp_restart_geoserver.sh &
+        
+        sleep 2s
+        Process_Check stop map_calculations
 fi
 
 
@@ -198,9 +220,13 @@ Send_Message m 6 location_selector.9 question actions [\"OK\"]
 # Updating center coordinates to the area of selection
     Request
         rm -f $VARIABLES/launch_locked
+        touch $VARIABLES/launcher_run
 
-    touch $VARIABLES/launcher_run
+        Running_Check stop
+
 coordinates
 sleep 3s
+
+
 Close_Process
 exit

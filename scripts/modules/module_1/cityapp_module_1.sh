@@ -1,18 +1,20 @@
 #! /bin/bash
 . ~/cityapp/scripts/shared/functions.sh
 
-# version 1.54
+# version 1.6
 # CityApp module
 # This module is to calculate the fastest way from "from_points" to "to_points" thru "via_points".
 # The network is the road network, with user-defined average speed.
 # Defining "from_points" is mandatory, "via_points" and "to_points" are optional.
 # If no "to_points" are selected, the default "to_points" will used: points along the roads, calculated by the application. 
-# 2020. április 1.
+# 2020. április 10.
 # Author: BUGYA Titusz, CityScienceLab -- Hamburg, Germany
 
 #
 #-- Initial settings -------------------
 #
+
+
 
 cd ~/cityapp
 
@@ -38,6 +40,8 @@ BASE_RESOLUTION=0.0005
 AVERAGE_SPEED=40
 ROAD_POINTS=0.003
 CONNECT_DISTANCE=0.003
+
+Running_Check start
 
 #
 #-- Preprocess, User communications -------------------
@@ -66,9 +70,14 @@ fi
             
             # Clip lines and polygons@PERMANENT mapset with the area_of_interest, defined by the user 
             # Results will stored in the "module_1" mapset
+            
+                Process_Check start map_calculations
+            
                 grass $GRASS/$MAPSET --exec g.copy vector=selection@PERMANENT,selection --overwrite --quiet
                 grass $GRASS/$MAPSET --exec g.copy vector=lines@PERMANENT,lines --overwrite --quiet
-                    
+                
+                Process_Check stop map_calculations
+                
             # get center coordinates from file
                 EAST=$(cat $VARIABLES/coordinate_east)
                 NORTH=$(cat $VARIABLES/coordinate_north)
@@ -82,9 +91,14 @@ fi
             case $REQUEST_CONTENT in
                 "yes"|"Yes"|"YES")
                     Request_Map geojson GEOJSON
+                    
+                        Process_Check start add_map
+                    
                         Add_Vector $REQUEST_PATH m1_from_points
                         Gpkg_Out m1_from_points m1_from_points
                         FROM_POINT=m1_from_points
+                        
+                        Process_Check stop add_map
                      ;;
                 "no"|"No"|"NO")
                     # Message 2 Select a map (only point maps are supported). Avilable maps are:
@@ -103,9 +117,13 @@ fi
                     VIA=0
                     Request_Map geojson GEOJSON
                         FRESH=$REQUEST_PATH
+                        
+                        Process_Check start map_calculations
                         Add_Vector $FRESH m1_via_points
                         Gpkg_Out m1_via_points m1_via_points
-                        VIA_POINT=m1_via_points;;
+                        VIA_POINT=m1_via_points
+                        Process_Check stop map_calculations
+                        ;;
                 "no"|"No"|"NO")
                     VIA=1
                     Send_Message l 2 module_1.4  select actions [\"OK\"] $MODULE/temp_list # Waiting for a map name (map already have to exist in GRASS)
@@ -124,9 +142,12 @@ fi
                     TO=0
                     Request_Map geojson GEOJSON
                         FRESH=$REQUEST_PATH
+                        
+                        Process_Check start add_map
                         Add_Vector $FRESH m1_to_points
                         Gpkg_Out m1_to_points m1_to_points
-                        TO_POINT=m1_to_points;;
+                        TO_POINT=m1_to_points
+                        Process_Check stop add_map;;
                 "no"|"No"|"NO")
                     TO=1
                     Send_Message l 2 module_1.6 select actions [\"OK\"] $MODULE/temp_list # Waiting for a map name (map already have to exist in GRASS)
@@ -145,8 +166,12 @@ fi
                     AREA=0
                     Request_Map geojson GEOJSON
                         FRESH=$REQUEST_PATH
+                        
+                        Process_Check start add_map
                         Add_Vector $FRESH m1_stricken_area
                         Gpkg_Out m1_stricken_area m1_stricken_area
+                        Process_Check stop add_map
+                        
                         AREA_MAP="m1_stricken_area"
                     Send_Message m 9 module_1.12 input action [\"OK\"]
                         Request
@@ -183,6 +208,8 @@ fi
 #
 # -- Processing --------------------------ˇ
 #
+
+Process_Check start processing_map
 
 # Creating highways map. This is fundamental for the further work in this module
     grass $GRASS/$MAPSET --exec v.extract input=lines@PERMANENT type=line where="highway>0" output=highways --overwrite --quiet 
@@ -283,9 +310,12 @@ grass $GRASS/$MAPSET --exec v.net input=highways points=from_via_to_points outpu
     grass $GRASS/$MAPSET --exec v.what.rast map=highway_points@module_1 raster=m1_time_map layer=2 column=time --overwrite
     grass $GRASS/$MAPSET --exec v.surf.rst input=highway_points@module_1 layer=2 zcolumn=time where="time>0" elevation=m1_time_map_interpolated tension=$TENSION smooth=$SMOOTH nprocs=4 --overwrite 
     grass $GRASS/$MAPSET --exec r.out.gdal input=m1_time_map_interpolated output=$GEOSERVER/m1_time_map_interpolated.tif format=GTiff --overwrite --quiet
-    
+
+Process_Check stop processing_map
+
 Send_Message m 12 module_1.14 question actions [\"OK\"]
     Request
+        Running_Check stop
         Close_Process
 
 exit

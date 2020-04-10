@@ -25,9 +25,10 @@ GRASS=~/cityapp/grass/global
 MAPSET=PERMANENT
 GEOSERVER=~/cityapp/geoserver_data
 
-# Starting running_check. running_check requires a status file too. It's firsl line is the module name and the second line is a number. When number is "1" it is allowing to run running_check.sh. Other number will stop that.
+# Starting running_check. 
 
 Running_Check start
+
 #
 #-- Process -----------------------------
 #
