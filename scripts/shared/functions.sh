@@ -1,7 +1,7 @@
-# version 1.21
+# version 1.3
 # CityApp function
 # This file contains functions of CityApp bash scripts. Funcions are in alphabetical order, A short description can be found for each function.
-# 2020. március 6.
+# 2020. április 10.
 # Author: BUGYA Titusz, CityScienceLab -- Hamburg, Germany
 
 #
@@ -283,10 +283,45 @@ Request_Tif ()
                 CHECK="ok"
                 Close_Process
                 exit
-        fi
+        fi 
     done
     }
 
+Process_Check ()
+    # This is to write a file in data_to_client directory in each second. Parameters are: "start" or "stop", and process_description.
+    {
+    if [ "$1" == "start" ]
+        then
+            echo $2 > $VARIABLES/process_status
+            echo "1" >> $VARIABLES/process_status
+            $MODULES/process_check/cityapp_process_check.sh &
+    fi
+
+
+    if [ "$1" == "stop" ]
+        then
+            echo $2 > $VARIABLES/process_status
+            echo "0" >> $VARIABLES/process_status
+    fi
+    }
+
+Running_Check ()
+    # This is to write a file in data_to_client directory in each second. Only parameter is "start" or "stop".
+    {
+    if [ "$1" == "start" ]
+        then
+            echo $MODULE_NAME > $VARIABLES/module_status
+            echo "1" >> $VARIABLES/module_status
+            $MODULES/running_check/cityapp_running_check.sh &
+    fi
+
+
+    if [ "$1" == "stop" ]
+        then
+            echo $MODULE_NAME > $VARIABLES/module_status
+            echo "0" >> $VARIABLES/module_status
+    fi
+    }
         
 Select_Fresh ()
     #This function is to select the last (freshest) file from data_from_browser directory. No parameters
