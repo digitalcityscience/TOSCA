@@ -1,7 +1,7 @@
 #! /bin/bash
 . ~/cityapp/scripts/shared/functions.sh
 
-# version 1.0
+# version 1.1
 # CityApp module
 #
 # Core component, don not modify.
@@ -31,12 +31,11 @@ ID_NUM=1
 PROCESS_ORIGIN=$(cat $VARIABLES/process_status | head -n1)
 RUNNING=$(cat $VARIABLES/process_status | tail -n1)
 while [ $RUNNING -eq 1 ];do
-    touch $MESSAGE_SENT/"process_"$PROCESS_ORIGIN"_"$ID_NUM
-    sleep 1s
     RUNNING=$(cat $VARIABLES/process_status | tail -n1)
-    rm -f $MESSAGE_SENT/"process_"$PROCESS_ORIGIN"_"$ID_NUM
+    echo $ID_NUM > $MESSAGE_SENT/$PROCESS_ORIGIN".processing"
     ID_NUM=$(($ID_NUM+1))
+    sleep 1s
 done
-rm -f $MESSAGE_SENT/"process_"$PROCESS_ORIGIN*
+rm -f $MESSAGE_SENT/$PROCESS_ORIGIN".processing"
 rm -f $VARIABLES/process_status
 exit
