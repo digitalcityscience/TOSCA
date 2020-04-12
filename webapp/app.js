@@ -108,7 +108,7 @@ app.post('/file_request', uploadParser.single('file'), async (req, res, next) =>
     writer.close()
 
     try {
-      const response = await readMessageFromFile(20000)
+      const response = await readMessageFromFile()
       res.send(response)
     } catch (e) {
       next('Server is unresponsive')
@@ -128,9 +128,16 @@ app.post('/select_location', jsonParser, async (req, res, next) => {
   }
 })
 
-// request to kill the app
-app.post('/exit', async () => {
-  writeMessageToFile('EXIT', 'EXIT')
+// Poll server for updates (usually while processes are running)
+app.post('/poll', jsonParser, async (req, res) => {
+  try {
+    // A status update is expected after one second
+    const response = await readMessageFromFile(1200)
+    res.send(response)
+  } catch (e) {
+    // Process has finished or aborted
+    res.send({ processing: -1, filename: req.body.process })
+  }
 })
 
 /*
@@ -146,29 +153,28 @@ function writeMessageToFile(filename, msg) {
  */
 async function readMessageFromFile(timeout) {
   return await new Promise((resolve, reject) => {
-    // After a timeout (default 10 s) stop waiting for messages
+    // Stop waiting for messages after a timeout (default 10 s)
     setTimeout(() => {
-      watcher.close()
       reject()
+      watcher.close()
     }, timeout || 10000)
 
-    // Watch the data_to_client directory for file system changes
     const watcher = fs.watch(dataToClient, {}, async (event, filename) => {
       console.log(`detected ${filename}`)
 
       try {
         const filepath = `${dataToClient}/${filename}`
-        const message = fs.readFileSync(filepath, { encoding: 'utf-8' })
+        const contents = fs.readFileSync(filepath, { encoding: 'utf-8' })
 
-        // If a change has been detected, return the contents of the changed file
-        resolve({ message: JSON.parse(message), filename })
-
-        watcher.close()
+        if (filename.match(/^message\./)) {
+          resolve({ message: JSON.parse(contents), filename })
+          watcher.close()
+        } else if (filename.match(/\.processing$/)) {
+          resolve({ processing: parseInt(contents), filename })
+          watcher.close()
+        }
       } catch (e) {
-        // Otherwise wait a moment and try again
-        await new Promise((_resolve) => setTimeout(() => {
-          _resolve()
-        }, 100))
+        // ¯\_(ツ)_/¯
       }
     })
   })

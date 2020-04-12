@@ -20,15 +20,15 @@ html
       div(class='title')
         h1 Open City Toolkit
 
+      div(id='help')
+        a: button(class='button button-yellow') Help
+
       div(class='logo')
         img(src='images/giz-logo.gif' id='giz-logo')
         img(src='images/hcu-logo.png' id='hcu-logo')
 
     div(class='main')
       div(class='sidebar')
-        div(id='help' class='card card-buttons row')
-          a: button(class='button button-yellow') Help
-
         div(id='textarea' class='card card-border card-border-yellow')
 
         div(id='buttonarea' class='card card-buttons row')
@@ -41,6 +41,7 @@ html
             option(value='location_selector') Select location
             option(value='resolution_setting') Set resolution
             option(value='add_map') Add map
+            option(value='module_1') Calculate time map
           a: button(class='button button-green' onclick='launch()') OK
 
         div(id='maps' class='card card-border')

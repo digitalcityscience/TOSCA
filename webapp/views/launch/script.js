@@ -1,14 +1,33 @@
+const status = {
+  processing: {}
+};
+
 /* Handle incoming messages from backend */
 
-function handleResponse({ filename, message }) {
-  const messageId = filename.replace(/\./g, '_');
+function handleResponse(res) {
+  console.log(res)
 
-  if (message.lat && message.lon) {
-    map.panTo(new L.LatLng(message.lat, message.lon));
+  if (res.processing) {
+    status.processing[res.filename] = res.processing > -1;
+    poll(res.filename);
     return;
   }
 
-  if (!message.text) {
+  if (!res.message) {
+    return;
+  }
+
+  const messageId = res.filename.replace(/\./g, '_');
+
+  if (res.message.lat && res.message.lon) {
+    map.panTo(new L.LatLng(res.message.lat, res.message.lon));
+
+    // check status ?
+    poll();
+    return;
+  }
+
+  if (!res.message.text) {
     console.error('Error: Empty message');
     return;
   }
@@ -23,9 +42,9 @@ function handleResponse({ filename, message }) {
 
   close();
 
-  let text = textElement(message.text), form, buttons;
+  let text = textElement(res.message.text), form, buttons;
 
-  switch (filename) {
+  switch (res.filename) {
     // add_map
     case 'message.add_map.1':
       buttons = [
@@ -128,6 +147,20 @@ function handleResponse({ filename, message }) {
         })
       ];
       break;
+
+      // module_1
+      case 'message.module_1.1':
+        buttons = [
+          buttonElement('Yes').click(() => {
+            reply('yes', true);
+            close();
+          }),
+          buttonElement('No').click(() => {
+            reply('no', true);
+            close();
+          })
+        ];
+        break;
   }
 
   textarea.append(text);
@@ -183,6 +216,10 @@ function query() {
 
 function reply(message, expectResponse) {
   sendMessage('/request', { msg: message }, expectResponse ? handleResponse : null);
+}
+
+function poll(process) {
+  sendMessage('/poll', { process }, handleResponse);
 }
 
 function sendMessage(target, message, callback) {
