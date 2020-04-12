@@ -1,14 +1,14 @@
 #! /bin/bash
 . ~/cityapp/scripts/shared/functions.sh
 
-# version 1.0
+# version 1.1
 # CityApp module
-# It is simply to touch "running" file in $MESSAGE_SENT directory
+# It is simply to touch "system.running" file in $MESSAGE_SENT directory
 # Started by ca_starter and killed only by ca_shutdown
 #
 # Core module, do not modify.
 #
-# 2020. március 25.
+# 2020. április 12.
 # Author: BUGYA Titusz, CityScienceLab -- Hamburg, Germany
 
 #
@@ -27,7 +27,7 @@ MESSAGE_SENT=~/cityapp/data_to_client
 
 VALUE=1
 until [ $VALUE -lt 1 ];do
-    touch $MESSAGE_SENT/running
+    touch $MESSAGE_SENT/system.running
     sleep 1s
 done
 

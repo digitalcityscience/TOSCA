@@ -11,24 +11,38 @@
 #-- Initial settings -------------------
 #
 
+
 cd ~/cityapp
 
-GEOSERVER=~/cityapp/geoserver_data
 MODULES=~/cityapp/scripts/modules
 MODULE=~/cityapp/scripts/modules/module_2
-GRASS=~/cityapp/grass/global
+MODULE_NAME=module_2
 VARIABLES=~/cityapp/scripts/shared/variables
 BROWSER=~/cityapp/data_from_browser
 LANGUAGE=$(cat ~/cityapp/scripts/shared/variables/lang)
 MESSAGE_TEXT=~/cityapp/scripts/shared/messages/$LANGUAGE/module_2
 MESSAGE_SENT=~/cityapp/data_to_client
+GEOSERVER=~/cityapp/geoserver_data
+GRASS=~/cityapp/grass/global
 MAPSET=module_2
 
-QUERY_RESOLUTION=0.00003
+QUERY_RESOLUTION=0.00001
+
+Running_Check start
 
 #
 #-- Preprocess, User dialogues -------------------
 #
+
+
+
+# It would great to make a distinction if the queried map is point, line, or polygon type?
+# If points > 0 AND lines = 0 AND centroids = 0: point
+# If points = 0 AND lines > 0 AND centroids = 0: line
+# If points = 0 AND lines = 0 AND centroids > 0: area (polygon)
+
+# If line type map, only lenght in meters can be queryed
+# for point and area map any other value can be queryed
 
 rm -f $MESSAGE_SENT/*
 
@@ -50,11 +64,13 @@ rm -f $MESSAGE_SENT/*
             # copy for archiving -- later, when a saving is not requested, it will deleted
             cp $REQUEST_PATH $MODULE/temp_storage/query_area
 
+            Process_Check start add_map
             Add_Vector $QUERY_AREA query_area_1
             QUERY_AREA="query_area_1"
             
             Gpkg_Out query_area_1 query_area_1
-    
+            Process_Check stop add_map
+            
 # Message 2 Only can query maps of PERMANENT mapset. What is the map you want to query? Available maps are:
     grass $GRASS/$MAPSET --exec g.list mapset=PERMANENT type=vector > $MODULE/temp_maps
     Send_Message l 2 module_2.2 select actions [\"OK\"] $MODULE/temp_maps
@@ -78,6 +94,7 @@ rm -f $MESSAGE_SENT/*
         Request
             echo $REQUEST_CONTENT > $MODULE/temp_storage/query_request
 
+            Process_Check start calculations
             Json_To_Text $MODULE/temp_storage/query_request $MODULE/temp_request
 
             QUERY_COLUMN_A=$(cat $MODULE/temp_request | cut -d"," -f2)
@@ -124,23 +141,35 @@ rm -f $MESSAGE_SENT/*
     Gpkg_Out query_result_1 query_result_1
 
 
-    rm -f $MODULE/temp_storage/statistic_1
-    touch $MODULE/temp_storage/statistic_1
+    rm -f $MODULE/temp_storage/statistics_output
+    touch $MODULE/temp_storage/statistics_output
 
-    echo $(head -n4 < $MESSAGE_TEXT | tail -n1)" "$(head -n6 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistic_1
-    echo $(head -n5 < $MESSAGE_TEXT | tail -n1)" "$(head -n15 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistic_1 
-    echo $(head -n6 < $MESSAGE_TEXT | tail -n1)" "$(head -n7 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistic_1 
-    echo $(head -n7 < $MESSAGE_TEXT | tail -n1)" "$(head -n8 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistic_1 
-    echo $(head -n8 < $MESSAGE_TEXT | tail -n1)" "$(head -n9 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistic_1
-    echo $(head -n9 < $MESSAGE_TEXT | tail -n1)" "$(head -n10 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistic_1
-    echo $(head -n10 < $MESSAGE_TEXT | tail -n1)" "$(head -n17 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistic_1
-    echo $(head -n11 < $MESSAGE_TEXT | tail -n1)" "$(head -n11 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistic_1
-    echo $(head -n12 < $MESSAGE_TEXT | tail -n1)" "$(head -n12 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistic_1
-    echo $(head -n13 < $MESSAGE_TEXT | tail -n1)" "$(head -n13 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistic_1
-    echo $(head -n14 < $MESSAGE_TEXT | tail -n1)" "$(head -n14 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistic_1
-    echo $(head -n15 < $MESSAGE_TEXT | tail -n1)" "$(head -n16 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistic_1
-    echo $(head -n16 < $MESSAGE_TEXT | tail -n1)" "$(head -n17 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistic_1
-    echo $(head -n17 < $MESSAGE_TEXT | tail -n1)" "$(head -n18 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistic_1
-    echo $(head -n18 < $MESSAGE_TEXT | tail -n1)" "$(head -n19 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistic_1
+    echo "Queried column:" > $MODULE/temp_storage/statistics_output
+    cat $MODULE/temp_storage/query_request | sed s'/"//'g  | sed s'/ //'g | sed s'/,>,/>/'g | sed s'/,<,/</'g | sed s'/,=,/=/'g | sed s'/,/ /'g | sed s'/\[ //'g | sed s'/\ ]//'g | cut -d" " -f1 >> $MODULE/temp_storage/statistics_output
+    echo "" >> $MODULE/temp_storage/statistics_output
+    echo "Criterias are:" >> $MODULE/temp_storage/statistics_output
+    cat $MODULE/temp_storage/query_request | sed s'/"//'g  | sed s'/ //'g | sed s'/,>,/>/'g | sed s'/,<,/</'g | sed s'/,=,/=/'g | sed s'/,/ /'g | sed s'/\[ //'g | sed s'/\ ]//'g | cut -d" " -f2- >> $MODULE/temp_storage/statistics_output
+    echo "" >> $MODULE/temp_storage/statistics_output
+    echo "Results:" >> $MODULE/temp_storage/statistics_output
+
     
+    echo $(head -n4 < $MESSAGE_TEXT | tail -n1)" "$(head -n6 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistics_output
+    echo $(head -n5 < $MESSAGE_TEXT | tail -n1)" "$(head -n15 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistics_output 
+    echo $(head -n6 < $MESSAGE_TEXT | tail -n1)" "$(head -n7 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistics_output 
+    echo $(head -n7 < $MESSAGE_TEXT | tail -n1)" "$(head -n8 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistics_output 
+    echo $(head -n8 < $MESSAGE_TEXT | tail -n1)" "$(head -n9 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistics_output
+    echo $(head -n9 < $MESSAGE_TEXT | tail -n1)" "$(head -n10 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistics_output
+    echo $(head -n10 < $MESSAGE_TEXT | tail -n1)" "$(head -n17 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistics_output
+    echo $(head -n11 < $MESSAGE_TEXT | tail -n1)" "$(head -n11 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistics_output
+    echo $(head -n12 < $MESSAGE_TEXT | tail -n1)" "$(head -n12 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistics_output
+    echo $(head -n13 < $MESSAGE_TEXT | tail -n1)" "$(head -n13 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistics_output
+    echo $(head -n14 < $MESSAGE_TEXT | tail -n1)" "$(head -n14 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistics_output
+    echo $(head -n15 < $MESSAGE_TEXT | tail -n1)" "$(head -n16 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistics_output
+    echo $(head -n16 < $MESSAGE_TEXT | tail -n1)" "$(head -n17 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistics_output
+    echo $(head -n17 < $MESSAGE_TEXT | tail -n1)" "$(head -n18 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistics_output
+    echo $(head -n18 < $MESSAGE_TEXT | tail -n1)" "$(head -n19 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistics_output
+
+    Process_Check stop calculations
+Running_Check stop
+Close_Process
 exit
