@@ -19,19 +19,6 @@ function handleResponse(res) {
 
   const messageId = res.filename.replace(/\./g, '_');
 
-  if (res.message.lat && res.message.lon) {
-    map.panTo(new L.LatLng(res.message.lat, res.message.lon));
-
-    // check status ?
-    poll();
-    return;
-  }
-
-  if (!res.message.text) {
-    console.error('Error: Empty message');
-    return;
-  }
-
   const textarea = $('#textarea');
   const buttonarea = $('#buttonarea');
 
@@ -42,114 +29,70 @@ function handleResponse(res) {
 
   close();
 
-  let text = textElement(res.message.text), form, buttons;
+  if (res.message.success !== undefined) {
+    if (res.message.success) {
+      textarea.append(textElement('Success!'));
+    } else {
+      textarea.append(textElement('Failed!'));
+    }
+  }
 
-  switch (res.filename) {
-    // add_map
-    case 'message.add_map.1':
-      buttons = [
-        buttonElement('OK').click(() => {
-          reply('ok', true);
-          close();
-        })
-      ];
-      break;
-    case 'message.add_map.2':
-      form = formElement(messageId);
-      form.append($(`<input id="${messageId}-input" type="file" name="file" />`));
-      buttons = [
-        buttonElement('Submit').click(() => {
-          const input = $(`#${messageId}-input`);
-          if (input[0].files.length) {
-            upload(form[0], handleResponse);
-          }
-          close();
-        })
-      ];
-      break;
-    case 'message.add_map.3':
-      form = formElement(messageId);
-      form.append($(`<input id="${messageId}-input" type="text" />`));
-      buttons = [
-        buttonElement('Submit').click(() => {
-          const input = $(`#${messageId}-input`);
-          reply(input.val(), true);
-          close();
-        })
-      ];
-      break;
-    case 'message.add_map.5':
-      buttons = [
-        buttonElement('OK').click(() => {
-          reply('ok', false);
-          close();
-        })
-      ];
-      break;
+  if (res.message.lat && res.message.lon) {
+    map.panTo(new L.LatLng(res.message.lat, res.message.lon));
 
-    // location_selector
-    case 'message.location_selector.1':
-      buttons = [
-        buttonElement('Yes').click(() => {
-          reply('yes', true);
-          close();
-        }),
-        buttonElement('No').click(() => {
-          reply('no', true);
-          close();
-        })
-      ];
-      break;
-    case 'message.location_selector.2':
-      form = formElement(messageId);
-      form.append($(`<input id="${messageId}-input" type="file" name="file" />`));
-      buttons = [
-        buttonElement('Submit').click(() => {
-          const input = $(`#${messageId}-input`);
-          if (input[0].files.length) {
-            upload(form[0], handleResponse);
-          }
-          close();
-        })
-      ];
-      break;
-    case 'message.location_selector.3':
-      buttons = [
-        buttonElement('Yes').click(() => {
-          reply('yes', true);
-          close();
-        }),
-        buttonElement('No').click(() => {
-          reply('no', true);
-          close();
-        })
-      ];
-      break;
-    case 'message.location_selector.10':
-      buttons = [
-        buttonElement('OK').click(() => {
-          reply('ok', false);
-          close();
-        })
-      ];
-      break;
+    // check status ?
+    poll();
+    return;
+  }
 
-    // resolution_setting
-    case 'message.resolution_setting.1':
-    case 'message.resolution_setting.2':
-      form = formElement(messageId);
-      form.append($(`<input id="${messageId}-input" type="number" />`));
-      buttons = [
-        buttonElement('Submit').click(() => {
-          const input = $(`#${messageId}-input`);
-          reply(input.val(), true);
-          close();
-        })
-      ];
-      break;
+  if (res.message.text) {
+    let text = textElement(res.message.text), form, buttons;
 
-      // module_1
-      case 'message.module_1.1':
+    switch (res.filename) {
+      // add_map
+      case 'message.add_map.1':
+        buttons = [
+          buttonElement('OK').click(() => {
+            reply('ok', true);
+            close();
+          })
+        ];
+        break;
+      case 'message.add_map.2':
+        form = formElement(messageId);
+        form.append($(`<input id="${messageId}-input" type="file" name="file" />`));
+        buttons = [
+          buttonElement('Submit').click(() => {
+            const input = $(`#${messageId}-input`);
+            if (input[0].files.length) {
+              upload(form[0], handleResponse);
+            }
+            close();
+          })
+        ];
+        break;
+      case 'message.add_map.3':
+        form = formElement(messageId);
+        form.append($(`<input id="${messageId}-input" type="text" />`));
+        buttons = [
+          buttonElement('Submit').click(() => {
+            const input = $(`#${messageId}-input`);
+            reply(input.val(), true);
+            close();
+          })
+        ];
+        break;
+      case 'message.add_map.5':
+        buttons = [
+          buttonElement('OK').click(() => {
+            reply('ok', false);
+            close();
+          })
+        ];
+        break;
+
+      // location_selector
+      case 'message.location_selector.1':
         buttons = [
           buttonElement('Yes').click(() => {
             reply('yes', true);
@@ -161,18 +104,80 @@ function handleResponse(res) {
           })
         ];
         break;
-  }
+      case 'message.location_selector.2':
+        form = formElement(messageId);
+        form.append($(`<input id="${messageId}-input" type="file" name="file" />`));
+        buttons = [
+          buttonElement('Submit').click(() => {
+            const input = $(`#${messageId}-input`);
+            if (input[0].files.length) {
+              upload(form[0], handleResponse);
+            }
+            close();
+          })
+        ];
+        break;
+      case 'message.location_selector.3':
+        buttons = [
+          buttonElement('Yes').click(() => {
+            reply('yes', true);
+            close();
+          }),
+          buttonElement('No').click(() => {
+            reply('no', true);
+            close();
+          })
+        ];
+        break;
+      case 'message.location_selector.10':
+        buttons = [
+          buttonElement('OK').click(() => {
+            reply('ok', false);
+            close();
+          })
+        ];
+        break;
 
-  textarea.append(text);
+      // resolution_setting
+      case 'message.resolution_setting.1':
+      case 'message.resolution_setting.2':
+        form = formElement(messageId);
+        form.append($(`<input id="${messageId}-input" type="number" />`));
+        buttons = [
+          buttonElement('Submit').click(() => {
+            const input = $(`#${messageId}-input`);
+            reply(input.val(), true);
+            close();
+          })
+        ];
+        break;
 
-  if (form) {
-    textarea.append(form);
-  }
+        // module_1
+        case 'message.module_1.1':
+          buttons = [
+            buttonElement('Yes').click(() => {
+              reply('yes', true);
+              close();
+            }),
+            buttonElement('No').click(() => {
+              reply('no', true);
+              close();
+            })
+          ];
+          break;
+    }
 
-  if (buttons) {
-    buttons.forEach((button) => {
-      buttonarea.append(button);
-    });
+    textarea.append(text);
+
+    if (form) {
+      textarea.append(form);
+    }
+
+    if (buttons) {
+      buttons.forEach((button) => {
+        buttonarea.append(button);
+      });
+    }
   }
 }
 
