@@ -166,7 +166,7 @@ async function readMessageFromFile(timeout) {
         const filepath = `${dataToClient}/${filename}`
         const contents = fs.readFileSync(filepath, { encoding: 'utf-8' })
 
-        if (filename.match(/^message\./)) {
+        if (filename.match(/\.message$/)) {
           resolve({ message: JSON.parse(contents), filename })
           watcher.close()
         } else if (filename.match(/\.processing$/)) {

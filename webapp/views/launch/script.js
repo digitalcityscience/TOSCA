@@ -52,7 +52,7 @@ function handleResponse(res) {
 
     switch (res.filename) {
       // add_map
-      case 'message.add_map.1':
+      case 'add_map.1.message':
         buttons = [
           buttonElement('OK').click(() => {
             reply('ok', true);
@@ -60,7 +60,7 @@ function handleResponse(res) {
           })
         ];
         break;
-      case 'message.add_map.2':
+      case 'add_map.2.message':
         form = formElement(messageId);
         form.append($(`<input id="${messageId}-input" type="file" name="file" />`));
         buttons = [
@@ -73,7 +73,7 @@ function handleResponse(res) {
           })
         ];
         break;
-      case 'message.add_map.3':
+      case 'add_map.3.message':
         form = formElement(messageId);
         form.append($(`<input id="${messageId}-input" type="text" />`));
         buttons = [
@@ -84,7 +84,7 @@ function handleResponse(res) {
           })
         ];
         break;
-      case 'message.add_map.4':
+      case 'add_map.4.message':
         buttons = [
           buttonElement('OK').click(() => {
             reply('ok', false);
@@ -94,7 +94,7 @@ function handleResponse(res) {
         break;
 
       // location_selector
-      case 'message.location_selector.1':
+      case 'location_selector.1.message':
         buttons = [
           buttonElement('Yes').click(() => {
             reply('yes', true);
@@ -106,7 +106,7 @@ function handleResponse(res) {
           })
         ];
         break;
-      case 'message.location_selector.2':
+      case 'location_selector.2.message':
         form = formElement(messageId);
         form.append($(`<input id="${messageId}-input" type="file" name="file" />`));
         buttons = [
@@ -119,7 +119,7 @@ function handleResponse(res) {
           })
         ];
         break;
-      case 'message.location_selector.3':
+      case 'location_selector.3.message':
         buttons = [
           buttonElement('Yes').click(() => {
             reply('yes', true);
@@ -131,7 +131,7 @@ function handleResponse(res) {
           })
         ];
         break;
-      case 'message.location_selector.10':
+      case 'location_selector.10.message':
         buttons = [
           buttonElement('OK').click(() => {
             reply('ok', false);
@@ -141,8 +141,8 @@ function handleResponse(res) {
         break;
 
       // resolution_setting
-      case 'message.resolution_setting.1':
-      case 'message.resolution_setting.2':
+      case 'resolution_setting.1.message':
+      case 'resolution_setting.2.message':
         form = formElement(messageId);
         form.append($(`<input id="${messageId}-input" type="number" />`));
         buttons = [
@@ -155,7 +155,7 @@ function handleResponse(res) {
         break;
 
         // module_1
-        case 'message.module_1.1':
+        case 'module_1.1.message':
           buttons = [
             buttonElement('Yes').click(() => {
               reply('yes', true);
