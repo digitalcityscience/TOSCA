@@ -1,10 +1,10 @@
 #! /bin/bash
 . ~/cityapp/scripts/shared/functions.sh
 
-# version 1.2
+# version 1.21
 # CityApp module
 # This module is to query any existing map by a user-defined area
-# 2020. február 5.
+# 2020. április 13.
 # Author: BUGYA Titusz, CityScienceLab -- Hamburg, Germany
 
 #
@@ -33,8 +33,6 @@ Running_Check start
 #
 #-- Preprocess, User dialogues -------------------
 #
-
-
 
 # It would great to make a distinction if the queried map is point, line, or polygon type?
 # If points > 0 AND lines = 0 AND centroids = 0: point
@@ -71,8 +69,8 @@ rm -f $MESSAGE_SENT/*
             Gpkg_Out query_area_1 query_area_1
             Process_Check stop add_map
             
-# Message 2 Only can query maps of PERMANENT mapset. What is the map you want to query? Available maps are:
-    grass $GRASS/$MAPSET --exec g.list mapset=PERMANENT type=vector > $MODULE/temp_maps
+# Message 2 Maps of PERMANENT mapset can only be queryed. Default maps and "selection" map is not included in the list. Only map with numeric column (except column "CAT") will listed. cWhat is the map you want to query? Available maps are:
+    grass $GRASS/$MAPSET --exec $MODULE/cityapp_module_2_listing.sh
     Send_Message l 2 module_2.2 select actions [\"OK\"] $MODULE/temp_maps
         Request
             MAP_TO_QUERY=$REQUEST_CONTENT
@@ -89,7 +87,10 @@ rm -f $MESSAGE_SENT/*
             fi
 
 # Message 3 Fill the form and press save.
-    grass $GRASS/$MAPSET --exec db.columns table=$MAP_TO_QUERY > $MODULE/temp_columns
+    # Supporting only integer and double precision type fielsds to query, except: CAT
+    grass $GRASS/$MAPSET --exec db.describe -c table=$MAP_TO_QUERY | grep -E 'DOUBLE\ PRECISION|INTEGER' | grep -vE 'CAT|cat' > $MODULE/temp_columns
+
+
     Send_Message l 3 module_2.3 select actions [\"OK\"] $MODULE/temp_columns
         Request
             echo $REQUEST_CONTENT > $MODULE/temp_storage/query_request
@@ -143,33 +144,44 @@ rm -f $MESSAGE_SENT/*
 
     rm -f $MODULE/temp_storage/statistics_output
     touch $MODULE/temp_storage/statistics_output
-
-    echo "Queried column:" > $MODULE/temp_storage/statistics_output
-    cat $MODULE/temp_storage/query_request | sed s'/"//'g  | sed s'/ //'g | sed s'/,>,/>/'g | sed s'/,<,/</'g | sed s'/,=,/=/'g | sed s'/,/ /'g | sed s'/\[ //'g | sed s'/\ ]//'g | cut -d" " -f1 >> $MODULE/temp_storage/statistics_output
-    echo "" >> $MODULE/temp_storage/statistics_output
-    echo "Criterias are:" >> $MODULE/temp_storage/statistics_output
-    cat $MODULE/temp_storage/query_request | sed s'/"//'g  | sed s'/ //'g | sed s'/,>,/>/'g | sed s'/,<,/</'g | sed s'/,=,/=/'g | sed s'/,/ /'g | sed s'/\[ //'g | sed s'/\ ]//'g | cut -d" " -f2- >> $MODULE/temp_storage/statistics_output
-    echo "" >> $MODULE/temp_storage/statistics_output
-    echo "Results:" >> $MODULE/temp_storage/statistics_output
-
-    
-    echo $(head -n4 < $MESSAGE_TEXT | tail -n1)" "$(head -n6 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistics_output
-    echo $(head -n5 < $MESSAGE_TEXT | tail -n1)" "$(head -n15 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistics_output 
-    echo $(head -n6 < $MESSAGE_TEXT | tail -n1)" "$(head -n7 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistics_output 
-    echo $(head -n7 < $MESSAGE_TEXT | tail -n1)" "$(head -n8 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistics_output 
-    echo $(head -n8 < $MESSAGE_TEXT | tail -n1)" "$(head -n9 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistics_output
-    echo $(head -n9 < $MESSAGE_TEXT | tail -n1)" "$(head -n10 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistics_output
-    echo $(head -n10 < $MESSAGE_TEXT | tail -n1)" "$(head -n17 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistics_output
-    echo $(head -n11 < $MESSAGE_TEXT | tail -n1)" "$(head -n11 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistics_output
-    echo $(head -n12 < $MESSAGE_TEXT | tail -n1)" "$(head -n12 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistics_output
-    echo $(head -n13 < $MESSAGE_TEXT | tail -n1)" "$(head -n13 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistics_output
-    echo $(head -n14 < $MESSAGE_TEXT | tail -n1)" "$(head -n14 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistics_output
-    echo $(head -n15 < $MESSAGE_TEXT | tail -n1)" "$(head -n16 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistics_output
-    echo $(head -n16 < $MESSAGE_TEXT | tail -n1)" "$(head -n17 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistics_output
-    echo $(head -n17 < $MESSAGE_TEXT | tail -n1)" "$(head -n18 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistics_output
-    echo $(head -n18 < $MESSAGE_TEXT | tail -n1)" "$(head -n19 < $MODULE/temp_statistic | tail -n1) >> $MODULE/temp_storage/statistics_output
-
+        echo "{" > $MODULE/temp_storage/statistics_output
+        echo "\"text\":" >> $MODULE/temp_storage/statistics_output
+        echo "\"$(cat $MESSAGE_TEXT | head -n19 | tail -n1)\"," >> $MODULE/temp_storage/statistics_output
+        echo "\"modalType\": \"results\"," >> $MODULE/temp_storage/statistics_output
+        echo "\"actions\": [\"Close\"]," >> $MODULE/temp_storage/statistics_output
+        echo "\"list\":" >> $MODULE/temp_storage/statistics_output
+        echo "{" >> $MODULE/temp_storage/statistics_output
+        echo "\"$(cat $MESSAGE_TEXT | head -n20 | tail -n1)\"," >> $MODULE/temp_storage/statistics_output
+        echo "\"$(cat $MODULE/temp_storage/query_request | sed s'/"//'g  | sed s'/ //'g | sed s'/,>,/>/'g | sed s'/,<,/</'g | sed s'/,=,/=/'g | sed s'/,/ /'g | sed s'/\[ //'g | sed s'/\ ]//'g | cut -d" " -f1)\"," >> $MODULE/temp_storage/statistics_output
+        echo "" >> $MODULE/temp_storage/statistics_output
+        echo "\"$(cat $MESSAGE_TEXT | head -n21 | tail -n1)\"," >> $MODULE/temp_storage/statistics_output
+        echo "\"$(cat $MODULE/temp_storage/query_request | sed s'/"//'g  | sed s'/ //'g | sed s'/,>,/>/'g | sed s'/,<,/</'g | sed s'/,=,/=/'g | sed s'/,/ /'g | sed s'/\[ //'g | sed s'/\ ]//'g | cut -d" " -f2-)\"," >> $MODULE/temp_storage/statistics_output
+        echo "" >> $MODULE/temp_storage/statistics_output
+        echo "\"$(cat $MESSAGE_TEXT | head -n22 | tail -n1)\"," >> $MODULE/temp_storage/statistics_output
+        echo "" >> $MODULE/temp_storage/statistics_output
+        
+        echo "\"$(head -n4 < $MESSAGE_TEXT | tail -n1)" "$(head -n6 < $MODULE/temp_statistic | tail -n1)\"," >> $MODULE/temp_storage/statistics_output
+        echo "\"$(head -n5 < $MESSAGE_TEXT | tail -n1)" "$(head -n15 < $MODULE/temp_statistic | tail -n1)\"," >> $MODULE/temp_storage/statistics_output 
+        echo "\"$(head -n6 < $MESSAGE_TEXT | tail -n1)" "$(head -n7 < $MODULE/temp_statistic | tail -n1)\"," >> $MODULE/temp_storage/statistics_output 
+        echo "\"$(head -n7 < $MESSAGE_TEXT | tail -n1)" "$(head -n8 < $MODULE/temp_statistic | tail -n1)\"," >> $MODULE/temp_storage/statistics_output 
+        echo "\"$(head -n8 < $MESSAGE_TEXT | tail -n1)" "$(head -n9 < $MODULE/temp_statistic | tail -n1)\"," >> $MODULE/temp_storage/statistics_output
+        echo "\"$(head -n9 < $MESSAGE_TEXT | tail -n1)" "$(head -n10 < $MODULE/temp_statistic | tail -n1)\"," >> $MODULE/temp_storage/statistics_output
+        echo "\"$(head -n10 < $MESSAGE_TEXT | tail -n1)" "$(head -n17 < $MODULE/temp_statistic | tail -n1)\"," >> $MODULE/temp_storage/statistics_output
+        echo "\"$(head -n11 < $MESSAGE_TEXT | tail -n1)" "$(head -n11 < $MODULE/temp_statistic | tail -n1)\"," >> $MODULE/temp_storage/statistics_output
+        echo "\"$(head -n12 < $MESSAGE_TEXT | tail -n1)" "$(head -n12 < $MODULE/temp_statistic | tail -n1)\"," >> $MODULE/temp_storage/statistics_output
+        echo "\"$(head -n13 < $MESSAGE_TEXT | tail -n1)" "$(head -n13 < $MODULE/temp_statistic | tail -n1)\"," >> $MODULE/temp_storage/statistics_output
+        echo "\"$(head -n14 < $MESSAGE_TEXT | tail -n1)" "$(head -n14 < $MODULE/temp_statistic | tail -n1)\"," >> $MODULE/temp_storage/statistics_output
+        echo "\"$(head -n15 < $MESSAGE_TEXT | tail -n1)" "$(head -n16 < $MODULE/temp_statistic | tail -n1)\"," >> $MODULE/temp_storage/statistics_output
+        echo "\"$(head -n16 < $MESSAGE_TEXT | tail -n1)" "$(head -n17 < $MODULE/temp_statistic | tail -n1)\"," >> $MODULE/temp_storage/statistics_output
+        echo "\"$(head -n17 < $MESSAGE_TEXT | tail -n1)" "$(head -n18 < $MODULE/temp_statistic | tail -n1)\"," >> $MODULE/temp_storage/statistics_output
+        echo "\"$(head -n18 < $MESSAGE_TEXT | tail -n1)" "$(head -n19 < $MODULE/temp_statistic | tail -n1)\"," >> $MODULE/temp_storage/statistics_output
+        echo "}" >> $MODULE/temp_storage/statistics_output
+        echo "}" >> $MODULE/temp_storage/statistics_output
     Process_Check stop calculations
-Running_Check stop
-Close_Process
+    
+    rm -f $MESSAGE_SENT/*.message
+    cp $MODULE/temp_storage/statistics_output $MESSAGE_SENT/module_2.4message
+        Request
+        Running_Check stop
+        Close_Process
 exit

@@ -11,27 +11,27 @@
 Add_Osm ()
     #This is to import an Open street map vector map file. Parameters: {filename to import,layer name, output filename for the GRASS}
     {
-    echo "Add_Osm" > $VARIABLES/still_working
+    #echo "Add_Osm" > $VARIABLES/still_working
     grass -f $GRASS/$MAPSET --exec v.in.ogr -o input=$1 layer=$2 output=$3 --overwrite --quiet
-    rm -f $VARIABLES/still_working
+    #rm -f $VARIABLES/still_working
     }
 
 Add_Raster ()
     {
     #This is to import geotiff raster maps. Parameters: 
-    echo "Add_Raster" > $VARIABLES/still_working
+    #echo "Add_Raster" > $VARIABLES/still_working
     grass -f $GRASS/$MAPSET --exec r.import input=$1 output=$2 --overwrite
     # grass -f $GRASS/$MAPSET --exec r.in.gdal -o -l -a -r input=$1 output=$2 --overwrite
-    rm -f $VARIABLES/still_working
+    #rm -f $VARIABLES/still_working
     }
 
 Add_Vector ()
     #This is to import a vector map file. Parameters: {filename to import,output filename for the GRASS}
     {
-    echo "Add_Vector" > $VARIABLES/still_working
+    #echo "Add_Vector" > $VARIABLES/still_working
     grass -f $GRASS/$MAPSET --exec v.import input=$1 output=$2 --overwrite
 #    grass -f $GRASS/$MAPSET --exec v.in.ogr -o input=$1 output=$2 --overwrite
-    rm -f $VARIABLES/still_working
+    #rm -f $VARIABLES/still_working
     }
     
 Area_To_Raster ()
@@ -362,7 +362,7 @@ Send_Message ()
             echo "\"modalType\": \"$4\"," >> $MODULE/temp_message
             echo "\"$5\": $6" >> $MODULE/temp_message
             echo "}" >> $MODULE/temp_message
-            mv $MODULE/temp_message $MESSAGE_SENT/message.$3;;
+            mv $MODULE/temp_message $MESSAGE_SENT/$3.message;;
         "l")        
 
             LINES=$(cat $7 | wc -l)
@@ -390,7 +390,7 @@ Send_Message ()
             done
             echo "}" >> $MODULE/temp_message
             echo "}" >> $MODULE/temp_message
-            mv $MODULE/temp_message $MESSAGE_SENT/message.$3;;
+            mv $MODULE/temp_message $MESSAGE_SENT/$3.message;;
         "s")
 
             LINES=$(cat $7 | wc -l)
@@ -418,7 +418,7 @@ Send_Message ()
             done
             echo "]" >> $MODULE/temp_message
             echo "}" >> $MODULE/temp_message
-            mv $MODULE/temp_message $MESSAGE_SENT/message.$3;;
+            mv $MODULE/temp_message $MESSAGE_SENT/$3.message;;
     esac
     }
     

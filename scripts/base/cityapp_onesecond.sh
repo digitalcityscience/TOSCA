@@ -26,8 +26,9 @@ BROWSER=~/cityapp/data_from_browser
 MESSAGE_SENT=~/cityapp/data_to_client
 
 VALUE=1
-until [ $VALUE -lt 1 ];do
-    touch $MESSAGE_SENT/system.running
+until [ $VALUE -eq 0 ];do
+    echo $VALUE > $MESSAGE_SENT/system.running
+    VALUE=$(($VALUE+1))
     sleep 1s
 done
 
