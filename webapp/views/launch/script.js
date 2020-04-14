@@ -45,6 +45,8 @@ function handleResponse(res) {
     return;
   }
 
+  $('#loading').hide();
+
   if (res.message.text) {
     let text = textElement(res.message.text), form, buttons;
 
@@ -82,7 +84,7 @@ function handleResponse(res) {
           })
         ];
         break;
-      case 'message.add_map.5':
+      case 'message.add_map.4':
         buttons = [
           buttonElement('OK').click(() => {
             reply('ok', false);
@@ -224,6 +226,7 @@ function reply(message, expectResponse) {
 }
 
 function poll(process) {
+  $('#loading').show();
   sendMessage('/poll', { process }, handleResponse);
 }
 

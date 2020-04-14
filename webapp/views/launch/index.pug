@@ -63,6 +63,10 @@ html
 
       div(id='alert-anchor')
 
+      div(id='loading')
+        div(class='loading-text') Processing …
+        div(class='spinner spinner-border')
+
     script.
       const geoserverUrl = '#{geoserverUrl}';
       const [lat, lon] = [#{lat}, #{lon}];
