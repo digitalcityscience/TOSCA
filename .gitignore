@@ -2,7 +2,6 @@
 /data_from_browser
 /data_to_client
 temp_*
-.launch_locked
 launch_locked
 
 # user data
