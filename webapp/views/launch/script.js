@@ -223,6 +223,12 @@ function handleResponse(res) {
 
       // == module_1 ==
 
+      // • message id: module_1.1
+      // • text: Start points are required. Do you want to draw start points on the basemap now? If yes, click Yes, then draw one or more point and click Save button. If you want to use an already existing map, select No.
+      // • expectation: request file with text Yes or No
+      // • consequence:
+      //   - If answer is "yes", the module is waiting for a geojson file in data_from_browser. Module only goes to the next step, when geojson file is created.
+      //   - If answer is "no", module send a new message: => module_1.2
       case 'module_1.1.message':
         buttons = [
           buttonElement('Yes').click(() => {
@@ -234,6 +240,137 @@ function handleResponse(res) {
           }),
           buttonElement('No').click(() => {
             reply('no', true);
+          })
+        ];
+        break;
+
+      // // • message id: module_1.2
+      // // • text: Select a map (only point maps are supported). Avilable maps are:
+      // // • expectation: request file with the select item only.
+      // //   Since „message.module_1.2” containes a list in json format (list items are the availabe maps), user has to select one of them. The modal type is select, therefore the answer (new request file) conatains only the selected item (in this case: a map name). It is not expected to create a separate request file containig "yes".
+      // case 'module_1.2.message':
+      //   form = formElement(messageId);
+      //   form.append($(`<input id="${messageId}-input" type="number" />`));
+      //   buttons = [
+      //     buttonElement('Submit').click(() => {
+      //       const input = $(`#${messageId}-input`);
+      //       reply(input.val(), true);
+      //     })
+      //   ];
+      //   break;
+
+      // • message id: module_1.3
+      // • text: Via points are optional. If you want to select 'via' points from the map, click Yes. If you want to use an already existing map, select No. If you do not want to use via points, click Cancel.
+      // • expectation: request file with text yes or no or cancel.
+      // • consequence:
+      //   - If answer is "yes", the module is waiting for a geojson file in data_from_browser. Module only goes to the next step, when geojson file is created.
+      //   - If answer is "no", module send a new message: => module_1.4
+      //   - If answer is "cancel": => module_1.5
+      // ----
+      // • message id: module_1.5
+      // • text: Target points are required. If you want to select target points from the map, click Yes. If you want to use an already existing map containing target points, click No. If you want to use the default target points map, click Cancel.
+      // • expectation: request file with text yes or no or cancel.
+      // • consequence:
+      //   - If answer is "yes", the module is waiting for a geojson file in data_from_browser. Module only goes to the next step, when geojson file is created.
+      //   - If answer is "no", module send a new message: => module_1.6
+      //   - If answer is "cancel": => module_1.7
+      // ----
+      // • message id: module_1.7
+      // • text: Optionally you may define stricken area. If you want to draw area on the map, click Yes. If you want to select a map already containing area, click No. If you do not want to use any area, click Cancel.
+      // • expectation: request file with text yes or no or cancel.
+      // • consequence:
+      //   - If answer is "yes", the module is waiting for a geojson file in data_from_browser. Module only goes to the next step, when geojson file is created.
+      //   - If answer is "no", module send a new message: => module_1.8
+      //   - If answer is "cancel": => module_1.9
+      case 'module_1.3.message':
+      case 'module_1.5.message':
+      case 'module_1.7.message':
+        buttons = [
+          buttonElement('Yes').click(() => {
+            reply('yes', false);
+            const saveButton = buttonElement('Save').click(() => {
+              saveDrawing();
+            })
+            buttonarea.append(saveButton);
+          }),
+          buttonElement('No').click(() => {
+            reply('no', true);
+          }),
+          buttonElement('Cancel').click(() => {
+            reply('cancel', true);
+          })
+        ];
+        break;
+
+      // • message id: module_1.4
+      // • text: Select a map (only point maps are supported). Avilable maps are:
+      // • expectation: request file with the select item only.
+      //   Since „message.module_1.3” containes a list in json format (list items are the availabe maps), user has to select one of them. The modal type is select, therefore the answer (new request file) conatains only the selected item (in this case: a map name). It is not expected to create a separate request file containig "yes".
+      // ----
+      // • message id: module_1.6
+      // • text: Select a map (only point maps are supported). Avilable maps are:
+      // • expectation: request file with the select item only
+      //   Since „message.module_1.5” containes a list in json format (list items are the availabe maps), user has to select one of them. The modal type is select, therefore the answer (new request file) conatains only the selected item (in this case: a map name). It is not expected to create a separate request file containig "yes".
+      // ----
+      // • message id: module_1.8
+      // • text: Select a map (only area maps are supported). Avilable maps are:
+      // • expectation: request file with the select item only
+      //   Since „message.module_1.7” containes a list in json format (list items are the availabe maps), user has to select one of them. The modal type is select, therefore the answer (new request file) conatains only the selected item (in this case: a map name). It is not expected to create a separate request file containig "yes"
+      case 'module_1.4.message':
+      case 'module_1.6.message':
+      case 'module_1.8.message':
+        form = formElement(messageId);
+
+        // TODO: add maps
+        form.append($(`<select id="${messageId}-input" type="text">
+          <option selected value="">Select a map</option>
+        </select>`));
+        buttons = [
+          buttonElement('Submit').click(() => {
+            const input = $(`#${messageId}-input`);
+            reply(input[0].value, true);
+          })
+        ];
+        break;
+
+      // • message id: module_1.9
+      // • text: Do you want to set the speed on the road network? If not, the current values will used.
+      // • expectation: request file with a single yes or no.
+      // • consequence: If answer is "yes", there is a new message: => module_1.10
+      case 'module_1.9.message':
+        buttons = [
+          buttonElement('Yes').click(() => {
+            reply('yes', true);
+          }),
+          buttonElement('No').click(() => {
+            reply('no', true);
+          })
+        ];
+        break;
+
+      // • message id: module_1.12
+      // • text: Set speed for roads of stricken area.
+      // • expectation: reqest file with single a floating point numeric value
+      case 'module_1.12.message':
+        form = formElement(messageId);
+        form.append($(`<input id="${messageId}-input" type="number" />`));
+        buttons = [
+          buttonElement('Submit').click(() => {
+            const input = $(`#${messageId}-input`);
+            reply(input.val(), true);
+          })
+        ];
+        break;
+
+      // • message id: module_1.14
+      // • text: Calculations are ready, display output time maps.
+      // • expectation: A request file with a single "OK" word
+      // • consequence: After the user acknowledge the message, the module exit.
+      case 'module_1.14.message':
+        buttons = [
+          buttonElement('OK').click(() => {
+            reply('ok', false);
+            clearDialog();
           })
         ];
         break;

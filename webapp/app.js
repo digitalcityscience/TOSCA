@@ -160,8 +160,6 @@ async function readMessageFromFile(timeout) {
     }, timeout || 10000)
 
     const watcher = fs.watch(dataToClient, {}, async (event, filename) => {
-      console.log(`detected ${filename}`)
-
       try {
         const filepath = `${dataToClient}/${filename}`
         const contents = fs.readFileSync(filepath, { encoding: 'utf-8' })
