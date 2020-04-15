@@ -1,15 +1,23 @@
 # Pull base system
 FROM debian:buster
 
+ENV DEBIAN_FRONTEND=noninteractive
+
 # Install utilities
 RUN apt-get update
-RUN apt-get install -y curl unzip procps bc inotify-tools openjdk-11-jre
+RUN apt-get install -y locales curl unzip procps bc inotify-tools openjdk-11-jre-headless
+
+# Set locale
+RUN sed -i -e 's/# \(en_US\.UTF-8 .*\)/\1/' /etc/locale.gen && locale-gen
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
 
 WORKDIR /usr/share
 
 # Install GeoServer
 ARG VERSION=2.16.2
-RUN curl -o geoserver.zip https://netcologne.dl.sourceforge.net/project/geoserver/GeoServer/${VERSION}/geoserver-${VERSION}-bin.zip
+RUN curl -L -o geoserver.zip https://sourceforge.net/projects/geoserver/files/GeoServer/${VERSION}/geoserver-${VERSION}-bin.zip/download
 RUN unzip -q geoserver.zip
 RUN mv geoserver-${VERSION} geoserver
 RUN rm geoserver.zip
@@ -17,7 +25,7 @@ ENV GEOSERVER_HOME=/usr/share/geoserver
 ENV GEOSERVER_DATA_DIR=/root/cityapp/geoserver_data
 
 # Install GRASS GIS and Gnuplot
-RUN apt-get install -y grass gnuplot
+RUN apt-get install -y grass-core gnuplot-nox
 
 # Install Node.js
 RUN curl -L https://deb.nodesource.com/setup_12.x | bash -
