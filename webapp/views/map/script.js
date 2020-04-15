@@ -55,10 +55,10 @@ const selection = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
   minZoom: 1,
 });
 
-var map = new L.Map('map', {
+const map = new L.Map('map', {
   center: new L.LatLng(lat, lon), zoom: 9
 })
-var drawnItems = L.featureGroup().addTo(map);
+const drawnItems = L.featureGroup().addTo(map);
 
 // OSM basemap
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -93,34 +93,25 @@ map.addControl(new L.Control.Draw({
     rectangle: false,
     circle: false,
     marker: false,
-    circlemarker: false,
+    circlemarker: true
   }
 }));
 
-var featureGroup = L.featureGroup().addTo(map);
+const featureGroup = L.featureGroup().addTo(map);
+
 map.on('draw:created', (saving_draw) => {
   /* Creating a new item (polygon, line ... ) will be added to the feature group */
   featureGroup.addLayer(saving_draw.layer);
 });
 
 map.on(L.Draw.Event.CREATED, (event) => {
-  var layer = event.layer;
-  drawnItems.addLayer(layer);
+  drawnItems.addLayer(event.layer);
 });
 
 /* scale bar */
 L.control.scale({ maxWidth: 300 }).addTo(map);
 
 /* north arrow */
-var north = L.control({ position: 'bottomright' });
+const north = L.control({ position: 'bottomright' });
 north.onAdd = () => document.getElementById('north-arrow');
 north.addTo(map);
-
-/*----- Save drawing -----------------------------------------*/
-
-function save() {
-  /* making a GeoJson from featureGroup */
-  var geojson = featureGroup.toGeoJSON();
-
-  sendMessage('/select_location', geojson, true);
-}
