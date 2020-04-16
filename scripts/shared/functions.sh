@@ -167,6 +167,24 @@ Point_To_Raster ()
     fi
     }
     
+Process_Check ()
+    # This is to write a file in data_to_client directory in each second. Parameters are: "start" or "stop", and process_description.
+    {
+    if [ "$1" == "start" ]
+        then
+            echo $2 > $VARIABLES/process_status
+            echo "1" >> $VARIABLES/process_status
+            $MODULES/process_check/cityapp_process_check.sh &
+    fi
+
+
+    if [ "$1" == "stop" ]
+        then
+            echo $2 > $VARIABLES/process_status
+            echo "0" >> $VARIABLES/process_status
+    fi
+    }
+    
 Request ()
     {
     CHECK=no
@@ -287,23 +305,6 @@ Request_Tif ()
     done
     }
 
-Process_Check ()
-    # This is to write a file in data_to_client directory in each second. Parameters are: "start" or "stop", and process_description.
-    {
-    if [ "$1" == "start" ]
-        then
-            echo $2 > $VARIABLES/process_status
-            echo "1" >> $VARIABLES/process_status
-            $MODULES/process_check/cityapp_process_check.sh &
-    fi
-
-
-    if [ "$1" == "stop" ]
-        then
-            echo $2 > $VARIABLES/process_status
-            echo "0" >> $VARIABLES/process_status
-    fi
-    }
 
 Running_Check ()
     # This is to write a file in data_to_client directory in each second. Only parameter is "start" or "stop".
@@ -434,6 +435,50 @@ Set_Region ()
         then
             grass -f $GRASS/$MAPSET --exec g.region vector=$1 --overwrite --quiet
     fi
+    }
+    
+Topology ()
+    # It is to identify the topology of a vector map. Input parameters are: grass mapset ($1), map name to query ($2). Output value is TOPOLOGY (posible values are: point, line, area, empty, mixed)
+    {
+    grass $1 --exec v.info -t map=$2 > $VARIABLES/temp_topology
+    TOPOLOGY_POINTS=$(cat $VARIABLES/temp_topology | grep "points=" | cut -d"=" -f2)
+    TOPOLOGY_LINES=$(cat $VARIABLES/temp_topology | grep "lines=" | cut -d"=" -f2)
+    TOPOLOGY_CENTROIDS=$(cat $VARIABLES/temp_topology | grep "centroids=" | cut -d"=" -f2)
+
+    TOPOLOGY_POINT=0
+    TOPOLOGY_LINE=0
+    TOPOLOGY_CENTROID=0
+    if [ $TOPOLOGY_POINTS -gt 0 ]
+        then
+            TOPOLOGY_POINT=1
+    fi
+
+    if [ $TOPOLOGY_LINES -gt 0 ]
+        then
+            TOPOLOGY_LINE=1
+    fi
+
+    if [ $TOPOLOGY_CENTROIDS -gt 0 ]
+        then
+            TOPOLOGY_CENTROID=1
+    fi
+
+    TOPOLOGY_TYPES=$TOPOLOGY_POINT$TOPOLOGY_LINE$TOPOLOGY_CENTROID
+
+    case $TOPOLOGY_TYPES in
+        000)
+            TOPOLOGY="empty";;
+        100)
+            TOPOLOGY="point";;
+        010)
+            TOPOLOGY="line";;
+        001)
+            TOPOLOGY="area";;
+        101|011|111)
+            TOPOLOGY="mixed";;
+    esac
+    rm -f $VARIABLES/temp_topology
+    MAP_TOPOLOGY=$TOPOLOGY
     }
     
 Vector_Mask ()

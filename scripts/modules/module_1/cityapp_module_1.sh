@@ -91,13 +91,10 @@ fi
             case $REQUEST_CONTENT in
                 "yes"|"Yes"|"YES")
                     Request_Map geojson GEOJSON
-                    
                         Process_Check start add_map
-                    
                         Add_Vector $REQUEST_PATH m1_from_points
                         Gpkg_Out m1_from_points m1_from_points
                         FROM_POINT=m1_from_points
-                        
                         Process_Check stop add_map
                      ;;
                 "no"|"No"|"NO")
