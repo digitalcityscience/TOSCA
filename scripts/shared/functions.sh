@@ -72,6 +72,7 @@ Close_Process ()
     if [ -e $VARIABLES/subprocess ]
         then
             rm -f $MODULE/temp_*
+            rm -f $MODULE/*_temp
             rm -f $MESSAGE_SENT/*
             rm $BROWSER/leave_session
             rm -f $BROWSER/request
@@ -82,6 +83,7 @@ Close_Process ()
             inotifywait -e delete $VARIABLES/still_working
                             
             rm -f $MODULE/temp_*
+            rm -f $MODULE/*_temp
             rm -f $MESSAGE_SENT/*
             rm $VARIABLES/launch_locked
             rm $BROWSER/leave_session
@@ -97,6 +99,7 @@ Close_Process ()
             touch $BROWSER/launcher_run
         else
             rm -f $MODULE/temp_*
+            rm -f $MODULE/*_temp
             rm -f $MESSAGE_SENT/*
             rm $VARIABLES/launch_locked
             rm $BROWSER/leave_session

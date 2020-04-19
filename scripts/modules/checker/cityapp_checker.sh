@@ -1,8 +1,8 @@
 #! /bin/bash
-# version 1.0
+# version 1.01
 # CityApp maintenance
 # Check requested components
-# 2020. január 22.
+# 2020. április 16.
 # Author: BUGYA Titusz, CityScienceLab -- Hamburg, Germany
 
 
@@ -67,6 +67,20 @@ if [ $(which grep) ]
         echo "grep found"
     else
         echo "No grep found" >> $ERROR
+fi
+
+if [ $(which enscript) ]
+    then
+        echo "enscript found"
+    else
+        echo "No enscript found" >> $ERROR
+fi
+
+if [ $(which ps2pdf) ]
+    then
+        echo "ps2pdf found"
+    else
+        echo "No ps2pdf found" >> $ERROR
 fi
 
 if [ $(echo $(stat --printf="%s" $ERROR)) -eq 0 ]
