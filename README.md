@@ -18,7 +18,7 @@ docker build -t cityapp .
 Now start a container using the newly created image:
 ```
 docker run -ti \
-  -v ~/<local path to>/geoserver_data:/root/cityapp/geoserver_data \
+  -v ~/<local path to>/geoserver_data:/usr/share/geoserver/data_dir/data \
   -v ~/<local path to>/grass:/root/cityapp/grass \
   -p 3000:3000 \
   -p 8080:8080 \
