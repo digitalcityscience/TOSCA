@@ -1,13 +1,13 @@
 #! /bin/bash
 . ~/cityapp/scripts/shared/functions.sh
 
-# version 1.6
+# version 1.61
 # CityApp module
 # This module is to calculate the fastest way from "from_points" to "to_points" thru "via_points".
 # The network is the road network, with user-defined average speed.
 # Defining "from_points" is mandatory, "via_points" and "to_points" are optional.
 # If no "to_points" are selected, the default "to_points" will used: points along the roads, calculated by the application. 
-# 2020. április 10.
+# 2020. április 20.
 # Author: BUGYA Titusz, CityScienceLab -- Hamburg, Germany
 
 #
@@ -29,7 +29,8 @@ MESSAGE_SENT=~/cityapp/data_to_client
 GEOSERVER=~/cityapp/geoserver_data
 GRASS=~/cityapp/grass/global
 MAPSET=module_1
-
+DATE_VALUE=$(date +%Y-%m-%d" "%H":"%M)
+DATE_VALUE_2=$(date +%Y_%m_%d_%H_%M)
 #
 #-- Default constants values for the interpolation and time calculations. Only modify when you know what is the effects of these variables -------------------
 #
@@ -83,6 +84,13 @@ fi
                 NORTH=$(cat $VARIABLES/coordinate_north)
 
     fi        
+
+# Creating empty maps for ps output, if no related maps are created/selected by user:
+# m1_via_points m1_to_points, m1_stricken_area
+# If user would create a such map, empty maps will automatically overwritten
+    v.edit map=m1_via_points tool=create
+    v.edit map=m1_to_points tool=create
+    v.edit map=m1_stricken_area tool=create
 
 # Message 1 Start points are required. Do you want to draw start points on the basemap now? If yes, click Yes, then draw one or more point and click Save button. If you want to use an already existing map, select No.
     grass $GRASS/$MAPSET --exec g.list -m type=vector > $MODULE/temp_list
@@ -304,10 +312,52 @@ grass $GRASS/$MAPSET --exec v.net input=highways points=from_via_to_points outpu
     grass $GRASS/$MAPSET --exec g.region res=$BASE_RESOLUTION --overwrite
     grass $GRASS/$MAPSET --exec r.mask vector=selection --overwrite
     grass $GRASS/$MAPSET --exec v.db.addcolumn map=highway_points layer=2 columns="time DOUBLE PRECISION" --overwrite
+    
+    
     grass $GRASS/$MAPSET --exec v.what.rast map=highway_points@module_1 raster=m1_time_map layer=2 column=time --overwrite
+    
+    
     grass $GRASS/$MAPSET --exec v.surf.rst input=highway_points@module_1 layer=2 zcolumn=time where="time>0" elevation=m1_time_map_interpolated tension=$TENSION smooth=$SMOOTH nprocs=4 --overwrite 
+    
     grass $GRASS/$MAPSET --exec r.out.gdal input=m1_time_map_interpolated output=$GEOSERVER/m1_time_map_interpolated.tif format=GTiff --overwrite --quiet
+    
+# Generating pdf output
+    
+    # set color for maps:
+    grass $GRASS/$MAPSET --exec g.region res=$(cat $VARIABLES/resolution)
+    r.colors -a map=m1_time_map color=gyr
+    r.colors map=m1_time_map_interpolated color=gyr
 
+    echo "Map output for time map calculations" > $MODULE/temp_time_map_info_text
+    echo "" >> $MODULE/temp_time_map_info_text
+    echo "Date of map creation: $DATE_VALUE" >> $MODULE/temp_time_map_info_text
+    echo "" >> $MODULE/temp_time_map_info_text
+    echo "Colors on map represents time in minutes" >> $MODULE/temp_time_map_info_text
+    echo "Numbers of legend are time in minutes" >> $MODULE/temp_time_map_info_text
+    echo "" >> $MODULE/temp_time_map_info_text
+    echo "Start point: yellow cross" >> $MODULE/temp_time_map_info_text
+    echo "Via point: purple cross" >> $MODULE/temp_time_map_info_text
+    echo "Target point red cross" >> $MODULE/temp_time_map_info_text
+    echo "Stricken area: black line" >> $MODULE/temp_time_map_info_text
+    echo "" >> $MODULE/temp_time_map_info_text
+    echo "Considered speed on roads:" >> $MODULE/temp_time_map_info_text
+    cat $VARIABLES/roads_speed >> $MODULE/temp_time_map_info_text
+    echo "" >> $MODULE/temp_time_map_info_text
+    echo "Speed reduction coefficient for stricken area: $REDUCING_RATIO" >> $MODULE/temp_time_map_info_text
+    
+    enscript -p $MODULE/temp_time_map_info_text.ps $MODULE/temp_time_map_info_text
+    ps2pdf $MODULE/temp_time_map_info_text.ps $MODULE/temp_time_map_info_text.pdf
+    
+    grass $GRASS/$MAPSET --exec ps.map input=$MODULE/ps_param_1 output=$MODULE/time_map_1.ps --overwrite
+    grass $GRASS/$MAPSET --exec ps.map input=$MODULE/ps_param_2 output=$MODULE/time_map_2.ps --overwrite
+    ps2pdf $MODULE/time_map_1.ps $MODULE/time_map_1.pdf
+    ps2pdf $MODULE/time_map_2.ps $MODULE/time_map_2.pdf
+
+    gs -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -dPDFSETTINGS=/prepress -sOutputFile=$MODULE/temp_m1_results_$DATE_VALUE_2".pdf" $MODULE/temp_time_map_info_text.pdf $MODULE/time_map_1.pdf $MODULE/time_map_2.pdf
+    
+    mv $MODULE/temp_m1_results_$DATE_VALUE_2".pdf" ~/cityapp/saved_results/time_map_results_$DATE_VALUE_2".pdf"
+    
+    
 Process_Check stop processing_map
 
 Send_Message m 12 module_1.14 question actions [\"OK\"]
@@ -316,3 +366,9 @@ Send_Message m 12 module_1.14 question actions [\"OK\"]
         Close_Process
 
 exit
+
+    
+    
+
+
+    
