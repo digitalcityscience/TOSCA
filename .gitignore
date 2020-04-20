@@ -10,6 +10,9 @@ launch_locked
 !/geoserver_data/logging.xml
 /grass/global
 /grass/skel
+*.gpkg
+*.pdf
+*.ps
 
 # Node.js dependencies
 node_modules
