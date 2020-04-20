@@ -6,7 +6,7 @@ ENV LANG=en_US.UTF-8
 ENV LANGUAGE=en_US:en
 ENV LC_ALL=en_US.UTF-8
 ENV GEOSERVER_HOME=/usr/share/geoserver
-ENV GEOSERVER_DATA_DIR=/usr/share/geoserver/data_dir/data
+ENV GEOSERVER_DATA_DIR=/usr/share/geoserver/data_dir
 
 # Install utilities
 RUN apt-get update
