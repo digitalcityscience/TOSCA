@@ -2,7 +2,6 @@
 require('dotenv').config()
 
 const geoserverUrl = process.env.GEOSERVER_URL
-const websocketUrl = process.env.WEBSOCKET_URL
 const dataFromBrowser = process.env.DATA_FROM_BROWSER_DIR
 const dataToClient = process.env.DATA_TO_CLIENT_DIR
 
@@ -40,9 +39,8 @@ app.set('view engine', 'pug')
 app.get('/', (req, res) => {
   let options = {
     geoserverUrl,
-    websocketUrl,
-    lat: 53.55,
-    lon: 10
+    lat: 20.2,
+    lon: 85.7
   }
   res.render('launch', options)
 })
@@ -160,6 +158,8 @@ async function readMessageFromFile(timeout) {
     }, timeout || 10000)
 
     const watcher = fs.watch(dataToClient, {}, async (event, filename) => {
+      console.log(`Got ${filename}`)
+
       try {
         const filepath = `${dataToClient}/${filename}`
         const contents = fs.readFileSync(filepath, { encoding: 'utf-8' })

@@ -18,17 +18,25 @@ docker build -t cityapp .
 Now start a container using the newly created image:
 ```
 docker run -ti \
-  -v ~/<local path to>/geoserver_data:/usr/share/geoserver/data_dir/data \
+  -v ~/<local path to>/geoserver_data_dir:/usr/share/geoserver/data_dir \
   -v ~/<local path to>/grass:/root/cityapp/grass \
   -p 3000:3000 \
   -p 8080:8080 \
-  --name cityapp_1 \
+  --name cityapp \
   cityapp
 ```
 
 The app will run on http://localhost:3000, and GeoServer will be available at http://localhost:8080/geoserver/.
 
 The `geoserver_data` and `grass` directories are mounted as volumes into the container, in order to make their contents persistent.
+
+*Directory mappings:*
+
+| Local copy | Container |
+| ---------- | --------- |
+| –          | `/root/cityapp/geoserver_data -> /usr/share/geoserver/data_dir/data` (symbolic link) |
+| `geoserver_data_dir` | `/usr/share/geoserver/data_dir` (mounted volume) |
+| `grass`    | `/root/cityapp/grass` (mounted volume) |
 
 ## 1 System requirements
 

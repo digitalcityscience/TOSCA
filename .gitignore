@@ -5,12 +5,15 @@ temp_*
 launch_locked
 
 # user data
-/geoserver_data/*
-!/geoserver_data/workspaces
-!/geoserver_data/logging.xml
+/geoserver_data_dir/data
+/geoserver_data_dir/logs/geoserver.log*
 /grass/global
 /grass/skel
 *.gpkg
+*.gpkg-shm
+*.gpkg-wal
+*.tif
+*.tif.aux.xml
 *.pdf
 *.ps
 

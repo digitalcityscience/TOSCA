@@ -39,6 +39,7 @@ RUN apt-get clean
 
 # Install webapp
 WORKDIR /root/cityapp
+RUN ln -s $GEOSERVER_DATA_DIR/data geoserver_data
 RUN mkdir data_from_browser
 RUN mkdir data_to_client
 COPY webapp/package*.json ./webapp/
