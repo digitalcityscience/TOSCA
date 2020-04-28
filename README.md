@@ -15,15 +15,15 @@ You can quickly set up a running system via [Docker](https://docs.docker.com/) â
 docker build -t cityapp .
 ```
 
-Now start a container using the newly created image:
+Create required directories:
 ```
-docker run -ti \
-  -v ~/<local path to>/geoserver_data_dir:/usr/share/geoserver/data_dir \
-  -v ~/<local path to>/grass:/root/cityapp/grass \
-  -p 3000:3000 \
-  -p 8080:8080 \
-  --name cityapp \
-  cityapp
+mkdir geoserver_data_dir/data
+mkdir grass/global
+```
+
+Start a container using the newly created image:
+```
+docker run -ti -v `pwd`/geoserver_data_dir:/usr/share/geoserver/data_dir -v `pwd`/grass:/root/cityapp/grass -p 3000:3000 -p 8080:8080 --name cityapp cityapp
 ```
 
 The app will run on http://localhost:3000, and GeoServer will be available at http://localhost:8080/geoserver/.
