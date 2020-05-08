@@ -1,8 +1,8 @@
 #! /bin/bash
-# version 1.01
+# version 1.02
 # CityApp maintenance
 # Check requested components
-# 2020. április 16.
+# 2020. április 30.
 # Author: BUGYA Titusz, CityScienceLab -- Hamburg, Germany
 
 
@@ -76,11 +76,18 @@ if [ $(which enscript) ]
         echo "No enscript found" >> $ERROR
 fi
 
-if [ $(which ps2pdf) ]
+if [ $( which ghostscript) ]
     then
-        echo "ps2pdf found"
+        echo "ghostscript found"
     else
-        echo "No ps2pdf found" >> $ERROR
+        echo "No ghostscript found" >> $ERROR
+fi
+
+if [ $(which gnuplot) ]
+    then
+        echo "gnuplot found"
+    else
+        echo "No gnuplot found" >> $ERROR
 fi
 
 if [ $(echo $(stat --printf="%s" $ERROR)) -eq 0 ]

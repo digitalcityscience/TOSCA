@@ -149,7 +149,7 @@ if [ ! -e $GRASS/$MAPSET/vector/lines_osm ]
     then
         # Message 4 No lines map found in PERMANET mapset, or lines map is damaged. To resolve this error, add again your location (map) to CityApp. Modul is now exiting.
         Send_Message m 4 location_selector.7 error actions [\"OK\"]
-            RequestLocation selector is now exiting.
+            Request
                 Close_Process
         exit
 fi
