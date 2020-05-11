@@ -46,9 +46,7 @@ for i in $(ps a | grep "inotifywait" | grep "$USER" | cut -d" " -f1);do
     kill -9 $i
 done
 
-for i in $(ps a | grep "node app.js" | grep -v grep | cut -d" " -f1);do
-    kill -9 $i
-done
+kill -9 $(pgrep -f node)
 
 Send_Message m 1 ca_shutdown.1 question actions [\"Yes\"]
 

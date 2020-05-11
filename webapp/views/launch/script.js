@@ -106,15 +106,33 @@ function handleResponse(res) {
         ];
         break;
 
-      // == location_selector ==
+      // == add_location ==
 
-      // • message id: location_selector.1
+      // • message id: add_location.1
+      // • text: There is an already added location, and it is not allowed to add further locations. If you want to add a new location, the already existing location will automatically removed. If you want to store the already existing location, save manually (refer to the manual, please). Do you want to add a new location? If yes, click OK.
+      // • expectation: A request file with yes or no text.
+      // • consequence:
+      //   - If answer is NO, then add_location send a message and when the message is acknowledged, exit: => add_location.3
+      //   - If answer is YES: => add_location.4
+      case 'add_location.1.message':
+        buttons = [
+          buttonElement('Yes').click(() => {
+            reply('yes', true);
+          }),
+          buttonElement('No').click(() => {
+            reply('no', true);
+          })
+        ];
+        break;
+ 
+      // • message id: add_location.2
       // • text: No valid location found. First have to add a location to the dataset. Without such location, CityApp will not work. Adding a new location may take a long time, depending on the file size. If you want to continue, click Yes.
       // • expectation: A request file with yes or no text.
       // • consequence:
-      //   - If answer is NO, then location_selector send a message and when the message is acknowledged, exit: => location_selector.10
-      //   - If answer is YES: => location_selector.2
-      case 'location_selector.1.message':
+      //   - If answer is NO, then add_location send a message and when the message is acknowledged, exit: => add_location.3
+      //   - If answer is YES: => add_location.4
+        
+      case 'add_location.2.message':
         buttons = [
           buttonElement('Yes').click(() => {
             reply('yes', true);
@@ -125,11 +143,25 @@ function handleResponse(res) {
         ];
         break;
 
-      // • message id: location_selector.2
+      // • message id: add_location.3
+      // • text: Exit process, click OK.
+      // • expectation: A request file with OK text
+      // • consequence: Module exit when message is acknowledged
+      case 'add_location.3.message':
+      case 'add_location.5.message':
+        buttons = [
+          buttonElement('OK').click(() => {
+            reply('ok', false);
+            clearDialog();
+          })
+        ];
+        break;
+        
+      // • message id: add_location.4
       // • text: Select a map to add to CityApp. Map has to be in Open Street Map format -- osm is the only accepted format.
       // • expectation: Finding an uploaded osm file in data_from_browser directory. Request file is not expected, and therefore it is not neccessary to create.
       // • consequence: No specific consequences
-      case 'location_selector.2.message':
+      case 'add_location.4.message':
         form = formElement(messageId);
         form.append($(`<input id="${messageId}-input" type="file" name="file" />`));
         buttons = [
@@ -142,45 +174,28 @@ function handleResponse(res) {
         ];
         break;
 
-      // • message id: location_selector.3
-      // • text: There is an already defined area. To reshape the existing selection, select Yes. If do not want reshape the selection, beceause you want to replace the entire location, select No.
-      // • expectation: A request file with yes or no text
-      // • consequence:
-      //   - If answer is yes: => location_selector.8
-      //   - If answer is no: => location_selector.2
-      case 'location_selector.3.message':
-        buttons = [
-          buttonElement('Yes').click(() => {
-            reply('yes', true);
-          }),
-          buttonElement('No').click(() => {
-            reply('no', true);
-          })
-        ];
-        break;
-
-      // • message id: location_selector.8
-      // • text: Now zoom to area of your interest, then use drawing tool to define your location. Next, save your selection.
-      // • expectation: Finding an uploaded goejson file in data_from_browser directory. This file is created by the browser, when the user define interactively the selection area. Request file is not expected, and therefore it is not neccessary to create.
-      // • consequence: No specific consequences
-      case 'location_selector.8.message':
-        buttons = [
-          buttonElement('Save').click(() => {
-            saveDrawing();
-          })
-        ];
-        break;
-
-      // • message id: location_selector.9
-      // • text: Process finished. Now CityApp Location selector exit
+      // • message id: add_location.5
+      // • text: New location is set. To exit, click OK.
       // • expectation: A request file with OK text
       // • consequence: Module exit when message is acknowledged
-      // ----
-      // • message id: location_selector.10
-      // • text: Location selector is now exiting.
-      // • expectation: A request file with OK text.
-      case 'location_selector.9.message':
-      case 'location_selector.10.message':
+      case 'add_location.5.message':
+        buttons = [
+          buttonElement('OK').click(() => {
+            reply('ok', false);
+            //clearDialog();//
+            refreshPage();
+          })
+        ];
+        break;
+
+        
+// == make_selection ==
+
+      // • message id: make_selection.1
+      // • text: No valid location found. First have to add a location to the dataset. Without such location, CityApp will not work. To add a location, use Add Location menu. Now click OK to exit.
+      // • expectation: A request file with OK text
+      // • consequence: Module exit when message is acknowledged
+      case 'make_selection.1.message':
         buttons = [
           buttonElement('OK').click(() => {
             reply('ok', false);
@@ -188,7 +203,32 @@ function handleResponse(res) {
           })
         ];
         break;
+ 
+      // • message id: make_selection.2
+      // • text: Now zoom to area of your interest, then use drawing tool to define your location. Next, save your selection.
+      // • expectation: Finding an uploaded goejson file in data_from_browser directory. This file is created by the browser, when the user define interactively the selection area. Request file is not expected, and therefore it is not neccessary to create.
+      // • consequence: No specific consequences
+      case 'make_selection.2.message':
+        buttons = [
+          buttonElement('Save').click(() => {
+            saveDrawing();
+          })
+        ];
+        break;
 
+      // • message id: make_selection.3
+      // • text: Process finished, selection is saved. To process exit, click OK.
+      // • expectation: A request file with OK text
+      // • consequence: Module exit when message is acknowledged
+      case 'make_selection.3.message':
+        buttons = [
+          buttonElement('OK').click(() => {
+            reply('ok', false);
+            clearDialog();
+          })
+        ];
+        break;
+        
       // == resolution_setting ==
 
       // • message id: resolution_setting.1
@@ -220,6 +260,16 @@ function handleResponse(res) {
           })
         ];
         break;
+        
+      case 'resolution_setting.3.message':
+        buttons = [
+          buttonElement('OK').click(() => {
+            reply('ok', false);
+            clearDialog();
+          })
+        ];
+        break;
+        
 
       // == module_1 ==
 
@@ -485,3 +535,8 @@ function onServerTimeout() {
   $('#alert-anchor').append(alert);
   $('#loading').hide();
 }
+
+// reload the page
+function refreshPage(){
+location.reload();
+} 

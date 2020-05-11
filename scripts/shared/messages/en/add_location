@@ -1,0 +1,5 @@
+There is an already added location, and it is not allowed to add further locations. If you want to add a new location, the already existing location will automatically removed. If you want to store the already existing location, save manually (refer to the manual, please). Do you want to add a new location? If yes, click Yes.
+No valid location found. First have to add a location to the dataset. Without such location, CityApp will not work. Adding a new location may take a long time, depending on the file size. If you want to continue, click Yes.
+Exit process, click OK
+Select a map to add to CityApp. Map has to be in Open Street Map format -- osm is the only accepted format.
+New location is set. To exit, click OK.

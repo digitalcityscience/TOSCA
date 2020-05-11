@@ -69,8 +69,14 @@ function coordinates
     #cp $MODULES/base_map/base_map_template.html $MODULES/base_map/base_map.html
     
     #sed -i 's/replacethisline/var map = new L.Map('\''map'\'', {center: new L.LatLng('$NORTH', '$EAST'), zoom: 9 }),drawnItems = L.featureGroup().addTo(map);/' $MODULES/base_map/base_map.html
+
+    rm -f ~/cityapp/webapp/app.js 
+    cp ~/cityapp/webapp/app_base.js ~/cityapp/webapp/app.js 
+    sed -i 's/replacelat/lat: $NORTH,' ~/cityapp/webapp/app.js
+    sed -i 's/replacelon/lon: $EAST,' ~/cityapp/webapp/app.js
     }
 
+    
     if [ ! -d "$GRASS/$MAPSET/" ]
         then
             # PERMANENT not found

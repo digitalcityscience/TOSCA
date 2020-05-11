@@ -1,10 +1,10 @@
 #! /bin/bash
 . ~/cityapp/scripts/shared/functions.sh
 
-# version 1.31
+# version 1.32
 # CityApp maintenance
 # Resolution setting
-# 2020. április 9.
+# 2020. május 9.
 # Author: BUGYA Titusz, CityScienceLab -- Hamburg, Germany
 
 #
@@ -76,6 +76,10 @@ Send_Message m 1 resolution_setting.1 input actions [\"OK\"]
                     echo "{ "\""success"\"": false }" > $MESSAGE_SENT/message.resolution_setting.3
             fi
     fi
-sleep 1s
-Close_Process
+
+# Resolution is now set, to exit, click OK.
+Send_Message m 3 resolution_setting.3 question actions [\"OK\"]
+    Request
+    Close_Process
+
 exit

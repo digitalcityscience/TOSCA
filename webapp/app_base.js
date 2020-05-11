@@ -39,8 +39,8 @@ app.set('view engine', 'pug')
 app.get('/', (req, res) => {
   let options = {
     geoserverUrl,
-    lat: 53.731477,
-    lon: 10.260016,
+    replacelat
+    replacelon
   }
   res.render('launch', options)
 })
