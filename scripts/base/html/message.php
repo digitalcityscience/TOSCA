@@ -1,1 +1,0 @@
-/home/titusz/cityapp/data_to_client/message.system_error.2

@@ -154,7 +154,7 @@ function coordinates
 
 
     # Process finished, selection is saved. To process exit, click OK.
-    Send_Message m 3 make_selection.3 question actions [\"OK\"]
+    Send_Message m 3 make_selection .3 question actions [\"OK\"]
         Request
             rm -f $VARIABLES/launch_locked
             touch $VARIABLES/launcher_run
