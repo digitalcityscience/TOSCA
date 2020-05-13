@@ -9,7 +9,6 @@ function handleResponse(res) {
     } else {
       $('#loading').hide();
     }
-    return;
   }
 
   if (!res.message) {
@@ -48,6 +47,184 @@ function handleResponse(res) {
     switch (res.filename) {
       // The various actions required in response to server messages are defined here.
 
+      // == add_location ==
+
+      // • message id: add_location.1
+      // • text: There is an already added location, and it is not allowed to add further locations. If you want to add a new location, the already existing location will automatically removed. If you want to store the already existing location, save manually (refer to the manual, please). Do you want to add a new location? If yes, click OK.
+      // • expectation: A request file with yes or no text.
+      // • consequence:
+      //   - If answer is NO, then add_location send a message and when the message is acknowledged, exit: => add_location.3
+      //   - If answer is YES: => add_location.4
+      case 'add_location.1.message':
+        buttons = [
+          buttonElement('Yes').click(() => {
+            reply('yes', true);
+          }),
+          buttonElement('No').click(() => {
+            reply('no', true);
+          })
+        ];
+        break;
+
+      // • message id: add_location.2
+      // • text: No valid location found. First have to add a location to the dataset. Without such location, CityApp will not work. Adding a new location may take a long time, depending on the file size. If you want to continue, click Yes.
+      // • expectation: A request file with yes or no text.
+      // • consequence:
+      //   - If answer is NO, then add_location send a message and when the message is acknowledged, exit: => add_location.3
+      //   - If answer is YES: => add_location.4
+
+      case 'add_location.2.message':
+        buttons = [
+          buttonElement('Yes').click(() => {
+            reply('yes', true);
+          }),
+          buttonElement('No').click(() => {
+            reply('no', true);
+          })
+        ];
+        break;
+
+      // • message id: add_location.3
+      // • text: Exit process, click OK.
+      // • expectation: A request file with OK text
+      // • consequence: Module exit when message is acknowledged
+      case 'add_location.3.message':
+        buttons = [
+          buttonElement('OK').click(() => {
+            reply('ok', false);
+            clearDialog();
+          })
+        ];
+        break;
+
+      // • message id: add_location.4
+      // • text: Select a map to add to CityApp. Map has to be in Open Street Map format -- osm is the only accepted format.
+      // • expectation: Finding an uploaded osm file in data_from_browser directory. Request file is not expected, and therefore it is not neccessary to create.
+      // • consequence: No specific consequences
+      case 'add_location.4.message':
+        form = formElement(messageId);
+        form.append($(`<input id="${messageId}-input" type="file" name="file" />`));
+        buttons = [
+          buttonElement('Submit').click(() => {
+            $(`#${messageId}-error`).remove();
+            const input = $(`#${messageId}-input`);
+            if (input[0].files.length) {
+              upload(form[0], handleResponse);
+            } else {
+              textarea.append($(`<span id="${messageId}-error" class="validation-error">Please choose a file for upload.</span>`));
+            }
+          })
+        ];
+        break;
+
+      // • message id: add_location.5
+      // • text: New location is set. To exit, click OK.
+      // • expectation: A request file with OK text
+      // • consequence: Module exit when message is acknowledged
+      case 'add_location.5.message':
+        buttons = [
+          buttonElement('OK').click(() => {
+            reply('ok', false);
+            clearDialog();
+          })
+        ];
+        break;
+
+      // == make_selection ==
+
+      // • message id: make_selection.1
+      // • text: No valid location found. First have to add a location to the dataset. Without such location, CityApp will not work. To add a location, use Add Location menu. Now click OK to exit.
+      // • expectation: A request file with OK text
+      // • consequence: Module exit when message is acknowledged
+      case 'make_selection.1.message':
+        buttons = [
+          buttonElement('OK').click(() => {
+            reply('ok', false);
+            clearDialog();
+          })
+        ];
+        break;
+
+      // • message id: make_selection.2
+      // • text: Now zoom to area of your interest, then use drawing tool to define your location. Next, save your selection.
+      // • expectation: Finding an uploaded goejson file in data_from_browser directory. This file is created by the browser, when the user define interactively the selection area. Request file is not expected, and therefore it is not neccessary to create.
+      // • consequence: No specific consequences
+      case 'make_selection.2.message':
+        buttons = [
+          buttonElement('Save').click(() => {
+            $(`#${messageId}-error`).remove();
+            const success = saveDrawing();
+            if (!success) {
+              textarea.append($(`<span id="${messageId}-error" class="validation-error">Please draw a polygon using the map’s drawing tool.</span>`));
+            }
+          })
+        ];
+        break;
+
+      // • message id: make_selection.3
+      // • text: Process finished, selection is saved. To process exit, click OK.
+      // • expectation: A request file with OK text
+      // • consequence: Module exit when message is acknowledged
+      case 'make_selection.3.message':
+        buttons = [
+          buttonElement('OK').click(() => {
+            reply('ok', false);
+            clearDialog();
+          })
+        ];
+        break;
+
+      // == resolution_setting ==
+
+      // • message id: resolution_setting.1
+      // • text: Type the resolution in meters, you want to use. For further details see manual.
+      // • expectation: A request file with a positive number.
+      // • consequence: If user gives a negative number, then UNTIL number is greater than zero: => resolution_setting.2
+      case 'resolution_setting.1.message':
+        form = formElement(messageId);
+        form.append($(`<input id="${messageId}-input" type="number" />`));
+        buttons = [
+          buttonElement('Submit').click(() => {
+            $(`#${messageId}-error`).remove();
+            const input = $(`#${messageId}-input`);
+            if (!isNaN(parseInt(input.val()))) {
+              reply(input.val(), true);
+            } else {
+              textarea.append($(`<span id="${messageId}-error" class="validation-error">Please enter a numeric value.</span>`));
+            }
+          })
+        ];
+        break;
+
+      // • message id: resolution_setting.2
+      // • text: Resolution has to be an integer number, greater than 0.  Please, define the resolution for calculations in meters.
+      // • expectation: A request file with a positive number.
+      // • consequence: No specific consequences
+      case 'resolution_setting.2.message':
+        form = formElement(messageId);
+        form.append($(`<input id="${messageId}-input" type="number" />`));
+        buttons = [
+          buttonElement('Submit').click(() => {
+            $(`#${messageId}-error`).remove();
+            const input = $(`#${messageId}-input`);
+            if (!isNaN(parseInt(input.val()))) {
+              reply(input.val(), true);
+            } else {
+              textarea.append($(`<span id="${messageId}-error" class="validation-error">Please enter a numeric value.</span>`));
+            }
+          })
+        ];
+        break;
+
+      case 'resolution_setting.3.message':
+        buttons = [
+          buttonElement('OK').click(() => {
+            reply('ok', false);
+            clearDialog();
+          })
+        ];
+        break;
+
       // == add_map ==
 
       // • message id: add_map.1
@@ -71,9 +248,12 @@ function handleResponse(res) {
         form.append($(`<input id="${messageId}-input" type="file" name="file" />`));
         buttons = [
           buttonElement('Submit').click(() => {
+            $(`#${messageId}-error`).remove();
             const input = $(`#${messageId}-input`);
             if (input[0].files.length) {
               upload(form[0], handleResponse);
+            } else {
+              textarea.append($(`<span id="${messageId}-error" class="validation-error">Please choose a file for upload.</span>`));
             }
           })
         ];
@@ -87,8 +267,13 @@ function handleResponse(res) {
         form.append($(`<input id="${messageId}-input" type="text" />`));
         buttons = [
           buttonElement('Submit').click(() => {
+            $(`#${messageId}-error`).remove();
             const input = $(`#${messageId}-input`);
-            reply(input.val(), true);
+            if (input.val()) {
+              reply(input.val(), true);
+            } else {
+              textarea.append($(`<span id="${messageId}-error" class="validation-error">Please enter a name.</span>`));
+            }
           })
         ];
         break;
@@ -105,171 +290,6 @@ function handleResponse(res) {
           })
         ];
         break;
-
-      // == add_location ==
-
-      // • message id: add_location.1
-      // • text: There is an already added location, and it is not allowed to add further locations. If you want to add a new location, the already existing location will automatically removed. If you want to store the already existing location, save manually (refer to the manual, please). Do you want to add a new location? If yes, click OK.
-      // • expectation: A request file with yes or no text.
-      // • consequence:
-      //   - If answer is NO, then add_location send a message and when the message is acknowledged, exit: => add_location.3
-      //   - If answer is YES: => add_location.4
-      case 'add_location.1.message':
-        buttons = [
-          buttonElement('Yes').click(() => {
-            reply('yes', true);
-          }),
-          buttonElement('No').click(() => {
-            reply('no', true);
-          })
-        ];
-        break;
- 
-      // • message id: add_location.2
-      // • text: No valid location found. First have to add a location to the dataset. Without such location, CityApp will not work. Adding a new location may take a long time, depending on the file size. If you want to continue, click Yes.
-      // • expectation: A request file with yes or no text.
-      // • consequence:
-      //   - If answer is NO, then add_location send a message and when the message is acknowledged, exit: => add_location.3
-      //   - If answer is YES: => add_location.4
-        
-      case 'add_location.2.message':
-        buttons = [
-          buttonElement('Yes').click(() => {
-            reply('yes', true);
-          }),
-          buttonElement('No').click(() => {
-            reply('no', true);
-          })
-        ];
-        break;
-
-      // • message id: add_location.3
-      // • text: Exit process, click OK.
-      // • expectation: A request file with OK text
-      // • consequence: Module exit when message is acknowledged
-      case 'add_location.3.message':
-      case 'add_location.5.message':
-        buttons = [
-          buttonElement('OK').click(() => {
-            reply('ok', false);
-            clearDialog();
-          })
-        ];
-        break;
-        
-      // • message id: add_location.4
-      // • text: Select a map to add to CityApp. Map has to be in Open Street Map format -- osm is the only accepted format.
-      // • expectation: Finding an uploaded osm file in data_from_browser directory. Request file is not expected, and therefore it is not neccessary to create.
-      // • consequence: No specific consequences
-      case 'add_location.4.message':
-        form = formElement(messageId);
-        form.append($(`<input id="${messageId}-input" type="file" name="file" />`));
-        buttons = [
-          buttonElement('Submit').click(() => {
-            const input = $(`#${messageId}-input`);
-            if (input[0].files.length) {
-              upload(form[0], handleResponse);
-            }
-          })
-        ];
-        break;
-
-      // • message id: add_location.5
-      // • text: New location is set. To exit, click OK.
-      // • expectation: A request file with OK text
-      // • consequence: Module exit when message is acknowledged
-      case 'add_location.5.message':
-        buttons = [
-          buttonElement('OK').click(() => {
-            reply('ok', false);
-            //clearDialog();//
-            refreshPage();
-          })
-        ];
-        break;
-
-        
-// == make_selection ==
-
-      // • message id: make_selection.1
-      // • text: No valid location found. First have to add a location to the dataset. Without such location, CityApp will not work. To add a location, use Add Location menu. Now click OK to exit.
-      // • expectation: A request file with OK text
-      // • consequence: Module exit when message is acknowledged
-      case 'make_selection.1.message':
-        buttons = [
-          buttonElement('OK').click(() => {
-            reply('ok', false);
-            clearDialog();
-          })
-        ];
-        break;
- 
-      // • message id: make_selection.2
-      // • text: Now zoom to area of your interest, then use drawing tool to define your location. Next, save your selection.
-      // • expectation: Finding an uploaded goejson file in data_from_browser directory. This file is created by the browser, when the user define interactively the selection area. Request file is not expected, and therefore it is not neccessary to create.
-      // • consequence: No specific consequences
-      case 'make_selection.2.message':
-        buttons = [
-          buttonElement('Save').click(() => {
-            saveDrawing();
-          })
-        ];
-        break;
-
-      // • message id: make_selection.3
-      // • text: Process finished, selection is saved. To process exit, click OK.
-      // • expectation: A request file with OK text
-      // • consequence: Module exit when message is acknowledged
-      case 'make_selection.3.message':
-        buttons = [
-          buttonElement('OK').click(() => {
-            reply('ok', false);
-            clearDialog();
-          })
-        ];
-        break;
-        
-      // == resolution_setting ==
-
-      // • message id: resolution_setting.1
-      // • text: Type the resolution in meters, you want to use. For further details see manual.
-      // • expectation: A request file with a positive number.
-      // • consequence: If user gives a negative number, then UNTIL number is greater than zero: => resolution_setting.2
-      case 'resolution_setting.1.message':
-        form = formElement(messageId);
-        form.append($(`<input id="${messageId}-input" type="number" />`));
-        buttons = [
-          buttonElement('Submit').click(() => {
-            const input = $(`#${messageId}-input`);
-            reply(input.val(), true);
-          })
-        ];
-        break;
-
-      // • message id: resolution_setting.2
-      // • text: Resolution has to be an integer number, greater than 0.  Please, define the resolution for calculations in meters.
-      // • expectation: A request file with a positive number.
-      // • consequence: No specific consequences
-      case 'resolution_setting.2.message':
-        form = formElement(messageId);
-        form.append($(`<input id="${messageId}-input" type="number" />`));
-        buttons = [
-          buttonElement('Submit').click(() => {
-            const input = $(`#${messageId}-input`);
-            reply(input.val(), true);
-          })
-        ];
-        break;
-        
-      case 'resolution_setting.3.message':
-        buttons = [
-          buttonElement('OK').click(() => {
-            reply('ok', false);
-            clearDialog();
-          })
-        ];
-        break;
-        
 
       // == module_1 ==
 
@@ -495,8 +515,12 @@ function poll(process) {
 
 function saveDrawing() {
   const geojson = featureGroup.toGeoJSON();
+  if (geojson.features.length === 0) {
+    return false;
+  }
   console.log(`Save drawing:`, geojson);
   sendMessage('/select_location', geojson, handleResponse);
+  return true;
 }
 
 function sendMessage(target, message, callback) {
@@ -539,4 +563,4 @@ function onServerTimeout() {
 // reload the page
 function refreshPage(){
 location.reload();
-} 
+}

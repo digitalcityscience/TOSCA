@@ -39,8 +39,8 @@ app.set('view engine', 'pug')
 app.get('/', (req, res) => {
   let options = {
     geoserverUrl,
-    lat: 53.731477,
-    lon: 10.260016,
+    lat: 20.27,
+    lon: 85.84,
   }
   res.render('launch', options)
 })
@@ -186,4 +186,4 @@ function ec(error) {
 // reload the page
 function refreshPage(){
 window.location.reload();
-} 
+}

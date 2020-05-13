@@ -79,7 +79,15 @@ h1 {
 
 .card.card-border.card-border-yellow {
   background-color: #fffdaa;
-  border-color: red;
+  border-color: #db0000;
+}
+
+.card form {
+  margin-bottom: 0;
+}
+
+.validation-error {
+  color: #db0000;
 }
 
 #textarea,
