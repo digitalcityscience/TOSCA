@@ -1,13 +1,13 @@
 #! /bin/bash
 . ~/cityapp/scripts/shared/functions.sh
 
-# version 1.32
+# version 1.33
 # CityApp module
 # This module is to shutdown cityapp system
 #
 # Core module, do not modify!
 #
-# 2020. április 9.
+# 2020. május 12.
 # Author: BUGYA Titusz, CityScienceLab -- Hamburg, Germany
 
 #
@@ -36,13 +36,13 @@ rm -f $VARIABLES/launch_locked
 rm -f $BROWSER/leave_session
 rm -f $BROWSER/*
 
-kill -9 $(ps -a | grep ca_starter | sed s'/[a-z _]//'g | cut -d"/" -f1)
+kill -9 $(pgrep -f ca_starter)
 
-for i in $(ps -a | grep cityapp | sed s'/[a-z _]//'g | cut -d"/" -f1);do
+for i in $(pgrep -f cityapp);do
     kill -9 $i
 done
 
-for i in $(ps a | grep "inotifywait" | grep "$USER" | cut -d" " -f1);do
+for i in $(pgrep -f inotifywait);do
     kill -9 $i
 done
 
