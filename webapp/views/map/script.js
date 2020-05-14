@@ -1,6 +1,7 @@
 const map = new L.Map('map', {
   center: new L.LatLng(lat, lon),
-  zoom: 9
+  zoom: 9,
+  minZoom: 4
 })
 
 const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
