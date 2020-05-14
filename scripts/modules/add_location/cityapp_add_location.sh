@@ -1,14 +1,14 @@
 #! /bin/bash
 . ~/cityapp/scripts/shared/functions.sh
 
-# version 1.0
+# version 1.1
 # CityApp module
 # Import OSM maps into PERMANENT mapset. Points, lines, polygons, relations are only imported. Other maps can be extracted from these in separate modules.
 # To import other maps, use Add Layer module.
 #
 # Core module, do not modify.
 #
-# 2020. május 9.
+# 2020. május 14.
 # Author: BUGYA Titusz, CityScienceLab -- Hamburg, Germany
 
 #
@@ -29,8 +29,8 @@ GEOSERVER=~/cityapp/geoserver_data
 GRASS=~/cityapp/grass/global
 MAPSET=PERMANENT
 
-touch $VARIABLES/launch_locked
-echo "launch_locked" > $VARIABLES/launch_locked
+#touch $VARIABLES/launch_locked
+#echo "launch_locked" > $VARIABLES/launch_locked
 
 Running_Check start
 
@@ -160,8 +160,8 @@ coordinates
 Send_Message m 5 add_location.5 question actions [\"OK\"]
 # Updating center coordinates to the area of selection
     Request
-        rm -f $VARIABLES/launch_locked
-        touch $VARIABLES/launcher_run
+#        rm -f $VARIABLES/launch_locked
+#        touch $VARIABLES/launcher_run
 
         Running_Check stop
 

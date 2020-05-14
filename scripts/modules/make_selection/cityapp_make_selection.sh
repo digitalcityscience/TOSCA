@@ -1,14 +1,14 @@
 #! /bin/bash
 . ~/cityapp/scripts/shared/functions.sh
 
-# version 1.0
+# version 1.01
 # CityApp module
 # Import OSM maps into PERMANENT mapset. Points, lines, polygons, relations are only imported. Other maps can be extracted from these in separate modules.
 # To import other maps, use Add Layer module.
 #
 # Core module, do not modify.
 #
-# 2020. május 11.
+# 2020. május 13.
 # Author: BUGYA Titusz, CityScienceLab -- Hamburg, Germany
 
 #
@@ -29,8 +29,8 @@ GEOSERVER=~/cityapp/geoserver_data
 GRASS=~/cityapp/grass/global
 MAPSET=PERMANENT
 
-touch $VARIABLES/launch_locked
-echo "launch_locked" > $VARIABLES/launch_locked
+#touch $VARIABLES/launch_locked
+#echo "launch_locked" > $VARIABLES/launch_locked
 
 Running_Check start
 
@@ -70,10 +70,10 @@ function coordinates
         
         #sed -i 's/replacethisline/var map = new L.Map('\''map'\'', {center: new L.LatLng('$NORTH', '$EAST'), zoom: 9 }),drawnItems = L.featureGroup().addTo(map);/' $MODULES/base_map/base_map.html
 
-        rm -f ~/cityapp/webapp/app.js 
-        cp ~/cityapp/webapp/app_base.js ~/cityapp/webapp/app.js 
-        sed -i 's/replacelat/lat: '$NORTH',/' ~/cityapp/webapp/app.js
-        sed -i 's/replacelon/lon: '$EAST',/' ~/cityapp/webapp/app.js
+#        rm -f ~/cityapp/webapp/app.js 
+#        cp ~/cityapp/webapp/app_base.js ~/cityapp/webapp/app.js 
+#        sed -i 's/replacelat/lat: '$NORTH',/' ~/cityapp/webapp/app.js
+#        sed -i 's/replacelon/lon: '$EAST',/' ~/cityapp/webapp/app.js
     }
     
 # ---------------------
@@ -97,7 +97,8 @@ function coordinates
         Request_Map geojson GEOJSON
             GEOJSON_FILE=$REQUEST_PATH
                 Process_Check start add_vector
-                Add_Vector "$GEOJSON_FILE" selection
+                grass $GRASS/$MAPSET --exec g.remove -f type=vector name=selection
+                Add_Vector $GEOJSON_FILE selection
                 Gpkg_Out selection selection
                 Process_Check stop add_vector
             
@@ -117,6 +118,7 @@ function coordinates
 
     # Clipping the basemaps by the selection map. Results will used in the calculations and analysis
 
+    # rm -f $GEOSERVER/m1_time_map.tif
     Process_Check start map_calculations
 
     grass $GRASS/$MAPSET --exec v.clip input=polygons_osm clip=selection output=polygons --overwrite
@@ -144,20 +146,20 @@ function coordinates
     
     # Updating center coordinates to selected area
         coordinates
-        kill -9 $(pgrep -f node)
+      #  kill -9 $(pgrep -f node)
 
-        cd ~/cityapp/webapp
-        node app.js &
-        sleep 1s
+      #  cd ~/cityapp/webapp
+      #  node app.js &
+      #  sleep 1s
     
     Process_Check stop map_calculations
 
 
     # Process finished, selection is saved. To process exit, click OK.
-    Send_Message m 3 make_selection .3 question actions [\"OK\"]
+    Send_Message m 3 make_selection.3 question actions [\"OK\"]
         Request
-            rm -f $VARIABLES/launch_locked
-            touch $VARIABLES/launcher_run
+            #rm -f $VARIABLES/launch_locked
+            #touch $VARIABLES/launcher_run
 
 
             Running_Check stop

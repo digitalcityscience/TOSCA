@@ -1,10 +1,10 @@
 #! /bin/bash
 . ~/cityapp/scripts/shared/functions.sh
 
-# version 1.4
+# version 1.41
 # CityApp module
 # Adding new layers to a selected mapset
-# 2020. április 10.
+# 2020. május 13.
 # Author: BUGYA Titusz, CityScienceLab -- Hamburg, Germany
 
 #
@@ -33,8 +33,8 @@ Running_Check start
 #-- Process -----------------------------
 #
 
-touch $VARIABLES/launch_locked
-echo "add_map" > $VARIABLES/launch_locked
+#touch $VARIABLES/launch_locked
+#echo "add_map" > $VARIABLES/launch_locked
 
 if [ ! $(grass $GRASS/$MAPSET --exec g.list type=vector | grep selection) ]
     then

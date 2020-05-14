@@ -1,10 +1,10 @@
 #! /bin/bash
 . ~/cityapp/scripts/shared/functions.sh
 
-# version 1.32
+# version 1.33
 # CityApp maintenance
 # Resolution setting
-# 2020. május 9.
+# 2020. május 13.
 # Author: BUGYA Titusz, CityScienceLab -- Hamburg, Germany
 
 #
@@ -22,7 +22,15 @@ LANGUAGE=$(cat ~/cityapp/scripts/shared/variables/lang)
 MESSAGE_TEXT=~/cityapp/scripts/shared/messages/$LANGUAGE/resolution_setting
 MESSAGE_SENT=~/cityapp/data_to_client
 
-touch $VARIABLES/.launch_locked
+
+
+if [ -e $VARIABLES/subprocess ]
+    then
+        INIT=0
+    else
+        INIT=1
+       # touch $VARIABLES/.launch_locked
+fi
 
 #
 #-- Process ----------------------------
@@ -77,9 +85,16 @@ Send_Message m 1 resolution_setting.1 input actions [\"OK\"]
             fi
     fi
 
-# Resolution is now set, to exit, click OK.
-Send_Message m 3 resolution_setting.3 question actions [\"OK\"]
-    Request
-    Close_Process
-
-exit
+case $INIT in
+    0)
+        exit
+        ;;
+    1)
+        # rm -f $VARIABLES/.launch_locked
+        # Resolution is now set, to exit, click OK.
+        Send_Message m 3 resolution_setting.3 question actions [\"OK\"]
+            Request
+            Close_Process
+        exit
+        ;;
+esac
