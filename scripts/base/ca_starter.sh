@@ -31,7 +31,7 @@ MESSAGE_SENT=~/cityapp/data_to_client
     /usr/share/geoserver/bin/shutdown.sh &
     /usr/share/geoserver/bin/startup.sh &
 
-# Starting the node.js (xterm only for testing)
+# Starting the node.js
     cd ~/cityapp/webapp
      node app.js &
 
