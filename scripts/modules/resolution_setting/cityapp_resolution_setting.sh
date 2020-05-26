@@ -1,10 +1,10 @@
 #! /bin/bash
 . ~/cityapp/scripts/shared/functions.sh
 
-# version 1.33
+# version 1.34
 # CityApp maintenance
 # Resolution setting
-# 2020. május 13.
+# 2020. május 19.
 # Author: BUGYA Titusz, CityScienceLab -- Hamburg, Germany
 
 #
@@ -23,6 +23,7 @@ MESSAGE_TEXT=~/cityapp/scripts/shared/messages/$LANGUAGE/resolution_setting
 MESSAGE_SENT=~/cityapp/data_to_client
 
 
+Running_Check start
 
 if [ -e $VARIABLES/subprocess ]
     then
@@ -87,6 +88,7 @@ Send_Message m 1 resolution_setting.1 input actions [\"OK\"]
 
 case $INIT in
     0)
+        Running_Check stop
         exit
         ;;
     1)
@@ -94,6 +96,7 @@ case $INIT in
         # Resolution is now set, to exit, click OK.
         Send_Message m 3 resolution_setting.3 question actions [\"OK\"]
             Request
+            Running_Check stop
             Close_Process
         exit
         ;;

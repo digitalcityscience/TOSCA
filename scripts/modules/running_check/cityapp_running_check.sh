@@ -1,14 +1,14 @@
 #! /bin/bash
 . ~/cityapp/scripts/shared/functions.sh
 
-# version 1.1
+# version 1.2
 # CityApp module
 #
 # Core component, don not modify.
 #
 # This module is to send a message: the current module which has called this module, is still running.
 #
-# 2020. április 10.
+# 2020. május 26.
 # Author: BUGYA Titusz, CityScienceLab -- Hamburg, Germany
 
 #
@@ -29,8 +29,8 @@ MESSAGE_SENT=~/cityapp/data_to_client
 
 ID_NUM=1
 MODULE_ORIGIN=$(cat $VARIABLES/module_status | head -n1)
-RUNNING=$(cat $VARIABLES/module_status | tail -n1)
-while [ $RUNNING -eq 1 ];do
+RUNNING_MODULE=$(cat $VARIABLES/last_launched | head -n1)
+while [ $(pgrep -f $RUNNING_MODULE) ];do
     RUNNING=$(cat $VARIABLES/module_status | tail -n1)
     echo $ID_NUM > $MESSAGE_SENT/$MODULE_ORIGIN".running"
     ID_NUM=$(($ID_NUM+1))
@@ -38,4 +38,5 @@ while [ $RUNNING -eq 1 ];do
 done
 rm -f $MESSAGE_SENT/$MODULE_ORIGIN".running"
 rm -f $VARIABLES/module_status
+Close_Process
 exit

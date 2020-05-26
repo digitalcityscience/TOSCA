@@ -3,6 +3,7 @@
 
 # version 1.0
 # CityApp module
+# Do not start separately: it is automatically managed by cityapp_module_2a.sh
 # This module is to list available maps for module_2
 #
 # 2020. április 14.
@@ -21,7 +22,13 @@ VARIABLES=~/cityapp/scripts/shared/variables
 GRASS=~/cityapp/grass/global
 MAPSET=PERMANENT
 
+
+#
+# No Running_Check start and stop notes: it i because this script is managed by the main scipt -- it is like an external function, launched by the main script.
+#
+
 # -- processing -----
+
 
 rm -f $MODULE/temp_maps
 touch $MODULE/temp_maps

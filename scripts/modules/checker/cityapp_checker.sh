@@ -1,14 +1,15 @@
 #! /bin/bash
-# version 1.02
+# version 1.03
 # CityApp maintenance
 # Check requested components
-# 2020. április 30.
+# 2020. május 17.
 # Author: BUGYA Titusz, CityScienceLab -- Hamburg, Germany
 
 
 # Checker has no frontend. It is used only at the installation to check if all the requeted components are available.
 # Checker's messages are sent to the console the checker running in.
 
+Running_Check start
 ERROR=~/cityapp/error_log
 rm -f $ERROR
 touch $ERROR
@@ -90,7 +91,24 @@ if [ $(which gnuplot) ]
         echo "No gnuplot found" >> $ERROR
 fi
 
+if [ $(which node) ]
+    then
+        echo "node found"
+    else
+        echo "No node found" >> $ERROR
+fi
+
+if [ -e /usr/share/geoserver/bin/startup.sh ]
+    then
+        echo "geoserver found"
+    else
+        echo "No geoserver found" >> $ERROR
+fi
+
+
 if [ $(echo $(stat --printf="%s" $ERROR)) -eq 0 ]
 then
     rm $ERROR
 fi
+Running_Check stop
+exit

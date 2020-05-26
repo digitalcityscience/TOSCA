@@ -2,7 +2,8 @@
 . ~/cityapp/scripts/shared/functions.sh
 
 # version 1.0
-# CityApp module
+# CityApp submodule
+# Do not start separately: it is automatically managed by cityapp_module_2a.sh
 # This module is to comparing many area on the same map and criterias
 # 2020. április 18.
 # Author: BUGYA Titusz, CityScienceLab -- Hamburg, Germany
@@ -28,6 +29,10 @@ DATE_VALUE=$(date +%Y-%m-%d" "%H":"%M)
 DATE_VALUE_2=$(date +%Y_%m_%d_%H_%M)
 
 QUERY_RESOLUTION=0.00002
+
+#
+# No Running_Check start and stop notes: it i because this script is managed by the main scipt -- it is like an external function. When this script is called, then a Process_Check is launched by the main script.
+#
 
 #############
 # Preprocess

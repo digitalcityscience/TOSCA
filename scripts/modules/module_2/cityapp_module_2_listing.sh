@@ -23,6 +23,7 @@ MAPSET=PERMANENT
 
 # -- processing -----
 
+Running_Check start
 rm -f $MODULE/temp_maps
 touch $MODULE/temp_maps
 for i in $(g.list mapset=PERMANENT type=vector | grep -vE 'lines_osm|lines|points_osm|polygons_osm|polygons|relations_osm|relations|selection'); do
@@ -31,5 +32,5 @@ for i in $(g.list mapset=PERMANENT type=vector | grep -vE 'lines_osm|lines|point
             echo $i >> $MODULE/temp_maps
     fi
 done
-
+Running_Check stop
 exit 
