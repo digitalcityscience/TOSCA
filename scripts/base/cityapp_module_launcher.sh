@@ -37,12 +37,12 @@ rm -f $VARIABLES/last_launched
 
 while NEW_FILE=$(inotifywait -e create --format %f $BROWSER); do
     NEW_CONTENT=$(cat $BROWSER/$NEW_FILE)
-    
+
     case $NEW_FILE in
         "EXIT")
             Send_Message m 2 system_error.2 error actions [\"yes\"]
                 # Request
-                ~/cityapp/scripts/base/ca_shutdown.sh
+                # ~/cityapp/scripts/base/ca_shutdown.sh
             ;;
         "launch")
             IS_LAUNCHED=$(ps a | grep $LAST_LAUNCHED | grep -v grep)
@@ -64,11 +64,6 @@ while NEW_FILE=$(inotifywait -e create --format %f $BROWSER); do
             rm -f $MESSAGE_SENT/*
             touch $VARIABLES/launcher_run
             rm -f $VARIABLES/last_launched
-            
-            kill -9 $(pgrep -f node)
-            cd ~/cityapp/webapp
-            node app.js
-            
             ;;
     esac
 done
@@ -76,5 +71,5 @@ done
 Send_Message m 2 system_error.2 error actions [\"yes\"]
     Request
         rm -f $VARIABLES/last_launched
-~/cityapp/scripts/base/ca_shutdown.sh
+# ~/cityapp/scripts/base/ca_shutdown.sh
 exit

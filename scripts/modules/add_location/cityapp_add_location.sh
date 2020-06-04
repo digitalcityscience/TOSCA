@@ -51,7 +51,7 @@ function coordinates
 
         echo $EAST > $VARIABLES/coordinate_east
         echo $NORTH > $VARIABLES/coordinate_north
-    
+
         #Sending center coordinates as a regular message
             touch $MESSAGE_SENT/message.coordinates
             echo "{" > $MESSAGE_SENT/message.coordinates
@@ -59,7 +59,7 @@ function coordinates
             echo "\"lon\": $EAST" >> $MESSAGE_SENT/message.coordinates
             echo "}" >> $MESSAGE_SENT/message.coordinates
     }
-    
+
 #
 # -- Processing ------------------------
 #
@@ -115,7 +115,7 @@ case $INIT in
                 cp -r ~/cityapp/grass/skel_permanent/* $GRASS/$MAPSET
 
                 Process_Check start add_map
-                
+
                 Add_Osm $NEW_AREA_FILE points points_osm
                 Add_Osm $NEW_AREA_FILE lines lines_osm
                 Add_Osm $NEW_AREA_FILE multipolygons polygons_osm
@@ -123,9 +123,9 @@ case $INIT in
                 Gpkg_Out points_osm points
                 Gpkg_Out lines_osm lines
                 Gpkg_Out polygons_osm polygons
-                
+
                 Process_Check stop add_map
-                
+
                 # Copy basemaps into $GEOSERVER/saved
                 # From now this directory will contains the original, unclipped maps.
                 # This may useful for further operations.
@@ -150,10 +150,5 @@ Send_Message m 5 add_location.5 question actions [\"OK\"]
         Running_Check stop
 
 
-kill -9 $(pgrep -f node)
-
-cd ~/cityapp/webapp
-node app.js &
-sleep 1s
 Close_Process
 exit
