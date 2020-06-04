@@ -21,9 +21,9 @@ mkdir geoserver_data_dir/data
 mkdir grass/global
 ```
 
-Start a container using the newly created image:
+Start a container using the newly created image. In the environment variable `GEOSERVER_URL` in this command, replace "localhost" with your server's hostname.
 ```
-docker run -ti -v `pwd`/geoserver_data_dir:/usr/share/geoserver/data_dir -v `pwd`/grass:/root/cityapp/grass -p 3000:3000 -p 8080:8080 --name cityapp cityapp
+docker run -ti -e GEOSERVER_URL=http://localhost:8080/ -v `pwd`/geoserver_data_dir:/usr/share/geoserver/data_dir -v `pwd`/grass:/root/cityapp/grass -p 3000:3000 -p 8080:8080 --name cityapp cityapp
 ```
 
 The app will run on http://localhost:3000, and GeoServer will be available at http://localhost:8080/geoserver/.
@@ -135,6 +135,8 @@ First change to the `webapp` directory. Before you start the server for the firs
 ```
 npm install
 ```
+
+You must also set the environment variables in the `.env` file. The variables `DATA_FROM_BROWSER_DIR` and `DATA_TO_CLIENT_DIR` refer to the respective directories. The `GEOSERVER_URL` must point to the public URL of the GeoServer instance, which will be running on port 8080. If this is anything other than localhost, change the URL accordingly.
 
 Now to start the server, run:
 ```
