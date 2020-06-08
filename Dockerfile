@@ -30,6 +30,9 @@ RUN apt-get install -y grass-core
 # Install Gnuplot
 RUN apt-get install -y gnuplot-nox
 
+# Install Enscript/Ghostscript
+RUN apt-get install -y enscript ghostscript
+
 # Install Node.js
 RUN curl -L https://deb.nodesource.com/setup_12.x | bash -
 RUN apt-get install -y nodejs
