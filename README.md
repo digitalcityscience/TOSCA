@@ -31,7 +31,7 @@ mkdir grass/global
 
 Start a container using the newly created image. In the environment variable `GEOSERVER_URL` in this command, replace "localhost" with your server's hostname.
 ```
-docker run -ti -e GEOSERVER_URL=http://localhost:8080/ -v `pwd`/geoserver_data_dir:/usr/share/geoserver/data_dir -v `pwd`/grass:/root/cityapp/grass -p 3000:3000 -p 8080:8080 --name cityapp cityapp
+docker run -dti -e GEOSERVER_URL=http://localhost:8080/ -v `pwd`/geoserver_data_dir:/usr/share/geoserver/data_dir -v `pwd`/grass:/root/cityapp/grass -p 3000:3000 -p 8080:8080 --name cityapp cityapp
 ```
 
 The app will run on http://localhost:3000, and GeoServer will be available at http://localhost:8080/geoserver/.
