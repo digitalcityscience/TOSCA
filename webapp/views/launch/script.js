@@ -26,6 +26,7 @@ function handleResponse(res) {
 
   const textarea = $('#textarea');
   const buttonarea = $('#buttonarea');
+  const lists = $('#lists');
 
   if (res.message.success !== undefined) {
     if (res.message.success) {
@@ -41,6 +42,8 @@ function handleResponse(res) {
     poll();
     return;
   }
+
+  const mapList = (res.message.list || []).sort((a, b) => a.split('@')[1].localeCompare(b.split('@')[1]));
 
   $('#loading').hide();
 
@@ -317,20 +320,42 @@ function handleResponse(res) {
         ];
         break;
 
-      // // • message id: module_1.2
-      // // • text: Select a map (only point maps are supported). Avilable maps are:
-      // // • expectation: request file with the select item only.
-      // //   Since „message.module_1.2” containes a list in json format (list items are the availabe maps), user has to select one of them. The modal type is select, therefore the answer (new request file) conatains only the selected item (in this case: a map name). It is not expected to create a separate request file containig "yes".
-      // case 'module_1.2.message':
-      //   form = formElement(messageId);
-      //   form.append($(`<input id="${messageId}-input" type="number" />`));
-      //   buttons = [
-      //     buttonElement('Submit').click(() => {
-      //       const input = $(`#${messageId}-input`);
-      //       reply(input.val(), true);
-      //     })
-      //   ];
-      //   break;
+      // • message id: module_1.2
+      // • text: Select a map (only point maps are supported). Avilable maps are:
+      // • expectation: request file with the select item only.
+      //   Since „message.module_1.2” containes a list in json format (list items are the availabe maps), user has to select one of them. The modal type is select, therefore the answer (new request file) conatains only the selected item (in this case: a map name). It is not expected to create a separate request file containig "yes".
+      // ----
+      // • message id: module_1.4
+      // • text: Select a map (only point maps are supported). Avilable maps are:
+      // • expectation: request file with the select item only.
+      //   Since „message.module_1.4” containes a list in json format (list items are the availabe maps), user has to select one of them. The modal type is select, therefore the answer (new request file) conatains only the selected item (in this case: a map name). It is not expected to create a separate request file containig "yes".
+      // ----
+      // • message id: module_1.6
+      // • text: Select a map (only point maps are supported). Avilable maps are:
+      // • expectation: request file with the select item only
+      //   Since „message.module_1.6” containes a list in json format (list items are the availabe maps), user has to select one of them. The modal type is select, therefore the answer (new request file) conatains only the selected item (in this case: a map name). It is not expected to create a separate request file containig "yes".
+      // ----
+      // • message id: module_1.8
+      // • text: Select a map (only area maps are supported). Avilable maps are:
+      // • expectation: request file with the select item only
+      //   Since „message.module_1.8” containes a list in json format (list items are the availabe maps), user has to select one of them. The modal type is select, therefore the answer (new request file) conatains only the selected item (in this case: a map name). It is not expected to create a separate request file containig "yes"
+      case 'module_1.2.message':
+      case 'module_1.4.message':
+      case 'module_1.6.message':
+      case 'module_1.8.message':
+        form = formElement(messageId);
+
+        // TODO: add maps
+        lists.append($(`<select id="${messageId}-input" size="10">` +
+          mapList.map(map => `<option selected value="${map}">${map}</option>`) +
+        `</select>`));
+        buttons = [
+          buttonElement('Submit').click(() => {
+            const input = $(`#${messageId}-input`);
+            reply(input[0].value, true);
+          })
+        ];
+        break;
 
       // • message id: module_1.3
       // • text: Via points are optional. If you want to select 'via' points from the map, click Yes. If you want to use an already existing map, select No. If you do not want to use via points, click Cancel.
@@ -371,37 +396,6 @@ function handleResponse(res) {
           }),
           buttonElement('Cancel').click(() => {
             reply('cancel', true);
-          })
-        ];
-        break;
-
-      // • message id: module_1.4
-      // • text: Select a map (only point maps are supported). Avilable maps are:
-      // • expectation: request file with the select item only.
-      //   Since „message.module_1.3” containes a list in json format (list items are the availabe maps), user has to select one of them. The modal type is select, therefore the answer (new request file) conatains only the selected item (in this case: a map name). It is not expected to create a separate request file containig "yes".
-      // ----
-      // • message id: module_1.6
-      // • text: Select a map (only point maps are supported). Avilable maps are:
-      // • expectation: request file with the select item only
-      //   Since „message.module_1.5” containes a list in json format (list items are the availabe maps), user has to select one of them. The modal type is select, therefore the answer (new request file) conatains only the selected item (in this case: a map name). It is not expected to create a separate request file containig "yes".
-      // ----
-      // • message id: module_1.8
-      // • text: Select a map (only area maps are supported). Avilable maps are:
-      // • expectation: request file with the select item only
-      //   Since „message.module_1.7” containes a list in json format (list items are the availabe maps), user has to select one of them. The modal type is select, therefore the answer (new request file) conatains only the selected item (in this case: a map name). It is not expected to create a separate request file containig "yes"
-      case 'module_1.4.message':
-      case 'module_1.6.message':
-      case 'module_1.8.message':
-        form = formElement(messageId);
-
-        // TODO: add maps
-        form.append($(`<select id="${messageId}-input" type="text">
-          <option selected value="">Select a map</option>
-        </select>`));
-        buttons = [
-          buttonElement('Submit').click(() => {
-            const input = $(`#${messageId}-input`);
-            reply(input[0].value, true);
           })
         ];
         break;
@@ -478,6 +472,7 @@ function buttonElement(action) {
 function clearDialog() {
   $('#textarea').empty();
   $('#buttonarea').empty();
+  $('#lists').empty();
 }
 
 /* Send messages to the backend */
