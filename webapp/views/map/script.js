@@ -1,6 +1,8 @@
+/* eslint-disable no-undef */
+
 const map = new L.Map('map', {
   center: new L.LatLng(lat, lon),
-  zoom: 9,
+  zoom: 11,
   minZoom: 4
 })
 

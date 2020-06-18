@@ -1,3 +1,6 @@
+/* eslint-disable no-undef */
+/* eslint-disable no-unused-vars */
+
 /* Handle incoming messages from backend */
 
 function handleResponse(res) {

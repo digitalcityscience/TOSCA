@@ -18,25 +18,36 @@ The following instructions provide guidance for the installation of all required
 
 ### With Docker
 
-You can quickly set up a running system via [Docker](https://docs.docker.com/) – download the contents of this repository, change to its root directory and build the Docker image:
-```
-docker build -t cityapp .
-```
+You can quickly set up a running system via [Docker](https://docs.docker.com/).
 
-Create required directories:
+Before building the image, environment variables need to be set in `webapp/.env`:
+- `GEOSERVER_URL`: The base URL of the local GeoServer instance. This should normally be the public IP or domain of the server, port 8080.
+- `INITIAL_LAT`, `INITIAL_LON`: Initial center coordinates for the map view.
+
+It is also required to create these directories:
 ```
 mkdir geoserver_data_dir/data
 mkdir grass/global
 ```
 
-Start a container using the newly created image. In the environment variable `GEOSERVER_URL` in this command, replace "localhost" with your server's hostname.
+Build the Docker image:
 ```
-docker run -dti -e GEOSERVER_URL=http://localhost:8080/ -v `pwd`/geoserver_data_dir:/usr/share/geoserver/data_dir -v `pwd`/grass:/root/cityapp/grass -p 3000:3000 -p 8080:8080 --name cityapp cityapp
+docker build -t oct .
 ```
 
-The app will run on http://localhost:3000, and GeoServer will be available at http://localhost:8080/geoserver/.
+Start a container using the newly created image.
+```
+docker run -dti -v `pwd`/geoserver_data_dir:/usr/share/geoserver/data_dir -v `pwd`/grass:/root/cityapp/grass -p 3000:3000 -p 8080:8080 --name oct oct
+```
 
-The `geoserver_data` and `grass` directories are mounted as volumes into the container, in order to make their contents persistent.
+If you want to override any environment variables, you can do so using the `-e` option:
+```
+docker run -dti -e GEOSERVER_URL=... -e INITIAL_LAT=... -e INITIAL_LON=... -v `pwd`/geoserver_data_dir:/usr/share/geoserver/data_dir -v `pwd`/grass:/root/cityapp/grass -p 3000:3000 -p 8080:8080 --name oct oct
+```
+
+The `geoserver_data` and `grass` directories are mounted into the container as volumes in order to make their contents persistent.
+
+While the container is running, the app is served at http://your-server:3000 and GeoServer is available at http://your-server:8080/geoserver/.
 
 ### Without Docker
 

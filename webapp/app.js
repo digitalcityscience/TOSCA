@@ -1,9 +1,11 @@
 // Read config
 require('dotenv').config()
 
-const geoserverUrl = process.env.GEOSERVER_URL
 const dataFromBrowser = process.env.DATA_FROM_BROWSER_DIR
 const dataToClient = process.env.DATA_TO_CLIENT_DIR
+const geoserverUrl = process.env.GEOSERVER_URL
+const lat = process.env.INITIAL_LAT || 0
+const lon = process.env.INITIAL_LON || 0
 
 // File system
 const fs = require('fs')
@@ -39,8 +41,8 @@ app.set('view engine', 'pug')
 app.get('/', (req, res) => {
   let options = {
     geoserverUrl,
-    lat: 20.27,
-    lon: 85.84,
+    lat,
+    lon
   }
   res.render('launch', options)
 })
@@ -181,9 +183,4 @@ async function readMessageFromFile(timeout) {
 // error callback
 function ec(error) {
   if (error) throw error
-}
-
-// reload the page
-function refreshPage(){
-window.location.reload();
 }
