@@ -4,25 +4,15 @@
 /* Handle incoming messages from backend */
 
 function handleResponse(res) {
-  if (res.processing) {
-    console.log(`${res.filename}:`, res.processing)
-
-    if (res.processing > -1) {
-      poll(res.filename);
-    } else {
-      $('#loading').hide();
-    }
-  }
-
   if (!res.message) {
     return;
   }
 
-  console.log(`${res.filename}:`, res.message)
+  console.log(`${res.message_id}:`, res.message);
 
   clearDialog();
 
-  const messageId = res.filename.replace(/\./g, '_');
+  const messageId = res.message_id.replace(/\./g, '_');
 
   const textarea = $('#textarea');
   const buttonarea = $('#buttonarea');
@@ -38,9 +28,6 @@ function handleResponse(res) {
 
   if (res.message.lat && res.message.lon) {
     map.panTo(new L.LatLng(res.message.lat, res.message.lon));
-
-    poll();
-    return;
   }
 
   const mapList = (res.message.list || []).sort((a, b) => a.split('@')[1].localeCompare(b.split('@')[1]));
@@ -50,7 +37,7 @@ function handleResponse(res) {
   if (res.message.text) {
     let text = textElement(res.message.text), form, buttons;
 
-    switch (res.filename) {
+    switch (res.message_id) {
       // The various actions required in response to server messages are defined here.
 
       // == add_location ==
@@ -61,7 +48,7 @@ function handleResponse(res) {
       // • consequence:
       //   - If answer is NO, then add_location send a message and when the message is acknowledged, exit: => add_location.3
       //   - If answer is YES: => add_location.4
-      case 'add_location.1.message':
+      case 'add_location.1':
         buttons = [
           buttonElement('Yes').click(() => {
             reply('yes', true);
@@ -79,7 +66,7 @@ function handleResponse(res) {
       //   - If answer is NO, then add_location send a message and when the message is acknowledged, exit: => add_location.3
       //   - If answer is YES: => add_location.4
 
-      case 'add_location.2.message':
+      case 'add_location.2':
         buttons = [
           buttonElement('Yes').click(() => {
             reply('yes', true);
@@ -94,7 +81,7 @@ function handleResponse(res) {
       // • text: Exit process, click OK.
       // • expectation: A request file with OK text
       // • consequence: Module exit when message is acknowledged
-      case 'add_location.3.message':
+      case 'add_location.3':
         buttons = [
           buttonElement('OK').click(() => {
             reply('ok', false);
@@ -107,7 +94,7 @@ function handleResponse(res) {
       // • text: Select a map to add to CityApp. Map has to be in Open Street Map format -- osm is the only accepted format.
       // • expectation: Finding an uploaded osm file in data_from_browser directory. Request file is not expected, and therefore it is not neccessary to create.
       // • consequence: No specific consequences
-      case 'add_location.4.message':
+      case 'add_location.4':
         form = formElement(messageId);
         form.append($(`<input id="${messageId}-input" type="file" name="file" />`));
         buttons = [
@@ -127,7 +114,7 @@ function handleResponse(res) {
       // • text: New location is set. To exit, click OK.
       // • expectation: A request file with OK text
       // • consequence: Module exit when message is acknowledged
-      case 'add_location.5.message':
+      case 'add_location.5':
         buttons = [
           buttonElement('OK').click(() => {
             reply('ok', false);
@@ -502,13 +489,7 @@ function query() {
 }
 
 function reply(message, expectResponse) {
-  console.log(`Reply:`, message);
   sendMessage('/request', { msg: message }, expectResponse ? handleResponse : null);
-}
-
-function poll(process) {
-  $('#loading').show();
-  sendMessage('/poll', { process }, handleResponse);
 }
 
 function saveDrawing() {
@@ -516,12 +497,15 @@ function saveDrawing() {
   if (geojson.features.length === 0) {
     return false;
   }
-  console.log(`Save drawing:`, geojson);
   sendMessage('/select_location', geojson, handleResponse);
   return true;
 }
 
 function sendMessage(target, message, callback) {
+  if (callback) {
+    $('#loading').show();
+  }
+
   if (!callback) {
     message.noCallback = true;
   }
@@ -533,11 +517,14 @@ function sendMessage(target, message, callback) {
     dataType: 'json',
     contentType: 'application/json; encoding=utf-8'
   })
-  .done(callback ? callback : null)
-  .fail(onServerTimeout);
+  .done(callback || null)
+  .fail(callback && onServerTimeout)
+  .always(() => $('#loading').hide());
 }
 
 function upload(form, callback) {
+  $('#loading').show();
+
   $.ajax({
     type: 'POST',
     url: '/file_request',
@@ -547,8 +534,9 @@ function upload(form, callback) {
     contentType: false,
     processData: false
   })
-  .done(callback ? callback : null)
-  .fail(onServerTimeout);
+  .done(callback || null)
+  .fail(callback && onServerTimeout)
+  .always(() => $('#loading').hide());
 }
 
 function onServerTimeout() {
@@ -556,9 +544,4 @@ function onServerTimeout() {
   const alert = $(`<div class="alert alert-danger" role="alert">${text}&nbsp;&nbsp;<button class="close" data-dismiss="alert">×</button></div>`);
   $('#alert-anchor').append(alert);
   $('#loading').hide();
-}
-
-// reload the page
-function refreshPage(){
-location.reload();
 }

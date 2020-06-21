@@ -47,15 +47,24 @@ app.get('/', (req, res) => {
   res.render('launch', options)
 })
 
+// Scripts
+const AddLocationModule = require('./scripts/add_location.js')
+const addLocation = new AddLocationModule()
+
+let activeModule
+let lastReceived
+
 // launch a module
 app.post('/launch', jsonParser, async (req, res, next) => {
-  writeMessageToFile('launch', req.body.launch)
-
   try {
-    const response = await readMessageFromFile()
-    res.send(response)
-  } catch (e) {
-    next('Server is unresponsive')
+    switch (req.body.launch) {
+      case 'add_location':
+        lastReceived = addLocation.launch()
+        activeModule = addLocation
+        res.send(lastReceived)
+    }
+  } catch (err) {
+    next(err)
   }
 })
 
@@ -85,17 +94,18 @@ app.post('/query', jsonParser, async (req, res, next) => {
 
 // send generic request
 app.post('/request', jsonParser, async (req, res, next) => {
-  writeMessageToFile('request', req.body.msg)
-
-  if (req.body.noCallback) {
-    return
+  if (!activeModule) {
+    throw new Error("No active module")
   }
-
   try {
-    const response = await readMessageFromFile()
-    res.send(response)
-  } catch (e) {
-    next('Server is unresponsive')
+    lastReceived = activeModule.request(req.body.msg, lastReceived.message_id)
+    if (req.body.noCallback) {
+      res.status(200).send()
+    } else {
+      res.send(lastReceived)
+    }
+  } catch (err) {
+    next(err)
   }
 })
 
@@ -103,15 +113,16 @@ app.post('/request', jsonParser, async (req, res, next) => {
 app.post('/file_request', uploadParser.single('file'), async (req, res, next) => {
   const writer = fs.createWriteStream(`${dataFromBrowser}/${req.file.originalname}`)
   writer.write(req.file.buffer, async (error) => {
-    if (error) throw error
-
+    if (error) {
+      throw error
+    }
     writer.close()
 
     try {
-      const response = await readMessageFromFile()
-      res.send(response)
-    } catch (e) {
-      next('Server is unresponsive')
+      lastReceived = activeModule.requestMap(req.file.originalname)
+      res.send(lastReceived)
+    } catch (err) {
+      next(err)
     }
   })
 })
