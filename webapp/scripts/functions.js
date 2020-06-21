@@ -1,6 +1,6 @@
 const { execSync } = require('child_process') // Documentation: https://nodejs.org/api/child_process.html
 
-const GEOSERVER = process.env.GEOSERVER_DATA_DIR
+const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
 
 module.exports = {
   // This is to import an Open street map vector map file. Parameters: {filename to import,layer name, output filename for the GRASS}
