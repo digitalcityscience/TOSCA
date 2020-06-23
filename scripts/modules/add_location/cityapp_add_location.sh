@@ -138,10 +138,10 @@ case $INIT in
 esac
 
 # Inserting the center coordinates of the new area in the base_map.html
-coordinates
 
 # New location is set. To exit, click OK.
 Send_Message m 5 add_location.5 question actions [\"OK\"]
+coordinates
 # Updating center coordinates to the area of selection
     Request
 #        rm -f $VARIABLES/launch_locked
