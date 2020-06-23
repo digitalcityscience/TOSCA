@@ -140,6 +140,10 @@ app.post('/poll', jsonParser, async (req, res) => {
   }
 })
 
+app.post('/restart', async () => {
+  writeMessageToFile('RESTART', '')
+})
+
 /*
  * Write a text message to the data_from_browser directory
  */

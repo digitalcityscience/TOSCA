@@ -511,6 +511,10 @@ function poll(process) {
   sendMessage('/poll', { process }, handleResponse);
 }
 
+function restart() {
+  sendMessage('/restart', 'RESTART');
+}
+
 function saveDrawing() {
   const geojson = featureGroup.toGeoJSON();
   if (geojson.features.length === 0) {
@@ -556,9 +560,4 @@ function onServerTimeout() {
   const alert = $(`<div class="alert alert-danger" role="alert">${text}&nbsp;&nbsp;<button class="close" data-dismiss="alert">×</button></div>`);
   $('#alert-anchor').append(alert);
   $('#loading').hide();
-}
-
-// reload the page
-function refreshPage(){
-location.reload();
 }
