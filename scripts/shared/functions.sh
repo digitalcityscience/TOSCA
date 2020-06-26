@@ -378,7 +378,7 @@ Send_Message ()
             echo "\"modalType\": \"$4\"," >> $MODULE/temp_message
             echo "\"$5\": $6," >> $MODULE/temp_message
             echo "\"list\":" >> $MODULE/temp_message
-            echo "{" >> $MODULE/temp_message
+            echo "[" >> $MODULE/temp_message
 
             i=1
             until [ $i -gt $LINE ];do
@@ -392,7 +392,7 @@ Send_Message ()
                 fi
                 i=$(($i+1))
             done
-            echo "}" >> $MODULE/temp_message
+            echo "]" >> $MODULE/temp_message
             echo "}" >> $MODULE/temp_message
             mv $MODULE/temp_message $MESSAGE_SENT/$3.message;;
         "s")

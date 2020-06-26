@@ -49,7 +49,7 @@ while NEW_FILE=$(inotifywait -e create --format %f $BROWSER); do
             echo $IS_LAUNCHED
             if [ "$IS_LAUNCHED">0 ]
                 then
-                    Send_Message m 1 sytem_error.1 error actions [\"yes\"]
+                    #Send_Message m 1 sytem_error.1 error actions [\"yes\"]
                     rm -f $BROWSER/launch
                 else
                     rm -f $BROWSER/*
@@ -60,9 +60,11 @@ while NEW_FILE=$(inotifywait -e create --format %f $BROWSER); do
             fi
             ;;
         "RESTART")
-            rm -f $BROWSER/*
-            rm -f $MESSAGE_SENT/*
+            #rm -f $BROWSER/*
+            #rm -f $MESSAGE_SENT/*
             touch $VARIABLES/launcher_run
+            LAST_LAUNCHED_ID=$(cat $VARIABLES/last_launched | tail -n1)
+            kill -9 $LAST_LAUNCHED_ID
             rm -f $VARIABLES/last_launched
             ;;
     esac
