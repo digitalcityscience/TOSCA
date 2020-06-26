@@ -384,11 +384,11 @@ Send_Message ()
             until [ $i -gt $LINE ];do
                 if [ $i -lt $LINE ]
                     then
-                        echo "\""$(cat $7 | head -n$i | tail -n1) | sed s'/:/":"/'g | sed s'/ //'g | sed "/[a-zA-Z0-9]$/s/$/\",/" >> $MODULE/temp_message
+                        echo "\""$(cat $7 | head -n$i | tail -n1) | sed "/[a-zA-Z0-9]$/s/$/\",/" >> $MODULE/temp_message
                 fi
                 if [ $i -eq $LINE ]
                     then
-                        echo "\""$(cat $7 | head -n$i | tail -n1) | sed s'/:/":"/'g | sed s'/ //'g | sed "/[a-zA-Z0-9]$/s/$/\"/" >> $MODULE/temp_message
+                        echo "\""$(cat $7 | head -n$i | tail -n1) | sed "/[a-zA-Z0-9]$/s/$/\"/" >> $MODULE/temp_message
                 fi
                 i=$(($i+1))
             done
