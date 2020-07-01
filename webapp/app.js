@@ -2,7 +2,6 @@
 require('dotenv').config()
 
 const dataFromBrowser = process.env.DATA_FROM_BROWSER_DIR
-const dataToClient = process.env.DATA_TO_CLIENT_DIR
 const geoserverUrl = process.env.GEOSERVER_URL
 const lat = process.env.INITIAL_LAT || 0
 const lon = process.env.INITIAL_LON || 0
@@ -17,8 +16,7 @@ const app = express()
 const expressPort = 3000
 
 // Middleware
-const bodyParser = require('body-parser')
-const jsonParser = bodyParser.json()
+const jsonParser = require('body-parser').json()
 const multer = require('multer')
 const uploadParser = multer()
 
@@ -47,22 +45,21 @@ app.get('/', (req, res) => {
   res.render('launch', options)
 })
 
-// Scripts
-const AddLocationModule = require('./scripts/add_location.js')
-const addLocation = new AddLocationModule()
+// modules
+const AddLocationModule = require('./scripts/add_location')
+const SetSelectionModule = require('./scripts/set_selection')
+const SetResolutionModule = require('./scripts/set_resolution')
 
-let activeModule
-let lastReceived
+const modules = {
+  add_location: new AddLocationModule(),
+  set_selection: new SetSelectionModule(),
+  set_resolution: new SetResolutionModule(),
+}
 
 // launch a module
 app.post('/launch', jsonParser, async (req, res, next) => {
   try {
-    switch (req.body.launch) {
-      case 'add_location':
-        lastReceived = addLocation.launch()
-        activeModule = addLocation
-        res.send(lastReceived)
-    }
+    res.send(modules[req.body.launch].launch())
   } catch (err) {
     next(err)
   }
@@ -70,39 +67,21 @@ app.post('/launch', jsonParser, async (req, res, next) => {
 
 // display a map
 app.post('/display', jsonParser, async (req, res, next) => {
-  writeMessageToFile('display', req.body.display)
-
-  try {
-    const response = await readMessageFromFile()
-    res.send(response)
-  } catch (e) {
-    next('Server is unresponsive')
-  }
 })
 
 // query a map
 app.post('/query', jsonParser, async (req, res, next) => {
-  writeMessageToFile('query', req.body.query)
-
-  try {
-    const response = await readMessageFromFile()
-    res.send(response)
-  } catch (e) {
-    next('Server is unresponsive')
-  }
 })
 
 // send generic request
-app.post('/request', jsonParser, async (req, res, next) => {
-  if (!activeModule) {
-    throw new Error("No active module")
-  }
+app.post('/reply', jsonParser, async (req, res, next) => {
   try {
-    lastReceived = activeModule.request(req.body.msg, lastReceived.message_id)
+    const module = modules[req.query.message_id.split('.')[0]]
+    const message = module.process(req.body.msg, req.query.message_id)
     if (req.body.noCallback) {
       res.status(200).send()
     } else {
-      res.send(lastReceived)
+      res.send(message)
     }
   } catch (err) {
     next(err)
@@ -110,8 +89,10 @@ app.post('/request', jsonParser, async (req, res, next) => {
 })
 
 // file upload
-app.post('/file_request', uploadParser.single('file'), async (req, res, next) => {
+app.post('/file', uploadParser.single('file'), async (req, res, next) => {
+  const module = modules[req.query.message_id.split('.')[0]]
   const writer = fs.createWriteStream(`${dataFromBrowser}/${req.file.originalname}`)
+
   writer.write(req.file.buffer, async (error) => {
     if (error) {
       throw error
@@ -119,8 +100,7 @@ app.post('/file_request', uploadParser.single('file'), async (req, res, next) =>
     writer.close()
 
     try {
-      lastReceived = activeModule.requestMap(req.file.originalname)
-      res.send(lastReceived)
+      res.send(module.processFile(req.file.originalname))
     } catch (err) {
       next(err)
     }
@@ -128,70 +108,13 @@ app.post('/file_request', uploadParser.single('file'), async (req, res, next) =>
 })
 
 // send a GeoJSON
-app.post('/select_location', jsonParser, async (req, res, next) => {
-  writeMessageToFile('selection.geojson', JSON.stringify(req.body))
+app.post('/drawing', jsonParser, async (req, res, next) => {
+  fs.writeFileSync(`${dataFromBrowser}/drawing.geojson`, JSON.stringify(req.body.data))
 
   try {
-    const response = await readMessageFromFile()
-    res.send(response)
-  } catch (e) {
-    next('Server is unresponsive')
+    const module = modules[req.query.message_id.split('.')[0]]
+    res.send(module.processFile('drawing.geojson'))
+  } catch (err) {
+    next(err)
   }
 })
-
-// Poll server for updates (usually while processes are running)
-app.post('/poll', jsonParser, async (req, res) => {
-  try {
-    // A status update is expected after one second
-    const response = await readMessageFromFile(1200)
-    res.send(response)
-  } catch (e) {
-    // Process has finished or aborted
-    res.send({ processing: -1, filename: req.body.process })
-  }
-})
-
-/*
- * Write a text message to the data_from_browser directory
- */
-function writeMessageToFile(filename, msg) {
-  console.log(`echo "${msg}" > ${filename}`)
-  fs.writeFileSync(`${dataFromBrowser}/${filename}`, msg, ec)
-}
-
-/*
- * Create a self-destroying watcher to read messages in the data_to_browser directory
- */
-async function readMessageFromFile(timeout) {
-  return await new Promise((resolve, reject) => {
-    // Stop waiting for messages after a timeout (default 10 s)
-    setTimeout(() => {
-      reject()
-      watcher.close()
-    }, timeout || 1000000)
-
-    const watcher = fs.watch(dataToClient, {}, async (event, filename) => {
-      console.log(`Got ${filename}`)
-
-      try {
-        const filepath = `${dataToClient}/${filename}`
-        const contents = fs.readFileSync(filepath, { encoding: 'utf-8' })
-
-        if (filename.match(/\.message$/)) {
-          resolve({ message: JSON.parse(contents), filename })
-          watcher.close()
-        } else if (filename.match(/\.processing$/)) {
-          resolve({ processing: parseInt(contents), filename })
-          watcher.close()
-        }
-      } catch (e) {
-        // ¯\_(ツ)_/¯
-      }
-    })
-  })
-}
-
-// error callback
-function ec(error) {
-  if (error) throw error
-}

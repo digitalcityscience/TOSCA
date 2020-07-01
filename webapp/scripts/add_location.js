@@ -1,6 +1,6 @@
 const { execSync } = require('child_process') // Documentation: https://nodejs.org/api/child_process.html
 
-const { Add_Osm, Gpkg_Out } = require('./functions.js')
+const { Add_Osm, Get_Coordinates, Gpkg_Out } = require('./functions.js')
 
 const BROWSER = process.env.DATA_FROM_BROWSER_DIR
 const GRASS = process.env.GRASS_DIR
@@ -41,34 +41,27 @@ class AddLocationModule {
     }
 
     if (location) {
-      // "There is an already added location, and it is not allowed to add further locations. If you want to add a new location, the already existing location will automatically removed. If you want to store the already existing location, save manually (refer to the manual, please). Do you want to add a new location? If yes, click OK."
       return messages[1]
     }
-    // "No valid location found. First have to add a location to the dataset. Without such location, CityApp will not work. Adding a new location may take a long time, depending on the file size. If you want to continue, click Yes."
     return messages[2]
   }
 
-  request(message, replyTo) {
+  process(message, replyTo) {
     switch (replyTo) {
       case 'add_location.1':
         if (message.toLowerCase() == 'yes') {
-          // "Select a map to add to CityApp. Map has to be in Open Street Map format -- osm is the only accepted format."
           return messages[4]
         }
-        // "Exit process, click OK."
         return messages[3]
-
       case 'add_location.2':
         if (message.toLowerCase() == 'yes') {
-          // "Select a map to add to CityApp. Map has to be in Open Street Map format -- osm is the only accepted format."
           return messages[4]
         }
-        // "Exit process, click OK."
         return messages[3]
     }
   }
 
-  requestMap(filename) {
+  processFile(filename) {
     if (!filename.match(/\.osm$/i)) {
       throw new Error("Wrong file format - must be OSM")
     }
@@ -90,21 +83,8 @@ class AddLocationModule {
     execSync(`rm -f "${VARIABLES}"/location_mod`)
     execSync(`touch "${VARIABLES}"/location_new`)
 
-    // Get the center coordinates of the new area
-    let EAST, NORTH
-    let list = execSync(`grass "${MAPSET}" --exec g.list type=vector`, { encoding: 'utf-8' })
-    let region
+    let [EAST, NORTH] = Get_Coordinates(MAPSET)
 
-    if (list.split('\n').indexOf('selection') > -1) {
-      region = execSync(`grass "${MAPSET}" --exec g.region -cg vector=selection`, { encoding: 'utf-8' })
-    } else {
-      region = execSync(`grass "${MAPSET}" --exec g.region -cg vector=polygons_osm`, { encoding: 'utf-8' })
-    }
-
-    EAST = region.split('\n')[0].split('=')[1]
-    NORTH = region.split('\n')[1].split('=')[1]
-
-    // "New location is set. To exit, click OK."
     let msg = messages[5]
     msg.message.lat = NORTH
     msg.message.lon = EAST

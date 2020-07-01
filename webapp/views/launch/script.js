@@ -51,10 +51,10 @@ function handleResponse(res) {
       case 'add_location.1':
         buttons = [
           buttonElement('Yes').click(() => {
-            reply('yes', true);
+            reply(res, 'yes', true);
           }),
           buttonElement('No').click(() => {
-            reply('no', true);
+            reply(res, 'no', true);
           })
         ];
         break;
@@ -69,10 +69,10 @@ function handleResponse(res) {
       case 'add_location.2':
         buttons = [
           buttonElement('Yes').click(() => {
-            reply('yes', true);
+            reply(res, 'yes', true);
           }),
           buttonElement('No').click(() => {
-            reply('no', true);
+            reply(res, 'no', true);
           })
         ];
         break;
@@ -84,7 +84,7 @@ function handleResponse(res) {
       case 'add_location.3':
         buttons = [
           buttonElement('OK').click(() => {
-            reply('ok', false);
+            reply(res, 'ok', false);
             clearDialog();
           })
         ];
@@ -102,7 +102,7 @@ function handleResponse(res) {
             $(`#${messageId}-error`).remove();
             const input = $(`#${messageId}-input`);
             if (input[0].files.length) {
-              upload(form[0], handleResponse);
+              upload(form[0], { message_id: res.message_id }, handleResponse);
             } else {
               textarea.append($(`<span id="${messageId}-error" class="validation-error">Please choose a file for upload.</span>`));
             }
@@ -117,36 +117,36 @@ function handleResponse(res) {
       case 'add_location.5':
         buttons = [
           buttonElement('OK').click(() => {
-            reply('ok', false);
+            reply(res, 'ok', false);
             clearDialog();
           })
         ];
         break;
 
-      // == make_selection ==
+      // == set_selection ==
 
-      // • message id: make_selection.1
+      // • message id: set_selection.1
       // • text: No valid location found. First have to add a location to the dataset. Without such location, CityApp will not work. To add a location, use Add Location menu. Now click OK to exit.
       // • expectation: A request file with OK text
       // • consequence: Module exit when message is acknowledged
-      case 'make_selection.1.message':
+      case 'set_selection.1':
         buttons = [
           buttonElement('OK').click(() => {
-            reply('ok', false);
+            reply(res, 'ok', false);
             clearDialog();
           })
         ];
         break;
 
-      // • message id: make_selection.2
+      // • message id: set_selection.2
       // • text: Now zoom to area of your interest, then use drawing tool to define your location. Next, save your selection.
       // • expectation: Finding an uploaded goejson file in data_from_browser directory. This file is created by the browser, when the user define interactively the selection area. Request file is not expected, and therefore it is not neccessary to create.
       // • consequence: No specific consequences
-      case 'make_selection.2.message':
+      case 'set_selection.2':
         buttons = [
           buttonElement('Save').click(() => {
             $(`#${messageId}-error`).remove();
-            const success = saveDrawing();
+            const success = saveDrawing(res);
             if (!success) {
               textarea.append($(`<span id="${messageId}-error" class="validation-error">Please draw a polygon using the map’s drawing tool.</span>`));
             }
@@ -154,26 +154,26 @@ function handleResponse(res) {
         ];
         break;
 
-      // • message id: make_selection.3
+      // • message id: set_selection.3
       // • text: Process finished, selection is saved. To process exit, click OK.
       // • expectation: A request file with OK text
       // • consequence: Module exit when message is acknowledged
-      case 'make_selection.3.message':
+      case 'set_selection.3':
         buttons = [
           buttonElement('OK').click(() => {
-            reply('ok', false);
+            reply(res, 'ok', false);
             clearDialog();
           })
         ];
         break;
 
-      // == resolution_setting ==
+      // == set_resolution ==
 
-      // • message id: resolution_setting.1
+      // • message id: set_resolution.1
       // • text: Type the resolution in meters, you want to use. For further details see manual.
       // • expectation: A request file with a positive number.
-      // • consequence: If user gives a negative number, then UNTIL number is greater than zero: => resolution_setting.2
-      case 'resolution_setting.1.message':
+      // • consequence: If user gives a negative number, then UNTIL number is greater than zero: => set_resolution.2
+      case 'set_resolution.1':
         form = formElement(messageId);
         form.append($(`<input id="${messageId}-input" type="number" />`));
         buttons = [
@@ -181,7 +181,7 @@ function handleResponse(res) {
             $(`#${messageId}-error`).remove();
             const input = $(`#${messageId}-input`);
             if (!isNaN(parseInt(input.val()))) {
-              reply(input.val(), true);
+              reply(res, input.val(), true);
             } else {
               textarea.append($(`<span id="${messageId}-error" class="validation-error">Please enter a numeric value.</span>`));
             }
@@ -189,11 +189,11 @@ function handleResponse(res) {
         ];
         break;
 
-      // • message id: resolution_setting.2
-      // • text: Resolution has to be an integer number, greater than 0.  Please, define the resolution for calculations in meters.
+      // • message id: set_resolution.2
+      // • text: Resolution has to be an integer number, greater than 0. Please, define the resolution for calculations in meters.
       // • expectation: A request file with a positive number.
       // • consequence: No specific consequences
-      case 'resolution_setting.2.message':
+      case 'set_resolution.2':
         form = formElement(messageId);
         form.append($(`<input id="${messageId}-input" type="number" />`));
         buttons = [
@@ -201,7 +201,7 @@ function handleResponse(res) {
             $(`#${messageId}-error`).remove();
             const input = $(`#${messageId}-input`);
             if (!isNaN(parseInt(input.val()))) {
-              reply(input.val(), true);
+              reply(res, input.val(), true);
             } else {
               textarea.append($(`<span id="${messageId}-error" class="validation-error">Please enter a numeric value.</span>`));
             }
@@ -209,10 +209,10 @@ function handleResponse(res) {
         ];
         break;
 
-      case 'resolution_setting.3.message':
+      case 'set_resolution.3':
         buttons = [
           buttonElement('OK').click(() => {
-            reply('ok', false);
+            reply(res, 'ok', false);
             clearDialog();
           })
         ];
@@ -224,10 +224,10 @@ function handleResponse(res) {
       // • text: "Selection" map not found. Before adding a new layer, first you have to define a location and a selection. For this end please, use Location Selector tool of CityApp. Add_Map modul now quit.
       // • expectation: A request file with text OK
       // • consequence: Since no valid selection, the module exit after the user acknowledge the message.
-      case 'add_map.1.message':
+      case 'add_map.1':
         buttons = [
           buttonElement('OK').click(() => {
-            reply('ok', true);
+            reply(res, 'ok', true);
           })
         ];
         break;
@@ -236,7 +236,7 @@ function handleResponse(res) {
       // • text: Select a map to add CityApp. Only gpkg (geopackage), geojson and openstreetmap vector files and geotiff (gtif or tif) raster files are accepted.
       // • expectation: An uploaded file with a supported filename extension in data_from_browser directory. Request file is not expected, the question is only to draw the user's focus to the next step (select a file). Therefore in this case the trigger for the back-end is the presence of the uploaded file (and not a request file)
       // • consequence: When the selected file is uploaded succesfully, there is a new message: => add_map.3
-      case 'add_map.2.message':
+      case 'add_map.2':
         form = formElement(messageId);
         form.append($(`<input id="${messageId}-input" type="file" name="file" />`));
         buttons = [
@@ -244,7 +244,7 @@ function handleResponse(res) {
             $(`#${messageId}-error`).remove();
             const input = $(`#${messageId}-input`);
             if (input[0].files.length) {
-              upload(form[0], handleResponse);
+              upload(form[0], { message_id: res.message_id }, handleResponse);
             } else {
               textarea.append($(`<span id="${messageId}-error" class="validation-error">Please choose a file for upload.</span>`));
             }
@@ -255,7 +255,7 @@ function handleResponse(res) {
       // • message id: add_map.3
       // • text: Please, define an output map name. Name can contain only english characters, numbers, or underline character. Space and other specific characters are not allowed. For first character a letter only accepted.
       // • expectation: a request file with a single word as output name, defined by the user
-      case 'add_map.3.message':
+      case 'add_map.3':
         form = formElement(messageId);
         form.append($(`<input id="${messageId}-input" type="text" />`));
         buttons = [
@@ -263,7 +263,7 @@ function handleResponse(res) {
             $(`#${messageId}-error`).remove();
             const input = $(`#${messageId}-input`);
             if (input.val()) {
-              reply(input.val(), true);
+              reply(res, input.val(), true);
             } else {
               textarea.append($(`<span id="${messageId}-error" class="validation-error">Please enter a name.</span>`));
             }
@@ -275,10 +275,10 @@ function handleResponse(res) {
       // • text: Selected map is now succesfully added to your mapset. Add map module now exit
       // • expectation: A request file with text OK
       // • consequence: Module exit after user acknowledge the message.
-      case 'add_map.4.message':
+      case 'add_map.4':
         buttons = [
           buttonElement('OK').click(() => {
-            reply('ok', false);
+            reply(res, 'ok', false);
             clearDialog();
           })
         ];
@@ -292,17 +292,17 @@ function handleResponse(res) {
       // • consequence:
       //   - If answer is "yes", the module is waiting for a geojson file in data_from_browser. Module only goes to the next step, when geojson file is created.
       //   - If answer is "no", module send a new message: => module_1.2
-      case 'module_1.1.message':
+      case 'module_1.1':
         buttons = [
           buttonElement('Yes').click(() => {
-            reply('yes', false);
+            reply(res, 'yes', false);
             const saveButton = buttonElement('Save').click(() => {
-              saveDrawing();
+              saveDrawing(res);
             })
             buttonarea.append(saveButton);
           }),
           buttonElement('No').click(() => {
-            reply('no', true);
+            reply(res, 'no', true);
           })
         ];
         break;
@@ -326,10 +326,10 @@ function handleResponse(res) {
       // • text: Select a map (only area maps are supported). Avilable maps are:
       // • expectation: request file with the select item only
       //   Since „message.module_1.8” containes a list in json format (list items are the availabe maps), user has to select one of them. The modal type is select, therefore the answer (new request file) conatains only the selected item (in this case: a map name). It is not expected to create a separate request file containig "yes"
-      case 'module_1.2.message':
-      case 'module_1.4.message':
-      case 'module_1.6.message':
-      case 'module_1.8.message':
+      case 'module_1.2':
+      case 'module_1.4':
+      case 'module_1.6':
+      case 'module_1.8':
         form = formElement(messageId);
 
         // TODO: add maps
@@ -339,7 +339,7 @@ function handleResponse(res) {
         buttons = [
           buttonElement('Submit').click(() => {
             const input = $(`#${messageId}-input`);
-            reply(input[0].value, true);
+            reply(res, input[0].value, true);
           })
         ];
         break;
@@ -367,22 +367,22 @@ function handleResponse(res) {
       //   - If answer is "yes", the module is waiting for a geojson file in data_from_browser. Module only goes to the next step, when geojson file is created.
       //   - If answer is "no", module send a new message: => module_1.8
       //   - If answer is "cancel": => module_1.9
-      case 'module_1.3.message':
-      case 'module_1.5.message':
-      case 'module_1.7.message':
+      case 'module_1.3':
+      case 'module_1.5':
+      case 'module_1.7':
         buttons = [
           buttonElement('Yes').click(() => {
-            reply('yes', false);
+            reply(res, 'yes', false);
             const saveButton = buttonElement('Save').click(() => {
-              saveDrawing();
+              saveDrawing(res);
             })
             buttonarea.append(saveButton);
           }),
           buttonElement('No').click(() => {
-            reply('no', true);
+            reply(res, 'no', true);
           }),
           buttonElement('Cancel').click(() => {
-            reply('cancel', true);
+            reply(res, 'cancel', true);
           })
         ];
         break;
@@ -391,13 +391,13 @@ function handleResponse(res) {
       // • text: Do you want to set the speed on the road network? If not, the current values will used.
       // • expectation: request file with a single yes or no.
       // • consequence: If answer is "yes", there is a new message: => module_1.10
-      case 'module_1.9.message':
+      case 'module_1.9':
         buttons = [
           buttonElement('Yes').click(() => {
-            reply('yes', true);
+            reply(res, 'yes', true);
           }),
           buttonElement('No').click(() => {
-            reply('no', true);
+            reply(res, 'no', true);
           })
         ];
         break;
@@ -405,13 +405,13 @@ function handleResponse(res) {
       // • message id: module_1.12
       // • text: Set speed for roads of stricken area.
       // • expectation: reqest file with single a floating point numeric value
-      case 'module_1.12.message':
+      case 'module_1.12':
         form = formElement(messageId);
         form.append($(`<input id="${messageId}-input" type="number" />`));
         buttons = [
           buttonElement('Submit').click(() => {
             const input = $(`#${messageId}-input`);
-            reply(input.val(), true);
+            reply(res, input.val(), true);
           })
         ];
         break;
@@ -420,10 +420,10 @@ function handleResponse(res) {
       // • text: Calculations are ready, display output time maps.
       // • expectation: A request file with a single "OK" word
       // • consequence: After the user acknowledge the message, the module exit.
-      case 'module_1.14.message':
+      case 'module_1.14':
         buttons = [
           buttonElement('OK').click(() => {
-            reply('ok', false);
+            reply(res, 'ok', false);
             clearDialog();
           })
         ];
@@ -468,7 +468,7 @@ function launch() {
   // Get the selected item
   const value = $('#launch-menu')[0].value;
   if (value) {
-    sendMessage('/launch', { launch: value }, handleResponse);
+    sendMessage('/launch', { launch: value }, {}, handleResponse);
   }
 }
 
@@ -476,7 +476,7 @@ function display() {
   // Get the selected item
   const value = $('#maps-menu')[0].value;
   if (value) {
-    sendMessage('/display', { display: value }, handleResponse);
+    sendMessage('/display', { display: value }, {}, handleResponse);
   }
 }
 
@@ -484,24 +484,24 @@ function query() {
   // Get the selected item
   const value = $('#query-menu')[0].value;
   if (value) {
-    sendMessage('/query', { query: value }, handleResponse);
+    sendMessage('/query', { query: value }, {}, handleResponse);
   }
 }
 
-function reply(message, expectResponse) {
-  sendMessage('/request', { msg: message }, expectResponse ? handleResponse : null);
+function reply(res, message, expectResponse) {
+  sendMessage('/reply', { msg: message }, { message_id: res.message_id }, expectResponse ? handleResponse : null);
 }
 
-function saveDrawing() {
+function saveDrawing(res) {
   const geojson = featureGroup.toGeoJSON();
   if (geojson.features.length === 0) {
     return false;
   }
-  sendMessage('/select_location', geojson, handleResponse);
+  sendMessage('/drawing', { data: geojson }, { message_id: res.message_id }, handleResponse);
   return true;
 }
 
-function sendMessage(target, message, callback) {
+function sendMessage(target, message, params, callback) {
   if (callback) {
     $('#loading').show();
   }
@@ -512,7 +512,7 @@ function sendMessage(target, message, callback) {
 
   $.ajax({
     type: 'POST',
-    url: target,
+    url: target + '?' + $.param(params),
     data: JSON.stringify(message),
     dataType: 'json',
     contentType: 'application/json; encoding=utf-8'
@@ -522,12 +522,12 @@ function sendMessage(target, message, callback) {
   .always(() => $('#loading').hide());
 }
 
-function upload(form, callback) {
+function upload(form, params, callback) {
   $('#loading').show();
 
   $.ajax({
     type: 'POST',
-    url: '/file_request',
+    url: '/file?' + $.param(params),
     data: new FormData(form),
     dataType: 'json',
     cache: false,
@@ -543,5 +543,4 @@ function onServerTimeout() {
   const text = 'The server is not responding. Please check if it is running.';
   const alert = $(`<div class="alert alert-danger" role="alert">${text}&nbsp;&nbsp;<button class="close" data-dismiss="alert">×</button></div>`);
   $('#alert-anchor').append(alert);
-  $('#loading').hide();
 }
