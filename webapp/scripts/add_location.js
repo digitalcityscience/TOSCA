@@ -18,7 +18,7 @@ const messages = {
   },
   3: {
     message_id: 'add_location.3',
-    message: { "text": "Exit process, click OK" }
+    message: { "text": "Process cancelled." }
   },
   4: {
     message_id: 'add_location.4',
@@ -26,7 +26,7 @@ const messages = {
   },
   5: {
     message_id: 'add_location.5',
-    message: { "text": "New location is set. To exit, click OK." }
+    message: { "text": "New location is set." }
   }
 }
 

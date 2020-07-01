@@ -13,7 +13,7 @@ const messages = {
   },
   3: {
     message_id: 'set_resolution.3',
-    message: { "text": "Resolution is now set, to exit, click OK." }
+    message: { "text": "Resolution is now set." }
   }
 }
 

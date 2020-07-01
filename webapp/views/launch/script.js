@@ -77,19 +77,6 @@ function handleResponse(res) {
         ];
         break;
 
-      // • message id: add_location.3
-      // • text: Exit process, click OK.
-      // • expectation: A request file with OK text
-      // • consequence: Module exit when message is acknowledged
-      case 'add_location.3':
-        buttons = [
-          buttonElement('OK').click(() => {
-            reply(res, 'ok', false);
-            clearDialog();
-          })
-        ];
-        break;
-
       // • message id: add_location.4
       // • text: Select a map to add to CityApp. Map has to be in Open Street Map format -- osm is the only accepted format.
       // • expectation: Finding an uploaded osm file in data_from_browser directory. Request file is not expected, and therefore it is not neccessary to create.
@@ -106,19 +93,6 @@ function handleResponse(res) {
             } else {
               textarea.append($(`<span id="${messageId}-error" class="validation-error">Please choose a file for upload.</span>`));
             }
-          })
-        ];
-        break;
-
-      // • message id: add_location.5
-      // • text: New location is set. To exit, click OK.
-      // • expectation: A request file with OK text
-      // • consequence: Module exit when message is acknowledged
-      case 'add_location.5':
-        buttons = [
-          buttonElement('OK').click(() => {
-            reply(res, 'ok', false);
-            clearDialog();
           })
         ];
         break;
@@ -154,45 +128,18 @@ function handleResponse(res) {
         ];
         break;
 
-      // • message id: set_selection.3
-      // • text: Process finished, selection is saved. To process exit, click OK.
-      // • expectation: A request file with OK text
-      // • consequence: Module exit when message is acknowledged
-      case 'set_selection.3':
-        buttons = [
-          buttonElement('OK').click(() => {
-            reply(res, 'ok', false);
-            clearDialog();
-          })
-        ];
-        break;
-
       // == set_resolution ==
 
       // • message id: set_resolution.1
       // • text: Type the resolution in meters, you want to use. For further details see manual.
       // • expectation: A request file with a positive number.
       // • consequence: If user gives a negative number, then UNTIL number is greater than zero: => set_resolution.2
-      case 'set_resolution.1':
-        form = formElement(messageId);
-        form.append($(`<input id="${messageId}-input" type="number" />`));
-        buttons = [
-          buttonElement('Submit').click(() => {
-            $(`#${messageId}-error`).remove();
-            const input = $(`#${messageId}-input`);
-            if (!isNaN(parseInt(input.val()))) {
-              reply(res, input.val(), true);
-            } else {
-              textarea.append($(`<span id="${messageId}-error" class="validation-error">Please enter a numeric value.</span>`));
-            }
-          })
-        ];
-        break;
-
+      // ----
       // • message id: set_resolution.2
       // • text: Resolution has to be an integer number, greater than 0. Please, define the resolution for calculations in meters.
       // • expectation: A request file with a positive number.
       // • consequence: No specific consequences
+      case 'set_resolution.1':
       case 'set_resolution.2':
         form = formElement(messageId);
         form.append($(`<input id="${messageId}-input" type="number" />`));
@@ -205,15 +152,6 @@ function handleResponse(res) {
             } else {
               textarea.append($(`<span id="${messageId}-error" class="validation-error">Please enter a numeric value.</span>`));
             }
-          })
-        ];
-        break;
-
-      case 'set_resolution.3':
-        buttons = [
-          buttonElement('OK').click(() => {
-            reply(res, 'ok', false);
-            clearDialog();
           })
         ];
         break;

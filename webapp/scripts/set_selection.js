@@ -18,7 +18,7 @@ const messages = {
   },
   3: {
     message_id: 'set_selection.3',
-    message: { "text": "Process finished, selection is saved. To process exit, click OK." }
+    message: { "text": "Process finished, selection is saved." }
   }
 }
 
