@@ -182,6 +182,7 @@ fi
                         Request
                             REDUCING_RATIO=$REQUEST_CONTENT;;
                 "no"|"No"|"NO")
+                    AREA=1
                     Send_Message m 6 module_1.8 select action [\"OK\"] # Waiting for a map name (map already have to exist in GRASS)
                     Request
                         AREA_MAP=$REQUEST_CONTENT
@@ -189,6 +190,7 @@ fi
                         Request
                             REDUCING_RATIO=$REQUEST_CONTENT;;
                 "cancel"|"Cancel"|"CANCEL")
+                    AREA=2
                     rm -f $GEOSERVER/m1_stricken_area".gpkg";;
             esac
 
@@ -200,7 +202,7 @@ fi
             case $REQUEST_CONTENT in
                 "yes"|"Yes"|"YES")
                     # Message Now you can change the speed values. Current values are:
-                    Send_Message l 8 module_1.10 select actions [\"OK\",] $VARIABLES/roads_speed
+                    Send_Message l 8 module_1.10 select actions [\"OK\"] $VARIABLES/roads_speed
                         Request
                             # echo $REQUEST_CONTENT > $VARIABLES/roads_speed;;
                     # Specific value will serves as speed value for non classified elements and newly inserted connecting line segments. Speed of these features will set to speed of service roads
@@ -214,7 +216,7 @@ fi
 # -- Processing --------------------------ˇ
 #
 
-Process_Check start processing_map
+Process_Check start map_calculations
 
 # Creating highways map. This is fundamental for the further work in this module
     grass $GRASS/$MAPSET --exec v.extract input=lines@PERMANENT type=line where="highway>0" output=highways --overwrite --quiet 
@@ -232,10 +234,12 @@ Process_Check start processing_map
 # "TO" points are not optional. Optional only to place them on-by-one on the map, or  selecting an already existing map. If there are no user defined/selected to_points, default points (highway_points) are used as to_points. But, because these points are on the road by its origin, therefore no further connecting is requested.
     case $TO in
         0|1)
-            grass $GRASS/$MAPSET --exec v.patch input=$TO_POINT,$FROM_POINT,$VIA_POINT output=from_via_to_points --overwrite --quiet;;
+            grass $GRASS/$MAPSET --exec v.patch input=$TO_POINT,$FROM_POINT,$VIA_POINT output=from_via_to_points --overwrite --quiet
+            ;;
         2)
             grass $GRASS/$MAPSET --exec v.to.points input=highways output=highway_points dmax=$ROAD_POINTS --overwrite --quiet
-            TO_POINT="highway_points";;
+            TO_POINT="highway_points"
+            ;;
     esac
 
 # threshold to connect is ~ 330 m
@@ -282,10 +286,18 @@ grass $GRASS/$MAPSET --exec v.net input=highways points=from_via_to_points outpu
 # Now the Supplementary lines (formerly CAT_SUPP_LINES) raster map have to be added to map highways_from_points. First I convert highways_points_connected into raster setting value to 0(zero). Resultant map: temp. After I patch temp and highways_points_connected, result is:highways_points_connected_temp. Now have to reclass highways_points_connected_temp, setting 0 values to the speed value of residentals
     grass $GRASS/$MAPSET --exec v.to.rast input=highways_points_connected output=temp use=val val=$AVERAGE_SPEED --overwrite --quiet
     grass $GRASS/$MAPSET --exec r.patch input=highways_points_connected_zones,temp output=highways_points_connected_temp --overwrite --quiet
-    grass $GRASS/$MAPSET --exec v.to.rast input=$AREA_MAP output=$AREA_MAP use=val value=$REDUCING_RATIO --overwrite
-    grass $GRASS/$MAPSET --exec r.null map=$AREA_MAP null=1 --overwrite    
-    grass $GRASS/$MAPSET --exec r.mapcalc expression="highways_points_connected_full=(highways_points_connected_temp*$AREA_MAP)" --overwrite --quiet
-
+    
+    case $AREA in
+        0|1)
+            grass $GRASS/$MAPSET --exec v.to.rast input=$AREA_MAP output=$AREA_MAP use=val value=$REDUCING_RATIO --overwrite
+            grass $GRASS/$MAPSET --exec r.null map=$AREA_MAP null=1 --overwrite    
+            grass $GRASS/$MAPSET --exec r.mapcalc expression="highways_points_connected_full=(highways_points_connected_temp*$AREA_MAP)" --overwrite --quiet
+            ;;
+        2)
+            grass $GRASS/$MAPSET --exec r.mapcalc expression="highways_points_connected_full=(highways_points_connected_temp*1)" --overwrite --quiet
+            ;;
+    esac
+    
 # specific_time here is the time requested to cross a cell, where the resolution is as defined in resolution file
     grass $GRASS/$MAPSET --exec r.mapcalc expression="specific_time=$(cat $VARIABLES/resolution | head -n3 | tail -n1)/(highways_points_connected_full*0.27777)" --overwrite --quiet 
 
@@ -358,7 +370,7 @@ grass $GRASS/$MAPSET --exec v.net input=highways points=from_via_to_points outpu
     mv $MODULE/temp_m1_results_$DATE_VALUE_2".pdf" ~/cityapp/saved_results/time_map_results_$DATE_VALUE_2".pdf"
     
     
-Process_Check stop processing_map
+Process_Check stop map_calculations
 
 Send_Message m 12 module_1.14 question actions [\"OK\"]
     Request

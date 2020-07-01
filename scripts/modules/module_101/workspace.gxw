@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE gxw SYSTEM "grass-gxw.dtd">
+<gxw>
+    <layer_manager dim="1,36,841,784">
+    </layer_manager>
+    <display name="Display 1" render="1" mode="0" showCompExtent="1" alignExtent="1" constrainRes="0" showStatusbar="1" showToolbars="1" dim="875,110,1452,1128" extent="85.652849,19.964807,86.151128,20.482009,-0.500000,0.500000" tbres="1.000000" viewMode="2d" >
+        <layer type="raster" name="bbswr_dtm@module_101" checked="1" opacity="1.000000">
+            <selected />
+            <task name="d.rast">
+                <parameter name="map">
+                    <value>bbswr_dtm@module_101</value>
+                </parameter>
+            </task>
+        </layer>
+        <layer type="vector" name="waterfall_lines@module_101" checked="0" opacity="1.000000">
+            <task name="d.vect">
+                <parameter name="map">
+                    <value>waterfall_lines@module_101</value>
+                </parameter>
+                <parameter name="width">
+                    <value>1</value>
+                </parameter>
+            </task>
+        </layer>
+        <layer type="vector" name="water_polygon@module_101" checked="0" opacity="1.000000">
+            <task name="d.vect">
+                <parameter name="map">
+                    <value>water_polygon@module_101</value>
+                </parameter>
+                <parameter name="width">
+                    <value>1</value>
+                </parameter>
+            </task>
+        </layer>
+        <layer type="vector" name="water_coasts_polygon@module_101" checked="0" opacity="1.000000">
+            <task name="d.vect">
+                <parameter name="map">
+                    <value>water_coasts_polygon@module_101</value>
+                </parameter>
+                <parameter name="width">
+                    <value>1</value>
+                </parameter>
+            </task>
+        </layer>
+        <layer type="vector" name="tidal_channel_lines@module_101" checked="0" opacity="1.000000">
+            <task name="d.vect">
+                <parameter name="map">
+                    <value>tidal_channel_lines@module_101</value>
+                </parameter>
+                <parameter name="width">
+                    <value>1</value>
+                </parameter>
+            </task>
+        </layer>
+        <layer type="vector" name="stream_lines@module_101" checked="0" opacity="1.000000">
+            <task name="d.vect">
+                <parameter name="map">
+                    <value>stream_lines@module_101</value>
+                </parameter>
+                <parameter name="width">
+                    <value>1</value>
+                </parameter>
+            </task>
+        </layer>
+        <layer type="vector" name="riverbank_lines@module_101" checked="0" opacity="1.000000">
+            <task name="d.vect">
+                <parameter name="map">
+                    <value>riverbank_lines@module_101</value>
+                </parameter>
+                <parameter name="width">
+                    <value>1</value>
+                </parameter>
+            </task>
+        </layer>
+        <layer type="vector" name="river_lines@module_101" checked="0" opacity="1.000000">
+            <task name="d.vect">
+                <parameter name="map">
+                    <value>river_lines@module_101</value>
+                </parameter>
+                <parameter name="width">
+                    <value>1</value>
+                </parameter>
+            </task>
+        </layer>
+        <layer type="vector" name="drain_lines@module_101" checked="0" opacity="1.000000">
+            <task name="d.vect">
+                <parameter name="map">
+                    <value>drain_lines@module_101</value>
+                </parameter>
+                <parameter name="width">
+                    <value>1</value>
+                </parameter>
+            </task>
+        </layer>
+        <layer type="vector" name="ditch_lines@module_101" checked="0" opacity="1.000000">
+            <task name="d.vect">
+                <parameter name="map">
+                    <value>ditch_lines@module_101</value>
+                </parameter>
+                <parameter name="width">
+                    <value>1</value>
+                </parameter>
+            </task>
+        </layer>
+        <layer type="vector" name="canal_lines@module_101" checked="0" opacity="1.000000">
+            <task name="d.vect">
+                <parameter name="map">
+                    <value>canal_lines@module_101</value>
+                </parameter>
+                <parameter name="width">
+                    <value>1</value>
+                </parameter>
+            </task>
+        </layer>
+    </display>
+</gxw>

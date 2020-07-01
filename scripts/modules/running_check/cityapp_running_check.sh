@@ -34,7 +34,7 @@ while [ $(pgrep -f $RUNNING_MODULE) ];do
     RUNNING=$(cat $VARIABLES/module_status | tail -n1)
     echo $ID_NUM > $MESSAGE_SENT/$MODULE_ORIGIN".running"
     ID_NUM=$(($ID_NUM+1))
-    sleep 1s
+    sleep 0.5s
 done
 rm -f $MESSAGE_SENT/$MODULE_ORIGIN".running"
 rm -f $VARIABLES/module_status
