@@ -10,6 +10,11 @@ module.exports = {
     execSync(`grass "${GRASS}/global/${mapset}" --exec v.in.ogr -o input="${args[0]}" layer="${args[1]}" output="${args[2]}" --overwrite --quiet`)
   },
 
+  // This is to import geotiff raster maps.
+  addRaster(mapset, ...args) {
+    execSync(`grass "${GRASS}/global/${mapset}" --exec r.import input="${args[0]}" output="${args[1]}" --overwrite`)
+  },
+
   // This is to import a vector map file.
   // Parameters: {filename to import, output filename for GRASS}
   addVector(mapset, ...args) {

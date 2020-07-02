@@ -47,11 +47,13 @@ app.get('/', (req, res) => {
 
 // modules
 const AddLocationModule = require('./scripts/add_location')
+const AddMapModule = require('./scripts/add_map')
 const SetSelectionModule = require('./scripts/set_selection')
 const SetResolutionModule = require('./scripts/set_resolution')
 
 const modules = {
   add_location: new AddLocationModule(),
+  add_map: new AddMapModule(),
   set_selection: new SetSelectionModule(),
   set_resolution: new SetResolutionModule(),
 }

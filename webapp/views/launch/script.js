@@ -209,19 +209,6 @@ function handleResponse(res) {
         ];
         break;
 
-      // • message id: add_map.4
-      // • text: Selected map is now succesfully added to your mapset. Add map module now exit
-      // • expectation: A request file with text OK
-      // • consequence: Module exit after user acknowledge the message.
-      case 'add_map.4':
-        buttons = [
-          buttonElement('OK').click(() => {
-            reply(res, 'ok', false);
-            clearDialog();
-          })
-        ];
-        break;
-
       // == module_1 ==
 
       // • message id: module_1.1
