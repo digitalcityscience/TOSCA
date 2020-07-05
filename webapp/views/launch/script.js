@@ -127,6 +127,16 @@ function handleResponse(res) {
           })
         ];
         break;
+      // • message id: set_selection.3
+      // • text: Process finished, selection is saved.
+      case 'set_selection.3':
+        buttons = [
+          buttonElement('OK').click(() => {
+            reply(res, 'ok', false);
+            clearDialog();
+          })
+        ];
+        break;
 
       // == set_resolution ==
 
@@ -260,7 +270,7 @@ function handleResponse(res) {
         // TODO: add maps
         lists.append($(`<select id="${messageId}-input" size="10">` +
           mapList.map(map => `<option selected value="${map}">${map}</option>`) +
-        `</select>`));
+          `</select>`));
         buttons = [
           buttonElement('Submit').click(() => {
             const input = $(`#${messageId}-input`);
@@ -327,10 +337,10 @@ function handleResponse(res) {
         ];
         break;
 
-      // • message id: module_1.12
+      // • message id: module_1.10
       // • text: Set speed for roads of stricken area.
       // • expectation: reqest file with single a floating point numeric value
-      case 'module_1.12':
+      case 'module_1.10':
         form = formElement(messageId);
         form.append($(`<input id="${messageId}-input" type="number" />`));
         buttons = [
@@ -341,11 +351,11 @@ function handleResponse(res) {
         ];
         break;
 
-      // • message id: module_1.14
+      // • message id: module_1.11
       // • text: Calculations are ready, display output time maps.
       // • expectation: A request file with a single "OK" word
       // • consequence: After the user acknowledge the message, the module exit.
-      case 'module_1.14':
+      case 'module_1.11':
         buttons = [
           buttonElement('OK').click(() => {
             reply(res, 'ok', false);
@@ -442,9 +452,9 @@ function sendMessage(target, message, params, callback) {
     dataType: 'json',
     contentType: 'application/json; encoding=utf-8'
   })
-  .done(callback || null)
-  .fail(callback && onServerTimeout)
-  .always(() => $('#loading').hide());
+    .done(callback || null)
+    .fail(callback && onServerTimeout)
+    .always(() => $('#loading').hide());
 }
 
 function upload(form, params, callback) {
@@ -459,9 +469,9 @@ function upload(form, params, callback) {
     contentType: false,
     processData: false
   })
-  .done(callback || null)
-  .fail(callback && onServerTimeout)
-  .always(() => $('#loading').hide());
+    .done(callback || null)
+    .fail(callback && onServerTimeout)
+    .always(() => $('#loading').hide());
 }
 
 function onServerTimeout() {

@@ -50,12 +50,14 @@ const AddLocationModule = require('./scripts/add_location')
 const AddMapModule = require('./scripts/add_map')
 const SetSelectionModule = require('./scripts/set_selection')
 const SetResolutionModule = require('./scripts/set_resolution')
+const ModuleOne = require('./scripts/module_1')
 
 const modules = {
   add_location: new AddLocationModule(),
   add_map: new AddMapModule(),
   set_selection: new SetSelectionModule(),
   set_resolution: new SetResolutionModule(),
+  module_1: new ModuleOne()
 }
 
 // launch a module
@@ -115,7 +117,7 @@ app.post('/drawing', jsonParser, async (req, res, next) => {
 
   try {
     const module = modules[req.query.message_id.split('.')[0]]
-    res.send(module.processFile('drawing.geojson'))
+    res.send(module.processFile('drawing.geojson',req.query.message_id))
   } catch (err) {
     next(err)
   }
