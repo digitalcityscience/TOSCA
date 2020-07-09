@@ -322,11 +322,11 @@ function handleResponse(res) {
         ];
         break;
 
-      // • message id: module_1.9
+      // • message id: module_1.10
       // • text: Do you want to set the speed on the road network? If not, the current values will used.
       // • expectation: request file with a single yes or no.
-      // • consequence: If answer is "yes", there is a new message: => module_1.10
-      case 'module_1.9':
+      // • consequence: If answer is "yes", there is a new message: => module_1.11
+      case 'module_1.10':
         buttons = [
           buttonElement('Yes').click(() => {
             reply(res, 'yes', true);
@@ -337,10 +337,14 @@ function handleResponse(res) {
         ];
         break;
 
-      // • message id: module_1.10
+      // • message id: module_1.9
       // • text: Set speed for roads of stricken area.
       // • expectation: reqest file with single a floating point numeric value
-      case 'module_1.10':
+      // • message id: module_1.11
+      // • text: Set the speed on the road network.
+      // • expectation: reqest file with single a floating point numeric value
+      case 'module_1.9':
+      case 'module_1.11':
         form = formElement(messageId);
         form.append($(`<input id="${messageId}-input" type="number" />`));
         buttons = [
@@ -355,7 +359,7 @@ function handleResponse(res) {
       // • text: Calculations are ready, display output time maps.
       // • expectation: A request file with a single "OK" word
       // • consequence: After the user acknowledge the message, the module exit.
-      case 'module_1.11':
+      case 'module_1.12':
         buttons = [
           buttonElement('OK').click(() => {
             reply(res, 'ok', false);
