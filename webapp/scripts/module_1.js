@@ -148,7 +148,7 @@ class ModuleOne {
                     return this.messages[8]
                 }
                 else if (message.toLowerCase() == 'cancel') {
-                    return this.messages[9]
+                    return this.messages[10]
                 }
             case 'module_1.8':
                 this.AREA = 1
