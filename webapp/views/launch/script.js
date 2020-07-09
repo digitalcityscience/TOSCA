@@ -338,7 +338,7 @@ function handleResponse(res) {
         break;
 
       // • message id: module_1.9
-      // • text: Set speed for roads of stricken area.
+      // • text: Set speed reduction ratio for roads of stricken area
       // • expectation: reqest file with single a floating point numeric value
       // • message id: module_1.11
       // • text: Set the speed on the road network.
