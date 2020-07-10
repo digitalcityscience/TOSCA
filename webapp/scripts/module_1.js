@@ -173,14 +173,13 @@ class ModuleOne {
         return this.messages[12]
     }
   }
+
   processFile(filename, replyTo) {
-    console.log('replyTo: ', replyTo)
     switch (replyTo) {
       case 'module_1.1':
         addVector('module_1', `${BROWSER}/${filename}`, 'm1_from_points')
         gpkgOut('module_1', 'm1_from_points', 'm1_from_points')
         this.FROM_POINT = 'm1_from_points'
-
         return this.messages[3]
 
       case 'module_1.3':
@@ -188,7 +187,6 @@ class ModuleOne {
         addVector('module_1', `${BROWSER}/${filename}`, 'm1_via_points')
         gpkgOut('module_1', 'm1_via_points', 'm1_via_points')
         this.VIA_POINT = 'm1_via_points'
-
         return this.messages[5]
 
       case 'module_1.5':
@@ -196,7 +194,6 @@ class ModuleOne {
         addVector('module_1', `${BROWSER}/${filename}`, 'm1_to_points')
         gpkgOut('module_1', 'm1_to_points', 'm1_to_points')
         this.TO_POINT = 'm1_to_points'
-
         return this.messages[7]
 
       case 'module_1.7':
@@ -204,7 +201,6 @@ class ModuleOne {
         addVector('module_1', `${BROWSER}/${filename}`, 'm1_stricken_area')
         gpkgOut('module_1', 'm1_stricken_area', 'm1_stricken_area')
         this.AREA_MAP = 'm1_stricken_area'
-
         return this.messages[9]
     }
   }
@@ -234,14 +230,9 @@ class ModuleOne {
     // Because of the previous operations, in many case, there is no more "highway" column. Now we have to rename a_highway to highway again.
     // But, in some cases -- because of the differences between country datasets -- highway field io not affected,
     // the original highway field remains the same. In this case it is not neccessary to rename it.
-    let grep
-    try {
-      grep = execSync(`grass "${GRASS}"/global/module_1 --exec db.columns table=highways | grep a_highway`).toString()
-    } catch (err) {
-      console.log(err.message)
-    }
-    if (grep !== undefined) {
-      execSync(`grass "${GRASS}"/global/module_1  --exec v.db.renamecolumn map=highways_points_connected column=a_highway,highway`)
+    let columns = execSync(`grass "${GRASS}"/global/module_1 --exec db.columns table=highways`).toString()
+    if (columns.split("\n").find(column => column === 'a_highway')) {
+      execSync(`grass "${GRASS}"/global/module_1 --exec v.db.renamecolumn map=highways_points_connected column=a_highway,highway`)
     }
 
     //  Add "spd_average" attribute column (integer type) to the road network map (if not yet exist -- if exist Grass will skip this process)
