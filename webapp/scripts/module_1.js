@@ -252,13 +252,13 @@ class ModuleOne {
     // if [ $(echo $(stat --printf="%s" $VARIABLES/roads_speed)) -lt 169 -o ! -f $VARIABLES/roads_speed ]; then ##?##
     //     cp $VARIABLES/roads_speed_defaults $VARIABLES/roads_speed
     // fi
-    if (fs.existsSync(`${VARIABLES}/roads_speed`) || parseInt(execSync(`echo $(stat --printf="%s" test.js)`).toString().trim()) > 169) {
+    if (!fs.existsSync(`${VARIABLES}/roads_speed`) || parseInt(execSync(`echo $(stat --printf="%s" test.js)`).toString().trim()) > 169) {
       execSync(`cp "${VARIABLES}"/roads_speed_defaults "${VARIABLES}"/roads_speed`)
     }
 
     // Now updating the datatable of highways_points_connected map, using "roads_speed" file to get speed data and conditions. limit is 9 -- until [ $n -gt 9 ]; do -- because the file $VARIABLES/roads_speed has 9 lines. When the number of lines changed in the file, limit value also has to be changed.
-    for (let i = 0; i < 10; i++) {
-      execSync(`grass "${GRASS}"/global/module_1 --exec v.db.update map=highways_points_connected layer=1 column=avg_speed value=$(cat "${VARIABLES}"/roads_speed | head -n$n | tail -n1 | cut -d":" -f2 | sed s'/ //'g) where="$(cat "${VARIABLES}"/highway_types | head -n$n | tail -n1)"`)
+    for (let i = 1; i < 10; i++) {
+      execSync(`grass "${GRASS}"/global/module_1 --exec v.db.update map=highways_points_connected layer=1 column=avg_speed value=$(cat "${VARIABLES}"/roads_speed | head -n${i} | tail -n1 | cut -d":" -f2 | sed s'/ //'g) where="$(cat "${VARIABLES}"/highway_types | head -n${i} | tail -n1)"`)
     }
 
     // Converting clipped and connected road network map into raster format and float number
@@ -268,9 +268,9 @@ class ModuleOne {
     // Now vector zones are created around from, via and to points (its radius is equal to the curren resolution),
     // converted into raster format, and patched to raster map 'temp' (just created in the previous step)
     // zones:
-    execSync(`grass "${GRASS}"/global/module_1 --exec v.buffer input=from_via_to_points output=from_via_to_zones distance=$(cat $VARIABLES/resolution | tail -n1) minordistance=$(cat $VARIABLES/resolution | tail -n1) --overwrite --quiet`)
+    execSync(`grass "${GRASS}"/global/module_1 --exec v.buffer input=from_via_to_points output=from_via_to_zones distance=$(cat "${VARIABLES}"/resolution | tail -n1) minordistance=$(cat "${VARIABLES}"/resolution | tail -n1) --overwrite --quiet`)
     execSync(`grass "${GRASS}"/global/module_1 --exec r.mapcalc expression="from_via_to_zones=float(from_via_to_zones)" --overwrite --quiet`)
-    execSync(`grass "${GRASS}"/global/module_1 --exec v.to.rast input=from_via_to_zones output=from_via_to_zones use=val val=$AVERAGE_SPEED --overwrite --quiet`)
+    execSync(`grass "${GRASS}"/global/module_1 --exec v.to.rast input=from_via_to_zones output=from_via_to_zones use=val val="${AVERAGE_SPEED}" --overwrite --quiet`)
     execSync(`grass "${GRASS}"/global/module_1 --exec r.patch input=highways_points_connected,from_via_to_zones output=highways_points_connected_zones --overwrite --quiet`)
 
     // Now the Supplementary lines (formerly CAT_SUPP_LINES) raster map have to be added to map highways_from_points. First I convert highways_points_connected into raster setting value to 0(zero). Resultant map: temp. After I patch temp and highways_points_connected, result is:highways_points_connected_temp. Now have to reclass highways_points_connected_temp, setting 0 values to the speed value of residentals
