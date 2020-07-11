@@ -1,9 +1,6 @@
-const { execSync } = require('child_process') // Documentation: https://nodejs.org/api/child_process.html
-
-const { addVector, getCoordinates, gpkgOut, mapsetExists } = require('./functions')
+const { addVector, clip, getCoordinates, gpkgOut, mapsetExists, remove } = require('./functions')
 
 const BROWSER = process.env.DATA_FROM_BROWSER_DIR
-const GRASS = process.env.GRASS_DIR
 
 class SetSelectionModule {
   constructor() {
@@ -36,18 +33,15 @@ class SetSelectionModule {
         throw new Error("Wrong file format - must be 'geojson'")
       }
 
-      const geojsonFile = `${BROWSER}/${filename}`;
-
-      execSync(`grass "${GRASS}"/global/PERMANENT --exec g.remove -f type=vector name=selection`)
-
-      addVector('PERMANENT', geojsonFile, 'selection')
+      remove('PERMANENT', 'selection')
+      addVector('PERMANENT', `${BROWSER}/${filename}`, 'selection')
 
       gpkgOut('PERMANENT', 'selection', 'selection')
 
-      // Clipping the basemaps by the selection map. Results will be used in the calculations and analysis
-      execSync(`grass "${GRASS}"/global/PERMANENT --exec v.clip input=polygons_osm clip=selection output=polygons --overwrite`)
-      execSync(`grass "${GRASS}"/global/PERMANENT --exec v.clip input=lines_osm clip=selection output=lines --overwrite`)
-      execSync(`grass "${GRASS}"/global/PERMANENT --exec v.clip input=relations_osm clip=selection output=relations --overwrite`)
+      // Clip the basemaps by the selection map. Results will be used in the calculations and analyses
+      clip('PERMANENT', 'polygons_osm', 'selection', 'polygons')
+      clip('PERMANENT', 'lines_osm', 'selection', 'lines')
+      clip('PERMANENT', 'relations_osm', 'selection', 'relations')
 
       let [east, north] = getCoordinates('PERMANENT')
 

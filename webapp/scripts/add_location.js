@@ -1,4 +1,4 @@
-const { execSync } = require('child_process') // Documentation: https://nodejs.org/api/child_process.html
+const fs = require('fs')
 
 const { addOsm, getCoordinates, gpkgOut, mapsetExists } = require('./functions')
 
@@ -55,10 +55,14 @@ class AddLocationModule {
 
       const osmFile = `${BROWSER}/${filename}`
 
-      execSync(`rm -fr "${GRASS}"/global/PERMANENT`)
-      execSync(`mkdir "${GRASS}"/global/PERMANENT`)
-      execSync(`cp -r "${GRASS}"/skel_permanent/* "${GRASS}"/global/PERMANENT`)
+      // Clear previous mapset
+      fs.rmdirSync(`${GRASS}/global/PERMANENT`, { recursive: true })
+      fs.mkdirSync(`${GRASS}/global/PERMANENT`)
+      for (const file of fs.readdirSync(`${GRASS}/skel_permanent`)) {
+        fs.copyFileSync(`${GRASS}/skel_permanent/${file}`, `${GRASS}/global/PERMANENT/${file}`)
+      }
 
+      // Import new map data
       addOsm('PERMANENT', osmFile, 'points', 'points_osm')
       addOsm('PERMANENT', osmFile, 'lines', 'lines_osm')
       addOsm('PERMANENT', osmFile, 'multipolygons', 'polygons_osm')

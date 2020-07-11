@@ -36,6 +36,17 @@ module.exports = {
   },
 
   /**
+   * Clip a map layer using the bounds of another layer
+   * @param {string} mapset
+   * @param {string} layer the layer to clip
+   * @param {string} clipLayer the layer whose bounds are used for clipping
+   * @param {string} outfile output filename
+   */
+  clip(mapset, layer, clipLayer, outfile) {
+    execSync(`grass "${GRASS}"/global/${mapset} --exec v.clip input=${layer} clip=${clipLayer} output=${outfile} --overwrite`)
+  },
+
+  /**
    * Get the center coordinates of the current selection.
    * @param {string} mapset
    * @returns {[number, number]} center coordinates (east, north)
@@ -80,5 +91,14 @@ module.exports = {
       exists = false
     }
     return exists
+  },
+
+  /**
+   * Remove a map layer
+   * @param {string} mapset
+   * @param {string} layer layer name
+   */
+  remove(mapset, layer) {
+    execSync(`grass "${GRASS}/global/${mapset}" --exec g.remove -f type=vector name=${layer}`)
   }
 }
