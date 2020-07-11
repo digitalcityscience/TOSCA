@@ -4,7 +4,6 @@ const { addVector, getCoordinates, gpkgOut, mapsetExists } = require('./function
 
 const BROWSER = process.env.DATA_FROM_BROWSER_DIR
 const GRASS = process.env.GRASS_DIR
-const VARIABLES = `./variables`
 
 class SetSelectionModule {
   constructor() {
@@ -31,9 +30,6 @@ class SetSelectionModule {
     return this.messages[1]
   }
 
-  process(message, replyTo) {
-  }
-
   processFile(filename) {
     if (!filename.match(/\.geojson$/i)) {
       throw new Error("Wrong file format - must be GeoJSON")
@@ -48,10 +44,6 @@ class SetSelectionModule {
 
     // Running Set resolution module
     // TODO
-
-    // Refine or redefine the area selection
-    execSync(`rm -f "${VARIABLES}"/location_new`)
-    execSync(`touch "${VARIABLES}"/location_mod`)
 
     // Clipping the basemaps by the selection map. Results will be used in the calculations and analysis
     execSync(`grass "${GRASS}"/global/PERMANENT --exec v.clip input=polygons_osm clip=selection output=polygons --overwrite`)

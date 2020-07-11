@@ -22,6 +22,8 @@ class AddMapModule {
         message: { "text": "Selected map is now succesfully added to your mapset." }
       }
     }
+    this.mapType = '' // 'vector' or 'raster'
+    this.mapFile = '' // filename of uploaded file
   }
 
   launch() {
@@ -53,14 +55,12 @@ class AddMapModule {
   }
 
   processFile(filename) {
-    this.mapType = this.mapFile = ''
-
     if (filename.match(/\.geojson$|\.gpkg$|\.osm$/i)) {
       this.mapType = 'vector'
     } else if (filename.match(/\.tiff?$|\.gtif$/i)) {
       this.mapType = 'raster'
     } else {
-      throw new Error("Wrong file format - must be GeoJSON, GPKG, OSM or (G)TIF(F)")
+      throw new Error("Wrong file format - must be one of 'geojson', 'gpkg', 'osm', 'tif', 'tiff', 'gtif'")
     }
 
     this.mapFile = `${BROWSER}/${filename}`

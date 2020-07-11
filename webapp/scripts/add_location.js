@@ -4,7 +4,6 @@ const { addOsm, getCoordinates, gpkgOut, mapsetExists } = require('./functions')
 
 const BROWSER = process.env.DATA_FROM_BROWSER_DIR
 const GRASS = process.env.GRASS_DIR
-const VARIABLES = `./variables`
 
 class AddLocationModule {
   constructor() {
@@ -69,12 +68,10 @@ class AddLocationModule {
     addOsm('PERMANENT', osmFile, 'lines', 'lines_osm')
     addOsm('PERMANENT', osmFile, 'multipolygons', 'polygons_osm')
     addOsm('PERMANENT', osmFile, 'other_relations', 'relations_osm')
+
     gpkgOut('PERMANENT', 'points_osm', 'points')
     gpkgOut('PERMANENT', 'lines_osm', 'lines')
     gpkgOut('PERMANENT', 'polygons_osm', 'polygons')
-
-    execSync(`rm -f "${VARIABLES}"/location_mod`)
-    execSync(`touch "${VARIABLES}"/location_new`)
 
     let [east, north] = getCoordinates('PERMANENT')
 

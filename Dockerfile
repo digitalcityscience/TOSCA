@@ -43,7 +43,6 @@ RUN apt-get clean
 # Install webapp
 WORKDIR /root/cityapp
 RUN mkdir -p data_from_browser
-RUN mkdir -p webapp/variables
 COPY webapp/package*.json ./webapp/
 RUN cd webapp && npm i --only=production --ignore-scripts
 COPY webapp/public ./webapp/public

@@ -9,11 +9,19 @@ launch_locked
 /geoserver_data_dir/logs/geoserver.log*
 /grass/global
 /grass/skel
+/grass/variables/*
+!/grass/variables/defaults
+*.geojson
+*.osm
 *.gpkg
 *.gpkg-shm
 *.gpkg-wal
 *.tif
 *.tif.aux.xml
+*.tiff
+*.tiff.aux.xml
+*.gtif
+*.gtif.aux.xml
 *.pdf
 *.ps
 

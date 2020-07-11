@@ -6,7 +6,6 @@ const { addVector, gpkgOut, mapsetExists } = require('./functions')
 const BROWSER = process.env.DATA_FROM_BROWSER_DIR
 const GRASS = process.env.GRASS_DIR
 const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
-const VARIABLES = `./variables`
 const ROAD_POINTS = 0.003
 const CONNECT_DISTANCE = 0.003
 const AVERAGE_SPEED = 40
@@ -95,7 +94,7 @@ class ModuleOne {
       console.error(err)
     }
 
-    this.vectorMaps = execSync(`grass "${GRASS}"/global/module_1 --exec g.list -m type=vector`, { encoding: 'utf-8' }).split("\n").filter(map => !!map)
+    this.vectorMaps = execSync(`grass "${GRASS}"/global/module_1 --exec g.list -m type=vector`).toString().split("\n").filter(map => !!map)
 
     if (mapsetExists('PERMANENT')) {
       return this.messages[1]
@@ -209,7 +208,7 @@ class ModuleOne {
     // Creating highways map. This is fundamental for the further work in this module
     execSync(`grass "${GRASS}"/global/module_1 --exec v.extract input=lines@PERMANENT type=line where="highway>0" output=highways --overwrite --quiet`)
     // True data processing Setting region to fit the "selection" map (taken by location_selector), and resolution
-    execSync(`grass "${GRASS}"/global/module_1 --exec g.region vector=selection@PERMANENT res=$(cat "${VARIABLES}"/resolution | tail -n1) --overwrite`)
+    execSync(`grass "${GRASS}"/global/module_1 --exec g.region vector=selection@PERMANENT res=$(cat "${GRASS}"/variables/resolution | tail -n1) --overwrite`)
 
     // connecting from/via/to points to the clipped network, if neccessary. Via points are optional, first have to check if user previously has selected those or not.
     execSync(`grass "${GRASS}"/global/module_1 --exec g.copy vector="${this.FROM_POINT}",from_via_to_points --overwrite --quiet`)
@@ -243,13 +242,13 @@ class ModuleOne {
     // if [ $(echo $(stat --printf="%s" $VARIABLES/roads_speed)) -lt 169 -o ! -f $VARIABLES/roads_speed ]; then ##?##
     //     cp $VARIABLES/roads_speed_defaults $VARIABLES/roads_speed
     // fi
-    if (!fs.existsSync(`${VARIABLES}/roads_speed`) || parseInt(execSync(`echo $(stat --printf="%s" test.js)`).toString().trim()) > 169) {
-      execSync(`cp "${VARIABLES}"/roads_speed_defaults "${VARIABLES}"/roads_speed`)
+    if (!fs.existsSync(`"${GRASS}"/variables/roads_speed`)) {
+      execSync(`cp "${GRASS}"/variables/defaults/roads_speed_defaults "${GRASS}"/variables/roads_speed`)
     }
 
     // Now updating the datatable of highways_points_connected map, using "roads_speed" file to get speed data and conditions. limit is 9 -- until [ $n -gt 9 ]; do -- because the file $VARIABLES/roads_speed has 9 lines. When the number of lines changed in the file, limit value also has to be changed.
     for (let i = 1; i < 10; i++) {
-      execSync(`grass "${GRASS}"/global/module_1 --exec v.db.update map=highways_points_connected layer=1 column=avg_speed value=$(cat "${VARIABLES}"/roads_speed | head -n${i} | tail -n1 | cut -d":" -f2 | sed s'/ //'g) where="$(cat "${VARIABLES}"/highway_types | head -n${i} | tail -n1)"`)
+      execSync(`grass "${GRASS}"/global/module_1 --exec v.db.update map=highways_points_connected layer=1 column=avg_speed value=$(cat "${GRASS}"/variables/roads_speed | head -n${i} | tail -n1 | cut -d":" -f2 | sed s'/ //'g) where="$(cat "${GRASS}"/variables/defaults/highway_types | head -n${i} | tail -n1)"`)
     }
 
     // Converting clipped and connected road network map into raster format and float number
@@ -259,7 +258,7 @@ class ModuleOne {
     // Now vector zones are created around from, via and to points (its radius is equal to the curren resolution),
     // converted into raster format, and patched to raster map 'temp' (just created in the previous step)
     // zones:
-    execSync(`grass "${GRASS}"/global/module_1 --exec v.buffer input=from_via_to_points output=from_via_to_zones distance=$(cat "${VARIABLES}"/resolution | tail -n1) minordistance=$(cat "${VARIABLES}"/resolution | tail -n1) --overwrite --quiet`)
+    execSync(`grass "${GRASS}"/global/module_1 --exec v.buffer input=from_via_to_points output=from_via_to_zones distance=$(cat "${GRASS}"/variables/resolution | tail -n1) minordistance=$(cat "${GRASS}"/variables/resolution | tail -n1) --overwrite --quiet`)
     execSync(`grass "${GRASS}"/global/module_1 --exec r.mapcalc expression="from_via_to_zones=float(from_via_to_zones)" --overwrite --quiet`)
     execSync(`grass "${GRASS}"/global/module_1 --exec v.to.rast input=from_via_to_zones output=from_via_to_zones use=val val="${AVERAGE_SPEED}" --overwrite --quiet`)
     execSync(`grass "${GRASS}"/global/module_1 --exec r.patch input=highways_points_connected,from_via_to_zones output=highways_points_connected_zones --overwrite --quiet`)
@@ -278,7 +277,7 @@ class ModuleOne {
     }
 
     // specific_time here is the time requested to cross a cell, where the resolution is as defined in resolution file
-    execSync(`grass "${GRASS}"/global/module_1 --exec r.mapcalc expression="specific_time=$(cat "${VARIABLES}"/resolution | head -n3 | tail -n1)/(highways_points_connected_full*0.27777)" --overwrite --quiet`)
+    execSync(`grass "${GRASS}"/global/module_1 --exec r.mapcalc expression="specific_time=$(cat "${GRASS}"/variables/resolution | head -n3 | tail -n1)/(highways_points_connected_full*0.27777)" --overwrite --quiet`)
 
     // Calculating from -- via time map, via -- to time map and it sum. There is a NULL value replacenet too. It is neccessary, because otherwise, if one of the maps containes NULL value, NULL value cells will not considering while summarizing the maps. Therefore, before mapcalc operation, NULL has to be replaced by 0.
     if (this.VIA === 0 || this.VIA === 1) {
@@ -307,7 +306,7 @@ class ModuleOne {
     execSync(`grass "${GRASS}"/global/module_1 --exec r.out.gdal input=m1_time_map_interpolated output="${GEOSERVER}"/m1_time_map_interpolated.tif format=GTiff --overwrite --quiet`)
 
     // set color for maps:
-    execSync(`grass "${GRASS}"/global/module_1 --exec g.region res=$(cat "${VARIABLES}"/resolution)`)
+    execSync(`grass "${GRASS}"/global/module_1 --exec g.region res=$(cat "${GRASS}"/variables/resolution)`)
     execSync(`r.colors -a map=m1_time_map color=gyr`) // ?
     execSync(`r.colors map=m1_time_map_interpolated color=gyr`) // ?
 

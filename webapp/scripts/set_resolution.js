@@ -1,6 +1,6 @@
 const { execSync } = require('child_process') // Documentation: https://nodejs.org/api/child_process.html
 
-const VARIABLES = `./variables`
+const GRASS = process.env.GRASS_DIR
 
 class SetResolutionModule {
   constructor() {
@@ -35,10 +35,10 @@ class SetResolutionModule {
         if (resolution <= 0) {
           return this.messages[2]
         } else {
-          execSync(`echo "First data: Resolution in meters, given by the user." > ${VARIABLES}/resolution`)
-          execSync(`echo "Second data: resolution in decimal degrees, derivated from first data." >> ${VARIABLES}/resolution`)
-          execSync(`echo "${resolution}" >> ${VARIABLES}/resolution`)
-          execSync(`echo "${resolution/111322}" >> ${VARIABLES}/resolution`)
+          // Line 1: resolution in meters, given by the user
+          execSync(`echo "${resolution}" >> "${GRASS}"/variables/resolution`)
+          // Line 2: resolution in decimal degrees, derived from reoslution in meters
+          execSync(`echo "${resolution/111322}" >> "${GRASS}"/variables/resolution`)
 
           return this.messages[3]
         }
