@@ -1,7 +1,7 @@
 const { execSync } = require('child_process') // Documentation: https://nodejs.org/api/child_process.html
 
-const GRASS = process.env.GRASS_DIR
 const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
+const GRASS = process.env.GRASS_DIR
 
 module.exports = {
   /**
@@ -53,13 +53,13 @@ module.exports = {
    */
   getCoordinates(mapset) {
     let EAST, NORTH
-    let list = execSync(`grass "${GRASS}/global/${mapset}" --exec g.list type=vector`, { encoding: 'utf-8' })
+    let list = execSync(`grass "${GRASS}/global/${mapset}" --exec g.list type=vector`).toString().trim()
     let region
 
     if (list.split('\n').indexOf('selection') > -1) {
-      region = execSync(`grass "${GRASS}/global/${mapset}" --exec g.region -cg vector=selection`, { encoding: 'utf-8' })
+      region = execSync(`grass "${GRASS}/global/${mapset}" --exec g.region -cg vector=selection`).toString().trim()
     } else {
-      region = execSync(`grass "${GRASS}/global/${mapset}" --exec g.region -cg vector=polygons_osm`, { encoding: 'utf-8' })
+      region = execSync(`grass "${GRASS}/global/${mapset}" --exec g.region -cg vector=polygons_osm`).toString().trim()
     }
 
     EAST = region.split('\n')[0].split('=')[1]
@@ -76,6 +76,15 @@ module.exports = {
    */
   gpkgOut(mapset, infile, outfile) {
     execSync(`grass "${GRASS}/global/${mapset}" --exec v.out.ogr format=GPKG input="${infile}" output="${GEOSERVER}/${outfile}.gpkg" --overwrite --quiet`)
+  },
+
+  /**
+   * List available vector maps
+   * @param {string} mapset
+   * @return {string[]} names of available maps
+   */
+  listVector(mapset) {
+    return execSync(`grass "${GRASS}/global/${mapset}" --exec g.list -m type=vector`).toString().trim().split('\n')
   },
 
   /**
