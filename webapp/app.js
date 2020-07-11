@@ -61,7 +61,7 @@ const modules = {
 }
 
 // launch a module
-app.post('/launch', jsonParser, async (req, res, next) => {
+app.post('/launch', jsonParser, (req, res, next) => {
   try {
     res.send(modules[req.body.launch].launch())
   } catch (err) {
@@ -77,14 +77,13 @@ app.post('/launch', jsonParser, async (req, res, next) => {
 // app.post('/query', jsonParser, async (req, res, next) => {
 // })
 
-// send generic request
-app.post('/reply', jsonParser, async (req, res, next) => {
+// message request
+app.post('/reply', jsonParser, (req, res, next) => {
   try {
     const module = modules[req.query.message_id.split('.')[0]]
     const message = module.process(req.body.msg, req.query.message_id)
-    if (req.body.noCallback) {
-      res.status(200).send()
-    } else {
+
+    if (message) {
       res.send(message)
     }
   } catch (err) {
@@ -93,31 +92,37 @@ app.post('/reply', jsonParser, async (req, res, next) => {
 })
 
 // file upload
-app.post('/file', uploadParser.single('file'), async (req, res, next) => {
-  const module = modules[req.query.message_id.split('.')[0]]
-  const writer = fs.createWriteStream(`${dataFromBrowser}/${req.file.originalname}`)
+app.post('/file', uploadParser.single('file'), (req, res, next) => {
+  try {
+    const module = modules[req.query.message_id.split('.')[0]]
+    const file = `${dataFromBrowser}/${req.file.originalname}`
+    const writer = fs.createWriteStream(file)
 
-  writer.write(req.file.buffer, (error) => {
-    if (error) {
-      throw error
-    }
-    writer.close()
+    writer.write(req.file.buffer, (error) => {
+      if (error) {
+        throw error
+      }
+      writer.close()
 
-    try {
-      res.send(module.processFile(req.file.originalname, req.query.message_id))
-    } catch (err) {
-      next(err)
-    }
-  })
+      const message = module.processFile(file, req.query.message_id)
+
+      if (message) {
+        res.send(message)
+      }
+    })
+  } catch (err) {
+    next(err)
+  }
 })
 
 // send a GeoJSON
-app.post('/drawing', jsonParser, async (req, res, next) => {
-  fs.writeFileSync(`${dataFromBrowser}/drawing.geojson`, JSON.stringify(req.body.data))
-
+app.post('/drawing', jsonParser, (req, res, next) => {
   try {
     const module = modules[req.query.message_id.split('.')[0]]
-    res.send(module.processFile('drawing.geojson', req.query.message_id))
+    const file = `${dataFromBrowser}/drawing.geojson`
+
+    fs.writeFileSync(file, JSON.stringify(req.body.data))
+    res.send(module.processFile(file, req.query.message_id))
   } catch (err) {
     next(err)
   }

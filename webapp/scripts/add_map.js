@@ -1,7 +1,5 @@
 const { addRaster, addVector, mapsetExists } = require('./functions.js')
 
-const BROWSER = process.env.DATA_FROM_BROWSER_DIR
-
 class AddMapModule {
   constructor() {
     this.messages = {
@@ -62,7 +60,7 @@ class AddMapModule {
         throw new Error("Wrong file format - must be one of 'geojson', 'gpkg', 'osm', 'tif', 'tiff', 'gtif'")
       }
 
-      this.mapFile = `${BROWSER}/${filename}`
+      this.mapFile = filename
       return this.messages[3]
     }
   }

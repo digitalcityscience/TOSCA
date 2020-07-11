@@ -3,7 +3,6 @@ const fs = require('fs')
 
 const { addVector, gpkgOut, listVector, mapsetExists } = require('./functions')
 
-const BROWSER = process.env.DATA_FROM_BROWSER_DIR
 const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
 const GRASS = process.env.GRASS_DIR
 
@@ -112,50 +111,50 @@ class ModuleOne {
           msg.message.list = this.vectorMaps
           return msg
         }
-        break
+        return
+
       case 'module_1.2':
         this.fromPoints = message
         return this.messages[3]
+
       case 'module_1.3':
         if (message.toLowerCase() == 'no') {
           const msg = this.messages[4]
           msg.message.list = this.vectorMaps
           return msg
         }
-        else if (message.toLowerCase() == 'cancel') {
-          return this.messages[5]
-        }
-        break
+        return this.messages[5]
+
       case 'module_1.4':
         this.viaPoints = message
         return this.messages[5]
+
       case 'module_1.5':
         if (message.toLowerCase() == 'no') {
           const msg = this.messages[6]
           msg.message.list = this.vectorMaps
           return msg
         }
-        else if (message.toLowerCase() == 'cancel') {
-          return this.messages[7]
-        }
-        break
+        return this.messages[7]
+
       case 'module_1.6':
         this.toPoints = message
         return this.messages[7]
+
       case 'module_1.7':
         if (message.toLowerCase() == 'no') {
           return this.messages[8]
         }
-        else if (message.toLowerCase() == 'cancel') {
-          return this.messages[10]
-        }
-        break
+        return this.messages[10]
+
       case 'module_1.8':
         this.strickenArea = message
         return this.messages[9]
+
       case 'module_1.9':
         this.reductionRatio = message
         return this.messages[10]
+
       case 'module_1.10':
         if (message.toLowerCase() == 'yes') {
           return this.messages[11]
@@ -164,7 +163,8 @@ class ModuleOne {
           this.calculate()
           return this.messages[12]
         }
-        break
+        return
+
       case 'module_1.11':
         this.roadsSpeed = message // not used
         this.calculate()
@@ -173,29 +173,27 @@ class ModuleOne {
   }
 
   processFile(filename, replyTo) {
-    const file = `${BROWSER}/${filename}`
-
     switch (replyTo) {
       case 'module_1.1':
-        addVector('module_1', file, 'm1_from_points')
+        addVector('module_1', filename, 'm1_from_points')
         gpkgOut('module_1', 'm1_from_points', 'm1_from_points')
         this.fromPoints = 'm1_from_points'
         return this.messages[3]
 
       case 'module_1.3':
-        addVector('module_1', file, 'm1_via_points')
+        addVector('module_1', filename, 'm1_via_points')
         gpkgOut('module_1', 'm1_via_points', 'm1_via_points')
         this.viaPoints = 'm1_via_points'
         return this.messages[5]
 
       case 'module_1.5':
-        addVector('module_1', file, 'm1_to_points')
+        addVector('module_1', filename, 'm1_to_points')
         gpkgOut('module_1', 'm1_to_points', 'm1_to_points')
         this.toPoints = 'm1_to_points'
         return this.messages[7]
 
       case 'module_1.7':
-        addVector('module_1', file, 'm1_stricken_area')
+        addVector('module_1', filename, 'm1_stricken_area')
         gpkgOut('module_1', 'm1_stricken_area', 'm1_stricken_area')
         this.strickenArea = 'm1_stricken_area'
         return this.messages[9]

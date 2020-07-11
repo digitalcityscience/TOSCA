@@ -1,7 +1,5 @@
 const { addVector, clip, getCoordinates, gpkgOut, mapsetExists, remove } = require('./functions')
 
-const BROWSER = process.env.DATA_FROM_BROWSER_DIR
-
 class SetSelectionModule {
   constructor() {
     this.messages = {
@@ -34,7 +32,7 @@ class SetSelectionModule {
       }
 
       remove('PERMANENT', 'selection')
-      addVector('PERMANENT', `${BROWSER}/${filename}`, 'selection')
+      addVector('PERMANENT', filename, 'selection')
 
       gpkgOut('PERMANENT', 'selection', 'selection')
 

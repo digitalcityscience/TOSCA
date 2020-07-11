@@ -51,10 +51,10 @@ function handleResponse(res) {
       case 'add_location.1':
         buttons = [
           buttonElement('Yes').click(() => {
-            reply(res, 'yes', true);
+            reply(res, 'yes');
           }),
           buttonElement('No').click(() => {
-            reply(res, 'no', true);
+            reply(res, 'no');
           })
         ];
         break;
@@ -69,10 +69,10 @@ function handleResponse(res) {
       case 'add_location.2':
         buttons = [
           buttonElement('Yes').click(() => {
-            reply(res, 'yes', true);
+            reply(res, 'yes');
           }),
           buttonElement('No').click(() => {
-            reply(res, 'no', true);
+            reply(res, 'no');
           })
         ];
         break;
@@ -106,7 +106,6 @@ function handleResponse(res) {
       case 'set_selection.1':
         buttons = [
           buttonElement('OK').click(() => {
-            reply(res, 'ok', false);
             clearDialog();
           })
         ];
@@ -148,7 +147,7 @@ function handleResponse(res) {
             $(`#${messageId}-error`).remove();
             const input = $(`#${messageId}-input`);
             if (!isNaN(parseInt(input.val()))) {
-              reply(res, input.val(), true);
+              reply(res, input.val());
             } else {
               textarea.append($(`<span id="${messageId}-error" class="validation-error">Please enter a numeric value.</span>`));
             }
@@ -165,7 +164,7 @@ function handleResponse(res) {
       case 'add_map.1':
         buttons = [
           buttonElement('OK').click(() => {
-            reply(res, 'ok', true);
+            reply(res, 'ok');
           })
         ];
         break;
@@ -201,7 +200,7 @@ function handleResponse(res) {
             $(`#${messageId}-error`).remove();
             const input = $(`#${messageId}-input`);
             if (input.val()) {
-              reply(res, input.val(), true);
+              reply(res, input.val());
             } else {
               textarea.append($(`<span id="${messageId}-error" class="validation-error">Please enter a name.</span>`));
             }
@@ -220,14 +219,13 @@ function handleResponse(res) {
       case 'module_1.1':
         buttons = [
           buttonElement('Yes').click(() => {
-            reply(res, 'yes', false);
             const saveButton = buttonElement('Save').click(() => {
               saveDrawing(res);
             })
             buttonarea.append(saveButton);
           }),
           buttonElement('No').click(() => {
-            reply(res, 'no', true);
+            reply(res, 'no');
           })
         ];
         break;
@@ -264,7 +262,7 @@ function handleResponse(res) {
         buttons = [
           buttonElement('Submit').click(() => {
             const input = $(`#${messageId}-input`);
-            reply(res, input[0].value, true);
+            reply(res, input[0].value);
           })
         ];
         break;
@@ -297,17 +295,16 @@ function handleResponse(res) {
       case 'module_1.7':
         buttons = [
           buttonElement('Yes').click(() => {
-            reply(res, 'yes', false);
             const saveButton = buttonElement('Save').click(() => {
               saveDrawing(res);
             })
             buttonarea.append(saveButton);
           }),
           buttonElement('No').click(() => {
-            reply(res, 'no', true);
+            reply(res, 'no');
           }),
           buttonElement('Cancel').click(() => {
-            reply(res, 'cancel', true);
+            reply(res, 'cancel');
           })
         ];
         break;
@@ -319,10 +316,10 @@ function handleResponse(res) {
       case 'module_1.10':
         buttons = [
           buttonElement('Yes').click(() => {
-            reply(res, 'yes', true);
+            reply(res, 'yes');
           }),
           buttonElement('No').click(() => {
-            reply(res, 'no', true);
+            reply(res, 'no');
           })
         ];
         break;
@@ -340,7 +337,7 @@ function handleResponse(res) {
         buttons = [
           buttonElement('Submit').click(() => {
             const input = $(`#${messageId}-input`);
-            reply(res, input.val(), true);
+            reply(res, input.val());
           })
         ];
         break;
@@ -352,7 +349,6 @@ function handleResponse(res) {
       case 'module_1.12':
         buttons = [
           buttonElement('OK').click(() => {
-            reply(res, 'ok', false);
             clearDialog();
           })
         ];
@@ -417,8 +413,8 @@ function query() {
   }
 }
 
-function reply(res, message, expectResponse) {
-  sendMessage('/reply', { msg: message }, { message_id: res.message_id }, expectResponse ? handleResponse : null);
+function reply(res, message) {
+  sendMessage('/reply', { msg: message }, { message_id: res.message_id }, handleResponse);
 }
 
 function saveDrawing(res) {
@@ -431,13 +427,7 @@ function saveDrawing(res) {
 }
 
 function sendMessage(target, message, params, callback) {
-  if (callback) {
-    $('#loading').show();
-  }
-
-  if (!callback) {
-    message.noCallback = true;
-  }
+  $('#loading').show();
 
   $.ajax({
     type: 'POST',

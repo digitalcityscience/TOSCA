@@ -2,7 +2,6 @@ const fs = require('fs')
 
 const { addOsm, getCoordinates, gpkgOut, mapsetExists } = require('./functions')
 
-const BROWSER = process.env.DATA_FROM_BROWSER_DIR
 const GRASS = process.env.GRASS_DIR
 
 class AddLocationModule {
@@ -53,8 +52,6 @@ class AddLocationModule {
         throw new Error("Wrong file format - must be 'osm'")
       }
 
-      const osmFile = `${BROWSER}/${filename}`
-
       // Clear previous mapset
       fs.rmdirSync(`${GRASS}/global/PERMANENT`, { recursive: true })
       fs.mkdirSync(`${GRASS}/global/PERMANENT`)
@@ -63,10 +60,10 @@ class AddLocationModule {
       }
 
       // Import new map data
-      addOsm('PERMANENT', osmFile, 'points', 'points_osm')
-      addOsm('PERMANENT', osmFile, 'lines', 'lines_osm')
-      addOsm('PERMANENT', osmFile, 'multipolygons', 'polygons_osm')
-      addOsm('PERMANENT', osmFile, 'other_relations', 'relations_osm')
+      addOsm('PERMANENT', filename, 'points', 'points_osm')
+      addOsm('PERMANENT', filename, 'lines', 'lines_osm')
+      addOsm('PERMANENT', filename, 'multipolygons', 'polygons_osm')
+      addOsm('PERMANENT', filename, 'other_relations', 'relations_osm')
 
       gpkgOut('PERMANENT', 'points_osm', 'points')
       gpkgOut('PERMANENT', 'lines_osm', 'lines')
