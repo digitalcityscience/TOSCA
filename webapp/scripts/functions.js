@@ -4,24 +4,42 @@ const GRASS = process.env.GRASS_DIR
 const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
 
 module.exports = {
-  // This is to import an OSM map file.
-  // Parameters: {filename to import, layer name, output filename for GRASS}
-  addOsm(mapset, ...args) {
-    execSync(`grass "${GRASS}/global/${mapset}" --exec v.in.ogr -o input="${args[0]}" layer="${args[1]}" output="${args[2]}" --overwrite --quiet`)
+  /**
+   * Import an OSM map file into a GRASS mapset.
+   * @param {string} mapset
+   * @param {string} infile file to import
+   * @param {string} layer layer name
+   * @param {string} outfile output filename
+   */
+  addOsm(mapset, infile, layer, outfile) {
+    execSync(`grass "${GRASS}/global/${mapset}" --exec v.in.ogr -o input="${infile}" layer="${layer}" output="${outfile}" --overwrite --quiet`)
   },
 
-  // This is to import geotiff raster maps.
-  addRaster(mapset, ...args) {
-    execSync(`grass "${GRASS}/global/${mapset}" --exec r.import input="${args[0]}" output="${args[1]}" --overwrite`)
+  /**
+   * Import a raster map file into a GRASS mapset.
+   * @param {string} mapset
+   * @param {string} infile file to import
+   * @param {string} outfile output filename
+   */
+  addRaster(mapset, infile, outfile) {
+    execSync(`grass "${GRASS}/global/${mapset}" --exec r.import input="${infile}" output="${outfile}" --overwrite`)
   },
 
-  // This is to import a vector map file.
-  // Parameters: {filename to import, output filename for GRASS}
-  addVector(mapset, ...args) {
-    execSync(`grass "${GRASS}/global/${mapset}" --exec v.import input="${args[0]}" output="${args[1]}" --overwrite`)
+  /**
+   * Import a vector map file into a GRASS mapset.
+   * @param {string} mapset
+   * @param {string} infile file to import
+   * @param {string} outfile output filename
+   */
+  addVector(mapset, infile, outfile) {
+    execSync(`grass "${GRASS}/global/${mapset}" --exec v.import input="${infile}" output="${outfile}" --overwrite`)
   },
 
-  // Get the center coordinates of the current selection
+  /**
+   * Get the center coordinates of the current selection.
+   * @param {string} mapset
+   * @returns {[number, number]} center coordinates (east, north)
+   */
   getCoordinates(mapset) {
     let EAST, NORTH
     let list = execSync(`grass "${GRASS}/global/${mapset}" --exec g.list type=vector`, { encoding: 'utf-8' })
@@ -39,13 +57,21 @@ module.exports = {
     return [EAST, NORTH]
   },
 
-  // This function export a file in the geoserver data dir. Output fileformat can only GPKG.
-  // Parameters: {GRASS vector to export, filename after export in geoserver dir}
-  gpkgOut(mapset, ...args) {
-    execSync(`grass "${GRASS}/global/${mapset}" --exec v.out.ogr format=GPKG input="${args[0]}" output="${GEOSERVER}/${args[1]}.gpkg" --overwrite --quiet`)
+  /**
+   * Export a vector map as a GeoPackage file in the GeoServer data directory.
+   * @param {string} mapset
+   * @param {string} infile file to import
+   * @param {string} outfile output filename
+   */
+  gpkgOut(mapset, infile, outfile) {
+    execSync(`grass "${GRASS}/global/${mapset}" --exec v.out.ogr format=GPKG input="${infile}" output="${GEOSERVER}/${outfile}.gpkg" --overwrite --quiet`)
   },
 
-  // Check if a mapset exists
+  /**
+   * Check if a mapset exists
+   * @param {string} mapset
+   * @returns {boolean} true if mapset exists
+   */
   mapsetExists(mapset) {
     let exists = true
     try {
