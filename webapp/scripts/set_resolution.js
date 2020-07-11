@@ -25,23 +25,18 @@ class SetResolutionModule {
   }
 
   process(message, replyTo) {
-    switch (replyTo) {
-      case 'set_resolution.1':
-      case 'set_resolution.2': {
-        const resolution = parseInt(message)
+    if (replyTo == 'set_resolution.1' || replyTo == 'set_resolution.2') {
+      const resolution = parseInt(message)
 
-        console.log('resolution:', resolution)
+      if (resolution <= 0) {
+        return this.messages[2]
+      } else {
+        // Line 1: resolution in meters as given by the user
+        execSync(`echo ${resolution} >> "${GRASS}"/variables/resolution`)
+        // Line 2: resolution in decimal degrees, derived from resolution in meters
+        execSync(`echo ${resolution/111322} >> "${GRASS}"/variables/resolution`)
 
-        if (resolution <= 0) {
-          return this.messages[2]
-        } else {
-          // Line 1: resolution in meters, given by the user
-          execSync(`echo "${resolution}" >> "${GRASS}"/variables/resolution`)
-          // Line 2: resolution in decimal degrees, derived from reoslution in meters
-          execSync(`echo "${resolution/111322}" >> "${GRASS}"/variables/resolution`)
-
-          return this.messages[3]
-        }
+        return this.messages[3]
       }
     }
   }

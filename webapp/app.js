@@ -70,12 +70,12 @@ app.post('/launch', jsonParser, async (req, res, next) => {
 })
 
 // display a map
-app.post('/display', jsonParser, async (req, res, next) => {
-})
+// app.post('/display', jsonParser, async (req, res, next) => {
+// })
 
 // query a map
-app.post('/query', jsonParser, async (req, res, next) => {
-})
+// app.post('/query', jsonParser, async (req, res, next) => {
+// })
 
 // send generic request
 app.post('/reply', jsonParser, async (req, res, next) => {
@@ -97,14 +97,14 @@ app.post('/file', uploadParser.single('file'), async (req, res, next) => {
   const module = modules[req.query.message_id.split('.')[0]]
   const writer = fs.createWriteStream(`${dataFromBrowser}/${req.file.originalname}`)
 
-  writer.write(req.file.buffer, async (error) => {
+  writer.write(req.file.buffer, (error) => {
     if (error) {
       throw error
     }
     writer.close()
 
     try {
-      res.send(module.processFile(req.file.originalname))
+      res.send(module.processFile(req.file.originalname, req.query.message_id))
     } catch (err) {
       next(err)
     }
@@ -117,7 +117,7 @@ app.post('/drawing', jsonParser, async (req, res, next) => {
 
   try {
     const module = modules[req.query.message_id.split('.')[0]]
-    res.send(module.processFile('drawing.geojson',req.query.message_id))
+    res.send(module.processFile('drawing.geojson', req.query.message_id))
   } catch (err) {
     next(err)
   }

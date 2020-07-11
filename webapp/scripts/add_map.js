@@ -34,38 +34,37 @@ class AddMapModule {
   }
 
   process(message, replyTo) {
-    switch (replyTo) {
-      case 'add_map.3':
-        if (!message.match(/^[a-zA-Z]\w*$/)) {
-          throw new Error("Invalid map name. Use alphanumeric characters only")
-        }
+    if (replyTo == 'add_map.3') {
+      if (!message.match(/^[a-zA-Z]\w*$/)) {
+        throw new Error("Invalid map name. Use alphanumeric characters only")
+      }
 
-        if (!this.mapFile) {
-          throw new Error("File not found")
-        }
+      if (!this.mapFile) {
+        throw new Error("File not found")
+      }
 
-        if (this.mapType === 'vector') {
-          addVector('PERMANENT', this.mapFile, message)
-        } else if (this.mapType === 'raster') {
-          addRaster('PERMANENT', this.mapFile, message)
-        }
-
-        return this.messages[4]
+      if (this.mapType === 'vector') {
+        addVector('PERMANENT', this.mapFile, message)
+      } else if (this.mapType === 'raster') {
+        addRaster('PERMANENT', this.mapFile, message)
+      }
+      return this.messages[4]
     }
   }
 
-  processFile(filename) {
-    if (filename.match(/\.geojson$|\.gpkg$|\.osm$/i)) {
-      this.mapType = 'vector'
-    } else if (filename.match(/\.tiff?$|\.gtif$/i)) {
-      this.mapType = 'raster'
-    } else {
-      throw new Error("Wrong file format - must be one of 'geojson', 'gpkg', 'osm', 'tif', 'tiff', 'gtif'")
+  processFile(filename, replyTo) {
+    if (replyTo == 'add_map.2') {
+      if (filename.match(/\.geojson$|\.gpkg$|\.osm$/i)) {
+        this.mapType = 'vector'
+      } else if (filename.match(/\.tiff?$|\.gtif$/i)) {
+        this.mapType = 'raster'
+      } else {
+        throw new Error("Wrong file format - must be one of 'geojson', 'gpkg', 'osm', 'tif', 'tiff', 'gtif'")
+      }
+
+      this.mapFile = `${BROWSER}/${filename}`
+      return this.messages[3]
     }
-
-    this.mapFile = `${BROWSER}/${filename}`
-
-    return this.messages[3]
   }
 }
 

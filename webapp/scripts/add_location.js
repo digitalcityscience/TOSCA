@@ -39,46 +39,42 @@ class AddLocationModule {
   }
 
   process(message, replyTo) {
-    switch (replyTo) {
-      case 'add_location.1':
-        if (message.toLowerCase() == 'yes') {
-          return this.messages[4]
-        }
-        return this.messages[3]
-      case 'add_location.2':
-        if (message.toLowerCase() == 'yes') {
-          return this.messages[4]
-        }
-        return this.messages[3]
+    if (replyTo == 'add_location.1' || replyTo == 'add_location.2') {
+      if (message.toLowerCase() == 'yes') {
+        return this.messages[4]
+      }
+      return this.messages[3]
     }
   }
 
-  processFile(filename) {
-    if (!filename.match(/\.osm$/i)) {
-      throw new Error("Wrong file format - must be OSM")
+  processFile(filename, replyTo) {
+    if (replyTo == 'add_location.4') {
+      if (!filename.match(/\.osm$/i)) {
+        throw new Error("Wrong file format - must be 'osm'")
+      }
+
+      const osmFile = `${BROWSER}/${filename}`
+
+      execSync(`rm -fr "${GRASS}"/global/PERMANENT`)
+      execSync(`mkdir "${GRASS}"/global/PERMANENT`)
+      execSync(`cp -r "${GRASS}"/skel_permanent/* "${GRASS}"/global/PERMANENT`)
+
+      addOsm('PERMANENT', osmFile, 'points', 'points_osm')
+      addOsm('PERMANENT', osmFile, 'lines', 'lines_osm')
+      addOsm('PERMANENT', osmFile, 'multipolygons', 'polygons_osm')
+      addOsm('PERMANENT', osmFile, 'other_relations', 'relations_osm')
+
+      gpkgOut('PERMANENT', 'points_osm', 'points')
+      gpkgOut('PERMANENT', 'lines_osm', 'lines')
+      gpkgOut('PERMANENT', 'polygons_osm', 'polygons')
+
+      let [east, north] = getCoordinates('PERMANENT')
+
+      let msg = this.messages[5]
+      msg.message.lat = north
+      msg.message.lon = east
+      return msg
     }
-
-    const osmFile = `${BROWSER}/${filename}`
-
-    execSync(`rm -fr "${GRASS}"/global/PERMANENT`)
-    execSync(`mkdir "${GRASS}"/global/PERMANENT`)
-    execSync(`cp -r "${GRASS}"/skel_permanent/* "${GRASS}"/global/PERMANENT`)
-
-    addOsm('PERMANENT', osmFile, 'points', 'points_osm')
-    addOsm('PERMANENT', osmFile, 'lines', 'lines_osm')
-    addOsm('PERMANENT', osmFile, 'multipolygons', 'polygons_osm')
-    addOsm('PERMANENT', osmFile, 'other_relations', 'relations_osm')
-
-    gpkgOut('PERMANENT', 'points_osm', 'points')
-    gpkgOut('PERMANENT', 'lines_osm', 'lines')
-    gpkgOut('PERMANENT', 'polygons_osm', 'polygons')
-
-    let [east, north] = getCoordinates('PERMANENT')
-
-    let msg = this.messages[5]
-    msg.message.lat = north
-    msg.message.lon = east
-    return msg
   }
 }
 

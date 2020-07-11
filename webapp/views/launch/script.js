@@ -127,16 +127,6 @@ function handleResponse(res) {
           })
         ];
         break;
-      // • message id: set_selection.3
-      // • text: Process finished, selection is saved.
-      case 'set_selection.3':
-        buttons = [
-          buttonElement('OK').click(() => {
-            reply(res, 'ok', false);
-            clearDialog();
-          })
-        ];
-        break;
 
       // == set_resolution ==
 
