@@ -251,7 +251,7 @@ class ModuleOne {
 
     // Now updating the datatable of highways_points_connected map, using "roads_speed" file to get speed data and conditions.
     for (const [where, value] of this.roadSpeedValues) {
-      execSync(`grass "${GRASS}"/global/module_1 --exec v.db.update map=highways_points_connected layer=1 column=avg_speed value=${value} where="${where}"`)
+      execSync(`grass "${GRASS}"/global/module_1 --exec v.db.update map=highways_points_connected layer=1 column=avg_speed value=${value} where="${where.replace(/"/g, '\\"')}"`)
     }
 
     // Converting clipped and connected road network map into raster format and float number
