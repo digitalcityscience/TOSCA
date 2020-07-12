@@ -16,10 +16,6 @@ const TENSION = 30
 class ModuleOne {
   constructor() {
     this.messages = {
-      0: {
-        message_id: 'module_1.0',
-        message: { "text": "No valid location found. Run Location selector to create a valid location. Module is now exiting." }
-      },
       1: {
         message_id: 'module_1.1',
         message: { "text": "Start points are required. Do you want to draw start points on the basemap now? If yes, click Yes, then draw one or more point and click Save button. If you want to use an already existing map, select No." }
@@ -34,7 +30,7 @@ class ModuleOne {
       },
       4: {
         message_id: 'module_1.4',
-        message: { "text": "Select a map to add to CityApp. Map has to be in Open Street Map format -- osm is the only accepted format." }
+        message: { "text": "Select a map (only point maps are supported). Avilable maps are:" }
       },
       5: {
         message_id: 'module_1.5',
@@ -54,19 +50,23 @@ class ModuleOne {
       },
       9: {
         message_id: 'module_1.9',
-        message: { "text": "Set speed reduction ratio for roads of stricken area. This must be a number greater than 0 and less than 1." }
+        message: { "text": "Do you want to set the speed on the road network? If not, the current values will used." }
       },
       10: {
         message_id: 'module_1.10',
-        message: { "text": "Do you want to set the speed on the road network? If not, the current values will be used." }
+        message: { "text": "Now you can change the speed values. Current values are:" }
       },
       11: {
         message_id: 'module_1.11',
-        message: { "text": "Set the speed on the road network." }
+        message: { "text": "No valid location found. Run Location selector to create a valid location. Module is now exiting." }
       },
       12: {
         message_id: 'module_1.12',
-        message: { "text": "Calculations are ready. Display output time maps." }
+        message: { "text": "Set speed reduction ratio for roads of stricken area. This must be a number greater than 0 and less than 1." }
+      },
+      14: {
+        message_id: 'module_1.14',
+        message: { "text": "Calculations are ready, display output time maps" }
       }
     }
     this.fromPoints = ''
@@ -97,7 +97,7 @@ class ModuleOne {
     if (mapsetExists('PERMANENT')) {
       return this.messages[1]
     }
-    return this.messages[6]
+    return this.messages[11]
   }
 
   process(message, replyTo) {
@@ -142,30 +142,30 @@ class ModuleOne {
         if (message.toLowerCase() == 'no') {
           return this.messages[8]
         }
-        return this.messages[10]
+        return this.messages[12]
 
       case 'module_1.8':
         this.strickenArea = message
         return this.messages[9]
 
-      case 'module_1.9':
+      case 'module_1.12':
         this.reductionRatio = message
-        return this.messages[10]
+        return this.messages[9]
 
-      case 'module_1.10':
+      case 'module_1.9':
         if (message.toLowerCase() == 'yes') {
-          return this.messages[11]
+          return this.messages[10]
         }
         else if (message.toLowerCase() == 'no') {
           this.calculate()
-          return this.messages[12]
+          return this.messages[14]
         }
         return
 
       case 'module_1.11':
         this.roadsSpeed = message // not used
         this.calculate()
-        return this.messages[12]
+        return this.messages[14]
     }
   }
 
@@ -193,7 +193,7 @@ class ModuleOne {
         addVector('module_1', filename, 'm1_stricken_area')
         gpkgOut('module_1', 'm1_stricken_area', 'm1_stricken_area')
         this.strickenArea = 'm1_stricken_area'
-        return this.messages[9]
+        return this.messages[12]
     }
   }
 

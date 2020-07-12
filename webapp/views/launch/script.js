@@ -309,11 +309,11 @@ function handleResponse(res) {
         ];
         break;
 
-      // • message id: module_1.10
+      // • message id: module_1.9
       // • text: Do you want to set the speed on the road network? If not, the current values will used.
       // • expectation: request file with a single yes or no.
       // • consequence: If answer is "yes", there is a new message: => module_1.11
-      case 'module_1.10':
+      case 'module_1.9':
         buttons = [
           buttonElement('Yes').click(() => {
             reply(res, 'yes');
@@ -324,14 +324,14 @@ function handleResponse(res) {
         ];
         break;
 
-      // • message id: module_1.9
+      // • message id: module_1.12
       // • text: Set speed reduction ratio for roads of stricken area
       // • expectation: reqest file with single a floating point numeric value
-      // • message id: module_1.11
+      // • message id: module_1.10
       // • text: Set the speed on the road network.
       // • expectation: reqest file with single a floating point numeric value
-      case 'module_1.9':
-      case 'module_1.11':
+      case 'module_1.12':
+      case 'module_1.10':
         form = formElement(messageId);
         form.append($(`<input id="${messageId}-input" type="number" />`));
         buttons = [
@@ -342,11 +342,14 @@ function handleResponse(res) {
         ];
         break;
 
-      // • message id: module_1.11
+      // • message id: module_1.14
       // • text: Calculations are ready, display output time maps.
       // • expectation: A request file with a single "OK" word
       // • consequence: After the user acknowledge the message, the module exit.
-      case 'module_1.12':
+      // • message id: module_1.11
+      // • text: No valid location found. Run Location selector to create a valid location. Module is now exiting.
+      case 'module_1.11':
+      case 'module_1.14':
         buttons = [
           buttonElement('OK').click(() => {
             clearDialog();
