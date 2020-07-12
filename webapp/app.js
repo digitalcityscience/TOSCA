@@ -85,6 +85,8 @@ app.post('/reply', jsonParser, (req, res, next) => {
 
     if (message) {
       res.send(message)
+    } else {
+      next("Something went wrong")
     }
   } catch (err) {
     next(err)
@@ -100,14 +102,22 @@ app.post('/file', uploadParser.single('file'), (req, res, next) => {
 
     writer.write(req.file.buffer, (error) => {
       if (error) {
-        throw error
+        next(error)
       }
       writer.close()
 
-      const message = module.processFile(file, req.query.message_id)
+      // Process file after it's finished downloading.
+      // Have to add another try/catch block, as we're inside an async function
+      try {
+        const message = module.processFile(file, req.query.message_id)
 
-      if (message) {
-        res.send(message)
+        if (message) {
+          res.send(message)
+        } else {
+          next("Something went wrong")
+        }
+      } catch (err) {
+        next(err)
       }
     })
   } catch (err) {
@@ -126,4 +136,13 @@ app.post('/drawing', jsonParser, (req, res, next) => {
   } catch (err) {
     next(err)
   }
+})
+
+// error handler
+app.use((err, req, res, next) => {
+  if (res.headersSent) {
+    return next(err)
+  }
+  res.status(500)
+  res.json({ message: err.message.split('\n')[0] })
 })

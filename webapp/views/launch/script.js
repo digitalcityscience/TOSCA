@@ -434,10 +434,10 @@ function sendMessage(target, message, params, callback) {
     url: target + '?' + $.param(params),
     data: JSON.stringify(message),
     dataType: 'json',
-    contentType: 'application/json; encoding=utf-8'
+    contentType: 'application/json; encoding=utf-8',
+    error: onServerError
   })
-    .done(callback || null)
-    .fail(callback && onServerTimeout)
+    .done(callback)
     .always(() => $('#loading').hide());
 }
 
@@ -451,15 +451,15 @@ function upload(form, params, callback) {
     dataType: 'json',
     cache: false,
     contentType: false,
-    processData: false
+    processData: false,
+    error: onServerError
   })
-    .done(callback || null)
-    .fail(callback && onServerTimeout)
+    .done(callback)
     .always(() => $('#loading').hide());
 }
 
-function onServerTimeout() {
-  const text = 'The server is not responding. Please check if it is running.';
-  const alert = $(`<div class="alert alert-danger" role="alert">${text}&nbsp;&nbsp;<button class="close" data-dismiss="alert">×</button></div>`);
+function onServerError(xhr, textStatus) {
+  const text = xhr.responseJSON.message || textStatus || 'Unknown error';
+  const alert = $(`<div class="alert alert-danger" role="alert"><b>Server error:</b> ${text}&nbsp;&nbsp;<button class="close" data-dismiss="alert">×</button></div>`);
   $('#alert-anchor').append(alert);
 }
