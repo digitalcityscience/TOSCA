@@ -25,28 +25,31 @@ class SetSelectionModule {
     return this.messages[1]
   }
 
-  processFile(filename, replyTo) {
-    if (replyTo == 'set_selection.2') {
-      if (!filename.match(/\.geojson$/i)) {
-        throw new Error("Wrong file format - must be 'geojson'")
+  process(message, replyTo) {
+    switch (replyTo) {
+      case 'set_selection.2': {
+        // uploaded file
+        if (!message.match(/\.geojson$/i)) {
+          throw new Error("Wrong file format - must be 'geojson'")
+        }
+
+        remove('PERMANENT', 'selection')
+        addVector('PERMANENT', message, 'selection')
+
+        gpkgOut('PERMANENT', 'selection', 'selection')
+
+        // Clip the basemaps by the selection map. Results will be used in the calculations and analyses
+        clip('PERMANENT', 'polygons_osm', 'selection', 'polygons')
+        clip('PERMANENT', 'lines_osm', 'selection', 'lines')
+        clip('PERMANENT', 'relations_osm', 'selection', 'relations')
+
+        let [east, north] = getCoordinates('PERMANENT')
+
+        let msg = this.messages[3]
+        msg.message.lat = north
+        msg.message.lon = east
+        return msg
       }
-
-      remove('PERMANENT', 'selection')
-      addVector('PERMANENT', filename, 'selection')
-
-      gpkgOut('PERMANENT', 'selection', 'selection')
-
-      // Clip the basemaps by the selection map. Results will be used in the calculations and analyses
-      clip('PERMANENT', 'polygons_osm', 'selection', 'polygons')
-      clip('PERMANENT', 'lines_osm', 'selection', 'lines')
-      clip('PERMANENT', 'relations_osm', 'selection', 'relations')
-
-      let [east, north] = getCoordinates('PERMANENT')
-
-      let msg = this.messages[3]
-      msg.message.lat = north
-      msg.message.lon = east
-      return msg
     }
   }
 }

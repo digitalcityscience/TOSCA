@@ -109,7 +109,7 @@ app.post('/file', uploadParser.single('file'), (req, res, next) => {
       // Process file after it's finished downloading.
       // Have to add another try/catch block, as we're inside an async function
       try {
-        const message = module.processFile(file, req.query.message_id)
+        const message = module.process(file, req.query.message_id)
 
         if (message) {
           res.send(message)
@@ -132,7 +132,7 @@ app.post('/drawing', jsonParser, (req, res, next) => {
     const file = `${dataFromBrowser}/drawing.geojson`
 
     fs.writeFileSync(file, JSON.stringify(req.body.data))
-    res.send(module.processFile(file, req.query.message_id))
+    res.send(module.process(file, req.query.message_id))
   } catch (err) {
     next(err)
   }
