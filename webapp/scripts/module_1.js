@@ -103,7 +103,12 @@ class ModuleOne {
   process(message, replyTo) {
     switch (replyTo) {
       case 'module_1.1':
-        if (message.toLowerCase() == 'no') {
+        if (message.match(/drawing\.geojson/)) {
+          addVector('module_1', message, 'm1_from_points')
+          gpkgOut('module_1', 'm1_from_points', 'm1_from_points')
+          this.fromPoints = 'm1_from_points'
+          return this.messages[3]
+        } else if (message.toLowerCase() == 'no') {
           const msg = this.messages[2]
           msg.message.list = this.vectorMaps
           return msg
@@ -115,7 +120,12 @@ class ModuleOne {
         return this.messages[3]
 
       case 'module_1.3':
-        if (message.toLowerCase() == 'no') {
+        if (message.match(/drawing\.geojson/)) {
+          addVector('module_1', message, 'm1_via_points')
+          gpkgOut('module_1', 'm1_via_points', 'm1_via_points')
+          this.viaPoints = 'm1_via_points'
+          return this.messages[5]
+        } else if (message.toLowerCase() == 'no') {
           const msg = this.messages[4]
           msg.message.list = this.vectorMaps
           return msg
@@ -127,7 +137,12 @@ class ModuleOne {
         return this.messages[5]
 
       case 'module_1.5':
-        if (message.toLowerCase() == 'no') {
+        if (message.match(/drawing\.geojson/)) {
+          addVector('module_1', message, 'm1_to_points')
+          gpkgOut('module_1', 'm1_to_points', 'm1_to_points')
+          this.toPoints = 'm1_to_points'
+          return this.messages[7]
+        } else if (message.toLowerCase() == 'no') {
           const msg = this.messages[6]
           msg.message.list = this.vectorMaps
           return msg
@@ -139,7 +154,12 @@ class ModuleOne {
         return this.messages[7]
 
       case 'module_1.7':
-        if (message.toLowerCase() == 'no') {
+        if (message.match(/drawing\.geojson/)) {
+          addVector('module_1', message, 'm1_stricken_area')
+          gpkgOut('module_1', 'm1_stricken_area', 'm1_stricken_area')
+          this.strickenArea = 'm1_stricken_area'
+          return this.messages[12]
+        } else if (message.toLowerCase() == 'no') {
           return this.messages[8]
         }
         return this.messages[12]
@@ -166,34 +186,6 @@ class ModuleOne {
         this.roadsSpeed = message // not used
         this.calculate()
         return this.messages[14]
-    }
-  }
-
-  processFile(filename, replyTo) {
-    switch (replyTo) {
-      case 'module_1.1':
-        addVector('module_1', filename, 'm1_from_points')
-        gpkgOut('module_1', 'm1_from_points', 'm1_from_points')
-        this.fromPoints = 'm1_from_points'
-        return this.messages[3]
-
-      case 'module_1.3':
-        addVector('module_1', filename, 'm1_via_points')
-        gpkgOut('module_1', 'm1_via_points', 'm1_via_points')
-        this.viaPoints = 'm1_via_points'
-        return this.messages[5]
-
-      case 'module_1.5':
-        addVector('module_1', filename, 'm1_to_points')
-        gpkgOut('module_1', 'm1_to_points', 'm1_to_points')
-        this.toPoints = 'm1_to_points'
-        return this.messages[7]
-
-      case 'module_1.7':
-        addVector('module_1', filename, 'm1_stricken_area')
-        gpkgOut('module_1', 'm1_stricken_area', 'm1_stricken_area')
-        this.strickenArea = 'm1_stricken_area'
-        return this.messages[12]
     }
   }
 
