@@ -8,7 +8,6 @@ launch_locked
 /geoserver_data_dir/data
 /geoserver_data_dir/logs/geoserver.log*
 /grass/global
-/grass/skel
 /grass/variables/*
 !/grass/variables/defaults
 *.geojson
