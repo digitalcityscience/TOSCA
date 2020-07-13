@@ -82,10 +82,10 @@ class ModuleOne {
       fs.mkdirSync(`${GRASS}/global/module_1`)
     }
     fs.copyFileSync(`${GRASS}/global/PERMANENT/WIND`, `${GRASS}/global/module_1/WIND`)
-    // FIXME: do we need "skel"?
-    // for (const file of fs.readdirSync(`${GRASS}/skel`)) {
-    //   fs.copyFileSync(`${GRASS}/skel/${file}`, `${GRASS}/global/module_1/${file}`)
-    // }
+
+    for (const file of fs.readdirSync(`${GRASS}/skel`)) {
+      fs.copyFileSync(`${GRASS}/skel/${file}`, `${GRASS}/global/module_1/${file}`)
+    }
 
     this.vectorMaps = listVector('module_1')
 
