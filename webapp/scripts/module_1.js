@@ -88,6 +88,11 @@ class ModuleOne {
     //   fs.copyFileSync(`${GRASS}/skel/${file}`, `${GRASS}/global/module_1/${file}`)
     // }
     execSync(`cp -r "${GRASS}"/skel/* "${GRASS}"/global/module_1`)
+    
+    // FIXME: is sqlite folder needed?
+    if (!fs.existsSync(`${GRASS}/skel/sqlite`)) {
+      fs.mkdirSync(`${GRASS}/skel/sqlite`)
+    }
 
     // Fill this new avg_speed column for each highway feature. Values are stored in $VARIABLES/roads_speed
     if (!fs.existsSync(`${GRASS}/variables/roads_speed`)) {
