@@ -83,10 +83,17 @@ class ModuleOne {
     }
     fs.copyFileSync(`${GRASS}/global/PERMANENT/WIND`, `${GRASS}/global/module_1/WIND`)
 
-    for (const file of fs.readdirSync(`${GRASS}/skel`)) {
-      fs.copyFileSync(`${GRASS}/skel/${file}`, `${GRASS}/global/module_1/${file}`)
-    }
+    // FIXME: copyFileSync cannot copy folders
+    // for (const file of fs.readdirSync(`${GRASS}/skel`)) {
+    //   fs.copyFileSync(`${GRASS}/skel/${file}`, `${GRASS}/global/module_1/${file}`)
+    // }
+    execSync(`cp -r "${GRASS}"/skel/* "${GRASS}"/global/module_1`)
 
+    // Fill this new avg_speed column for each highway feature. Values are stored in $VARIABLES/roads_speed
+    if (!fs.existsSync(`${GRASS}/variables/roads_speed`)) {
+      fs.copyFileSync(`${GRASS}/variables/defaults/roads_speed_defaults`, `${GRASS}/variables/roads_speed`)
+    }
+    
     this.vectorMaps = listVector('module_1')
 
     this.resolution = fs.readFileSync(`${GRASS}/variables/resolution`).toString().trim().split('\n')[1]
@@ -223,10 +230,7 @@ class ModuleOne {
     //  Add "spd_average" attribute column (integer type) to the road network map (if not yet exist -- if exist Grass will skip this process)
     execSync(`grass "${GRASS}/global/module_1" --exec v.db.addcolumn map=highways_points_connected columns='avg_speed INT'`)
 
-    // Fill this new avg_speed column for each highway feature. Values are stored in $VARIABLES/roads_speed
-    if (!fs.existsSync(`${GRASS}/variables/roads_speed`)) {
-      fs.copyFileSync(`${GRASS}/variables/defaults/roads_speed_defaults`, `${GRASS}/variables/roads_speed`)
-    }
+
 
     // Now updating the datatable of highways_points_connected map, using "roads_speed" file to get speed data and conditions.
     for (const [where, value] of this.roadSpeedValues) {
