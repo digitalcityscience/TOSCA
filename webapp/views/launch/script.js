@@ -557,9 +557,15 @@ function poll(process) {
   sendMessage('/poll', { process }, handleResponse);
 }
 
+
 function restart() {
-  sendMessage('/restart', 'RESTART');
+  // Get the selected item
+  const value = $('#restart-menu')[0].value;
+  if (value) {
+    sendMessage('/restart', { RESTART: value }, handleResponse);
+  }
 }
+
 
 function saveDrawing() {
   const geojson = featureGroup.toGeoJSON();
