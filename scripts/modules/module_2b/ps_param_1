@@ -1,0 +1,82 @@
+border
+    color grey
+    width 1
+    end
+
+mapinfo
+	where 1.5 0
+	font Courier
+	fontsize 12
+	color brown
+	end
+	
+vareas clipped_lands_governmental
+	color red
+	fcolor red
+	width 0.1
+	masked n
+	end
+
+vareas clipped_lands_private
+	color purple
+	fcolor purple
+	width 0.1
+	masked n
+	end
+
+
+vareas clipped_lands_temple
+	color #dddd22
+	fcolor #dddd22
+	width 0.1
+	masked n
+	end
+
+vareas clipped_lands_no_owner_data
+	color #444444
+	fcolor #888888
+	width 0.1
+	masked n
+	end
+	
+vlines lines
+	where highway = 'trunk' OR highway = 'trunk link'
+	color #eecc77
+	width 2
+	masked y
+	end
+
+vlines lines
+	where highway = 'primary' OR highway = 'primary link' OR highway = 'secondary' OR highway = 'secondary link' OR highway = 'tertiary' OR highway =  'tertiary link'
+	color #eecc77
+	width 0.5
+	masked y
+	end
+	
+vlines lines
+	where highway = 'residential' OR highway = 'service' OR highway = 'truck'
+	width 0.2
+	color #eecc77
+	masked y
+	end
+
+vlines lines
+	where waterway = 'stream' OR waterway = 'drain' OR waterway = 'canal'
+	color blue
+	width 0.2
+	masked y
+	end
+	
+vlines lines
+	where waterway = 'river'
+	color #ccccff
+	width 3
+	masked y
+	end
+
+vareas query_area_1
+	color green
+	width 2
+	fcolor #eeeeee
+	masked y
+	end

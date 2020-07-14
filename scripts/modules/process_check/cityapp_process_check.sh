@@ -34,7 +34,7 @@ while [ $RUNNING -eq 1 ];do
     RUNNING=$(cat $VARIABLES/process_status | tail -n1)
     echo $ID_NUM > $MESSAGE_SENT/$PROCESS_ORIGIN".processing"
     ID_NUM=$(($ID_NUM+1))
-    sleep 0.5s
+    sleep 1s
 done
 rm -f $MESSAGE_SENT/$PROCESS_ORIGIN".processing"
 rm -f $VARIABLES/process_status

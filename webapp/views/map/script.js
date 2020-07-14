@@ -6,6 +6,7 @@ const map = new L.Map('map', {
   minZoom: 4
 })
 
+// Base layers
 const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(map);
@@ -42,6 +43,9 @@ const selection = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
   minZoom: 1
 });
 
+const drawnItems = L.featureGroup().addTo(map);
+
+//Extension layers
 const query_area_1 = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
   layers: 'vector:query_area_1',
   format: 'image/png',
@@ -114,8 +118,12 @@ const ToPoints = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", 
   minZoom: 3
 });
 
-const drawnItems = L.featureGroup().addTo(map);
+// Control for map legends. For those item, where the linked map has a "legend_yes: true," property, a second checkbox will displayed.
+L.control.legend(
+  { position: 'bottomleft' }
+).addTo(map);
 
+// Control panel of base layers
 L.control.layers(
   {},
   {
@@ -124,6 +132,15 @@ L.control.layers(
     'Roads': roads,
     'Buildings': buildings,
     'Current selection': selection,
+    'Drawings on the map': drawnItems
+  },
+  { position: 'topright', collapsed: false }
+).addTo(map);
+
+// Control panel of extension layers
+L.control.layers(
+  {},
+  {
     'Query area 1': query_area_1,
     'Query results 1': query_result_area_1,
     'Query results 3': query_result_point_1,
@@ -133,7 +150,6 @@ L.control.layers(
     "From-points": FromPoints,
     "Via-points": ViaPoints,
     "To-points": ToPoints,
-    'Drawing': drawnItems
   },
   { position: 'topright', collapsed: false }
 ).addTo(map);
@@ -169,7 +185,7 @@ map.on(L.Draw.Event.CREATED, (event) => {
 });
 
 /* scale bar */
-L.control.scale({ maxWidth: 300 }).addTo(map);
+L.control.scale({ maxWidth: 300, position: 'bottomright' }).addTo(map);
 
 /* north arrow */
 const north = L.control({ position: 'bottomright' });

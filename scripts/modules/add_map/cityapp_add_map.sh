@@ -1,10 +1,10 @@
 #! /bin/bash
 . ~/cityapp/scripts/shared/functions.sh
 
-# version 1.41
+# version 1.42
 # CityApp module
 # Adding new layers to a selected mapset
-# 2020. május 13.
+# 2020. június 30.
 # Author: BUGYA Titusz, CityScienceLab -- Hamburg, Germany
 
 #
@@ -41,8 +41,11 @@ if [ ! $(grass $GRASS/$MAPSET --exec g.list type=vector | grep selection) ]
         # Message 1 "Selection" map not found. Before adding a new layer, first you have to define a location and a selection. For this end please, use Location Selector tool of CityApp. Add_Map modul now quit.
         Send_Message m 1 add_map.1 error actions [\"Ok\"]
             Request
-            Close_Process
-            exit
+                Send_Message m 4 add_map.4 question actions [\"OK\"]
+                    Request
+                        Running_Check stop
+                        Close_Process
+                exit
     else
         #Message: Select a map to add CityApp. Only gpkg (geopackage), geojson and openstreetmap vector files and geotiff (gtif or tif) raster files are accepted. Adding a map may take a long time.
         Send_Message m 2 add_map.2 upload actions [\"Yes\"]
@@ -78,7 +81,4 @@ if [ ! $(grass $GRASS/$MAPSET --exec g.list type=vector | grep selection) ]
                 Running_Check stop
                 Close_Process
         exit
-fi    
-
-    
-
+fi
