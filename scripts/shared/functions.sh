@@ -1,7 +1,7 @@
-# version 1.3
+    # version 1.31
 # CityApp function
 # This file contains functions of CityApp bash scripts. Funcions are in alphabetical order, A short description can be found for each function.
-# 2020. április 10.
+# 2020. jólius 12.
 # Author: BUGYA Titusz, CityScienceLab -- Hamburg, Germany
 
 #
@@ -357,7 +357,7 @@ Send_Message ()
     # $7 -- previously it was $4 -- list file: this is a list have to transform ito JSON format for the Browser;  }
 
     {
-    rm -f $MESSAGE_SENT/*
+    rm -f $MESSAGE_SENT/*.message
     case $1 in
         "m")
             echo "{" > $MODULE/temp_message

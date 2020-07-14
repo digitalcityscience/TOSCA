@@ -29,34 +29,39 @@ html
 
     div(class='main')
       div(class='sidebar')
+        div(id='launch-app' class='card card-border')
+          select(id='launch-app-menu' class='select-menu')
+            option(selected value='') - Applications menu -
+            option(value='module_1') Calculate time map
+            option(value='module_2b') Query area and population by land ownership
+          a: button(class='button button-green' onclick='launch_app()') OK
+          
         div(id='textarea' class='card card-border card-border-yellow')
 
         div(id='buttonarea' class='card card-buttons row')
 
-        div(id='lists' class='card card-border card-border-yellow')
-
-        div(id='launch' class='card card-border')
-          select(id='launch-menu' class='select-menu')
-            option(selected value='') Select a module to launch
-            option(value='add_location') Add a new location
-            option(value='make_selection') Define a new selection
+        div(id='launch-settings' class='card card-border')
+          select(id='launch-settings-menu' class='select-menu')
+            option(selected value='') - Settings menu -
+            option(value='add_location') Set new location
+            option(value='make_selection') Set new selection
             option(value='resolution_setting') Set resolution
-            option(value='add_map') Add map
-            option(value='module_1') Calculate time map
-          a: button(class='button button-green' onclick='launch()') OK
+            option(value='add_map') Add map to query mapset
+          a: button(class='button button-green' onclick='launch_settings()') OK
 
-        div(id='maps' class='card card-border')
-          select(id='maps-menu' class='select-menu')
-            option(selected value='') Select a map to display
-          a: button(class='button button-green' onclick='display()') OK
+        div(id='help' class='card card-border')
+          select(id='help-menu' class='select-menu')
+            option(selected value='') - Help menu -
+            option(selected value='quick-guide') Quick guide
+            option(selected value='user-manual') User's manual
+            option(selected value='tech-manual') Technical manual
+          a: button(class='button button-green' onclick='help()') OK
 
-        div(id='query' class='card card-border')
-          select(id='query-menu' class='select-menu')
-            option(selected value='') Select a map to query
-          a: button(class='button button-green' onclick='query()') OK
-
-        div(id='additional' class='card card-border')
-          a: button(class='button button-yellow' onclick='restart()') Restart
+        div(id='restart' class='card card-border')
+          select(id='restart-menu' class='select-menu')
+            option(selected value='') - Reset menu -
+            option(selected value='RESTART') Reset the system 
+          a: button(class='button button-green' onclick='RESTART()') OK
 
       div(id='map-container' class='card')
         include ../map/index.pug
@@ -73,5 +78,6 @@ html
       const geoserverUrl = '#{geoserverUrl}';
       const [lat, lon] = [#{lat}, #{lon}];
     script
+      include legend.js
       include script.js
       include ../map/script.js

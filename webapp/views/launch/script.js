@@ -441,8 +441,46 @@ function handleResponse(res) {
           })
         ];
         break;
-    }
+    
+      // == module_2b ==
 
+      // • message id: module_2b.1
+      // • text: If you want to use an existing map as query area, click 'Map' button, then draw the area, and click 'Save'.  If you want to draw a new query area, click 'Draw' button. If you want to exit, click 'Cancel'.
+      // • expectation: request file with text "map", "draw" or "cancel"
+      // • consequence:
+      //    - If answer is "draw", the module is waiting for a geojson file in data_from_browser. Module only goes to the next step, when geojson file is created.
+      //    - If answer is "map", module send a new message: => module_2b.2
+      //    - If answer is cancel, module exit.
+      case 'module_2b.1.message':
+        buttons = [
+          buttonElement('Draw').click(() => {
+            reply('draw', false);
+            const saveButton = buttonElement('Save').click(() => {
+              saveDrawing();
+            })
+            buttonarea.append(saveButton);
+          }),
+          buttonElement('Cancel').click(() => {
+            reply('cancel', true);
+          })
+        ];
+        break;
+        
+        // • message id: module_2b.2
+        // • text: To process exit, click OK.
+        // • expectation: A request file with a single "OK" word
+        // • consequence: After the user acknowledge the message, the module exit.
+        case 'module_2b.2.message':
+            buttons = [
+            buttonElement('OK').click(() => {
+                reply('ok', false);
+                clearDialog();
+            })
+            ];
+            break;
+
+
+    }
     textarea.append(text);
 
     if (form) {
@@ -477,9 +515,17 @@ function clearDialog() {
 
 /* Send messages to the backend */
 
-function launch() {
+function launch_app() {
   // Get the selected item
-  const value = $('#launch-menu')[0].value;
+  const value = $('#launch-app-menu')[0].value;
+  if (value) {
+    sendMessage('/launch', { launch: value }, handleResponse);
+  }
+}
+
+function launch_settings() {
+  // Get the selected item
+  const value = $('#launch-settings-menu')[0].value;
   if (value) {
     sendMessage('/launch', { launch: value }, handleResponse);
   }

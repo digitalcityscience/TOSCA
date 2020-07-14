@@ -58,16 +58,17 @@ fi
 # Terrain modell has to be added to the mapset (using add_map module), therefore its nomal location is in the PERMANENT.
 # Now, for testing only, the search path is: $GRASS/$MAPSET. In the final version this will set to: $GRASS/PERMANENT
 
-if [[ ! -z $(grass -f $GRASS/$MAPSET --exec g.list type=raster | grep _dem_) ]]
-    then
-        DEM=$(grass -f $GRASS/$MAPSET --exec g.list type=raster | grep _dem_)
-    else
+#if [[ ! -z $(grass -f $GRASS/$MAPSET --exec g.list type=raster | grep _dem_) ]]
+#    then
+#        DEM=$(grass -f $GRASS/$MAPSET --exec g.list type=raster | grep dem_)
+#    else
         # Message 2 No terrain model map found. First add a terrain model map to the mapset. For further info, please, consult the user's manual.
-        Send_Message m 2 module_101.2 error actions [\"Ok\"]
-            Request
-                Close_Process
-                exit
-fi
+#        Send_Message m 2 module_101.2 error actions [\"Ok\"]
+#            Request
+#                Close_Process
+#                exit
+#fi
+    DEM=dem_bbswr
 
                 # Creating map of water bodies, by extracting them from lines_osm and multipolygons_osm
                 Process_Check start map_calculations
