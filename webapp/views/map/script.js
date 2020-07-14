@@ -70,7 +70,7 @@ const query_result_point_1 = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wm
   minZoom: 1
 });
 
-const Stricken_Area = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+const Stricken_Area = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
   layers: 'vector:m1_stricken_area',
   format: 'image/png',
   transparent: true,
@@ -78,7 +78,7 @@ const Stricken_Area = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wm
   minZoom: 3
 });
 
-const TimeMap = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/raster/wms/", {
+const TimeMap = L.tileLayer.wms(geoserverUrl + "geoserver/raster/wms/", {
   layers: 'raster:m1_time_map',
   format: 'image/png',
   transparent: true,
@@ -86,7 +86,7 @@ const TimeMap = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/raster/wms/", {
   minZoom: 1
 });
 
-const TimeMapInterpolated = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/raster/wms/", {
+const TimeMapInterpolated = L.tileLayer.wms(geoserverUrl + "geoserver/raster/wms/", {
   layers: 'raster:m1_time_map_interpolated',
   format: 'image/png',
   transparent: true,
@@ -94,7 +94,7 @@ const TimeMapInterpolated = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/ras
   minZoom: 1
 });
 
-const FromPoints = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+const FromPoints = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
   layers: 'vector:m1_from_points',
   format: 'image/png',
   transparent: true,
@@ -102,7 +102,7 @@ const FromPoints = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/"
   minZoom: 3
 });
 
-const ViaPoints = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+const ViaPoints = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
   layers: 'vector:m1_via_points',
   format: 'image/png',
   transparent: true,
@@ -110,7 +110,7 @@ const ViaPoints = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/",
   minZoom: 3
 });
 
-const ToPoints = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+const ToPoints = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
   layers: 'vector:m1_to_points',
   format: 'image/png',
   transparent: true,
