@@ -119,8 +119,7 @@ function handleResponse(res) {
         buttons = [
           buttonElement('Save').click(() => {
             $(`#${messageId}-error`).remove();
-            const success = saveDrawing(res);
-            if (!success) {
+            if (!saveDrawing(res)) {
               textarea.append($(`<span id="${messageId}-error" class="validation-error">Please draw a polygon using the map’s drawing tool.</span>`));
             }
           })
@@ -254,8 +253,6 @@ function handleResponse(res) {
       case 'module_1.6':
       case 'module_1.8':
         form = formElement(messageId);
-
-        // TODO: add maps
         lists.append($(`<select id="${messageId}-input" size="10">` +
           mapList.map(map => `<option selected value="${map}">${map}</option>`) +
           `</select>`));
@@ -338,6 +335,32 @@ function handleResponse(res) {
           buttonElement('Submit').click(() => {
             const input = $(`#${messageId}-input`);
             reply(res, input.val());
+          })
+        ];
+        break;
+
+      // == module_2 ==
+
+      case 'module_2.1':
+        buttons = [
+          buttonElement('Save').click(() => {
+            $(`#${messageId}-error`).remove();
+            if (!saveDrawing(res)) {
+              textarea.append($(`<span id="${messageId}-error" class="validation-error">Please draw a polygon using the map’s drawing tool.</span>`));
+            }
+          })
+        ];
+        break;
+
+      case 'module_2.2':
+        form = formElement(messageId);
+        lists.append($(`<select id="${messageId}-input" size="10">` +
+          mapList.map(map => `<option selected value="${map}">${map}</option>`) +
+          `</select>`));
+        buttons = [
+          buttonElement('Submit').click(() => {
+            const input = $(`#${messageId}-input`);
+            reply(res, input[0].value);
           })
         ];
         break;
@@ -476,7 +499,7 @@ function upload(form, params, callback) {
 }
 
 function onServerError(xhr, textStatus) {
-  const text = xhr.responseJSON.message || textStatus || 'Unknown error';
+  const text = xhr.responseJSON && xhr.responseJSON.message || textStatus || 'Unknown error';
   const alert = $(`<div class="alert alert-danger" role="alert"><b>Server error:</b> ${text}&nbsp;&nbsp;<button class="close" data-dismiss="alert">×</button></div>`);
   $('#alert-anchor').append(alert);
   $('#loading').hide();

@@ -1,6 +1,6 @@
 const { execSync } = require('child_process') // Documentation: https://nodejs.org/api/child_process.html
 const fs = require('fs')
-const { addVector, gpkgOut, listVector, mapsetExists, grass } = require('./functions')
+const { addVector, gpkgOut, initMapset, listVector, mapsetExists, grass } = require('./functions')
 
 const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
 const GRASS = process.env.GRASS_DIR
@@ -82,14 +82,7 @@ class ModuleOne {
       return this.messages[11]
     }
 
-    if (!fs.existsSync(`${GRASS}/global/module_1`)) {
-      fs.mkdirSync(`${GRASS}/global/module_1`)
-    }
-    fs.copyFileSync(`${GRASS}/global/PERMANENT/WIND`, `${GRASS}/global/module_1/WIND`)
-
-    for (const file of fs.readdirSync(`${GRASS}/skel`)) {
-      fs.copyFileSync(`${GRASS}/skel/${file}`, `${GRASS}/global/module_1/${file}`)
-    }
+    initMapset('module_1')
 
     // Clip lines and polygons@PERMANENT mapset with the area_of_interest, defined by the user
     // Results will be stored in the "module_1" mapset

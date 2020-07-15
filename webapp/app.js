@@ -51,13 +51,15 @@ const AddMapModule = require('./scripts/add_map')
 const SetSelectionModule = require('./scripts/set_selection')
 const SetResolutionModule = require('./scripts/set_resolution')
 const ModuleOne = require('./scripts/module_1')
+const ModuleTwo = require('./scripts/module_2')
 
 const modules = {
   add_location: new AddLocationModule(),
   add_map: new AddMapModule(),
   set_selection: new SetSelectionModule(),
   set_resolution: new SetResolutionModule(),
-  module_1: new ModuleOne()
+  module_1: new ModuleOne(),
+  module_2: new ModuleTwo()
 }
 
 // launch a module
@@ -136,5 +138,5 @@ app.use((err, req, res, next) => {
     return next(err)
   }
   res.status(500)
-  res.json({ message: err.message.split('\n')[0] })
+  res.json({ message: err.message && err.message.split('\n')[0] || err })
 })

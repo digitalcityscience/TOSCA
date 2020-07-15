@@ -1,4 +1,5 @@
 const { execSync } = require('child_process') // Documentation: https://nodejs.org/api/child_process.html
+const fs = require('fs')
 
 const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
 const GRASS = process.env.GRASS_DIR
@@ -69,6 +70,23 @@ module.exports = {
   },
 
   /**
+   * Identify the topology of a vector map
+   * @param {string} mapset
+   * @param {string} layer layer name
+   * @returns {string} topology type (possible values are: point, line, area, mixed, empty)
+   */
+  getTopology(mapset, layer) {
+    const info = grass(mapset, `v.info -t map=${layer}`).trim().split('\n').reduce((dict, line) => {
+      const a = line.split('=')
+      dict[a[0]] = a[1]
+      return dict
+    }, {})
+
+    const topology = info.points ? (info.lines || info.centroids ? 'mixed' : 'point') : info.lines ? (info.centroids ? 'mixed' : 'line') : info.centroids ? 'area' : 'empty'
+    return topology
+  },
+
+  /**
    * Export a vector map as a GeoPackage file in the GeoServer data directory.
    * @param {string} mapset
    * @param {string} infile file to import
@@ -76,6 +94,21 @@ module.exports = {
    */
   gpkgOut(mapset, infile, outfile) {
     grass(mapset, `v.out.ogr format=GPKG input="${infile}" output="${GEOSERVER}/${outfile}.gpkg" --overwrite`)
+  },
+
+  /**
+   * Overwrite the region of the given mapset. If no such mapset exists, create it
+   * @param {string} mapset
+   */
+  initMapset(mapset) {
+    if (!fs.existsSync(`${GRASS}/global/${mapset}`)) {
+      fs.mkdirSync(`${GRASS}/global/${mapset}`)
+    }
+    fs.copyFileSync(`${GRASS}/global/PERMANENT/WIND`, `${GRASS}/global/${mapset}/WIND`)
+
+    for (const file of fs.readdirSync(`${GRASS}/skel`)) {
+      fs.copyFileSync(`${GRASS}/skel/${file}`, `${GRASS}/global/${mapset}/${file}`)
+    }
   },
 
   /**
@@ -120,5 +153,5 @@ module.exports = {
  * @param {string} args arguments to the command line
  */
 function grass(mapset, args) {
-  return execSync(`grass "${GRASS}/global/${mapset}" --exec ${args}`, { encoding: 'utf-8' })
+  return execSync(`grass "${GRASS}/global/${mapset}" --exec ${args}`, { shell: '/bin/bash', encoding: 'utf-8' })
 }
