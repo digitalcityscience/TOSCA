@@ -90,10 +90,12 @@ h1 {
   color: #db0000;
 }
 
-#textarea,
-#lists,
-#additional {
+#dialog {
   flex-grow: 1;
+}
+
+#textarea {
+  margin-bottom: 12px;
 }
 
 #map-container {

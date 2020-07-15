@@ -479,4 +479,5 @@ function onServerError(xhr, textStatus) {
   const text = xhr.responseJSON.message || textStatus || 'Unknown error';
   const alert = $(`<div class="alert alert-danger" role="alert"><b>Server error:</b> ${text}&nbsp;&nbsp;<button class="close" data-dismiss="alert">×</button></div>`);
   $('#alert-anchor').append(alert);
+  $('#loading').hide();
 }
