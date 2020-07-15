@@ -12,7 +12,7 @@ module.exports = {
    * @param {string} outfile output filename
    */
   addOsm(mapset, infile, layer, outfile) {
-    execSync(`grass "${GRASS}/global/${mapset}" --exec v.in.ogr -o input="${infile}" layer="${layer}" output="${outfile}" --overwrite`)
+    grass(mapset, `v.in.ogr -o input="${infile}" layer="${layer}" output="${outfile}" --overwrite`)
   },
 
   /**
@@ -22,7 +22,7 @@ module.exports = {
    * @param {string} outfile output filename
    */
   addRaster(mapset, infile, outfile) {
-    execSync(`grass "${GRASS}/global/${mapset}" --exec r.import input="${infile}" output="${outfile}" --overwrite`)
+    grass(mapset, `r.import input="${infile}" output="${outfile}" --overwrite`)
   },
 
   /**
@@ -32,7 +32,7 @@ module.exports = {
    * @param {string} outfile output filename
    */
   addVector(mapset, infile, outfile) {
-    execSync(`grass "${GRASS}/global/${mapset}" --exec v.import input="${infile}" output="${outfile}" --overwrite`)
+    grass(mapset, `v.import input="${infile}" output="${outfile}" --overwrite`)
   },
 
   /**
@@ -43,7 +43,7 @@ module.exports = {
    * @param {string} outfile output filename
    */
   clip(mapset, layer, clipLayer, outfile) {
-    execSync(`grass "${GRASS}"/global/${mapset} --exec v.clip input=${layer} clip=${clipLayer} output=${outfile} --overwrite`)
+    grass(mapset, `v.clip input=${layer} clip=${clipLayer} output=${outfile} --overwrite`)
   },
 
   /**
@@ -53,13 +53,13 @@ module.exports = {
    */
   getCoordinates(mapset) {
     let EAST, NORTH
-    let list = execSync(`grass "${GRASS}/global/${mapset}" --exec g.list type=vector`).toString().trim()
+    let list = grass(mapset, `g.list type=vector`).trim()
     let region
 
     if (list.split('\n').indexOf('selection') > -1) {
-      region = execSync(`grass "${GRASS}/global/${mapset}" --exec g.region -cg vector=selection`).toString().trim()
+      region = grass(mapset, `g.region -cg vector=selection`).trim()
     } else {
-      region = execSync(`grass "${GRASS}/global/${mapset}" --exec g.region -cg vector=polygons_osm`).toString().trim()
+      region = grass(mapset, `g.region -cg vector=polygons_osm`).trim()
     }
 
     EAST = region.split('\n')[0].split('=')[1]
@@ -75,7 +75,7 @@ module.exports = {
    * @param {string} outfile output filename
    */
   gpkgOut(mapset, infile, outfile) {
-    execSync(`grass "${GRASS}/global/${mapset}" --exec v.out.ogr format=GPKG input="${infile}" output="${GEOSERVER}/${outfile}.gpkg" --overwrite`)
+    grass(mapset, `v.out.ogr format=GPKG input="${infile}" output="${GEOSERVER}/${outfile}.gpkg" --overwrite`)
   },
 
   /**
@@ -84,7 +84,7 @@ module.exports = {
    * @return {string[]} names of available maps
    */
   listVector(mapset) {
-    return execSync(`grass "${GRASS}/global/${mapset}" --exec g.list -m type=vector`).toString().trim().split('\n')
+    return grass(mapset, `g.list -m type=vector`).trim().split('\n')
   },
 
   /**
@@ -95,7 +95,7 @@ module.exports = {
   mapsetExists(mapset) {
     let exists = true
     try {
-      execSync(`grass "${GRASS}/global/${mapset}" --exec g.list type=vector`)
+      grass(mapset, `g.list type=vector`)
     } catch (err) {
       exists = false
     }
@@ -108,6 +108,17 @@ module.exports = {
    * @param {string} layer layer name
    */
   remove(mapset, layer) {
-    execSync(`grass "${GRASS}/global/${mapset}" --exec g.remove -f type=vector name=${layer}`)
-  }
+    grass(mapset, `g.remove -f type=vector name=${layer}`)
+  },
+
+  grass
+}
+
+/**
+ * Run any GRASS command on a given mapset
+ * @param {string} mapset
+ * @param {string} args arguments to the command line
+ */
+function grass(mapset, args) {
+  return execSync(`grass "${GRASS}/global/${mapset}" --exec ${args}`, { encoding: 'utf-8' })
 }

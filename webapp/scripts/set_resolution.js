@@ -1,5 +1,5 @@
-const { execSync } = require('child_process') // Documentation: https://nodejs.org/api/child_process.html
 const fs = require('fs')
+const { grass } = require('./functions')
 
 const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
 const GRASS = process.env.GRASS_DIR
@@ -44,9 +44,9 @@ class SetResolutionModule {
           // Finally, have to set Geoserver to display raster outputs (such as time_map) properly.
           // For this end, first have to prepare a "fake time_map". This is a simple geotiff, a raster version of "selection" vector map.
           // This will be exported to geoserver data dir as "time_map.tif".
-          execSync(`grass ${GRASS}/global/PERMANENT --exec g.region vector=selection res=${resolutionDeg}`)
-          execSync(`grass ${GRASS}/global/PERMANENT --exec v.to.rast input=selection output=m1_time_map use=val value=1 --overwrite --quiet`)
-          execSync(`grass ${GRASS}/global/PERMANENT --exec r.out.gdal input=m1_time_map output="${GEOSERVER}/m1_time_map.tif" format=GTiff type=Float64 --overwrite --quiet`)
+          grass('PERMANENT', `g.region vector=selection res=${resolutionDeg}`)
+          grass('PERMANENT', `v.to.rast input=selection output=m1_time_map use=val value=1 --overwrite`)
+          grass('PERMANENT', `r.out.gdal input=m1_time_map output="${GEOSERVER}/m1_time_map.tif" format=GTiff type=Float64 --overwrite`)
 
           return this.messages[3]
         }

@@ -1,5 +1,4 @@
 const fs = require('fs')
-
 const { addOsm, getCoordinates, gpkgOut, mapsetExists } = require('./functions')
 
 const GRASS = process.env.GRASS_DIR

@@ -1,7 +1,6 @@
 const { execSync } = require('child_process') // Documentation: https://nodejs.org/api/child_process.html
 const fs = require('fs')
-
-const { addVector, gpkgOut, listVector, mapsetExists } = require('./functions')
+const { addVector, gpkgOut, listVector, mapsetExists, grass } = require('./functions')
 
 const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
 const GRASS = process.env.GRASS_DIR
@@ -94,8 +93,8 @@ class ModuleOne {
 
     // Clip lines and polygons@PERMANENT mapset with the area_of_interest, defined by the user
     // Results will be stored in the "module_1" mapset
-    execSync(`grass "${GRASS}/global/module_1" --exec g.copy vector=selection@PERMANENT,selection --overwrite`)
-    execSync(`grass "${GRASS}/global/module_1" --exec g.copy vector=lines@PERMANENT,lines --overwrite`)
+    grass('module_1', `g.copy vector=selection@PERMANENT,selection --overwrite`)
+    grass('module_1', `g.copy vector=lines@PERMANENT,lines --overwrite`)
 
     this.vectorMaps = listVector('module_1')
 
@@ -202,37 +201,37 @@ class ModuleOne {
 
     // Creating highways map. This is fundamental for the further work in this module
     // FIXME: errors if lines@PERMANENT is missing or not covering the desired location
-    execSync(`grass "${GRASS}/global/module_1" --exec v.extract input=lines@PERMANENT type=line where="highway>0" output=highways --overwrite`)
+    grass('module_1', `v.extract input=lines@PERMANENT type=line where="highway>0" output=highways --overwrite`)
     // True data processing Setting region to fit the "selection" map (taken by location_selector), and resolution
-    execSync(`grass "${GRASS}/global/module_1" --exec g.region vector=selection@PERMANENT res=${this.resolution} --overwrite`)
+    grass('module_1', `g.region vector=selection@PERMANENT res=${this.resolution} --overwrite`)
 
     // connecting from/via/to points to the clipped network, if neccessary. Via points are optional, first have to check if user previously has selected those or not.
-    execSync(`grass "${GRASS}/global/module_1" --exec g.copy vector="${this.fromPoints},from_via_to_points" --overwrite`)
+    grass('module_1', `g.copy vector="${this.fromPoints},from_via_to_points" --overwrite`)
     if (this.viaPoints) {
-      execSync(`grass "${GRASS}/global/module_1" --exec v.patch input="${this.fromPoints},${this.viaPoints}" output=from_via_to_points --overwrite`)
+      grass('module_1', `v.patch input="${this.fromPoints},${this.viaPoints}" output=from_via_to_points --overwrite`)
     }
 
     // "TO" points are not optional. Optional only to place them one-by-one on the map, or selecting an already existing map. If there are no user defined/selected to_points, default points (highway_points) are used as to_points. But, because these points are on the road by its origin, therefore no further connecting is requested.
     if (this.toPoints) {
-      execSync(`grass "${GRASS}/global/module_1" --exec v.patch input="${this.toPoints},${this.fromPoints},${this.viaPoints}" output=from_via_to_points --overwrite`)
+      grass('module_1', `v.patch input="${this.toPoints},${this.fromPoints},${this.viaPoints}" output=from_via_to_points --overwrite`)
     } else {
-      execSync(`grass "${GRASS}/global/module_1" --exec v.to.points input=highways output=highway_points dmax=${ROAD_POINTS} --overwrite`)
+      grass('module_1', `v.to.points input=highways output=highway_points dmax=${ROAD_POINTS} --overwrite`)
       this.toPoints = 'highway_points'
     }
 
     // Build the network; threshold to connect is ~ 330 m
-    execSync(`grass "${GRASS}/global/module_1" --exec v.net input=highways points=from_via_to_points output=highways_points_connected operation=connect threshold=${CONNECT_DISTANCE} --overwrite`)
+    grass('module_1', `v.net input=highways points=from_via_to_points output=highways_points_connected operation=connect threshold=${CONNECT_DISTANCE} --overwrite`)
 
     // Because of the previous operations, in many cases, there is no more "highway" column. Now we have to rename a_highway to highway again.
     // But, in some cases -- because of the differences between country datasets -- highway field is not affected,
     // the original highway field remains the same. In this case it is not neccessary to rename it.
-    let columns = execSync(`grass "${GRASS}/global/module_1" --exec db.columns table=highways`).toString().trim()
+    let columns = grass('module_1', `db.columns table=highways`).trim()
     if (columns.split('\n').indexOf('a_highway') > -1) {
-      execSync(`grass "${GRASS}/global/module_1" --exec v.db.renamecolumn map=highways_points_connected column=a_highway,highway`)
+      grass('module_1', `v.db.renamecolumn map=highways_points_connected column=a_highway,highway`)
     }
 
     //  Add "avg_speed" attribute column (integer) to the road network map (if not yet exist -- if exist Grass will skip this process)
-    execSync(`grass "${GRASS}/global/module_1" --exec v.db.addcolumn map=highways_points_connected columns='avg_speed INT'`)
+    grass('module_1', `v.db.addcolumn map=highways_points_connected columns='avg_speed INT'`)
 
     // Fill this new avg_speed column for each highway feature. Values are stored in $VARIABLES/roads_speed
     if (!fs.existsSync(`${GRASS}/variables/roads_speed`)) {
@@ -241,67 +240,67 @@ class ModuleOne {
 
     // Now update the datatable of highways_points_connected map, using "roads_speed" file to get speed data and conditions.
     for (const [where, value] of this.roadSpeedValues) {
-      execSync(`grass "${GRASS}/global/module_1" --exec v.db.update map=highways_points_connected layer=1 column=avg_speed value=${value} where="${where.replace(/"/g, '\\"')}"`)
+      grass('module_1', `v.db.update map=highways_points_connected layer=1 column=avg_speed value=${value} where="${where.replace(/"/g, '\\"')}"`)
     }
 
     // Converting clipped and connected road network map into raster format and float number
-    execSync(`grass "${GRASS}/global/module_1" --exec v.to.rast input=highways_points_connected output=highways_points_connected use=attr attribute_column=avg_speed --overwrite`)
-    execSync(`grass "${GRASS}/global/module_1" --exec r.mapcalc expression="highways_points_connected=float(highways_points_connected)" --overwrite`)
+    grass('module_1', `v.to.rast input=highways_points_connected output=highways_points_connected use=attr attribute_column=avg_speed --overwrite`)
+    grass('module_1', `r.mapcalc expression="highways_points_connected=float(highways_points_connected)" --overwrite`)
 
     // Now vector zones are created around from, via and to points (its radius is equal to the current resolution),
     // converted into raster format, and patched to raster map 'temp' (just created in the previous step)
-    execSync(`grass "${GRASS}/global/module_1" --exec v.buffer input=from_via_to_points output=from_via_to_zones distance=${this.resolution} minordistance=${this.resolution} --overwrite`)
+    grass('module_1', `v.buffer input=from_via_to_points output=from_via_to_zones distance=${this.resolution} minordistance=${this.resolution} --overwrite`)
     // FIXME: there is a bug with this command
-    // execSync(`grass "${GRASS}/global/module_1" --exec r.mapcalc expression="from_via_to_zones=float(from_via_to_zones)" --overwrite`)
-    execSync(`grass "${GRASS}/global/module_1" --exec v.to.rast input=from_via_to_zones output=from_via_to_zones use=val val=${AVERAGE_SPEED} --overwrite`)
-    execSync(`grass "${GRASS}/global/module_1" --exec r.patch input=highways_points_connected,from_via_to_zones output=highways_points_connected_zones --overwrite`)
+    // grass('module_1', `r.mapcalc expression="from_via_to_zones=float(from_via_to_zones)" --overwrite`)
+    grass('module_1', `v.to.rast input=from_via_to_zones output=from_via_to_zones use=val val=${AVERAGE_SPEED} --overwrite`)
+    grass('module_1', `r.patch input=highways_points_connected,from_via_to_zones output=highways_points_connected_zones --overwrite`)
 
     // Now the supplementary lines raster map has to be added to map highways_from_points. First we convert highways_points_connected into raster setting value to 0(zero), resulting in: temp. Then we patch temp and highways_points_connected, resulting in: highways_points_connected_temp. Now we have to reclass highways_points_connected_temp, setting 0 values to the speed value of residentals
-    execSync(`grass "${GRASS}/global/module_1" --exec v.to.rast input=highways_points_connected output=temp use=val val=${AVERAGE_SPEED} --overwrite`)
-    execSync(`grass "${GRASS}/global/module_1" --exec r.patch input=highways_points_connected_zones,temp output=highways_points_connected_temp --overwrite`)
+    grass('module_1', `v.to.rast input=highways_points_connected output=temp use=val val=${AVERAGE_SPEED} --overwrite`)
+    grass('module_1', `r.patch input=highways_points_connected_zones,temp output=highways_points_connected_temp --overwrite`)
 
     if (this.strickenArea) {
-      execSync(`grass "${GRASS}/global/module_1" --exec v.to.rast input="${this.strickenArea}" output="${this.strickenArea}" use=val value=${this.reductionRatio} --overwrite`)
-      execSync(`grass "${GRASS}/global/module_1" --exec r.null map="${this.strickenArea}" null=1 --overwrite`)
-      execSync(`grass "${GRASS}/global/module_1" --exec r.mapcalc expression="highways_points_connected_full=(highways_points_connected_temp*${this.strickenArea})" --overwrite`)
+      grass('module_1', `v.to.rast input="${this.strickenArea}" output="${this.strickenArea}" use=val value=${this.reductionRatio} --overwrite`)
+      grass('module_1', `r.null map="${this.strickenArea}" null=1 --overwrite`)
+      grass('module_1', `r.mapcalc expression="highways_points_connected_full=(highways_points_connected_temp*${this.strickenArea})" --overwrite`)
     } else {
-      execSync(`grass "${GRASS}/global/module_1" --exec r.mapcalc expression="highways_points_connected_full=(highways_points_connected_temp*1)" --overwrite`)
+      grass('module_1', `r.mapcalc expression="highways_points_connected_full=(highways_points_connected_temp*1)" --overwrite`)
     }
 
     // specific_time here is the time required to cross a cell, where the resolution is as defined in resolution file
-    execSync(`grass "${GRASS}/global/module_1" --exec r.mapcalc expression="specific_time=${this.resolution}/(highways_points_connected_full*0.27777)" --overwrite`)
+    grass('module_1', `r.mapcalc expression="specific_time=${this.resolution}/(highways_points_connected_full*0.27777)" --overwrite`)
 
     // Calculating from -- via time map, via -- to time map and it sum. There is a NULL value replacenet too. It is neccessary, because otherwise, if one of the maps containes NULL value, NULL value cells will not considering while summarizing the maps. Therefore, before mapcalc operation, NULL has to be replaced by 0.
     if (this.viaPoints) {
-      execSync(`grass "${GRASS}/global/module_1" --exec r.cost input=specific_time output=from_via_cost start_points="${this.fromPoints}" stop_points="${this.viaPoints}" --overwrite`)
-      execSync(`grass "${GRASS}/global/module_1" --exec r.null map=from_via_cost null=0 --overwrite`)
-      execSync(`grass "${GRASS}/global/module_1" --exec r.cost input=specific_time output=via_to_cost start_points="${this.viaPoints}" stop_points="${this.toPoints}" --overwrite`)
-      execSync(`grass "${GRASS}/global/module_1" --exec r.null map=via_to_cost null=0 --overwrite`)
-      execSync(`grass "${GRASS}/global/module_1" --exec r.mapcalc expression="time_map_temp=from_via_cost+via_to_cost" --overwrite`)
-      execSync(`grass "${GRASS}/global/module_1" --exec r.mapcalc expression="time_map=time_map_temp/60" --overwrite`)
+      grass('module_1', `r.cost input=specific_time output=from_via_cost start_points="${this.fromPoints}" stop_points="${this.viaPoints}" --overwrite`)
+      grass('module_1', `r.null map=from_via_cost null=0 --overwrite`)
+      grass('module_1', `r.cost input=specific_time output=via_to_cost start_points="${this.viaPoints}" stop_points="${this.toPoints}" --overwrite`)
+      grass('module_1', `r.null map=via_to_cost null=0 --overwrite`)
+      grass('module_1', `r.mapcalc expression="time_map_temp=from_via_cost+via_to_cost" --overwrite`)
+      grass('module_1', `r.mapcalc expression="time_map=time_map_temp/60" --overwrite`)
     } else {
-      execSync(`grass "${GRASS}/global/module_1" --exec r.cost input=specific_time output=from_to_cost start_points="${this.fromPoints}" stop_points="${this.toPoints}" --overwrite`)
-      execSync(`grass "${GRASS}/global/module_1" --exec r.mapcalc expression="time_map_temp=from_to_cost/60" --overwrite`)
-      execSync(`grass "${GRASS}/global/module_1" --exec g.rename raster=time_map_temp,m1_time_map --overwrite`)
+      grass('module_1', `r.cost input=specific_time output=from_to_cost start_points="${this.fromPoints}" stop_points="${this.toPoints}" --overwrite`)
+      grass('module_1', `r.mapcalc expression="time_map_temp=from_to_cost/60" --overwrite`)
+      grass('module_1', `g.rename raster=time_map_temp,m1_time_map --overwrite`)
     }
 
-    execSync(`grass "${GRASS}/global/module_1" --exec r.null map=m1_time_map setnull=0`)
-    execSync(`grass "${GRASS}/global/module_1" --exec r.out.gdal input=m1_time_map output="${GEOSERVER}/m1_time_map.tif" format=GTiff --overwrite`)
+    grass('module_1', `r.null map=m1_time_map setnull=0`)
+    grass('module_1', `r.out.gdal input=m1_time_map output="${GEOSERVER}/m1_time_map.tif" format=GTiff --overwrite`)
 
     // Interpolation for the entire area of selection map
-    execSync(`grass "${GRASS}/global/module_1" --exec g.region res=${BASE_RESOLUTION} --overwrite`)
-    execSync(`grass "${GRASS}/global/module_1" --exec r.mask vector=selection --overwrite`)
-    execSync(`grass "${GRASS}/global/module_1" --exec v.db.addcolumn map=highway_points layer=2 columns="time DOUBLE PRECISION" --overwrite`)
-    execSync(`grass "${GRASS}/global/module_1" --exec v.what.rast map=highway_points@module_1 raster=m1_time_map layer=2 column=time --overwrite`)
-    execSync(`grass "${GRASS}/global/module_1" --exec v.surf.rst input=highway_points@module_1 layer=2 zcolumn=time where="time>0" elevation=m1_time_map_interpolated tension=${TENSION} smooth=${SMOOTH} nprocs=4 --overwrite`)
-    execSync(`grass "${GRASS}/global/module_1" --exec r.out.gdal input=m1_time_map_interpolated output="${GEOSERVER}/m1_time_map_interpolated.tif" format=GTiff --overwrite`)
+    grass('module_1', `g.region res=${BASE_RESOLUTION} --overwrite`)
+    grass('module_1', `r.mask vector=selection --overwrite`)
+    grass('module_1', `v.db.addcolumn map=highway_points layer=2 columns="time DOUBLE PRECISION" --overwrite`)
+    grass('module_1', `v.what.rast map=highway_points@module_1 raster=m1_time_map layer=2 column=time --overwrite`)
+    grass('module_1', `v.surf.rst input=highway_points@module_1 layer=2 zcolumn=time where="time>0" elevation=m1_time_map_interpolated tension=${TENSION} smooth=${SMOOTH} nprocs=4 --overwrite`)
+    grass('module_1', `r.out.gdal input=m1_time_map_interpolated output="${GEOSERVER}/m1_time_map_interpolated.tif" format=GTiff --overwrite`)
 
     // Generate pdf output
 
     fs.mkdirSync('tmp')
 
     // set color for maps
-    execSync(`grass "${GRASS}/global/module_1" --exec g.region res="${this.resolution}"`)
+    grass('module_1', `g.region res="${this.resolution}"`)
 
     const date = new Date()
     const dateString = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}`
@@ -328,8 +327,8 @@ Speed reduction coefficient for stricken area: ${this.reductionRatio}`)
     execSync(`enscript -p tmp/time_map_info_text.ps tmp/time_map_info_text`)
     execSync(`ps2pdf tmp/time_map_info_text.ps tmp/time_map_info_text.pdf`)
 
-    execSync(`grass "${GRASS}/global/module_1" --exec ps.map input="${GRASS}/variables/defaults/ps_param_1" output=tmp/time_map_1.ps --overwrite`)
-    execSync(`grass "${GRASS}/global/module_1" --exec ps.map input="${GRASS}/variables/defaults/ps_param_2" output=tmp/time_map_2.ps --overwrite`)
+    grass('module_1', `ps.map input="${GRASS}/variables/defaults/ps_param_1" output=tmp/time_map_1.ps --overwrite`)
+    grass('module_1', `ps.map input="${GRASS}/variables/defaults/ps_param_2" output=tmp/time_map_2.ps --overwrite`)
     execSync(`ps2pdf tmp/time_map_1.ps tmp/time_map_1.pdf`)
     execSync(`ps2pdf tmp/time_map_2.ps tmp/time_map_2.pdf`)
 
