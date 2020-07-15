@@ -28,6 +28,7 @@ It is also required to create these directories:
 ```
 mkdir geoserver_data_dir/data
 mkdir grass/global
+mkdir output
 ```
 
 Build the Docker image:
@@ -37,15 +38,15 @@ docker build -t oct .
 
 Start a container using the newly created image.
 ```
-docker run -dti -v `pwd`/geoserver_data_dir:/usr/share/geoserver/data_dir -v `pwd`/grass:/root/cityapp/grass -p 3000:3000 -p 8080:8080 --name oct oct
+docker run -dti -v `pwd`/geoserver_data_dir:/usr/share/geoserver/data_dir -v `pwd`/grass:/root/cityapp/grass -v `pwd`/output:/root/cityapp/output -p 3000:3000 -p 8080:8080 --name oct oct
 ```
 
 If you want to override any environment variables, you can do so using the `-e` option:
 ```
-docker run -dti -e GEOSERVER_URL=... -e INITIAL_LAT=... -e INITIAL_LON=... -v `pwd`/geoserver_data_dir:/usr/share/geoserver/data_dir -v `pwd`/grass:/root/cityapp/grass -p 3000:3000 -p 8080:8080 --name oct oct
+docker run -dti -e GEOSERVER_URL=... -e INITIAL_LAT=... -e INITIAL_LON=... -v `pwd`/geoserver_data_dir:/usr/share/geoserver/data_dir -v `pwd`/grass:/root/cityapp/grass -v `pwd`/output:/root/cityapp/output -p 3000:3000 -p 8080:8080 --name oct oct
 ```
 
-The `geoserver_data` and `grass` directories are mounted into the container as volumes in order to make their contents persistent.
+The `geoserver_data`, `grass` and `output` directories are mounted into the container as volumes in order to make their contents persistent and accessible from the host system.
 
 While the container is running, the app is served at http://your-server:3000 and GeoServer is available at http://your-server:8080/geoserver/.
 

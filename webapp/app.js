@@ -69,14 +69,6 @@ app.post('/launch', jsonParser, (req, res, next) => {
   }
 })
 
-// display a map
-// app.post('/display', jsonParser, async (req, res, next) => {
-// })
-
-// query a map
-// app.post('/query', jsonParser, async (req, res, next) => {
-// })
-
 // message request
 app.post('/reply', jsonParser, (req, res, next) => {
   try {

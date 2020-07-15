@@ -12,7 +12,7 @@ module.exports = {
    * @param {string} outfile output filename
    */
   addOsm(mapset, infile, layer, outfile) {
-    execSync(`grass "${GRASS}/global/${mapset}" --exec v.in.ogr -o input="${infile}" layer="${layer}" output="${outfile}" --overwrite --quiet`)
+    execSync(`grass "${GRASS}/global/${mapset}" --exec v.in.ogr -o input="${infile}" layer="${layer}" output="${outfile}" --overwrite`)
   },
 
   /**
@@ -75,7 +75,7 @@ module.exports = {
    * @param {string} outfile output filename
    */
   gpkgOut(mapset, infile, outfile) {
-    execSync(`grass "${GRASS}/global/${mapset}" --exec v.out.ogr format=GPKG input="${infile}" output="${GEOSERVER}/${outfile}.gpkg" --overwrite --quiet`)
+    execSync(`grass "${GRASS}/global/${mapset}" --exec v.out.ogr format=GPKG input="${infile}" output="${GEOSERVER}/${outfile}.gpkg" --overwrite`)
   },
 
   /**
