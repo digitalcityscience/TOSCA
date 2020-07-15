@@ -88,16 +88,9 @@ class ModuleOne {
     }
     fs.copyFileSync(`${GRASS}/global/PERMANENT/WIND`, `${GRASS}/global/module_1/WIND`)
 
-    // FIXME: is sqlite folder needed?
-    if (!fs.existsSync(`${GRASS}/skel/sqlite`)) {
-      fs.mkdirSync(`${GRASS}/skel/sqlite`)
+    for (const file of fs.readdirSync(`${GRASS}/skel`)) {
+      fs.copyFileSync(`${GRASS}/skel/${file}`, `${GRASS}/global/module_1/${file}`)
     }
-
-    // FIXME: copyFileSync cannot copy folders
-    // for (const file of fs.readdirSync(`${GRASS}/skel`)) {
-    //   fs.copyFileSync(`${GRASS}/skel/${file}`, `${GRASS}/global/module_1/${file}`)
-    // }
-    execSync(`cp -r "${GRASS}"/skel/* "${GRASS}"/global/module_1`)
 
     // Clip lines and polygons@PERMANENT mapset with the area_of_interest, defined by the user
     // Results will be stored in the "module_1" mapset

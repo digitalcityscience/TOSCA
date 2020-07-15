@@ -342,21 +342,6 @@ function handleResponse(res) {
         ];
         break;
 
-      // • message id: module_1.14
-      // • text: Calculations are ready, display output time maps.
-      // • expectation: A request file with a single "OK" word
-      // • consequence: After the user acknowledge the message, the module exit.
-      // • message id: module_1.11
-      // • text: No valid location found. Run Location selector to create a valid location. Module is now exiting.
-      case 'module_1.11':
-      case 'module_1.14':
-        buttons = [
-          buttonElement('OK').click(() => {
-            clearDialog();
-          })
-        ];
-        break;
-
       // == module_2b ==
 
       // • message id: module_2b.1
