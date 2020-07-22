@@ -98,6 +98,10 @@ h1 {
   margin-bottom: 12px;
 }
 
+#lists select {
+  width: 100%;
+}
+
 #map-container {
   flex-grow: 2;
   position: relative;

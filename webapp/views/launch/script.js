@@ -30,7 +30,7 @@ function handleResponse(res) {
     map.panTo(new L.LatLng(res.message.lat, res.message.lon));
   }
 
-  const mapList = (res.message.list || []).sort((a, b) => a.split('@')[1].localeCompare(b.split('@')[1]));
+  const list = (res.message.list || []).sort();
 
   $('#loading').hide();
 
@@ -253,9 +253,7 @@ function handleResponse(res) {
       case 'module_1.6':
       case 'module_1.8':
         form = formElement(messageId);
-        lists.append($(`<select id="${messageId}-input" size="10">` +
-          mapList.map(map => `<option selected value="${map}">${map}</option>`) +
-          `</select>`));
+        lists.append($(`<select id="${messageId}-input" size="10">` + list.map(map => `<option selected value="${map}">${map}</option>`) + `</select>`));
         buttons = [
           buttonElement('Submit').click(() => {
             const input = $(`#${messageId}-input`);
@@ -354,9 +352,7 @@ function handleResponse(res) {
 
       case 'module_2.2':
         form = formElement(messageId);
-        lists.append($(`<select id="${messageId}-input" size="10">` +
-          mapList.map(map => `<option selected value="${map}">${map}</option>`) +
-          `</select>`));
+        lists.append($(`<select id="${messageId}-input" size="10">` + list.map(col => `<option selected value="${col}">${col}</option>`) + `</select>`));
         buttons = [
           buttonElement('Submit').click(() => {
             const input = $(`#${messageId}-input`);
@@ -364,6 +360,39 @@ function handleResponse(res) {
           })
         ];
         break;
+
+      case 'module_2.3': {
+        form = formElement(messageId);
+        const columns = list.map(col => `<option selected value="${col}">${col}</option>`);
+        lists.append($('<span>SELECT</span>'));
+        lists.append($(`<select id="${messageId}-input0" size="2">${columns}</select>`));
+        lists.append($('<span>WHERE</span>'));
+        lists.append($(`<select id="${messageId}-input1" size="2">${columns}</select>`));
+        lists.append($(`<input id="${messageId}-input2" type="text" value="=" />`));
+        lists.append($(`<input id="${messageId}-input3" type="number" />`));
+        lists.append($(`<input id="${messageId}-input4" type="text" value="AND" />`));
+        lists.append($(`<select id="${messageId}-input5" size="2">${columns}</select>`));
+        lists.append($(`<input id="${messageId}-input6" type="text" value="=" />`));
+        lists.append($(`<input id="${messageId}-input7" type="number" />`));
+        lists.append($(`<input id="${messageId}-input8" type="text" value="AND" />`));
+        lists.append($(`<select id="${messageId}-input9" size="2">${columns}</select>`));
+        lists.append($(`<input id="${messageId}-input10" type="text" value="=" />`));
+        lists.append($(`<input id="${messageId}-input11" type="number" />`));
+        buttons = [
+          buttonElement('Submit').click(() => {
+            const input = [
+              $(`#${messageId}-input0`), $(`#${messageId}-input1`),
+              $(`#${messageId}-input2`), $(`#${messageId}-input3`),
+              $(`#${messageId}-input4`), $(`#${messageId}-input5`),
+              $(`#${messageId}-input6`), $(`#${messageId}-input7`),
+              $(`#${messageId}-input8`), $(`#${messageId}-input9`),
+              $(`#${messageId}-input10`), $(`#${messageId}-input11`)
+            ];
+            reply(res, input.map(item => item[0].value));
+          })
+        ];
+        break;
+      }
 
       // == module_2b ==
 

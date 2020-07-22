@@ -1,4 +1,4 @@
-const { addVector, getTopology, gpkgOut, initMapset, grass } = require('./functions')
+const { addVector, getNumericColumns, getTopology, gpkgOut, initMapset, grass } = require('./functions')
 
 class ModuleTwo {
   constructor() {
@@ -13,7 +13,7 @@ class ModuleTwo {
       },
       3: {
         message_id: 'module_2.3',
-        message: { "text": "Fill the form and press save. Available columns are:" }
+        message: { "text": "Fill the form and press save." }
       }
     }
   }
@@ -35,7 +35,7 @@ class ModuleTwo {
           // Only maps of PERMANENT mapset can be queried. Default maps and "selection" map are not included in the list. Only maps with numeric column (except column "CAT") will be listed.
           let maps = grass('PERMANENT', `g.list type=vector`).trim().split('\n')
             .filter(map => !map.match(/^lines(_osm)?$|^points(_osm)?$|^polygons(_osm)?$|^relations(_osm)?$|^selection$/))
-            .filter(map => grass('PERMANENT', `db.describe -c table=${map}`).trim().split('\n').filter(col => col.match(/DOUBLE PRECISION|INTEGER/)).filter(col => !col.match(/cat/i)).length > 0)
+            .filter(map => getNumericColumns('PERMANENT', map).length > 0)
 
           const msg = this.messages[2]
           msg.message.list = maps
@@ -43,18 +43,29 @@ class ModuleTwo {
         }
         return
 
-      case 'module_2.2':
+      case 'module_2.2': {
         this.mapToQuery = message
 
         // Now it is possible to check if the map to query is in the default mapset 'module_2' or not. If not, the map has to be copied into the module_2 mapset.
-        if (grass('module_2', `g.list type=vector`).split('\n').indexOf(this.mapToQuery) == -1) {
+        if (grass('PERMANENT', `g.list type=vector mapset=module_2`).split('\n').indexOf(this.mapToQuery) == -1) {
           grass('module_2', `g.copy vector=${this.mapToQuery}@PERMANENT,${this.mapToQuery}`)
         }
 
         // query map topology
         getTopology('module_2', this.mapToQuery)
 
-        return this.messages[3]
+        const msg = this.messages[3]
+        msg.message.list = getNumericColumns('module_2', this.mapToQuery).map(item => item.split(':')[1].trim())
+        return msg
+      }
+
+      case 'module_2.3': {
+        const [queryColumn, whereColumn1, relation1, value1, logical1, whereColumn2, relation2, value2, logical2, whereColumn3, relation3, value3] = message
+        const where = `${whereColumn1} ${relation1} ${value1} ${logical1} ${whereColumn2} ${relation2} ${value2} ${logical2} ${whereColumn3} ${relation3} ${value3}`
+
+        console.log(queryColumn)
+        console.log(where)
+      }
     }
   }
 

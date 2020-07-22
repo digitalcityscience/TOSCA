@@ -69,6 +69,10 @@ module.exports = {
     return [EAST, NORTH]
   },
 
+  getNumericColumns(mapset, layer) {
+    return grass(mapset, `db.describe -c table=${layer}`).trim().split('\n').filter(col => col.match(/DOUBLE PRECISION|INTEGER/)).filter(col => !col.match(/cat/i))
+  },
+
   /**
    * Identify the topology of a vector map
    * @param {string} mapset
