@@ -435,6 +435,15 @@ function clearDialog() {
   $('#lists').empty();
 }
 
+function toggleHelp() {
+  const info = $('#info-container')
+  if (info.css('flex-grow')==0) {
+    info.css('flex-grow', 1);
+  } else {
+    info.css('flex-grow', 0);
+  }
+}
+
 /* Send messages to the backend */
 
 function launch_app() {

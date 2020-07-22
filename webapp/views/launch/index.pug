@@ -10,6 +10,7 @@ html
     script(src='/lib/bootstrap/js/bootstrap.min.js')
     script(src='/lib/leaflet/leaflet.js')
     script(src='/lib/leaflet-draw/leaflet.draw.js')
+    script(src='/lib/leaflet-groupedlayercontrol/leaflet.groupedlayercontrol.js')
 
     style
       include style.css
@@ -62,7 +63,7 @@ html
       div(id='map-container' class='card')
         include ../map/index.pug
 
-      div(id='info-container' class='card card-border')
+      div(id='info-container' class='card card-border' onclick='toggleHelp()')
 
       div(id='alert-anchor')
 

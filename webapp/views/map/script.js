@@ -123,24 +123,20 @@ L.control.legend(
   { position: 'bottomleft' }
 ).addTo(map);
 
-// Control panel of base layers
-L.control.layers(
-  {},
-  {
-    'OpenStreetMap': osm,
+const baseLayers = {
+  'OpenStreetMap': osm
+};
+
+// Overlay layers are grouped
+const groupedOverlays = {
+  "Location": {
     'Water lines': waterLines,
     'Roads': roads,
     'Buildings': buildings,
     'Current selection': selection,
     'Drawings on the map': drawnItems
   },
-  { position: 'topright', collapsed: false }
-).addTo(map);
-
-// Control panel of extension layers
-L.control.layers(
-  {},
-  {
+  "Results": {
     'Query area 1': query_area_1,
     'Query results 1': query_result_area_1,
     'Query results 3': query_result_point_1,
@@ -149,10 +145,12 @@ L.control.layers(
     "Interpolated time map": TimeMapInterpolated,
     "From-points": FromPoints,
     "Via-points": ViaPoints,
-    "To-points": ToPoints,
-  },
-  { position: 'topright', collapsed: false }
-).addTo(map);
+    "To-points": ToPoints
+  }
+};
+
+// Use the custom grouped layer control, not "L.control.layers"
+L.control.groupedLayers(baseLayers, groupedOverlays,{ position: 'topright', collapsed: true }).addTo(map);
 
 map.addControl(new L.Control.Draw({
   edit: {

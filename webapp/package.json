@@ -17,6 +17,7 @@
     "jquery": "^3.5.0",
     "leaflet": "^1.6.0",
     "leaflet-draw": "^1.0.4",
+    "leaflet-groupedlayercontrol": "^0.6.1",
     "multer": "^1.4.2",
     "pug": "^2.0.4"
   },

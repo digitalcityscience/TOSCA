@@ -105,7 +105,8 @@ h1 {
 }
 
 #info-container {
-  flex-grow: 1;
+  flex-grow: 0;
+  transition: .2s;
   font-size: small;
 }
 
