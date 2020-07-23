@@ -11,7 +11,7 @@
   z-index: 1000;
 }
 
-.leaflet-control-layers-group-name {
+.leaflet-control-layers-group-name, .leaflet-legend-layer-name {
   font-weight: bold;
   margin-bottom: .2em;
   margin-left: 3px;
@@ -24,4 +24,16 @@
 .leaflet-control-layers-scrollbar {
   overflow-y: scroll;
   padding-right: 10px;
+}
+
+#leaflet-legend-container {
+  min-width: 300px;
+  max-height: 300px;
+  overflow-y: scroll;
+  background-color: white;
+  overflow-x: hidden;
+}
+
+.leaflet-legend-item {
+  padding: 10px 10px
 }
