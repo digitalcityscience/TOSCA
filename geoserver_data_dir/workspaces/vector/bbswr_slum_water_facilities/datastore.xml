@@ -1,0 +1,20 @@
+<dataStore>
+  <id>DataStoreInfoImpl-343c255e:17036557ae0:-7fb6</id>
+  <name>bbswr_slum_water_facilities</name>
+  <description>bbswr_slum_water_facilities</description>
+  <type>GeoPackage</type>
+  <enabled>true</enabled>
+  <workspace>
+    <id>WorkspaceInfoImpl-53a0964:16fc2624139:-7fff</id>
+  </workspace>
+  <connectionParameters>
+    <entry key="Batch insert size">1</entry>
+    <entry key="database">/usr/share/geoserver/data_dir/data/cityapp/bhubaneshwar/slum_houses.gpkg</entry>
+    <entry key="fetch size">1000</entry>
+    <entry key="Expose primary keys">false</entry>
+    <entry key="dbtype">geopkg</entry>
+    <entry key="namespace">vector</entry>
+  </connectionParameters>
+  <__default>false</__default>
+  <dateModified>2020-05-15 06:56:19.467 UTC</dateModified>
+</dataStore>

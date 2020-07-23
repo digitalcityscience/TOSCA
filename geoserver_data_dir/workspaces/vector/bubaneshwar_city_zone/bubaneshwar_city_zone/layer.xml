@@ -1,0 +1,15 @@
+<layer>
+  <name>bubaneshwar_city_zone</name>
+  <id>LayerInfoImpl-343c255e:17036557ae0:-7f12</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl-343c255e:17036557ae0:-7f19</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl-343c255e:17036557ae0:-7f13</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+</layer>

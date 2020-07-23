@@ -1,0 +1,15 @@
+<layer>
+  <name>bbswr_surface_waters</name>
+  <id>LayerInfoImpl-343c255e:17036557ae0:-7f26</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl-53a0964:16fc2624139:-7ff8</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl-343c255e:17036557ae0:-7f27</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+</layer>

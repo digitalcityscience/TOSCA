@@ -1,0 +1,56 @@
+/* @title Bubaneshwar slums Land Tenure Status */
+
+/* @title 'Katcha' */
+[LNT_STATU = 'Katcha']{
+   stroke: #6c0001;
+  stroke-width: 0.5;
+  fill: #d7191c;
+  fill-opacity: 1;
+}
+
+/* @title 'Semi-pukka' */
+[LNT_STATU = 'Semi-pukka' ]{
+   stroke: #ab6918;
+  stroke-width: 0.5;
+  fill: #feba6f;
+  fill-opacity: 1;
+}
+
+/* @title 'Private land' */
+[LNT_STATU = 'Private land']{
+   stroke: #ab6918;
+  stroke-width: 0.5;
+  fill: #feba6f;
+  fill-opacity: 1;
+}
+
+/* @title 'Rented' */
+[LNT_STATU = 'Rented']{
+   stroke: #668802;
+  stroke-width: 0.5;
+  fill: #cccc00;
+  fill-opacity: 1;
+}
+
+/* @title 'Public land' */
+[LNT_STATU = 'Public land']{
+   stroke: #668802;
+  stroke-width: 0.5;
+  fill: #99bb02;
+  fill-opacity: 1;
+}
+
+
+[LNT_STATU = 'Occupancy right'] {
+   stroke: #449922;
+  stroke-width: 0.5;
+  fill: #66dd22;
+  fill-opacity: 1;
+}
+
+[LNT_STATU = 'Patta']{
+   stroke: #229922;
+  stroke-width: 0.5;
+  fill: #33dd33;
+  fill-opacity: 1;
+}

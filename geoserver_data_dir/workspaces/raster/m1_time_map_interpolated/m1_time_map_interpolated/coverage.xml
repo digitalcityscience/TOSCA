@@ -96,16 +96,16 @@
   </responseSRS>
   <parameters>
     <entry>
+      <string>RescalePixels</string>
+      <boolean>true</boolean>
+    </entry>
+    <entry>
       <string>InputTransparentColor</string>
       <null/>
     </entry>
     <entry>
       <string>SUGGESTED_TILE_SIZE</string>
       <string>512,512</string>
-    </entry>
-    <entry>
-      <string>RescalePixels</string>
-      <boolean>true</boolean>
     </entry>
   </parameters>
   <nativeCoverageName>m1_time_map_interpolated</nativeCoverageName>

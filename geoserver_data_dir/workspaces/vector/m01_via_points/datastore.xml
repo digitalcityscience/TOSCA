@@ -9,11 +9,12 @@
   </workspace>
   <connectionParameters>
     <entry key="Batch insert size">1</entry>
-    <entry key="database">/usr/share/geoserver/data_dir/data/m1_via_points.gpkg</entry>
+    <entry key="database">/usr/share/geoserver/data_dir/data/cityapp/m1_via_points.gpkg</entry>
     <entry key="fetch size">1000</entry>
     <entry key="Expose primary keys">false</entry>
     <entry key="dbtype">geopkg</entry>
     <entry key="namespace">vector</entry>
   </connectionParameters>
   <__default>false</__default>
+  <dateModified>2020-05-15 06:59:59.681 UTC</dateModified>
 </dataStore>

@@ -118,6 +118,185 @@ const ToPoints = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
   minZoom: 3
 });
 
+// Local layers (Bhubaneshwar)
+// Watch out the property 'legend_yes'. It must be  true if you want to allow a second checckbox to display (refer to views/launch/legend.js and views/index.pug)   
+
+const Bbswr_Metropolitan_Area = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
+  layers: 'vector:bubaneshwar_metropolitan_area',
+  format: 'image/png',
+  transparent: true,
+  legend_yes: true,
+  maxZoom: 20,
+  minZoom: 1,
+});
+
+const Bbswr_City_Zone = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
+  layers: 'vector:bubaneshwar_city_zone',
+  format: 'image/png',
+  transparent: true,
+  legend_yes: true,
+  maxZoom: 20,
+  minZoom: 1,
+});
+
+const Slum_Areas = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
+  layers: 'vector:bbswr_slums',
+  format: 'image/png',
+  transparent: true,
+  legend_yes: true,
+  maxZoom: 20,
+  minZoom: 1,
+});
+const Slum_Total_Population = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
+  layers: 'vector:bbswr_slum_total_population_households',
+  format: 'image/png',
+  transparent: true,
+  legend_yes: true,
+  maxZoom: 20,
+  minZoom: 1,
+});
+
+const Female_Population = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
+  layers: 'vector:bbswr_slum_female_population_households',
+  format: 'image/png',
+  transparent: true,
+  legend_yes: true,
+  maxZoom: 20,
+  minZoom: 1,
+});
+
+const Male_Population = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
+  layers: 'vector:bbswr_slum_male_population_households',
+  format: 'image/png',
+  transparent: true,
+  legend_yes: true,
+  maxZoom: 20,
+  minZoom: 1,
+});
+const Empty_Place_Types = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
+  layers: 'vector:bbswr_empty_place_types',
+  format: 'image/png',
+  transparent: true,
+  legend_yes: true,
+  maxZoom: 20,
+  minZoom: 1,
+});
+
+const Empty_Place_Category = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
+  layers: 'vector:bbswr_empty_places_category',
+  format: 'image/png',
+  transparent: true,
+  legend_yes: true,
+  maxZoom: 20,
+  minZoom: 1,
+});
+
+const Land_Ownership = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
+  layers: 'vector:bbswr_land_ownership',
+  format: 'image/png',
+  transparent: true,
+  legend_yes: true,
+  maxZoom: 20,
+  minZoom: 1,
+});
+
+const Slums_Empty_Ownership = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
+  layers: 'vector:empty_places_ownership',
+  format: 'image/png',
+  transparent: true,
+  legend_yes: true,
+  maxZoom: 20,
+  minZoom: 1,
+});
+
+const Slum_Ownerhip = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
+  layers: '	vector:bbswr_slum_ownership',
+  format: 'image/png',
+  transparent: true,
+  legend_yes: true,
+  maxZoom: 20,
+  minZoom: 1,
+});
+
+const Slum_Religions = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
+  layers: 'vector:bbswr_slum_religions',
+  format: 'image/png',
+  transparent: true,
+  legend_yes: true,
+  maxZoom: 20,
+  minZoom: 1,
+});
+
+const Monthly_Incomes = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
+  layers: 'vector:bbswr_slum_average_incomes',
+  format: 'image/png',
+  transparent: true,
+  legend_yes: true,
+  maxZoom: 20,
+  minZoom: 1,
+});
+
+const Animals = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
+  layers: 'vector:bbswr_slum_animals',
+  format: 'image/png',
+  transparent: true,
+  legend_yes: true,
+  maxZoom: 20,
+  minZoom: 1,
+});
+
+const Slums_Bathrooms = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
+  layers: 'vector:bbswr_slum_bathrooms',
+  format: 'image/png',
+  transparent: true,
+  legend_yes: true,
+  maxZoom: 20,
+  minZoom: 1,
+});
+
+const Slum_Tapwater = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
+  layers: 'vector:bbswr_slum_tapwater',
+  format: 'image/png',
+  transparent: true,
+  legend_yes: true,
+  maxZoom: 20,
+  minZoom: 1,
+});
+
+const Slum_Toilettes = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
+  layers: 'vector:bbswr_slum_toilettes',
+  format: 'image/png',
+  transparent: true,
+  legend_yes: true,
+  maxZoom: 20,
+  minZoom: 1,
+});
+
+// Control panel for local layers
+
+L.control.layers(
+  {},
+  {
+    "Bubaneshwar metropolitan area": Bbswr_Metropolitan_Area,
+    "Bubaneshwar city zone": Bbswr_City_Zone,
+    "Slums of Bubaneshwar": Slum_Areas,
+    "Total population by households": Slum_Total_Population,
+    "Female habitanst by households": Female_Population,
+    "Male habitanst by households": Male_Population,
+    "Open/Vacant empty places": Empty_Place_Types,
+    "Dry/Green empty places ": Empty_Place_Category,
+    "Land ownership in Bubaneshwar": Land_Ownership,
+    "Ownership of empty areas": Slums_Empty_Ownership,
+    "Ownerhips of slum houses": Slum_Ownerhip,
+    "Religions by households": Slum_Religions,
+    "Monthly average incomes per household": Monthly_Incomes,
+    "Household with/without livestocks": Animals,
+    "Bathroom facilities in the slums": Slums_Bathrooms,
+    "Water accessibility in slums": Slum_Tapwater,
+    "Toilette facilities in the slums": Slum_Toilettes,
+  },
+  { position: 'topright', collapsed: true }).addTo(map);
+
 // Control for map legends. For those item, where the linked map has a "legend_yes: true," property, a second checkbox will displayed.
 L.control.legend(
   { position: 'bottomleft' }
@@ -150,7 +329,7 @@ const groupedOverlays = {
 };
 
 // Use the custom grouped layer control, not "L.control.layers"
-L.control.groupedLayers(baseLayers, groupedOverlays,{ position: 'topright', collapsed: true }).addTo(map);
+L.control.groupedLayers(baseLayers, groupedOverlays, { position: 'topright', collapsed: true }).addTo(map);
 
 map.addControl(new L.Control.Draw({
   edit: {

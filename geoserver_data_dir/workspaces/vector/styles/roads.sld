@@ -22,6 +22,7 @@
           </sld:LineSymbolizer>
         </sld:Rule>
         <sld:Rule>
+          <sld:Title>motorway_link</sld:Title>
           <ogc:Filter>
             <ogc:PropertyIsEqualTo>
               <ogc:PropertyName>highway</ogc:PropertyName>
@@ -38,6 +39,7 @@
           </sld:LineSymbolizer>
         </sld:Rule>
         <sld:Rule>
+          <sld:Title>trunk</sld:Title>
           <ogc:Filter>
             <ogc:PropertyIsEqualTo>
               <ogc:PropertyName>highway</ogc:PropertyName>
@@ -54,6 +56,7 @@
           </sld:LineSymbolizer>
         </sld:Rule>
         <sld:Rule>
+          <sld:Title>trunk_link</sld:Title>
           <ogc:Filter>
             <ogc:PropertyIsEqualTo>
               <ogc:PropertyName>highway</ogc:PropertyName>
@@ -70,6 +73,7 @@
           </sld:LineSymbolizer>
         </sld:Rule>
         <sld:Rule>
+          <sld:Title>primary</sld:Title>
           <ogc:Filter>
             <ogc:PropertyIsEqualTo>
               <ogc:PropertyName>highway</ogc:PropertyName>
@@ -86,6 +90,7 @@
           </sld:LineSymbolizer>
         </sld:Rule>
         <sld:Rule>
+          <sld:Title>primary_link</sld:Title>
           <ogc:Filter>
             <ogc:PropertyIsEqualTo>
               <ogc:PropertyName>highway</ogc:PropertyName>
@@ -102,6 +107,7 @@
           </sld:LineSymbolizer>
         </sld:Rule>
         <sld:Rule>
+          <sld:Title>secondary</sld:Title>
           <ogc:Filter>
             <ogc:PropertyIsEqualTo>
               <ogc:PropertyName>highway</ogc:PropertyName>
@@ -118,6 +124,7 @@
           </sld:LineSymbolizer>
         </sld:Rule>
         <sld:Rule>
+          <sld:Title>secondary_link</sld:Title>
           <ogc:Filter>
             <ogc:PropertyIsEqualTo>
               <ogc:PropertyName>highway</ogc:PropertyName>
@@ -134,6 +141,7 @@
           </sld:LineSymbolizer>
         </sld:Rule>
         <sld:Rule>
+          <sld:Title>tertiary</sld:Title>
           <ogc:Filter>
             <ogc:PropertyIsEqualTo>
               <ogc:PropertyName>highway</ogc:PropertyName>
@@ -150,6 +158,7 @@
           </sld:LineSymbolizer>
         </sld:Rule>
         <sld:Rule>
+          <sld:Title>tertiary_link</sld:Title>
           <ogc:Filter>
             <ogc:PropertyIsEqualTo>
               <ogc:PropertyName>highway</ogc:PropertyName>
@@ -166,6 +175,7 @@
           </sld:LineSymbolizer>
         </sld:Rule>
         <sld:Rule>
+          <sld:Title>track</sld:Title>
           <ogc:Filter>
             <ogc:PropertyIsEqualTo>
               <ogc:PropertyName>highway</ogc:PropertyName>
@@ -182,6 +192,7 @@
           </sld:LineSymbolizer>
         </sld:Rule>
         <sld:Rule>
+          <sld:Title>unclassified</sld:Title>
           <ogc:Filter>
             <ogc:PropertyIsEqualTo>
               <ogc:PropertyName>highway</ogc:PropertyName>
@@ -198,6 +209,7 @@
           </sld:LineSymbolizer>
         </sld:Rule>
         <sld:Rule>
+          <sld:Title>residential</sld:Title>
           <ogc:Filter>
             <ogc:PropertyIsEqualTo>
               <ogc:PropertyName>highway</ogc:PropertyName>
@@ -214,6 +226,7 @@
           </sld:LineSymbolizer>
         </sld:Rule>
         <sld:Rule>
+          <sld:Title>service</sld:Title>
           <ogc:Filter>
             <ogc:PropertyIsEqualTo>
               <ogc:PropertyName>highway</ogc:PropertyName>
@@ -230,6 +243,7 @@
           </sld:LineSymbolizer>
         </sld:Rule>
         <sld:Rule>
+          <sld:Title>pedestrian</sld:Title>
           <ogc:Filter>
             <ogc:PropertyIsEqualTo>
               <ogc:PropertyName>highway</ogc:PropertyName>
@@ -245,6 +259,7 @@
           </sld:LineSymbolizer>
         </sld:Rule>
         <sld:Rule>
+          <sld:Title>footway</sld:Title>
           <ogc:Filter>
             <ogc:PropertyIsEqualTo>
               <ogc:PropertyName>highway</ogc:PropertyName>
@@ -260,6 +275,7 @@
           </sld:LineSymbolizer>
         </sld:Rule>
         <sld:Rule>
+          <sld:Title>path</sld:Title>
           <ogc:Filter>
             <ogc:PropertyIsEqualTo>
               <ogc:PropertyName>highway</ogc:PropertyName>
@@ -295,6 +311,7 @@
           </sld:LineSymbolizer>
         </sld:Rule>
         <sld:Rule>
+          <sld:Title>motorway_link</sld:Title>
           <ogc:Filter>
             <ogc:PropertyIsEqualTo>
               <ogc:PropertyName>highway</ogc:PropertyName>
@@ -311,6 +328,7 @@
           </sld:LineSymbolizer>
         </sld:Rule>
         <sld:Rule>
+          <sld:Title>trunk</sld:Title>
           <ogc:Filter>
             <ogc:PropertyIsEqualTo>
               <ogc:PropertyName>highway</ogc:PropertyName>
@@ -327,6 +345,7 @@
           </sld:LineSymbolizer>
         </sld:Rule>
         <sld:Rule>
+          <sld:Title>trunk_link</sld:Title>
           <ogc:Filter>
             <ogc:PropertyIsEqualTo>
               <ogc:PropertyName>highway</ogc:PropertyName>
@@ -343,6 +362,7 @@
           </sld:LineSymbolizer>
         </sld:Rule>
         <sld:Rule>
+          <sld:Title>primary</sld:Title>
           <ogc:Filter>
             <ogc:PropertyIsEqualTo>
               <ogc:PropertyName>highway</ogc:PropertyName>
@@ -359,6 +379,7 @@
           </sld:LineSymbolizer>
         </sld:Rule>
         <sld:Rule>
+          <sld:Title>primary_link</sld:Title>
           <ogc:Filter>
             <ogc:PropertyIsEqualTo>
               <ogc:PropertyName>highway</ogc:PropertyName>
@@ -375,6 +396,7 @@
           </sld:LineSymbolizer>
         </sld:Rule>
         <sld:Rule>
+          <sld:Title>secondary</sld:Title>
           <ogc:Filter>
             <ogc:PropertyIsEqualTo>
               <ogc:PropertyName>highway</ogc:PropertyName>
@@ -391,6 +413,7 @@
           </sld:LineSymbolizer>
         </sld:Rule>
         <sld:Rule>
+          <sld:Title>secondary_link</sld:Title>
           <ogc:Filter>
             <ogc:PropertyIsEqualTo>
               <ogc:PropertyName>highway</ogc:PropertyName>
@@ -407,6 +430,7 @@
           </sld:LineSymbolizer>
         </sld:Rule>
         <sld:Rule>
+          <sld:Title>tertiary</sld:Title>
           <ogc:Filter>
             <ogc:PropertyIsEqualTo>
               <ogc:PropertyName>highway</ogc:PropertyName>
@@ -423,6 +447,7 @@
           </sld:LineSymbolizer>
         </sld:Rule>
         <sld:Rule>
+          <sld:Title>tertiary_link</sld:Title>
           <ogc:Filter>
             <ogc:PropertyIsEqualTo>
               <ogc:PropertyName>highway</ogc:PropertyName>
@@ -439,6 +464,7 @@
           </sld:LineSymbolizer>
         </sld:Rule>
         <sld:Rule>
+          <sld:Title>track</sld:Title>
           <ogc:Filter>
             <ogc:PropertyIsEqualTo>
               <ogc:PropertyName>highway</ogc:PropertyName>
@@ -454,6 +480,7 @@
           </sld:LineSymbolizer>
         </sld:Rule>
         <sld:Rule>
+          <sld:Title>unclassified</sld:Title>
           <ogc:Filter>
             <ogc:PropertyIsEqualTo>
               <ogc:PropertyName>highway</ogc:PropertyName>
@@ -469,6 +496,7 @@
           </sld:LineSymbolizer>
         </sld:Rule>
         <sld:Rule>
+          <sld:Title>residential</sld:Title>
           <ogc:Filter>
             <ogc:PropertyIsEqualTo>
               <ogc:PropertyName>highway</ogc:PropertyName>
@@ -484,6 +512,7 @@
           </sld:LineSymbolizer>
         </sld:Rule>
         <sld:Rule>
+          <sld:Title>service</sld:Title>
           <ogc:Filter>
             <ogc:PropertyIsEqualTo>
               <ogc:PropertyName>highway</ogc:PropertyName>
