@@ -140,12 +140,40 @@ module.exports = {
   },
 
   /**
+   * Merge multiple PDF files into one
+   * @param {string} outfile
+   * @param  {...string} infiles
+   */
+  mergePDFs(outfile, ...infiles) {
+    infiles = infiles.map(file => `"${file}"`).join(" ")
+    execSync(`gs -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -dPDFSETTINGS=/prepress -sOutputFile="${outfile}" ${infiles}`)
+  },
+
+  /**
    * Remove a map layer
    * @param {string} mapset
    * @param {string} layer layer name
    */
   remove(mapset, layer) {
     grass(mapset, `g.remove -f type=vector name=${layer}`)
+  },
+
+  /**
+   * Convert PS to PDF
+   * @param {string} infile
+   * @param {string} outfile
+   */
+  psToPDF(infile, outfile) {
+    execSync(`ps2pdf ${infile} ${outfile}`)
+  },
+
+  /**
+   * Convert text to PS
+   * @param {string} infile
+   * @param {string} outfile
+   */
+  textToPS(infile, outfile) {
+    execSync(`enscript -p ${outfile} ${infile}`)
   },
 
   grass
