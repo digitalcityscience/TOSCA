@@ -296,8 +296,8 @@ class ModuleOne {
     grass('module_1', `g.region res="${this.resolution}"`)
 
     const date = new Date()
-    const dateString = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}`
-    const dateString2 = `${date.getFullYear()}_${date.getMonth()}_${date.getDate()}_${date.getHours()}_${date.getMinutes()}`
+    const dateString = date.toString()
+    const safeDateString = date.toISOString().replace(/([\d-]*)T(\d\d):(\d\d):[\d.]*Z/g, '$1_$2$3')
 
     fs.writeFileSync('tmp/time_map_info_text', `
 Map output for time map calculations
@@ -325,7 +325,7 @@ Speed reduction coefficient for stricken area: ${this.reductionRatio}`)
     execSync(`ps2pdf tmp/time_map_1.ps tmp/time_map_1.pdf`)
     execSync(`ps2pdf tmp/time_map_2.ps tmp/time_map_2.pdf`)
 
-    execSync(`gs -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -dPDFSETTINGS=/prepress -sOutputFile="${OUTPUT}/time_map_results_${dateString2}.pdf" tmp/time_map_info_text.pdf tmp/time_map_1.pdf tmp/time_map_2.pdf`)
+    execSync(`gs -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -dPDFSETTINGS=/prepress -sOutputFile="${OUTPUT}/time_map_results_${safeDateString}.pdf" tmp/time_map_info_text.pdf tmp/time_map_1.pdf tmp/time_map_2.pdf`)
 
     fs.unlinkSync(`tmp/time_map_info_text`)
     fs.unlinkSync(`tmp/time_map_info_text.ps`)
