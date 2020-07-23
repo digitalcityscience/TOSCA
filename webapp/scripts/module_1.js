@@ -320,8 +320,8 @@ Speed reduction coefficient for stricken area: ${this.reductionRatio}`)
     execSync(`enscript -p tmp/time_map_info_text.ps tmp/time_map_info_text`)
     execSync(`ps2pdf tmp/time_map_info_text.ps tmp/time_map_info_text.pdf`)
 
-    grass('module_1', `ps.map input="${GRASS}/variables/defaults/ps_param_1" output=tmp/time_map_1.ps --overwrite`)
-    grass('module_1', `ps.map input="${GRASS}/variables/defaults/ps_param_2" output=tmp/time_map_2.ps --overwrite`)
+    grass('module_1', `ps.map input="${GRASS}/variables/defaults/module_1.ps_param_1" output=tmp/time_map_1.ps --overwrite`)
+    grass('module_1', `ps.map input="${GRASS}/variables/defaults/module_1.ps_param_2" output=tmp/time_map_2.ps --overwrite`)
     execSync(`ps2pdf tmp/time_map_1.ps tmp/time_map_1.pdf`)
     execSync(`ps2pdf tmp/time_map_2.ps tmp/time_map_2.pdf`)
 

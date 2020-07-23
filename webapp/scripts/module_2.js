@@ -1,19 +1,30 @@
+const { execSync } = require('child_process') // Documentation: https://nodejs.org/api/child_process.html
+const fs = require('fs')
 const { addVector, getNumericColumns, getTopology, gpkgOut, initMapset, grass } = require('./functions')
+
+const GRASS = process.env.GRASS_DIR
+const OUTPUT = process.env.OUTPUT_DIR
+
+const QUERY_RESOLUTION = 0.00002
 
 class ModuleTwo {
   constructor() {
     this.messages = {
       1: {
         message_id: 'module_2.1',
-        message: { "text": "Draw an area to query." }
+        message: { text: "Draw an area to query." }
       },
       2: {
         message_id: 'module_2.2',
-        message: { "text": "Which map do you want to query? Available maps are:" }
+        message: { text: "Which map do you want to query? Available maps are:" }
       },
       3: {
         message_id: 'module_2.3',
-        message: { "text": "Fill the form and press save." }
+        message: { text: "Fill the form and press save." }
+      },
+      24: {
+        message_id: 'module_2.24',
+        message: { text: "Statistics output is ready." }
       }
     }
   }
@@ -63,10 +74,77 @@ class ModuleTwo {
         const [queryColumn, whereColumn1, relation1, value1, logical1, whereColumn2, relation2, value2, logical2, whereColumn3, relation3, value3] = message
         const where = `${whereColumn1} ${relation1} ${value1} ${logical1} ${whereColumn2} ${relation2} ${value2} ${logical2} ${whereColumn3} ${relation3} ${value3}`
 
-        console.log(queryColumn)
-        console.log(where)
+        this.calculate(queryColumn, where)
+
+        return this.messages[24]
       }
     }
+  }
+
+  calculate(queryColumn, where) {
+    // Set region to query area, set resolution
+    grass('module_2', `g.region vector=${this.mapToQuery} res=${QUERY_RESOLUTION} --overwrite`)
+
+    // Set mask to query area
+    grass('module_2', `r.mask vector=${this.queryArea} --overwrite`)
+
+    // Clip the basemep map by query area
+    grass('module_2', `v.select ainput=${this.mapToQuery} atype=point,line,boundary,centroid,area binput=${this.queryArea} btype=area output=clipped_1 operator=overlap --overwrite`)
+
+    // Apply the query request
+    grass('module_2', `v.extract input=clipped_1 where="${where}" output=query_result_area_1 --overwrite`)
+
+    // Query statistics
+    const stats = grass('module_2', `v.db.univar -e -g map=query_result_area_1 column=${queryColumn}`).trim().split('\n').map(line => line.split('=')[1])
+
+    // Data output
+    gpkgOut('module_2', 'query_result_area_1', 'query_result_area_1')
+
+    const date = new Date()
+    const dateString = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}`
+    const dateString2 = `${date.getFullYear()}_${date.getMonth()}_${date.getDate()}_${date.getHours()}_${date.getMinutes()}`
+
+    let output = `Statistics and map results
+
+Date of creation: ${dateString}
+Queried column: ${queryColumn}
+Criteria: ${where}
+Results:
+Number of features:          ${stats[0]}
+Sum of values:               ${stats[9]}
+Minimum value:               ${stats[1]}
+Maximum value:               ${stats[2]}
+Range of values:             ${stats[3]}
+Mean:                        ${stats[4]}
+Mean of absolute values:     ${stats[5]}
+Median:                      ${stats[11]}
+Standard deviation:          ${stats[7]}
+Variance:                    ${stats[6]}
+Relative standard deviation: ${stats[8]}
+1st quartile:                ${stats[10]}
+3rd quartile:                ${stats[12]}
+90th percentile:             ${stats[13]}`
+
+    // Generate PDF
+
+    fs.mkdirSync('tmp')
+    fs.writeFileSync('tmp/statistics_output', output)
+
+    execSync(`enscript -p tmp/statistics.ps tmp/statistics_output`)
+    execSync(`ps2pdf tmp/statistics.ps tmp/statistics.pdf`)
+
+    grass('module_2', `ps.map input="${GRASS}/variables/defaults/module_2.ps_param_1" output=tmp/query_map.ps --overwrite`)
+    execSync(`ps2pdf tmp/query_map.ps tmp/query_map.pdf`)
+
+    execSync(`gs -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -dPDFSETTINGS=/prepress -sOutputFile="${OUTPUT}/query_results_${dateString2}.pdf" tmp/statistics.pdf tmp/query_map.pdf`)
+
+    fs.unlinkSync(`tmp/statistics_output`)
+    fs.unlinkSync(`tmp/statistics.ps`)
+    fs.unlinkSync(`tmp/statistics.pdf`)
+    fs.unlinkSync(`tmp/query_map.ps`)
+    fs.unlinkSync(`tmp/query_map.pdf`)
+
+    return output
   }
 
 }
