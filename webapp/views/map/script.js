@@ -118,11 +118,13 @@ const ToPoints = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
   minZoom: 3
 });
 
+
 // Local layers (Bhubaneshwar)
 // Watch out the property 'legend_yes'. It must be  true if you want to allow a second checckbox to display (refer to views/launch/legend.js and views/index.pug)   
 
 const Bbswr_Metropolitan_Area = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
   layers: 'vector:bubaneshwar_metropolitan_area',
+  name: 'Bubaneshwar metropolitan area',
   format: 'image/png',
   transparent: true,
   legend_yes: true,
@@ -132,6 +134,7 @@ const Bbswr_Metropolitan_Area = L.tileLayer.wms(geoserverUrl + 'geoserver/vector
 
 const Bbswr_City_Zone = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
   layers: 'vector:bubaneshwar_city_zone',
+  name: 'Bubaneshwar city zone',
   format: 'image/png',
   transparent: true,
   legend_yes: true,
@@ -141,6 +144,7 @@ const Bbswr_City_Zone = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
 
 const Slum_Areas = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
   layers: 'vector:bbswr_slums',
+  name: 'Slums of Bubaneshwar',
   format: 'image/png',
   transparent: true,
   legend_yes: true,
@@ -149,6 +153,7 @@ const Slum_Areas = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
 });
 const Slum_Total_Population = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
   layers: 'vector:bbswr_slum_total_population_households',
+  name: 'Total population by households',
   format: 'image/png',
   transparent: true,
   legend_yes: true,
@@ -158,6 +163,7 @@ const Slum_Total_Population = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/w
 
 const Female_Population = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
   layers: 'vector:bbswr_slum_female_population_households',
+  name: 'Female habitanst by households',
   format: 'image/png',
   transparent: true,
   legend_yes: true,
@@ -167,6 +173,7 @@ const Female_Population = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms',
 
 const Male_Population = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
   layers: 'vector:bbswr_slum_male_population_households',
+  name: 'Male habitanst by households',
   format: 'image/png',
   transparent: true,
   legend_yes: true,
@@ -175,6 +182,7 @@ const Male_Population = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
 });
 const Empty_Place_Types = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
   layers: 'vector:bbswr_empty_place_types',
+  name: 'Open/Vacant empty places',
   format: 'image/png',
   transparent: true,
   legend_yes: true,
@@ -184,6 +192,7 @@ const Empty_Place_Types = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms',
 
 const Empty_Place_Category = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
   layers: 'vector:bbswr_empty_places_category',
+  name: 'Dry/Green empty places',
   format: 'image/png',
   transparent: true,
   legend_yes: true,
@@ -193,6 +202,7 @@ const Empty_Place_Category = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wm
 
 const Land_Ownership = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
   layers: 'vector:bbswr_land_ownership',
+  name: 'Land ownership in Bubaneshwar',
   format: 'image/png',
   transparent: true,
   legend_yes: true,
@@ -202,6 +212,7 @@ const Land_Ownership = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
 
 const Slums_Empty_Ownership = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
   layers: 'vector:empty_places_ownership',
+  name: 'Ownership of empty areas',
   format: 'image/png',
   transparent: true,
   legend_yes: true,
@@ -211,6 +222,7 @@ const Slums_Empty_Ownership = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/w
 
 const Slum_Ownerhip = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
   layers: '	vector:bbswr_slum_ownership',
+  name: 'Ownerhips of slum houses',
   format: 'image/png',
   transparent: true,
   legend_yes: true,
@@ -220,6 +232,7 @@ const Slum_Ownerhip = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
 
 const Slum_Religions = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
   layers: 'vector:bbswr_slum_religions',
+  name: 'Religions by households',
   format: 'image/png',
   transparent: true,
   legend_yes: true,
@@ -229,6 +242,7 @@ const Slum_Religions = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
 
 const Monthly_Incomes = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
   layers: 'vector:bbswr_slum_average_incomes',
+  name: 'Monthly average incomes per household',
   format: 'image/png',
   transparent: true,
   legend_yes: true,
@@ -238,6 +252,7 @@ const Monthly_Incomes = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
 
 const Animals = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
   layers: 'vector:bbswr_slum_animals',
+  name: 'Household with/without livestocks',
   format: 'image/png',
   transparent: true,
   legend_yes: true,
@@ -247,6 +262,7 @@ const Animals = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
 
 const Slums_Bathrooms = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
   layers: 'vector:bbswr_slum_bathrooms',
+  name: 'Bathroom facilities in the slums',
   format: 'image/png',
   transparent: true,
   legend_yes: true,
@@ -256,6 +272,7 @@ const Slums_Bathrooms = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
 
 const Slum_Tapwater = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
   layers: 'vector:bbswr_slum_tapwater',
+  name: 'Water accessibility in slums',
   format: 'image/png',
   transparent: true,
   legend_yes: true,
@@ -265,37 +282,13 @@ const Slum_Tapwater = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
 
 const Slum_Toilettes = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
   layers: 'vector:bbswr_slum_toilettes',
+  name: 'Toilette facilities in the slums',
   format: 'image/png',
   transparent: true,
   legend_yes: true,
   maxZoom: 20,
   minZoom: 1,
 });
-
-// Control panel for local layers
-
-L.control.layers(
-  {},
-  {
-    "Bubaneshwar metropolitan area": Bbswr_Metropolitan_Area,
-    "Bubaneshwar city zone": Bbswr_City_Zone,
-    "Slums of Bubaneshwar": Slum_Areas,
-    "Total population by households": Slum_Total_Population,
-    "Female habitanst by households": Female_Population,
-    "Male habitanst by households": Male_Population,
-    "Open/Vacant empty places": Empty_Place_Types,
-    "Dry/Green empty places ": Empty_Place_Category,
-    "Land ownership in Bubaneshwar": Land_Ownership,
-    "Ownership of empty areas": Slums_Empty_Ownership,
-    "Ownerhips of slum houses": Slum_Ownerhip,
-    "Religions by households": Slum_Religions,
-    "Monthly average incomes per household": Monthly_Incomes,
-    "Household with/without livestocks": Animals,
-    "Bathroom facilities in the slums": Slums_Bathrooms,
-    "Water accessibility in slums": Slum_Tapwater,
-    "Toilette facilities in the slums": Slum_Toilettes,
-  },
-  { position: 'topright', collapsed: true }).addTo(map);
 
 // Control for map legends. For those item, where the linked map has a "legend_yes: true," property, a second checkbox will displayed.
 L.control.legend(
@@ -325,6 +318,25 @@ const groupedOverlays = {
     "From-points": FromPoints,
     "Via-points": ViaPoints,
     "To-points": ToPoints
+  },
+  "Bhubaneshwar": {
+    [Bbswr_Metropolitan_Area.options.name]: Bbswr_Metropolitan_Area,
+    [Bbswr_City_Zone.options.name]: Bbswr_City_Zone,
+    [Slum_Areas.options.name]: Slum_Areas,
+    [Slum_Total_Population.options.name]: Slum_Total_Population,
+    [Female_Population.options.name]: Female_Population,
+    [Male_Population.options.name]: Male_Population,
+    [Empty_Place_Types.options.name]: Empty_Place_Types,
+    [Empty_Place_Category.options.name]: Empty_Place_Category,
+    [Land_Ownership.options.name]: Land_Ownership,
+    [Slums_Empty_Ownership.options.name]: Slums_Empty_Ownership,
+    [Slum_Ownerhip.options.name]: Slum_Ownerhip,
+    [Slum_Religions.options.name]: Slum_Religions,
+    [Monthly_Incomes.options.name]: Monthly_Incomes,
+    [Animals.options.name]: Animals,
+    [Slums_Bathrooms.options.name]: Slums_Bathrooms,
+    [Slum_Tapwater.options.name]: Slum_Tapwater,
+    [Slum_Toilettes.options.name]: Slum_Toilettes,
   }
 };
 
