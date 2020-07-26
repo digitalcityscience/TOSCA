@@ -1,0 +1,154 @@
+csv2odf (2.09) unstable; urgency=low
+
+  * Add option to specify csv file encoding.
+
+ -- Larry Jordan <w322@users.sourceforge.net>  Sat, 01 Jul 2017 21:54:27 -0400
+
+csv2odf (2.08) unstable; urgency=low
+
+  * Bugfix unicode regression, filter offset.
+
+ -- Larry Jordan <w322@users.sourceforge.net>  Mon, 13 Feb 2017 22:30:53 -0500
+
+csv2odf (2.07) unstable; urgency=low
+
+  * Bugfix for memory error with xlsx and large csv files.
+
+ -- Larry Jordan <w322@users.sourceforge.net>  Sun, 05 Feb 2017 18:58:48 -0500
+
+csv2odf (2.06) unstable; urgency=low
+
+  * Fixed bug #8 error handling unicode.
+
+ -- Larry Jordan <w322@users.sourceforge.net>  Mon, 12 Dec 2016 17:59:04 -0500
+
+csv2odf (2.05) unstable; urgency=low
+
+  * Fixed bug #6 --template option did not work.
+  * Fixed bug #7 xlsx mangled output.
+  * Improved handling of unicode characters.
+
+ -- Larry Jordan <w322@users.sourceforge.net>  Tue, 26 Apr 2016 07:03:09 -0400
+
+csv2odf (2.04) unstable; urgency=low
+
+  * Fixed bug causing loss of lines in other tabs.
+
+ -- Larry Jordan <w322@users.sourceforge.net>  Tue, 12 May 2015 12:49:59 -0400
+
+csv2odf (2.03) unstable; urgency=low
+
+  * Added -a option to append to existing data.
+  * Fixed problem with large files on Windows.
+
+ -- Larry Jordan <w322@users.sourceforge.net>  Mon, 20 Apr 2015 09:33:40 -0400
+
+csv2odf (2.02) unstable; urgency=low
+
+  * Fixed pipes in Windows when using python 2.7.
+  * Added ability to add data to empty sheets in xlsx.
+  * Fixed -o option to leave empty order positions unchanged.
+
+ -- Larry Jordan <w322@users.sourceforge.net>  Mon, 13 Oct 2014 18:24:16 -0400
+
+csv2odf (2.01) unstable; urgency=low
+
+  * Changed temporary file to decrease memory use during final save.
+  * Fixed xml output crash in windows.
+
+ -- Larry Jordan <w322@users.sourceforge.net>  Tue, 09 Sep 2014 21:54:06 -0400
+
+csv2odf (2.00) unstable; urgency=low
+
+  * Ability to handle large data files using less memory.
+  * The date tag has changed to [csv2odf-date].
+
+ -- Larry Jordan <w322@users.sourceforge.net>  Thu, 31 Jul 2014 12:00:00 +0000
+
+csv2odf (1.11) unstable; urgency=low
+
+  * Bugfix to handle blank cells more cleanly.
+
+ -- Larry Jordan <w322@users.sourceforge.net>  Tue, 20 May 2014 12:00:00 +0000
+
+csv2odf (1.10) unstable; urgency=low
+
+  * Preserve the position of filters when options are in the template.
+  * Fixed injection of multiple lines within csv data cells.
+
+ -- Larry Jordan <w322@users.sourceforge.net>  Thu, 03 Apr 2014 12:00:00 +0000
+
+csv2odf (1.09) unstable; urgency=low
+
+  * Fixed bug causing unreadable output in xlsx format.
+  * Graphs pointing to data are adjusted to point to inserted data.
+
+ -- Larry Jordan <w322@users.sourceforge.net>  Fri, 30 Nov 2012 12:00:00 +0000
+
+csv2odf (1.08) unstable; urgency=low
+
+  * Handle compressed template cells by expanding instead of generating an error.
+  * Handle missing template rows or cells instead of generating an error.
+  * Added progress indication in verbose mode for large files.
+  * Some improvements in error messages.
+
+ -- Larry Jordan <w322@users.sourceforge.net>  Tue, 03 Jan 2012 12:00:00 +0000
+
+csv2odf (1.07) unstable; urgency=low
+
+  * Added support for html files (html, htm)
+  * Added option to support reading of the template from stdin
+  * Improved support for tab delimiters
+  * Modified to use Python csv module for reading data files
+  * Added support for tsv (tab seperated values) data file extension
+
+ -- Larry Jordan <w322@users.sourceforge.net>  Mon, 26 Sep 2011 12:00:00 +0000
+
+csv2odf (1.06) unstable; urgency=low
+
+  * Added ability to handle these file extensions: docm, xlsm, dotx, xltx, dotm, xltm.
+  * Added ability to display line feeds in a document table cell.
+  * Added ability to add a comment from the command line to a document.
+
+ -- Larry Jordan <w322@users.sourceforge.net>  Thu, 16 Jun 2011 12:00:00 +0000
+
+csv2odf (1.05) unstable; urgency=low
+
+  * added support for piping input and output
+  * added display of version number
+
+ -- Larry Jordan <w322@users.sourceforge.net>  Wed, 09 Mar 2011 12:00:00 +0000
+
+csv2odf (1.04) unstable; urgency=low
+
+  * added support for xlsx and docx file formats
+
+ -- Larry Jordan <w322@users.sourceforge.net>  Sat, 12 Feb 2011 12:00:00 +0000
+
+csv2odf (1.03) unstable; urgency=low
+
+  * rewritten to use python xml.dom module, simplifying the code
+  * options can now be included in the template file
+
+ -- Larry Jordan <w322@users.sourceforge.net>  Mon, 12 Apr 2010 12:00:00 +0000
+
+csv2odf (1.02) unstable; urgency=low
+
+  * csv2odf is now compatible with Python 3, requires Python 2.6 or greater
+  * csv file is now optional when not merging data
+  * Date styles are now preserved
+
+ -- Larry Jordan <w322@users.sourceforge.net>  Sat, 26 Dec 2009 12:00:00 +0000
+
+csv2odf (1.01) unstable; urgency=low
+
+  * Minor code cleanup
+
+ -- Larry Jordan <w322@users.sourceforge.net>  Sat, 07 Nov 2009 12:00:00 +0000
+
+csv2odf (1.00) unstable; urgency=low
+
+  * First release.
+
+ -- Larry Jordan <w322@users.sourceforge.net>  Sat, 03 Oct 2009 12:00:00 +0000
+

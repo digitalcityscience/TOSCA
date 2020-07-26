@@ -1,0 +1,4 @@
+Government:owner_set='government':government_land
+Private:owner_set='private':private_land
+Temple/Trustee:owner_set='temple':temple_land
+No-ownership-data:owner_set='nodata':nodata_land

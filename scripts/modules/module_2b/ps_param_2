@@ -1,21 +1,33 @@
-border
-    color grey
-    width 1
-    end
-
-mapinfo
-	where 1.5 0
-	font Courier
-	fontsize 12
-	color brown
-	end
-
-vareas query_result_area_1
+vareas government_land
 	color red
-	width 1
+	fcolor red
+	width 0.1
 	masked n
 	end
 
+vareas private_land
+	color #33aaff
+	fcolor #33aaff
+	width 0.1
+	masked n
+	end
+
+
+vareas temple_land
+	color #ffdc30
+	fcolor #ffdc30
+	width 0.1
+	masked n
+	end
+
+vareas nodata_land
+	color #c146c2
+	fcolor #c146c2
+	width 0.1
+	masked n
+	end
+	
+	
 vlines lines
 	where highway = 'trunk' OR highway = 'trunk link'
 	color #eecc77
@@ -51,9 +63,17 @@ vlines lines
 	masked y
 	end
 
+
 vareas query_area_1
 	color green
 	width 2
 	fcolor #eeeeee
 	masked y
+	end
+	
+mapinfo
+	where 1 0
+	font Courier
+	fontsize 12
+	color brown
 	end

@@ -1,14 +1,14 @@
 #! /bin/bash
 . ~/cityapp/scripts/shared/functions.sh
 
-# version 1.1
+# version 1.11
 # CityApp module
 # It is simply to touch "system.running" file in $MESSAGE_SENT directory
 # Started by ca_starter and killed only by ca_shutdown
 #
 # Core module, do not modify.
 #
-# 2020. április 12.
+# 2020. július 24.
 # Author: BUGYA Titusz, CityScienceLab -- Hamburg, Germany
 
 #
@@ -29,7 +29,7 @@ VALUE=1
 until [ $VALUE -eq 0 ];do
     echo $VALUE > $MESSAGE_SENT/system.running
     VALUE=$(($VALUE+1))
-    sleep 1s
+    sleep 0.8s
 done
 
 exit

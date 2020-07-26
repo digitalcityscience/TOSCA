@@ -1,0 +1,230 @@
+csv2odf(1)                      Text Processing                     csv2odf(1)
+
+
+
+NAME
+       csv2odf - convert csv files to open document format
+
+SYNTAX
+       csv2odf [option] [<csvfile>] <templatefile> [<outputfile>]
+
+DESCRIPTION
+       csv2odf is a command line tool that can convert a comma separated value
+       (csv) file into an ods, odt, html, xlsx, or docx document.  csv2odf  is
+       useful  for creating reports from databases and other data sources that
+       produce csv files.  csv2odf can be combined with cron and shell scripts
+       to automatically generate business reports.
+
+       The csv data is merged with a template file to produce the output file.
+       The template can be a spreadsheet file (ods or xlsx) or a document file
+       (odt or docx), as produced by OpenOffice.org, LibreOffice, or Word. The
+       template can also be an html file.
+
+       The first row of the table will be treated as a header row.   (Override
+       with  -H)  The formatting in the second row of cells will be applied to
+       each data cell of the output file.  If the -a option is used, data will
+       be  appended  below the last existing row, formatting from the last row
+       will be applied to cells in each new row.
+
+       If the template is a spreadsheet, the second row  should  contain  some
+       data  of  similar  type to the incoming data so that numbers/text/dates
+       can be correctly identified.
+
+       If the template is a document, it must contain a  table  that  the  csv
+       data  will be inserted into.  If the first table in the file is not the
+       target, use the -t options to identify the table number.
+
+       If the template is an html file, it must contain a table  or  div  tags
+       that  the  csv  data  will be inserted into.  If the first table in the
+       file is not the target, use the -t options to identify the table number
+       or  table  id  property.   The  table may be made using div tags if the
+       --div options is used, in which case a div tag must enclose each  cell,
+       each row, and the entire table.
+
+       If a csv input file is not specified, input will be taken from standard
+       input (stdin).  If an output file is  not  specified,  output  will  be
+       directed  to standard output (stdout).  This allows the use of the com-
+       mand in pipes.
+
+       In the header or footer of the template, you  can  insert  a  [csv2odf-
+       date]  tag  ("csv2odf-date" enclosed in square brackets).  The date tag
+       will be replaced by the current date.  The date format can  be  changed
+       using  format  codes  (see  below), for example [csv2odf-date %Y-%m-%d]
+       will produce a date like 2008-02-04.  A date with a day offset from the
+       current  date  can  be created by using +n or -n, for example [csv2odf-
+       date-1] would insert the date before today.
+
+       The options may be placed in  the  template  file.   To  do  this,  put
+       "csv2odf:"  (without  quotes) followed by the options in the first cell
+       (cell A1).  Note the  first  row  will  be  deleted  when  it  contains
+       options.
+
+OPTIONS FOR PROCESSING CSV DATA FILE
+       -c <char>
+              use  char as delimiter instead of comma.  \t will indicate a tab
+              as the dilimiter.
+
+       -o <spec>
+              specify column order: 2,1,3 = second csv column  will  be  first
+              column  in the output.  Also use to leave unchanged the contents
+              of a template column: 1,2,,3,4 = the 3rd template column is  not
+              overwritten.   Useful  if a column contains a formula.  The for-
+              mula cell references will be offset to the correct row.
+
+       -s <n> start reading at the nth row of the csv file
+
+       -e <n> end reading at the nth row of the csv file
+
+       -d <fmt>
+              date format within csv data is specified by fmt string,  see  -D
+              for  codes.   For  columns identified as dates, the program will
+              attempt to translate incoming data into the native  date  coding
+              using  the  format supplied with the -d option.  If the transla-
+              tion fails, it data will be inserted as text.  In ods files, the
+              program  knows  which columns are dates by looking for date for-
+              matted cells in the template.  In xlsx files you must mark  date
+              cells  with  the text [csv2odf-date] (csv2odf-date inside square
+              brackets).
+
+       -E <encoding>, --csv-encoding=<encoding>
+              specify the encoding used in the csv file.  A list of  available
+              encoding        names        can        be        found       at
+              https://docs.python.org/3/library/codecs.html#standard-encod-
+              ings.
+
+       --default-csv-encoding
+              display  the default encoding for csv files.  This value is sys-
+              tem dependent.
+
+OPTIONS FOR PROCESSING TEMPLATE FILE
+       -H     insert the first csv row into the header
+
+       -S <n> skip the first n rows of the template file, the header  will  be
+              the next row after those skipped
+
+       -t <n> specify  which tab or table to add data to, default first table.
+              For html files, -t may be followed by a name to match  to  table
+              id property.
+
+       -a     append csv data to the end of existing data
+
+       --comment=<text>
+              replace [csv2odf-comment] within the document with <text>
+
+       --div  search  for  <div>  tags  instead  of <table> (html files only).
+              <div> tags must be nested with levels for table, row, and cell.
+
+       --template-stdin-ods
+              The template will be passed to std-in and it's  format  will  be
+              ods
+
+       --template-stdin-odt
+              The  template  will  be passed to std-in and it's format will be
+              odt
+
+       --template-stdin-html
+              The template will be passed to std-in and it's  format  will  be
+              html
+
+       --template-stdin-xlsx
+              The  template  will  be passed to std-in and it's format will be
+              xlsx
+
+       --template-stdin-docx
+              The template will be passed to std-in and it's  format  will  be
+              docx
+
+GENERAL OPTIONS
+       -h     displays help information
+
+       -v     verbose mode
+
+       -D     show a list of date format codes (see below)
+
+       -q     suppress all warning messages
+
+       -x     create an xml output file instead of odf
+
+       -n     do  not  merge the data into output, use with -x to extract tem-
+              plate xml codes
+
+       --input=<file>
+              specify the csv data file location
+
+       --template=<file>
+              specify the tempate file location
+
+       --output=<file>
+              specify the output file location
+
+       -V     display version number
+
+       -z     display debugging information
+
+DATE FORMAT CODES
+       The date format codes are the same ones used by Python's strftime func-
+       tion.
+
+       %a   Locale's abbreviated weekday name.
+       %A   Locale's full weekday name.
+       %b   Locale's abbreviated month name.
+       %B   Locale's full month name.
+       %c   Locale's appropriate date and time representation.
+       %d   Day of the month as a decimal number [01-31].
+       %H   Hour (24-hour clock) as a decimal number [00-23].
+       %I   Hour (12-hour clock) as a decimal number [01-12].
+       %j   Day of the year as a decimal number [001-366].
+       %m   Month as a decimal number [01-12].
+       %M   Minute as a decimal number [00-59].
+       %p   Locale's equivalent of either AM or PM.
+       %S   Second as a decimal number [00-61].
+       %U   Week number of the year (Sunday as the first day of the week)
+               as a decimal number [00-53]. All days in a new year preceding
+               the first Sunday are considered to be in week 0
+       %w   Weekday as a decimal number [0(Sunday)-6].
+       %W   Week number of the year (Monday as the first day of the week)
+               as a decimal number [00-53]. All days in a new year preceding
+               the first Monday are considered to be in week 0.
+       %x   Locale's appropriate date representation.
+       %X   Locale's appropriate time representation.
+       %y   Year without century as a decimal number [00-99].
+       %Y   Year with century as a decimal number.
+       %Z   Time zone name (no characters if no time zone exists).
+       %%   A literal "%" character.
+
+EXAMPLES
+       Insert data into a spreadsheet:
+
+              csv2odf data.csv template.ods output.ods
+
+       Insert data into an LibreOffice text document:
+
+              csv2odf data.csv template.odt output.odt
+
+       Specify format for dates in the csv file:
+
+              csv2odf -d "%m/%d/%y %H:%M" data.csv template.ods output.ods
+
+       Dates  in the csv file can be almost any format.  You can tell the pro-
+       gram the format to be expected with the -d option.  In ods  files,  the
+       program  knows  which  columns  are dates by looking for date formatted
+       cells in the template.  In xlsx files, format the date  then  mark  the
+       cell  with  the  text [csv2odf-date] (csv2odf-date inside square brack-
+       ets).
+
+       The csv file has a header on the first row:
+
+              csv2odf -H data.csv template.ods output.ods
+
+       When the csv file has column names on the first row, -H will cause  the
+       column name to be put into the header of the output file.
+
+       The csv file has a header but we don't want to use it:
+
+              csv2odf -s 2 data.csv template.ods output.ods
+
+       This will use data from the csv file beginning with the second row.
+
+
+
+Larry Jordan                       July 2014                        csv2odf(1)

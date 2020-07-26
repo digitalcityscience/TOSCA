@@ -1,10 +1,11 @@
 #! /bin/bash
 . ~/cityapp/scripts/shared/functions.sh
 
-# version 0.31
+# version 0.4
 # CityApp module
-# This module is to query any existing map by a user-defined area -- querying attribute data only
-# 2020. júliu 2.
+# This module is to launch module_2b_query_process.sh, and process user communication
+
+# 2020. július 26.
 # Author: BUGYA Titusz, CityScienceLab -- Hamburg, Germany
 
 #
@@ -34,7 +35,7 @@ Running_Check start
 ##############
 # Preprocess, 
 ##############
-
+    
     rm -f $MESSAGE_SENT/*
 
     # First overwrite the region of module_2 mapset. If no such mapset exist, create it
@@ -53,43 +54,46 @@ Running_Check start
 # User input
 #############
 
-    #  If you want to draw a new query area, click 'Draw' button, draw the area you want to query, then click 'Save'. If you want to exit, click 'Cancel'.
-        Send_Message m 1 module_2b.1 question actions [\"Map\",\"Draw\",\"Cancel\"]
+    # If you want to draw a new query area, click 'Draw' button, draw the area you want to query, then click 'Save'. If you want to exit, click 'Cancel'.
+        Send_Message m 1 module_2b.1 question actions [\"Draw\",\"Cancel\"]
             Request
             case $REQUEST_CONTENT in
                 "draw"|"Draw"|"DRAW")
                     Request_Map geojson GEOJSON
-                    
-                        Process_Check start add_map
                         Add_Vector $REQUEST_PATH query_area_1
-                        Gpkg_Out query_area_1
-                        QUERY_AREA_1=query_area_1
-                    
-                        Process_Check stop add_map
+                        Gpkg_Out query_area_1 query_area_1
+                        sleep 1.1s
                      ;;
                 "cancel"|"Cancel"|"CANCEL")
                     # To process exit, click OK.
                     Send_Message m 2 module_2b.2 question actions [\"OK\"]
                         Request
+                            until [ "$REQUEST_CONTENT" == "ok" ]; do
+                                rm -f $MESSAGE_SENT/*.message
+                                Send_Message m 2 module_2b.2 question actions [\"OK\"]
+                                    Request
+                            done
                         Running_Check stop
                         Close_Process
                     exit;;
             esac
-        
+
 ##############
 #  Processing 
 ##############
+    
+    # Launching a separate script for actual calculations: this script will run directly in the GRASS GIS
+        grass $GRASS/$MAPSET --exec ~/cityapp/scripts/modules/module_2b/module_2b_query_process.sh    
+    
+    # Query is finished, to process exit, click OK.
+        Send_Message m 2 module_2b.2 question actions [\"OK\"]
+            Request
+                until [ "$REQUEST_CONTENT" == "ok" ]; do
+                    rm -f $MESSAGE_SENT/*.message
+                    Send_Message m 2 module_2b.2 question actions [\"OK\"]
+                        Request
+                done
 
-    Process_Check start calculations
-    
-        grass $GRASS/$MAPSET --exec ~/cityapp/scripts/modules/module_2b/module_2b_query_process.sh
-    
-    Process_Check stop calculations
-    
-    
-    # To process exit, click OK.
-    Send_Message m 2 module_2b.2 question actions [\"OK\"]
-        Request
-            Running_Check stop
-            Close_Process
-exit
+        Running_Check Stop
+        Close_Process
+    exit

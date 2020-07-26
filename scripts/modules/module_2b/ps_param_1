@@ -1,43 +1,38 @@
-border
-    color grey
-    width 1
-    end
-
-mapinfo
-	where 1.5 0
-	font Courier
-	fontsize 12
-	color brown
+eps 14% 92%
+	epsfile /home/titusz/cityapp/scripts/modules/module_2b/map_legend_1.eps
+	scale 0.5
+	masked n
 	end
 	
-vareas clipped_lands_governmental
+vareas government_land
 	color red
 	fcolor red
 	width 0.1
 	masked n
 	end
 
-vareas clipped_lands_private
-	color purple
-	fcolor purple
+vareas private_land
+	color #33aaff
+	fcolor #33aaff
 	width 0.1
 	masked n
 	end
 
 
-vareas clipped_lands_temple
-	color #dddd22
-	fcolor #dddd22
+vareas temple_land
+	color #ffdc30
+	fcolor #ffdc30
 	width 0.1
 	masked n
 	end
 
-vareas clipped_lands_no_owner_data
-	color #444444
-	fcolor #888888
+vareas nodata_land
+	color #c146c2
+	fcolor #c146c2
 	width 0.1
 	masked n
 	end
+	
 	
 vlines lines
 	where highway = 'trunk' OR highway = 'trunk link'
@@ -74,9 +69,17 @@ vlines lines
 	masked y
 	end
 
+
 vareas query_area_1
 	color green
 	width 2
 	fcolor #eeeeee
 	masked y
+	end
+	
+mapinfo
+	where 1 0
+	font Courier
+	fontsize 12
+	color brown
 	end
