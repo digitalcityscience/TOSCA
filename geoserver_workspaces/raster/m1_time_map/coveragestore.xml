@@ -1,0 +1,13 @@
+<coverageStore>
+  <id>CoverageStoreInfoImpl--d260471:17020009e7b:-5a40</id>
+  <name>m1_time_map</name>
+  <description>m1_time_map</description>
+  <type>GeoTIFF</type>
+  <enabled>true</enabled>
+  <workspace>
+    <id>WorkspaceInfoImpl-53a0964:16fc2624139:-7fc9</id>
+  </workspace>
+  <__default>false</__default>
+  <dateModified>2020-07-21 12:12:19.426 UTC</dateModified>
+  <url>/usr/share/geoserver/data_dir/data/cityapp/m1_time_map.tif</url>
+</coverageStore>

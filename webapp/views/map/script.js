@@ -6,7 +6,7 @@
 
 const map = new L.Map('map', {
   center: new L.LatLng(lat, lon),
-  zoom: 11,
+  zoom: 13,
   minZoom: 4
 })
 
@@ -198,7 +198,7 @@ const drawnItems = L.featureGroup().addTo(map);
                 });
                 
             const Land_Ownership = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
-                    layers: 'vector:bbswr_land_ownership',
+                    layers: 'vector:land_owners',
                     format: 'image/png',
                     transparent: true,
                     legend_yes: true,

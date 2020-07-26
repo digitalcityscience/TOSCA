@@ -4,7 +4,6 @@
 # version 0.4
 # CityApp module
 # This module is to launch module_2b_query_process.sh, and process user communication
-
 # 2020. július 26.
 # Author: BUGYA Titusz, CityScienceLab -- Hamburg, Germany
 
@@ -83,10 +82,26 @@ Running_Check start
 ##############
     
     # Launching a separate script for actual calculations: this script will run directly in the GRASS GIS
-        grass $GRASS/$MAPSET --exec ~/cityapp/scripts/modules/module_2b/module_2b_query_process.sh    
+        grass $GRASS/$MAPSET --exec ~/cityapp/scripts/modules/module_2b/module_2b_query_process.sh
+        Send_Message m 2 module_2b.2 question actions [\"OK\"]
+        
+    # Creating the final pdf output
+        # Writing numeric and map data into a single ods table file
+            rm -f $MODULE/result.ods
+            ~/cityapp/scripts/external/csv2odf/csv2odf -S2 $MODULE/outfile.csv $MODULE/template.ods $MODULE/result.ods
+        
+        # Coverting ods into pdf
+            rm -f $MODULE/result.pdf
+            cd $MODULE
+            /usr/bin/soffice --convert-to pdf ./result.ods
+
+        # Merging table output pdf and maps pdf into a single pdf file
+            gs -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -dPDFSETTINGS=/prepress -sOutputFile=$MODULE/temp_results_$DATE_VALUE_2".pdf" $MODULE/result.pdf $MODULE/temp_map_2.pdf
+            
+            cp $MODULE/temp_results_$DATE_VALUE_2".pdf" $MESSAGE_SENT/info.pdf
+            cp $MODULE/temp_results_$DATE_VALUE_2".pdf" ~/cityapp/saved_results/bbswr_slum_landownership_query_$DATE_VALUE_2".pdf"
     
     # Query is finished, to process exit, click OK.
-        Send_Message m 2 module_2b.2 question actions [\"OK\"]
             Request
                 until [ "$REQUEST_CONTENT" == "ok" ]; do
                     rm -f $MESSAGE_SENT/*.message

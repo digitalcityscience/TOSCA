@@ -80,28 +80,29 @@ Process_Check start calculations
         v.what.vect map=clipped_households_points column=owner_set query_map=clipped_lands query_column=$COL_OWNER
 
     # Now this new point map is ready for complex a query
-    
+        
         # First the total population, amount of houses, land area and number of lands
         # Total population, amount of houses, land area and number of lands on query area
-            rm -f $MODULE/temp_dataoutput_1
-            touch $MODULE/temp_dataoutput_1
             
-            TOT_HOUSE=$(v.db.univar map=clipped_households_points column=total_family_members | head -n1 | cut -d":" -f2 | sed s'/ //'g )
-            TOT_POP=$(v.db.univar map=clipped_households_points column=total_family_members | tail -n1 | cut -d":" -f2 | sed s'/ //'g )
-            TOT_LAND=$(v.db.univar map=clipped_lands column=area | head -n1 | cut -d":" -f2 | sed s'/ //'g)
-            TOT_AREA=$(v.db.univar map=clipped_lands column=area | tail -n1 | cut -d":" -f2 | sed s'/ //'g | cut -d"." -f1 | cut -d',' -f1)
+            unset TABLE_DATA
+            rm -f $MODULE/outfile.csv
+            touch $MODULE/outfile.csv
             
-            echo "Total amount of lands on query area: $TOT_LAND" >> $MODULE/temp_dataoutput_1
-            echo "Total surface of query area (m2): $TOT_AREA" >> $MODULE/temp_dataoutput_1
-            echo "Total amount of houses on query area: $TOT_HOUSE" >> $MODULE/temp_dataoutput_1
-            echo "Total population on query area: $TOT_POP" >> $MODULE/temp_dataoutput_1
-            echo >> $MODULE/temp_dataoutput_1
+            HOUSE_TOT=$(v.db.univar map=clipped_households_points column=total_family_members | head -n1 | cut -d":" -f2 | sed s'/ //'g )
+            POP_TOT=$(v.db.univar map=clipped_households_points column=total_family_members | tail -n1 | cut -d":" -f2 | sed s'/ //'g )
+            LAND_TOT=$(v.db.univar map=clipped_lands column=area | head -n1 | cut -d":" -f2 | sed s'/ //'g)
+            AREA_TOT=$(v.db.univar map=clipped_lands column=area | tail -n1 | cut -d":" -f2 | sed s'/ //'g | cut -d"." -f1 | cut -d',' -f1)
+            
+            TABLE_DATA="Total summed result,,$LAND_TOT,,,$AREA_TOT,,,$HOUSE_TOT,,,$POP_TOT,,,"            
+            echo $TABLE_DATA >> $MODULE/outfile.csv
             
             for i in $(cat $MODULE/land_owner_values);do
-                ID=$(echo $i | cut -d":" -f1 | sed s'/-/ /'g)
+                unset TABLE_DATA
+                
+                ID_LAND=$(echo $i | cut -d":" -f1 | sed s'/-/ /'g)
                 VALUE_L=$(echo $i | cut -d":" -f2 | sed s'/-/ /'g)
                 OUT_FILENAME=$(echo $i | cut -d":" -f3)
-                    
+                                
                 LAND_SUM=$(v.db.univar map=clipped_lands column=area where="$VALUE_L" | head -n1 | cut -d":" -f2 | sed s'/ //'g)
                     if [[ $LAND_SUM -eq 0 ]] || [[ ! $LAND_SUM ]]
                         then
@@ -110,53 +111,57 @@ Process_Check start calculations
                             HOUSE_SUM=0
                             POP_SUM=0
                         else
+                            LAND_SUM_PERCENT_OF_TOT=$(echo "($LAND_SUM/$LAND_TOT)*100"| calc -dp | cut -c 1-4)
                             AREA_SUM=$(v.db.univar map=clipped_lands column=area where="$VALUE_L" | tail -n1 | cut -d":" -f2 | sed s'/ //'g | cut -d"." -f1 | cut -d"," -f1)
+                            AREA_SUM_PERCENT_OF_TOT=$(echo "($AREA_SUM/$AREA_TOT)*100"| calc -dp | cut -c 1-4)
                             HOUSE_SUM=$(v.db.univar map=clipped_households_points column=total_family_members where="$VALUE_L" | head -n1 | cut -d":" -f2 | sed s'/ //'g)
+                            HOUSE_SUM_PERCENT_OF_TOT=$(echo "($HOUSE_SUM/$HOUSE_TOT)*100"| calc -dp | cut -c 1-4)
                             POP_SUM=$(v.db.univar map=clipped_households_points column=total_family_members where="$VALUE_L" | tail -n1 | cut -d":" -f2 | sed s'/ //'g)
+                            POP_SUM_PERCENT_OF_TOT=$(echo "($POP_SUM/$POP_TOT)*100"| calc -dp | cut -c 1-4)
                             
-                            echo "-----------------------------------------">> $MODULE/temp_dataoutput_1
-                            echo >> $MODULE/temp_dataoutput_1
-                            echo "$ID" >> $MODULE/temp_dataoutput_1
-                            echo >> $MODULE/temp_dataoutput_1
-                            echo "   Sum number of lands: $LAND_SUM" >> $MODULE/temp_dataoutput_1
-                            echo "   Sum land area (m2): $AREA_SUM" >> $MODULE/temp_dataoutput_1
-                            echo "   Sum number of houses: $HOUSE_SUM" >> $MODULE/temp_dataoutput_1
-                            echo "   Sum population: $POP_SUM" >> $MODULE/temp_dataoutput_1
-                            echo >> $MODULE/temp_dataoutput_1
-
+                            TABLE_DATA="$ID_LAND,,$LAND_SUM,100,$LAND_SUM_PERCENT_OF_TOT,$AREA_SUM,100,$AREA_SUM_PERCENT_OF_TOT,$HOUSE_SUM,100,$HOUSE_SUM_PERCENT_OF_TOT,$POP_SUM,100,$POP_SUM_PERCENT_OF_TOT"
+                            echo $TABLE_DATA >> $MODULE/outfile.csv
+                            
                             HOUSES=0
                             POPS=0
                             for i in $(cat $MODULE/house_owner_values);do
-                                ID=$(echo $i | cut -d":" -f1 | sed s'/-/ /'g)
+                                
+                                unset TABLE_DATA
+                                
+                                ID_TENURE=$(echo $i | cut -d":" -f1 | sed s'/-/ /'g)
                                 VALUE_H=$(echo $i | cut -d":" -f2 | sed s'/-/ /'g)
                                 COMP_VALUE="$VALUE_H "AND" $VALUE_L"
                                 HOUSE=$(v.db.univar map=clipped_households_points column=total_family_members where="$COMP_VALUE" | head -n1 | cut -d":" -f2 | sed s'/ //'g )
+                                HOUSE_SUM_PERCENT=$(echo "($HOUSE/$HOUSE_SUM)*100"| calc -dp | cut -c 1-4)
+                                HOUSE_TOT_PERCENT=$(echo "($HOUSE/$HOUSE_TOT)*100"| calc -dp | cut -c 1-4)
                                 POP=$(v.db.univar map=clipped_households_points column=total_family_members where="$COMP_VALUE" | tail -n1 | cut -d":" -f2 | sed s'/ //'g )
+                                POP_SUM_PERCENT=$(echo "($POP/$POP_SUM)*100"| calc -dp | cut -c 1-4)
+                                POP_TOT_PERCENT=$(echo "($POP/$POP_TOT)*100"| calc -dp | cut -c 1-4)
                                 
                                 HOUSES=$(($HOUSE+$HOUSES))
                                 POPS=$(($POP+$POPS))
-                                
-                                echo "   $ID" >> $MODULE/temp_dataoutput_1
-                                echo "      Houses: $HOUSE" >> $MODULE/temp_dataoutput_1
-                                echo "      Population: $POP" >> $MODULE/temp_dataoutput_1
+
+                                TABLE_DATA=",$ID_TENURE,,,,,,,$HOUSE,$HOUSE_SUM_PERCENT,$HOUSE_TOT_PERCENT,$POP,$POP_SUM_PERCENT,$POP_TOT_PERCENT"
+                                echo $TABLE_DATA >> $MODULE/outfile.csv
+                                unset TABLE_DATA
                             done
                             
                             HOUSE_REM=$(($HOUSE_SUM-$HOUSES))
-                            POP_REM=$(($POP_SUM-$POPS))
-                            echo >> $MODULE/temp_dataoutput_1
-                            echo "   Houses without identifyable tenure status: $HOUSE_REM" >> $MODULE/temp_dataoutput_1
-                            echo "   Total population of these houses: $POP_REM" >> $MODULE/temp_dataoutput_1
+                            HOUSE_REM_SUM_PERCENT=$(echo "($HOUSE_REM/$HOUSE_SUM)*100"| calc -dp | cut -c 1-4)
+                            HOUSE_REM_TOT_PERCENT=$(echo "($HOUSE_REM/$HOUSE_TOT)*100"| calc -dp | cut -c 1-4)
                             
+                            POP_REM=$(($POP_SUM-$POPS))
+                            POP_REM_SUM_PERCENT=$(echo "($POP_REM/$POP_REM_SUM)*100"| calc -dp | cut -c 1-4)
+                            POP_REM_TOT_PERCENT=$(echo "($POP_REM/$POP_REM_TOT)*100"| calc -dp | cut -c 1-4)
+                            
+                            TABLE_DATA=",$ID_TENURE,,,,,,,$HOUSE_REM,$HOUSE_REM_SUM_PERCENT,$HOUSE_REM_TOT_PERCENT,$POP_REM,$POP_REM_SUM_PERCENT,$POP_REM_TOT_PERCENT"
+                            echo $TABLE_DATA >> $MODULE/outfile.csv
                             #finally, a vector output for the pdf output file
                             v.extract -t input=clipped_lands where="$VALUE_L" output=$OUT_FILENAME --overwrite 
-
                     fi
-            done
+            done            
+            
 
-    # Converting output text into a ps, then convert into a pdf file
-        enscript -p $MODULE/temp_statistics_1.ps $MODULE/temp_dataoutput_1
-        ps2pdf $MODULE/temp_statistics_1.ps $MODULE/temp_statistics_1.pdf
-        
     # Creating a multilayer map for pdf output. For this end has to use maps and an external style file
         # Setting region to the entire selection, allowing to export the entire selected area as a ps map
             g.region vector=selection@PERMANENT
@@ -170,14 +175,9 @@ Process_Check start calculations
             ps.map input=$MODULE/ps_param_2 output=$MODULE/temp_query_map_2.ps --overwrite
             ps2pdf $MODULE/temp_query_map_2.ps $MODULE/temp_query_map_2.pdf
     
-    # Merging pdf maps into a single pdf file
-        gs -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -dPDFSETTINGS=/prepress -sOutputFile=$MODULE/temp_map_2.pdf $MODULE/temp_query_map_1.pdf $MODULE/temp_query_map_2.pdf
+        # Merging pdf maps into a single pdf file
+            gs -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -dPDFSETTINGS=/prepress -sOutputFile=$MODULE/temp_map_2.pdf $MODULE/temp_query_map_1.pdf $MODULE/temp_query_map_2.pdf
     
-    # Merging numeric output pdf and maps pdf into a single pdf file
-        gs -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -dPDFSETTINGS=/prepress -sOutputFile=$MODULE/temp_results_$DATE_VALUE_2".pdf" $MODULE/temp_statistics_1.pdf $MODULE/temp_map_2.pdf
-        
-        cp $MODULE/temp_results_$DATE_VALUE_2".pdf" $MESSAGE_SENT/info.pdf
-        cp $MODULE/temp_results_$DATE_VALUE_2".pdf" ~/cityapp/saved_results/$MODULE/temp_results_$DATE_VALUE_2".pdf"
     
-    Process_Check stop calculations
+Process_Check stop calculations
 exit

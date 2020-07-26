@@ -1,0 +1,15 @@
+<layer>
+  <name>bbswr_slum_female_population_households</name>
+  <id>LayerInfoImpl-343c255e:17036557ae0:-7f2b</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl-343c255e:17036557ae0:-7f34</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl-343c255e:17036557ae0:-7f2c</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+</layer>

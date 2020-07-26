@@ -1,0 +1,11 @@
+/* @title To points  */
+* {
+   mark: symbol(cross);
+   :mark {
+   size:20;
+   fill: #ff0000;
+   stroke:#000000;
+   stroke-width:2;
+   z-index: 1;
+   }
+}

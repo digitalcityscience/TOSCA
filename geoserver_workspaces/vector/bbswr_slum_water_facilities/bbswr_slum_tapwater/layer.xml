@@ -1,0 +1,15 @@
+<layer>
+  <name>bbswr_slum_tapwater</name>
+  <id>LayerInfoImpl-343c255e:17036557ae0:-7fb2</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl-37b6ddcf:16fcd74ff28:-7ce7</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl-343c255e:17036557ae0:-7fb3</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+</layer>

@@ -1,0 +1,15 @@
+<layer>
+  <name>query_result_area_1</name>
+  <id>LayerInfoImpl--6746af3c:1717a749e9f:-7ff9</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl--6746af3c:1717a749e9f:-7fff</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl--6746af3c:1717a749e9f:-7ffa</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+</layer>

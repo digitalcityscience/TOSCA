@@ -1,0 +1,16 @@
+<layer>
+  <name>m1_time_map_interpolated</name>
+  <id>LayerInfoImpl--d260471:17020009e7b:-5a39</id>
+  <type>RASTER</type>
+  <defaultStyle>
+    <id>StyleInfoImpl-53a0964:16fc2624139:-7fc0</id>
+  </defaultStyle>
+  <resource class="coverage">
+    <id>CoverageInfoImpl--d260471:17020009e7b:-5a3a</id>
+  </resource>
+  <opaque>false</opaque>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+</layer>

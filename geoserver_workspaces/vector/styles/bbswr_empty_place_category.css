@@ -1,0 +1,15 @@
+/* @title Bubaneshwar city empty places */
+
+/* @title Dry area */
+[TYPE ='Open Space' ]{
+    stroke: #aaaa66;
+    stroke-width: 0.5;
+    fill: #ffffaa;
+}
+
+/* @title Green area */
+[TYPE ='Vacant Land' ]{
+    stroke: #338833;
+    stroke-width: 0.5;
+    fill: #88ff88;
+}

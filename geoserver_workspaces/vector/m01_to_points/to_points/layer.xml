@@ -1,0 +1,15 @@
+<layer>
+  <name>to_points</name>
+  <id>LayerInfoImpl-53a0964:16fc2624139:-7fcf</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl-53a0964:16fc2624139:-7ff5</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl-53a0964:16fc2624139:-7fd0</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+</layer>
