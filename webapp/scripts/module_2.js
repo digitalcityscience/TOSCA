@@ -1,6 +1,5 @@
-const { execSync } = require('child_process') // Documentation: https://nodejs.org/api/child_process.html
 const fs = require('fs')
-const { addVector, getNumericColumns, getTopology, gpkgOut, initMapset, grass } = require('./functions')
+const { addVector, getNumericColumns, getTopology, gpkgOut, initMapset, grass, mergePDFs, psToPDF, textToPS } = require('./functions')
 
 const GRASS = process.env.GRASS_DIR
 const OUTPUT = process.env.OUTPUT_DIR
@@ -101,8 +100,8 @@ class ModuleTwo {
     gpkgOut('module_2', 'query_result_area_1', 'query_result_area_1')
 
     const date = new Date()
-    const dateString = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}`
-    const dateString2 = `${date.getFullYear()}_${date.getMonth()}_${date.getDate()}_${date.getHours()}_${date.getMinutes()}`
+    const dateString = date.toString()
+    const safeDateString = date.toISOString().replace(/([\d-]*)T(\d\d):(\d\d):[\d.]*Z/g, '$1_$2$3')
 
     let output = `Statistics and map results
 
@@ -127,22 +126,18 @@ Relative standard deviation: ${stats[8]}
 
     // Generate PDF
 
-    fs.mkdirSync('tmp')
+    fs.mkdirSync('tmp', { recursive: true })
     fs.writeFileSync('tmp/statistics_output', output)
 
-    execSync(`enscript -p tmp/statistics.ps tmp/statistics_output`)
-    execSync(`ps2pdf tmp/statistics.ps tmp/statistics.pdf`)
+    textToPS('tmp/statistics_output', 'tmp/statistics.ps')
+    psToPDF('tmp/statistics.ps', 'tmp/statistics.pdf')
 
     grass('module_2', `ps.map input="${GRASS}/variables/defaults/module_2.ps_param_1" output=tmp/query_map.ps --overwrite`)
-    execSync(`ps2pdf tmp/query_map.ps tmp/query_map.pdf`)
+    psToPDF('tmp/query_map.ps', 'tmp/query_map.pdf')
 
-    execSync(`gs -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -dPDFSETTINGS=/prepress -sOutputFile="${OUTPUT}/query_results_${dateString2}.pdf" tmp/statistics.pdf tmp/query_map.pdf`)
+    mergePDFs(`${OUTPUT}/query_results_${safeDateString}.pdf`, 'tmp/statistics.pdf', 'tmp/query_map.pdf')
 
-    fs.unlinkSync(`tmp/statistics_output`)
-    fs.unlinkSync(`tmp/statistics.ps`)
-    fs.unlinkSync(`tmp/statistics.pdf`)
-    fs.unlinkSync(`tmp/query_map.ps`)
-    fs.unlinkSync(`tmp/query_map.pdf`)
+    fs.rmdirSync('tmp', { recursive: true })
 
     return output
   }

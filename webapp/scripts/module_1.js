@@ -1,6 +1,5 @@
-const { execSync } = require('child_process') // Documentation: https://nodejs.org/api/child_process.html
 const fs = require('fs')
-const { addVector, gpkgOut, initMapset, listVector, mapsetExists, grass } = require('./functions')
+const { addVector, gpkgOut, initMapset, listVector, mapsetExists, grass, mergePDFs, psToPDF, textToPS } = require('./functions')
 
 const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
 const GRASS = process.env.GRASS_DIR
@@ -290,15 +289,14 @@ class ModuleOne {
 
     // Generate pdf output
 
-    fs.mkdirSync('tmp')
-
     // set color for maps
     grass('module_1', `g.region res="${this.resolution}"`)
 
     const date = new Date()
-    const dateString = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}`
-    const dateString2 = `${date.getFullYear()}_${date.getMonth()}_${date.getDate()}_${date.getHours()}_${date.getMinutes()}`
+    const dateString = date.toString()
+    const safeDateString = date.toISOString().replace(/([\d-]*)T(\d\d):(\d\d):[\d.]*Z/g, '$1_$2$3')
 
+    fs.mkdirSync('tmp', { recursive: true })
     fs.writeFileSync('tmp/time_map_info_text', `
 Map output for time map calculations
 
@@ -317,23 +315,17 @@ ${this.roadsSpeed.join('\n')}
 
 Speed reduction coefficient for stricken area: ${this.reductionRatio}`)
 
-    execSync(`enscript -p tmp/time_map_info_text.ps tmp/time_map_info_text`)
-    execSync(`ps2pdf tmp/time_map_info_text.ps tmp/time_map_info_text.pdf`)
+    textToPS('tmp/time_map_info_text', 'tmp/time_map_info_text.ps')
+    psToPDF('tmp/time_map_info_text.ps', 'tmp/time_map_info_text.pdf')
 
     grass('module_1', `ps.map input="${GRASS}/variables/defaults/module_1.ps_param_1" output=tmp/time_map_1.ps --overwrite`)
     grass('module_1', `ps.map input="${GRASS}/variables/defaults/module_1.ps_param_2" output=tmp/time_map_2.ps --overwrite`)
-    execSync(`ps2pdf tmp/time_map_1.ps tmp/time_map_1.pdf`)
-    execSync(`ps2pdf tmp/time_map_2.ps tmp/time_map_2.pdf`)
+    psToPDF('tmp/time_map_1.ps', 'tmp/time_map_1.pdf')
+    psToPDF('tmp/time_map_2.ps', 'tmp/time_map_2.pdf')
 
-    execSync(`gs -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -dPDFSETTINGS=/prepress -sOutputFile="${OUTPUT}/time_map_results_${dateString2}.pdf" tmp/time_map_info_text.pdf tmp/time_map_1.pdf tmp/time_map_2.pdf`)
+    mergePDFs(`${OUTPUT}/time_map_results_${safeDateString}.pdf`, 'tmp/time_map_info_text.pdf', 'tmp/time_map_1.pdf', 'tmp/time_map_2.pdf')
 
-    fs.unlinkSync(`tmp/time_map_info_text`)
-    fs.unlinkSync(`tmp/time_map_info_text.ps`)
-    fs.unlinkSync(`tmp/time_map_info_text.pdf`)
-    fs.unlinkSync(`tmp/time_map_1.ps`)
-    fs.unlinkSync(`tmp/time_map_2.ps`)
-    fs.unlinkSync(`tmp/time_map_1.pdf`)
-    fs.unlinkSync(`tmp/time_map_2.pdf`)
+    fs.rmdirSync('tmp', { recursive: true })
   }
 }
 
