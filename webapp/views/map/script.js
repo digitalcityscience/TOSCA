@@ -78,16 +78,8 @@ const Stricken_Area = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
   minZoom: 3
 });
 
-const TimeMap = L.tileLayer.wms(geoserverUrl + "geoserver/raster/wms/", {
-  layers: 'raster:m1_time_map',
-  format: 'image/png',
-  transparent: true,
-  maxZoom: 20,
-  minZoom: 1
-});
-
-const TimeMapInterpolated = L.tileLayer.wms(geoserverUrl + "geoserver/raster/wms/", {
-  layers: 'raster:m1_time_map_interpolated',
+const TimeMap = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
+  layers: 'vector:m1_time_map',
   format: 'image/png',
   transparent: true,
   maxZoom: 20,
@@ -314,7 +306,6 @@ const groupedOverlays = {
     'Query results 3': query_result_point_1,
     "Stricken area": Stricken_Area,
     "Road-level time map": TimeMap,
-    "Interpolated time map": TimeMapInterpolated,
     "From-points": FromPoints,
     "Via-points": ViaPoints,
     "To-points": ToPoints

@@ -26,6 +26,7 @@ app.listen(expressPort, () => {
 
 // Static files
 app.use(express.static('public'))
+app.use('/output', express.static('../output'))
 app.use('/lib/jquery', express.static('node_modules/jquery/dist'));
 app.use('/lib/bootstrap', express.static('node_modules/bootstrap/dist'));
 app.use('/lib/leaflet', express.static('node_modules/leaflet/dist'));
@@ -129,6 +130,20 @@ app.post('/drawing', jsonParser, (req, res, next) => {
 
     fs.writeFileSync(file, JSON.stringify(req.body.data))
     res.send(module.process(file, req.query.message_id))
+  } catch (err) {
+    next(err)
+  }
+})
+
+// return all output filenames
+app.post('/output', jsonParser, (req, res, next) => {
+  try {
+    const list = []
+    fs.readdirSync('/root/cityapp/output').forEach(file => {
+      list.push(file)
+    });
+    const message = { message_id: 'output', message: { list } }
+    res.send(message)
   } catch (err) {
     next(err)
   }

@@ -34,6 +34,14 @@ function handleResponse(res) {
 
   $('#loading').hide();
 
+  // == output ==
+  // • get output file names
+  if (res.message_id === 'output') {
+    $('#results-menu').html(function () {
+      return list.reduce((str, file) => str + `<option selected value="${file}">${file}</option>`, '');
+    })
+  }
+
   if (res.message.text) {
     let text = textElement(res.message.text), form, buttons;
 
@@ -464,13 +472,13 @@ function clearDialog() {
   $('#lists').empty();
 }
 
-function toggleHelp() {
-  const info = $('#info-container')
-  if (info.css('flex-grow')==0) {
-    info.css('flex-grow', 1);
-  } else {
-    info.css('flex-grow', 0);
-  }
+function show_results() {
+  getOutput({})
+  $('#results-modal').show()
+}
+
+function hide_results() {
+  $('#results-modal').hide()
 }
 
 /* Send messages to the backend */
@@ -502,6 +510,10 @@ function saveDrawing(res) {
   }
   sendMessage('/drawing', { data: geojson }, { message_id: res.message_id }, handleResponse);
   return true;
+}
+
+function getOutput(res, message) {
+  sendMessage('/output', { msg: message }, { message_id: res.message_id }, handleResponse);
 }
 
 function sendMessage(target, message, params, callback) {
