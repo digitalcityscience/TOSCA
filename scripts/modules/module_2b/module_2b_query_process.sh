@@ -85,8 +85,8 @@ Process_Check start calculations
         # Total population, amount of houses, land area and number of lands on query area
             
             unset TABLE_DATA
-            rm -f $MODULE/outfile.csv
-            touch $MODULE/outfile.csv
+            rm -f $MODULE/temp_outfile.csv
+            touch $MODULE/temp_outfile.csv
             
             HOUSE_TOT=$(v.db.univar map=clipped_households_points column=total_family_members | head -n1 | cut -d":" -f2 | sed s'/ //'g )
             POP_TOT=$(v.db.univar map=clipped_households_points column=total_family_members | tail -n1 | cut -d":" -f2 | sed s'/ //'g )
@@ -94,7 +94,7 @@ Process_Check start calculations
             AREA_TOT=$(v.db.univar map=clipped_lands column=area | tail -n1 | cut -d":" -f2 | sed s'/ //'g | cut -d"." -f1 | cut -d',' -f1)
             
             TABLE_DATA="Total summed result,,$LAND_TOT,,,$AREA_TOT,,,$HOUSE_TOT,,,$POP_TOT,,,"            
-            echo $TABLE_DATA >> $MODULE/outfile.csv
+            echo $TABLE_DATA >> $MODULE/temp_outfile.csv
             
             for i in $(cat $MODULE/land_owner_values);do
                 unset TABLE_DATA
@@ -120,7 +120,7 @@ Process_Check start calculations
                             POP_SUM_PERCENT_OF_TOT=$(echo "($POP_SUM/$POP_TOT)*100"| calc -dp | cut -c 1-4)
                             
                             TABLE_DATA="$ID_LAND,,$LAND_SUM,100,$LAND_SUM_PERCENT_OF_TOT,$AREA_SUM,100,$AREA_SUM_PERCENT_OF_TOT,$HOUSE_SUM,100,$HOUSE_SUM_PERCENT_OF_TOT,$POP_SUM,100,$POP_SUM_PERCENT_OF_TOT"
-                            echo $TABLE_DATA >> $MODULE/outfile.csv
+                            echo $TABLE_DATA >> $MODULE/temp_outfile.csv
                             
                             HOUSES=0
                             POPS=0
@@ -142,7 +142,7 @@ Process_Check start calculations
                                 POPS=$(($POP+$POPS))
 
                                 TABLE_DATA=",$ID_TENURE,,,,,,,$HOUSE,$HOUSE_SUM_PERCENT,$HOUSE_TOT_PERCENT,$POP,$POP_SUM_PERCENT,$POP_TOT_PERCENT"
-                                echo $TABLE_DATA >> $MODULE/outfile.csv
+                                echo $TABLE_DATA >> $MODULE/temp_outfile.csv
                                 unset TABLE_DATA
                             done
                             
@@ -155,7 +155,7 @@ Process_Check start calculations
                             POP_REM_TOT_PERCENT=$(echo "($POP_REM/$POP_REM_TOT)*100"| calc -dp | cut -c 1-4)
                             
                             TABLE_DATA=",$ID_TENURE,,,,,,,$HOUSE_REM,$HOUSE_REM_SUM_PERCENT,$HOUSE_REM_TOT_PERCENT,$POP_REM,$POP_REM_SUM_PERCENT,$POP_REM_TOT_PERCENT"
-                            echo $TABLE_DATA >> $MODULE/outfile.csv
+                            echo $TABLE_DATA >> $MODULE/temp_outfile.csv
                             #finally, a vector output for the pdf output file
                             v.extract -t input=clipped_lands where="$VALUE_L" output=$OUT_FILENAME --overwrite 
                     fi

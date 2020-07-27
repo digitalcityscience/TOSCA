@@ -87,16 +87,16 @@ Running_Check start
         
     # Creating the final pdf output
         # Writing numeric and map data into a single ods table file
-            rm -f $MODULE/result.ods
-            ~/cityapp/scripts/external/csv2odf/csv2odf -S2 $MODULE/outfile.csv $MODULE/template.ods $MODULE/result.ods
+            rm -f $MODULE/temp_result.ods
+            ~/cityapp/scripts/external/csv2odf/csv2odf -S2 $MODULE/temp_outfile.csv $MODULE/template.ods $MODULE/temp_result.ods
         
         # Coverting ods into pdf
-            rm -f $MODULE/result.pdf
+            rm -f $MODULE/temp_result.pdf
             cd $MODULE
-            /usr/bin/soffice --convert-to pdf ./result.ods
+            /usr/bin/soffice --convert-to pdf ./temp_result.ods
 
         # Merging table output pdf and maps pdf into a single pdf file
-            gs -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -dPDFSETTINGS=/prepress -sOutputFile=$MODULE/temp_results_$DATE_VALUE_2".pdf" $MODULE/result.pdf $MODULE/temp_map_2.pdf
+            gs -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -dPDFSETTINGS=/prepress -sOutputFile=$MODULE/temp_results_$DATE_VALUE_2".pdf" $MODULE/temp_result.pdf $MODULE/temp_map_2.pdf
             
             cp $MODULE/temp_results_$DATE_VALUE_2".pdf" $MESSAGE_SENT/info.pdf
             cp $MODULE/temp_results_$DATE_VALUE_2".pdf" ~/cityapp/saved_results/bbswr_slum_landownership_query_$DATE_VALUE_2".pdf"
