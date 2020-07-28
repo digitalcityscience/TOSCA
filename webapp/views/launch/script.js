@@ -337,6 +337,37 @@ function handleResponse(res) {
         ];
         break;
 
+      // == module_1a ==
+
+      // Start points / via points / stricken area
+      case 'module_1a.1':
+      case 'module_1a.2':
+      case 'module_1a.3':
+        buttons = [
+          buttonElement('Save').click(() => {
+            $(`#${messageId}-error`).remove();
+            if (!saveDrawing(res)) {
+              textarea.append($(`<span id="${messageId}-error" class="validation-error">Please draw one or more points using the circlemarker drawing tool.</span>`));
+            }
+          }),
+          buttonElement('Cancel').click(() => {
+            reply(res, 'cancel');
+          })
+        ];
+        break;
+
+      // Speed reduction ratio
+      case 'module_1a.4':
+        form = formElement(messageId);
+        form.append($(`<input id="${messageId}-input" type="number" />`));
+        buttons = [
+          buttonElement('Submit').click(() => {
+            const input = $(`#${messageId}-input`);
+            reply(res, input.val());
+          })
+        ];
+        break;
+
       // == module_2 ==
 
       case 'module_2.1':
