@@ -2,7 +2,7 @@
 
 const map = new L.Map('map', {
   center: new L.LatLng(lat, lon),
-  zoom: 11,
+  zoom: 13,
   minZoom: 4
 })
 
@@ -110,6 +110,7 @@ const ToPoints = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
   minZoom: 3
 });
 
+<<<<<<< HEAD
 
 // Local layers (Bhubaneshwar)
 // Watch out the property 'legend_yes'. It must be  true if you want to allow a second checckbox to display (refer to views/launch/legend.js and views/index.pug)   
@@ -283,6 +284,9 @@ const Slum_Toilettes = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
 });
 
 // Control for map legends. For those item, where the linked map has a "legend_yes: true," property, a second checkbox will displayed.
+=======
+//Control for map legends. For those item, where the linked map has a "legend_yes: true," property, a second checkbox will displayed.
+>>>>>>> refactor
 L.control.legend(
   { position: 'bottomleft' }
 ).addTo(map);

@@ -1,0 +1,8 @@
+/* @title Buildings */
+* [building>0]
+{
+  stroke: #aa0000;
+  stroke-width: 0.2;
+  fill: #ffbbbb;
+  fill-opacity: 1;
+}

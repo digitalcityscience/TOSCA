@@ -105,6 +105,19 @@ if [ -e /usr/share/geoserver/bin/startup.sh ]
         echo "No geoserver found" >> $ERROR
 fi
 
+if [ -e ~/cityapp/scripts/external/csv2odf/csv2odf ]
+    then
+        echo "csv2odf found"
+    else
+        echo "No csv2odf found" >> $ERROR
+fi
+
+if [ $(which wkhtmltopdf) ]
+    then
+        echo "wkhtmltopdf found"
+    else
+        echo "No wkhtmltopdf found" >> $ERROR
+fi
 
 if [ $(echo $(stat --printf="%s" $ERROR)) -eq 0 ]
 then

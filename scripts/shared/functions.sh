@@ -92,7 +92,7 @@ Close_Process ()
             PS_ID=$(ps a | grep $MODULE_NAME | sed s'/[a-z _]//'g | cut -d"/" -f1)
             echo "--------------------"
             echo "Now killing process"
-            echo "Pocess: -- $MODULE_NAME -- killed"
+            echo "Process: -- $MODULE_NAME -- killed"
             echo "--------------------"
             kill -9 $PS_ID
 
