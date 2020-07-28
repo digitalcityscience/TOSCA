@@ -1,13 +1,13 @@
 #! /bin/bash
 . ~/cityapp/scripts/shared/functions.sh
 
-# version 1.61
+# version 1.62
 # CityApp module
 # This module is to calculate the fastest way from "from_points" to "to_points" thru "via_points".
 # The network is the road network, with user-defined average speed.
 # Defining "from_points" is mandatory, "via_points" and "to_points" are optional.
 # If no "to_points" are selected, the default "to_points" will used: points along the roads, calculated by the application. 
-# 2020. április 20.
+# 2020. július 26.
 # Author: BUGYA Titusz, CityScienceLab -- Hamburg, Germany
 
 #
@@ -374,13 +374,12 @@ Process_Check stop map_calculations
 
 Send_Message m 12 module_1.14 question actions [\"OK\"]
     Request
-        Running_Check stop
-        Close_Process
+        until [ "$REQUEST_CONTENT" == "ok" ]; do
+            rm -f $MESSAGE_SENT/*.message
+            Send_Message m 12 module_1.14 question actions [\"OK\"]
+                Request
+        done
 
+    Running_Check Stop
+    Close_Process
 exit
-
-    
-    
-
-
-    

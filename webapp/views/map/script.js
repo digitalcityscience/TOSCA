@@ -2,7 +2,7 @@
 
 const map = new L.Map('map', {
   center: new L.LatLng(lat, lon),
-  zoom: 11,
+  zoom: 13,
   minZoom: 4
 })
 
@@ -118,7 +118,7 @@ const ToPoints = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
   minZoom: 3
 });
 
-// Control for map legends. For those item, where the linked map has a "legend_yes: true," property, a second checkbox will displayed.
+//Control for map legends. For those item, where the linked map has a "legend_yes: true," property, a second checkbox will displayed.
 L.control.legend(
   { position: 'bottomleft' }
 ).addTo(map);

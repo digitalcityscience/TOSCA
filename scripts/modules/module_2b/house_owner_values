@@ -1,0 +1,7 @@
+Patta:house_tenure_status='Patta'
+Other:house_tenure_status='others'
+Possession-Certificate/Occupancy-Right:house_tenure_status='Possession-Certificate/Occupancy-Right'
+Private-Land-Encroched:house_tenure_status='Private-Land-Enchroched'
+Public-Land-Encroched:house_tenure_status='Public-Land-Enchroched'
+Rented:house_tenure_status='Rented'
+No-tenure-data:house_tenure_status='no_tenuredata'

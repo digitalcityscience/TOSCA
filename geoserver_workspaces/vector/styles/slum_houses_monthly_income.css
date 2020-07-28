@@ -1,0 +1,49 @@
+/* @title Bubanshwar slums average monthly incomes */
+
+/* @title 500 -- 1300 INR */
+[AVG_MON_I >= 500] [AVG_MON_I < 1300] {
+  stroke: #6c0001;
+  stroke-width: 0.5;
+  fill: #d7191c;
+  fill-opacity: 1;
+}
+
+/* @title 1300 -- 3200 INR */
+[AVG_MON_I >= 1300] [AVG_MON_I < 3200] {
+  stroke: #a53c04;
+  stroke-width: 0.5;
+  fill: #ed6e43;
+  fill-opacity: 1;
+}
+
+/* @title 3200 -- 4300 INR */
+[AVG_MON_I >= 3200] [AVG_MON_I < 4300] {
+  stroke: #b57d0e;
+  stroke-width: 0.5;
+  fill: #feba6f;
+  fill-opacity: 1;
+}
+
+/* @title 4300 -- 5600 INR */
+[AVG_MON_I >= 4300] [AVG_MON_I < 5600] {
+  stroke: #9f9700;
+  stroke-width: 0.5;
+  fill: #ffe8a5;
+  fill-opacity: 1;
+}
+
+/* @title 5600 -- 8000 INR */
+[AVG_MON_I >= 5600] [AVG_MON_I < 8000] {
+  stroke: #05ba02;
+  stroke-width: 0.5;
+  fill: #9ef57c;
+  fill-opacity: 1;
+}
+
+/* @title 8000 -- 20000 INR */
+[AVG_MON_I >= 8000] [AVG_MON_I < 20000] {
+  stroke: #045716;
+  stroke-width: 0.5;
+  fill: #12b340;
+  fill-opacity: 1;
+}

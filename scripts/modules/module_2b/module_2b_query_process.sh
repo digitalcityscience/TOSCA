@@ -1,10 +1,12 @@
 #! /bin/bash
 . ~/cityapp/scripts/shared/functions.sh
 
-# version 1.2
+# version 1.4
 # CityApp module
-# This module is to query any existing map by a user-defined area -- querying attribute data only
-# 2020. július 8.
+# This module is a part of module_2b
+# This module is to query lands by landowners, slum households (number of houses and population) by households tenure type.
+# It is dedicated for Bhubaneshwar slums dataset
+# 2020. július 26.
 # Author: BUGYA Titusz, CityScienceLab -- Hamburg, Germany
 
 #
@@ -13,189 +15,169 @@
 
 cd ~/cityapp
 
-MODULES=~/cityapp/scripts/modules
-MODULE=~/cityapp/scripts/modules/module_2b
-MODULE_NAME=module_2b
-VARIABLES=~/cityapp/scripts/shared/variables
-BROWSER=~/cityapp/data_from_browser
-LANGUAGE=$(cat ~/cityapp/scripts/shared/variables/lang)
-MESSAGE_TEXT=~/cityapp/scripts/shared/messages/$LANGUAGE/module_2b
-MESSAGE_SENT=~/cityapp/data_to_client
-GEOSERVER=~/cityapp/geoserver_data
-GRASS=~/cityapp/grass/global
-MAPSET=module_2
-DATE_VALUE=$(date +%Y-%m-%d" "%H":"%M)
-DATE_VALUE_2=$(date +%Y_%m_%d_%H_%M)
+MODULES=~/cityapp/scripts/modules;
+MODULE=~/cityapp/scripts/modules/module_2b;
+MODULE_NAME=module_2b;
+VARIABLES=~/cityapp/scripts/shared/variables;
+BROWSER=~/cityapp/data_from_browser;
+LANGUAGE=$(cat ~/cityapp/scripts/shared/variables/lang);
+MESSAGE_TEXT=~/cityapp/scripts/shared/messages/$LANGUAGE/module_2b;
+MESSAGE_SENT=~/cityapp/data_to_client;
+GEOSERVER=~/cityapp/geoserver_data;
+GRASS=~/cityapp/grass/global;
+MAPSET=module_2;
+DATE_VALUE=$(date +%Y-%m-%d" "%H":"%M);
+DATE_VALUE_2=$(date +%Y_%m_%d_%H_%M);
 
 QUERY_RESOLUTION=0.00002
 
-    MAP_TO_QUERY_POPULATION=$(cat $MODULE/saved_query_settings | head -n1)
-    COLUMN_POPULATION=$(cat $MODULE/saved_query_settings | head -n2 | tail -n1)
-    MAP_TO_QUERY_OWNERSHIP=$(cat $MODULE/saved_query_settings | head -n3 | tail -n1)
-    COLUMN_OWNERSHIP=$(cat $MODULE/saved_query_settings | head -n4 | tail -n1)
-  
-  # Ezt a térképet még nem használjuk, de kelleni fog: ebből jön a slum-ok területe és száma a lekérdezési területen
-    MAP_TO_QUERY_SLUMS=$(cat $MODULE/saved_query_settings | head -n5 | tail -n1)
-    QUERY_AREA_1=$(cat $MODULE/saved_query_settings | head -n6 | tail -n1)
-                        
-        # Clipping maps by query area
-        v.clip input=$MAP_TO_QUERY_POPULATION clip=$QUERY_AREA_1 output=clipped_population --overwrite
-        v.clip input=$MAP_TO_QUERY_OWNERSHIP clip=$QUERY_AREA_1 output=clipped_land_ownership --overwrite # HIBA
+Process_Check start calculations
+
+    #First, setting the region to the entire calculation area
+        g.region vector=selection@PERMANENT
+
+    # Next, loading default map settings from "query_defaults" file
+        MAP_TO_QUERY_HOUSEHOLDS=$(cat $MODULE/query_defaults | head -n1)
+        COLUMN_POPULATION=$(cat $MODULE/query_defaults | head -n2 | tail -n1)
+        COLUMN_HOUSE_STATUS=$(cat $MODULE/query_defaults | head -n3 | tail -n1)
+        MAP_TO_QUERY_OWNERSHIP=$(cat $MODULE/query_defaults | head -n4 | tail -n1)
+        COL_OWNER=$(cat $MODULE/query_defaults | head -n5 | tail -n1);
+        MAP_TO_QUERY_SLUMS=$(cat $MODULE/query_defaults | head -n5 | tail -n1);
+        QUERY_AREA_1=$(cat $MODULE/query_defaults | head -n7 | tail -n1)
+
+    # If any of basemaps are missing, importing 
+        if [ ! $(g.list type=vector | grep $MAP_TO_QUERY_HOUSEHOLDS | grep -v grep) ]
+            then
+                v.import input=~/cityapp/geoserver_data/bhubaneshwar/bbswr_slum_houses_ownership.gpkg output=bbswr_slum_houses_ownership --overwrite
+        fi
+
+        if [ ! $(g.list type=vector | grep $MAP_TO_QUERY_OWNERSHIP | grep -v grep) ]
+            then
+                v.import input=~/cityapp/geoserver_data/bhubaneshwar/land_owners.gpkg output=land_owners --overwrite
+        fi
+   
+    # Knowing the query area, now it is the time to clip base maps by query area
+    # From this point resultant (clipped) maps will only be used.
+        v.select ainput=$MAP_TO_QUERY_OWNERSHIP atype=point,line,boundary,centroid,area binput=$QUERY_AREA_1 output=clipped_lands operator=overlap --overwrite     
+        v.select ainput=$MAP_TO_QUERY_HOUSEHOLDS atype=point,line,boundary,centroid,area binput=$QUERY_AREA_1 output=clipped_households operator=overlap --overwrite
+
+        # For later calculations, adding a new colum to the clipped_land map.
+            v.db.addcolumn map=clipped_lands columns="area DOUBLE"
         
+        # Uploading area of the separate land features into the new column
+            v.to.db map=clipped_lands option=area columns=area units=meters
+
+    # Setting calculation region to query_area_1
+        g.region vector=query_area_1
+    
+    # Converting clipped_households maps into a pont map (centroids are converted into point)
+        v.type input=clipped_households output=clipped_households_points from_type=centroid to_type=point --overwrite
+
+    # Adding a new datacolumn to  the point map, to store the new ownersip data
+        v.db.addcolumn map=clipped_households_points columns="owner_set VARCHAR(50)"
+    
+    # Reading land ownersip values from clipped_lands and writing them into the new column
+        v.what.vect map=clipped_households_points column=owner_set query_map=clipped_lands query_column=$COL_OWNER
+
+    # Now this new point map is ready for complex a query
         
-        # Most megállapítjuk, hogy az egyes tulajdonosformákból mennyi van, és azok összesen mekkora kiterjedésűek, mennyi háztartás van rajuk és mekkora ezek  összes lakossága
+        # First the total population, amount of houses, land area and number of lands
+        # Total population, amount of houses, land area and number of lands on query area
+            
+            unset TABLE_DATA
+            rm -f $MODULE/temp_outfile.csv
+            touch $MODULE/temp_outfile.csv
+            
+            HOUSE_TOT=$(v.db.univar map=clipped_households_points column=total_family_members | head -n1 | cut -d":" -f2 | sed s'/ //'g )
+            POP_TOT=$(v.db.univar map=clipped_households_points column=total_family_members | tail -n1 | cut -d":" -f2 | sed s'/ //'g )
+            LAND_TOT=$(v.db.univar map=clipped_lands column=area | head -n1 | cut -d":" -f2 | sed s'/ //'g)
+            AREA_TOT=$(v.db.univar map=clipped_lands column=area | tail -n1 | cut -d":" -f2 | sed s'/ //'g | cut -d"." -f1 | cut -d',' -f1)
+            
+            TABLE_DATA="Total summed result,,$LAND_TOT,,,$AREA_TOT,,,$HOUSE_TOT,,,$POP_TOT,,,"            
+            echo $TABLE_DATA >> $MODULE/temp_outfile.csv
+            
+            for i in $(cat $MODULE/land_owner_values);do
+                unset TABLE_DATA
+                
+                ID_LAND=$(echo $i | cut -d":" -f1 | sed s'/-/ /'g)
+                VALUE_L=$(echo $i | cut -d":" -f2 | sed s'/-/ /'g)
+                OUT_FILENAME=$(echo $i | cut -d":" -f3)
+                                
+                LAND_SUM=$(v.db.univar map=clipped_lands column=area where="$VALUE_L" | head -n1 | cut -d":" -f2 | sed s'/ //'g)
+                    if [[ $LAND_SUM -eq 0 ]] || [[ ! $LAND_SUM ]]
+                        then
+                            LAND_SUM=0
+                            AREA_SUM=0
+                            HOUSE_SUM=0
+                            POP_SUM=0
+                        else
+                            LAND_SUM_PERCENT_OF_TOT=$(echo "($LAND_SUM/$LAND_TOT)*100"| calc -dp | cut -c 1-4)
+                            AREA_SUM=$(v.db.univar map=clipped_lands column=area where="$VALUE_L" | tail -n1 | cut -d":" -f2 | sed s'/ //'g | cut -d"." -f1 | cut -d"," -f1)
+                            AREA_SUM_PERCENT_OF_TOT=$(echo "($AREA_SUM/$AREA_TOT)*100"| calc -dp | cut -c 1-4)
+                            HOUSE_SUM=$(v.db.univar map=clipped_households_points column=total_family_members where="$VALUE_L" | head -n1 | cut -d":" -f2 | sed s'/ //'g)
+                            HOUSE_SUM_PERCENT_OF_TOT=$(echo "($HOUSE_SUM/$HOUSE_TOT)*100"| calc -dp | cut -c 1-4)
+                            POP_SUM=$(v.db.univar map=clipped_households_points column=total_family_members where="$VALUE_L" | tail -n1 | cut -d":" -f2 | sed s'/ //'g)
+                            POP_SUM_PERCENT_OF_TOT=$(echo "($POP_SUM/$POP_TOT)*100"| calc -dp | cut -c 1-4)
+                            
+                            TABLE_DATA="$ID_LAND,,$LAND_SUM,100,$LAND_SUM_PERCENT_OF_TOT,$AREA_SUM,100,$AREA_SUM_PERCENT_OF_TOT,$HOUSE_SUM,100,$HOUSE_SUM_PERCENT_OF_TOT,$POP_SUM,100,$POP_SUM_PERCENT_OF_TOT"
+                            echo $TABLE_DATA >> $MODULE/temp_outfile.csv
+                            
+                            HOUSES=0
+                            POPS=0
+                            for i in $(cat $MODULE/house_owner_values);do
+                                
+                                unset TABLE_DATA
+                                
+                                ID_TENURE=$(echo $i | cut -d":" -f1 | sed s'/-/ /'g)
+                                VALUE_H=$(echo $i | cut -d":" -f2 | sed s'/-/ /'g)
+                                COMP_VALUE="$VALUE_H "AND" $VALUE_L"
+                                HOUSE=$(v.db.univar map=clipped_households_points column=total_family_members where="$COMP_VALUE" | head -n1 | cut -d":" -f2 | sed s'/ //'g )
+                                HOUSE_SUM_PERCENT=$(echo "($HOUSE/$HOUSE_SUM)*100"| calc -dp | cut -c 1-4)
+                                HOUSE_TOT_PERCENT=$(echo "($HOUSE/$HOUSE_TOT)*100"| calc -dp | cut -c 1-4)
+                                POP=$(v.db.univar map=clipped_households_points column=total_family_members where="$COMP_VALUE" | tail -n1 | cut -d":" -f2 | sed s'/ //'g )
+                                POP_SUM_PERCENT=$(echo "($POP/$POP_SUM)*100"| calc -dp | cut -c 1-4)
+                                POP_TOT_PERCENT=$(echo "($POP/$POP_TOT)*100"| calc -dp | cut -c 1-4)
+                                
+                                HOUSES=$(($HOUSE+$HOUSES))
+                                POPS=$(($POP+$POPS))
 
-        # Először a kormányzati területek
-       
-            v.extract input=clipped_land_ownership where="$COLUMN_OWNERSHIP='Govt Reserved' OR $COLUMN_OWNERSHIP='Govt Forest' OR $COLUMN_OWNERSHIP='Govt' OR $COLUMN_OWNERSHIP='Forest Department'" output=clipped_lands_governmental --overwrite --quiet
+                                TABLE_DATA=",$ID_TENURE,,,,,,,$HOUSE,$HOUSE_SUM_PERCENT,$HOUSE_TOT_PERCENT,$POP,$POP_SUM_PERCENT,$POP_TOT_PERCENT"
+                                echo $TABLE_DATA >> $MODULE/temp_outfile.csv
+                                unset TABLE_DATA
+                            done
+                            
+                            HOUSE_REM=$(($HOUSE_SUM-$HOUSES))
+                            HOUSE_REM_SUM_PERCENT=$(echo "($HOUSE_REM/$HOUSE_SUM)*100"| calc -dp | cut -c 1-4)
+                            HOUSE_REM_TOT_PERCENT=$(echo "($HOUSE_REM/$HOUSE_TOT)*100"| calc -dp | cut -c 1-4)
+                            
+                            POP_REM=$(($POP_SUM-$POPS))
+                            POP_REM_SUM_PERCENT=$(echo "($POP_REM/$POP_REM_SUM)*100"| calc -dp | cut -c 1-4)
+                            POP_REM_TOT_PERCENT=$(echo "($POP_REM/$POP_REM_TOT)*100"| calc -dp | cut -c 1-4)
+                            
+                            TABLE_DATA=",$ID_TENURE,,,,,,,$HOUSE_REM,$HOUSE_REM_SUM_PERCENT,$HOUSE_REM_TOT_PERCENT,$POP_REM,$POP_REM_SUM_PERCENT,$POP_REM_TOT_PERCENT"
+                            echo $TABLE_DATA >> $MODULE/temp_outfile.csv
+                            #finally, a vector output for the pdf output file
+                            v.extract -t input=clipped_lands where="$VALUE_L" output=$OUT_FILENAME --overwrite 
+                    fi
+            done            
             
-            # Numer of areas:
-                NUMBER_OF_GOV_OWNED_LANDS=$(v.info -t map=clipped_lands_governmental | head -n6 | tail -n1 | cut -d"=" -f2)
-            
-            # A kormányzati tulajdonú területek összes kiterjedése (m2)
-                AREA_OF_GOV_OWNED_LANDS=0;
-                COLUMN=$(v.report map=clipped_lands_governmental option=area units=feet sort=asc | head -n1 | sed s''/[a-z,A-Z,0-9,_]//g | wc -c)
-                i=0
-                for i in $(v.report map=clipped_lands_governmental option=area units=meters sort=asc | cut -d"|" -f$COLUMN);do
-                    AREA_OF_GOV_OWNED_LANDS=$(echo "$AREA_OF_GOV_OWNED_LANDS+$i" | bc);
-                done
-                
-                AREA_OF_GOV_OWNED_LANDS=$(echo $AREA_OF_GOV_OWNED_LANDS | cut -d"." -f1)
-            
-            # Házak (háztartások) száma kormányzati területen
-                v.clip input=clipped_population clip=clipped_lands_governmental output=population_on_governmental_land --overwrite
-                NUMBER_OF_HOUSES_GOV_LANDS=$(v.info -t map=population_on_governmental_land | head -n6 | tail -n1 | cut -d"=" -f2)
-                
-            # Lakosok száma kormányzati területen
-                POPULATION_ON_GOV_LANDS=$(v.db.univar -g map=population_on_governmental_land column=$COLUMN_POPULATION | grep sum | cut -d"=" -f2)
 
-        # Aztán a magántulajdonú területek
-            v.extract input=clipped_land_ownership where="$COLUMN_OWNERSHIP='Private'" output=clipped_lands_private --overwrite --quiet
+    # Creating a multilayer map for pdf output. For this end has to use maps and an external style file
+        # Setting region to the entire selection, allowing to export the entire selected area as a ps map
+            g.region vector=selection@PERMANENT
             
-            # Numer of areas:
-                NUMBER_OF_PRIVATE_OWNED_LANDS=$(v.info -t map=clipped_lands_private | head -n6 | tail -n1 | cut -d"=" -f2)
-            
-            # A magán tulajdonú területek összes kiterjedése (m2)
-                AREA_OF_PRIVATE_OWNED_LANDS=0;
-                COLUMN=$(v.report map=clipped_lands_private option=area units=feet sort=asc | head -n1 | sed s''/[a-z,A-Z,0-9,_]//g | wc -c)
-                i=0
-                for i in $(v.report map=clipped_lands_private option=area units=meters sort=asc | cut -d"|" -f$COLUMN);do
-                    AREA_OF_PRIVATE_OWNED_LANDS=$(echo "$AREA_OF_PRIVATE_OWNED_LANDS+$i" | bc);
-                done
-
-                AREA_OF_PRIVATE_OWNED_LANDS=$(echo $AREA_OF_PRIVATE_OWNED_LANDS | cut -d"." -f1)
-            
-            # Házak (háztartások) száma magán területen
-                v.clip input=clipped_population clip=clipped_lands_private output=population_on_private_land --overwrite
-                NUMBER_OF_HOUSES_PRIVATE_LANDS=$(v.info -t map=population_on_private_land | head -n6 | tail -n1 | cut -d"=" -f2)
-                
-            # Lakosok száma magán területen
-                POPULATION_ON_PRIVATE_LANDS=$(v.db.univar -g map=population_on_private_land column=$COLUMN_POPULATION | grep sum | cut -d"=" -f2)
-            
-        # Templomi tulajdonok
-            v.extract input=clipped_land_ownership where="$COLUMN_OWNERSHIP='Temple/Trustee'" output=clipped_lands_temple --overwrite --quiet
-            
-            # Numer of areas:
-                NUMBER_OF_TEMPLE_OWNED_LANDS=$(v.info -t map=clipped_lands_temple | head -n6 | tail -n1 | cut -d"=" -f2)
-            
-            # A templomi tulajdonú területek összes kiterjedése (m2)
-                AREA_OF_TEMPLE_OWNED_LANDS=0;
-                COLUMN=$(v.report map=clipped_lands_temple option=area units=feet sort=asc | head -n1 | sed s''/[a-z,A-Z,0-9,_]//g | wc -c)
-                i=0
-                for i in $(v.report map=clipped_lands_temple option=area units=meters sort=asc | cut -d"|" -f$COLUMN);do
-                    AREA_OF_TEMPLE_OWNED_LANDS=$(echo "$AREA_OF_TEMPLE_OWNED_LANDS+$i" | bc);
-                done
-                
-                AREA_OF_TEMPLE_OWNED_LANDS=$(echo $AREA_OF_TEMPLE_OWNED_LANDS | cut -d"." -f1)
-            
-            # Házak (háztartások) száma templomi területen
-                v.clip input=clipped_population clip=clipped_lands_temple output=population_on_temple_land --overwrite
-                NUMBER_OF_HOUSES_TEMPLE_LANDS=$(v.info -t map=population_on_temple_land | head -n6 | tail -n1 | cut -d"=" -f2)
-                
-            # Lakosok száma templomi területen
-                POPULATION_ON_TEMPLE_LANDS=$(v.db.univar -g map=population_on_temple_land column=$COLUMN_POPULATION | grep sum | cut -d"=" -f2)
-
-        # Ismeretlen tulajdonúak
-            v.extract -r input=clipped_land_ownership where="$COLUMN_OWNERSHIP='Govt Reserved' OR $COLUMN_OWNERSHIP='Govt Forest' OR $COLUMN_OWNERSHIP='Govt' OR $COLUMN_OWNERSHIP='Forest Department' OR $COLUMN_OWNERSHIP='Private' OR $COLUMN_OWNERSHIP='Temple/Trustee'" output=clipped_lands_no_owner_data --overwrite --quiet
-        
-            # Numer of areas:
-                NUMBER_OF_UNKNOWN_OWNED_LANDS=$(v.info -t map=clipped_lands_no_owner_data | head -n6 | tail -n1 | cut -d"=" -f2)
-            
-            # Az Ismeretlen tulajdonú területek összes kiterjedése (m2)
-                AREA_OF_UNKNOWN_OWNED_LANDS=0;
-                COLUMN=$(v.report map=clipped_lands_no_owner_data option=area units=feet sort=asc | head -n1 | sed s''/[a-z,A-Z,0-9,_]//g | wc -c)
-                
-                i=0
-                for i in $(v.report map=clipped_lands_no_owner_data option=area units=meters sort=asc | cut -d"|" -f$COLUMN);do
-                    AREA_OF_UNKNOWN_OWNED_LANDS=$(echo "$AREA_OF_UNKNOWN_OWNED_LANDS+$i" | bc);
-                done
-                
-                AREA_OF_UNKNOWN_OWNED_LANDS=$(echo $AREA_OF_UNKNOWN_OWNED_LANDS | cut -d"." -f1)
-            
-            # Házak (háztartások) száma templomi területen
-                v.clip input=clipped_population clip=clipped_lands_no_owner_data output=population_on_unknown_owned_land --overwrite
-                NUMBER_OF_HOUSES_UNKNOWN_OWNED_LANDS=$(v.info -t map=population_on_no_unknown_owned_land | head -n6 | tail -n1 | cut -d"=" -f2)
-                
-            # Lakosok száma templomi területen
-                POPULATION_ON_UNKNOWN_OWNED_LANDS=$(v.db.univar -g map=population_on_unknown_owned_land column=$COLUMN_POPULATION | grep sum | cut -d"=" -f2)
-
-            # String (text and numberic data) output 
-
-        # Data output -- not only a text output, but there will a pdf output too
-        # First: creating a text output, and inseting into a pdf file.
-        
-        rm -f $MODULE/temp_statistics_output_1
-        touch $MODULE/temp_statistics_output_1
-            
-            echo "" > $MODULE/temp_statistics_output_1
-            echo "GOVERNMET" >> $MODULE/temp_statistics_output_1
-            echo "Governmental area (in square meters): $AREA_OF_GOV_OWNED_LANDS" >> $MODULE/temp_statistics_output_1
-            echo "Number of governmental areas: $NUMBER_OF_GOV_OWNED_LANDS" >> $MODULE/temp_statistics_output_1
-            echo "Number of households on governmental land: $NUMBER_OF_HOUSES_GOV_LANDS" >> $MODULE/temp_statistics_output_1
-            echo "Population on governmental land: $POPULATION_ON_GOV_LANDS" >> $MODULE/temp_statistics_output_1
-            echo "" >> $MODULE/temp_statistics_output_1
-            echo "PRIVATE" >> $MODULE/temp_statistics_output_1
-            echo "Private area (in square meters): $AREA_OF_PRIVATE_OWNED_LANDS" >> $MODULE/temp_statistics_output_1
-            echo "Number of private areas: $NUMBER_OF_PRIVATE_OWNED_LANDS" >> $MODULE/temp_statistics_output_1
-            echo "Number of households on private land: $NUMBER_OF_HOUSES_PRIVATE_LANDS" >> $MODULE/temp_statistics_output_1
-            echo "Population on prvate land: $POPULATION_ON_PRIVATE_LANDS" >> $MODULE/temp_statistics_output_1
-            echo "" >> $MODULE/temp_statistics_output_1
-            echo "TEMPLE" >> $MODULE/temp_statistics_output_1
-            echo "Temple owned area (in square meters): $AREA_OF_TEMPLE_OWNED_LANDS" >> $MODULE/temp_statistics_output_1
-            echo "Number of temple owned areas: $NUMBER_OF_TEMPLE_OWNED_LANDS" >> $MODULE/temp_statistics_output_1
-            echo "Number of households on temple land: $NUMBER_OF_HOUSES_TEMPLE_LANDS" >> $MODULE/temp_statistics_output_1
-            echo "Population on temple land: $POPULATION_ON_TEMPLE_LANDS" >> $MODULE/temp_statistics_output_1
-            echo "" >> $MODULE/temp_statistics_output_1
-            echo "UNKNOWN OWNER/NO DATA">> $MODULE/temp_statistics_output_1
-            echo "Unknown owned area (in square meters): $AREA_OF_UNKNOWN_OWNED_LANDS" >> $MODULE/temp_statistics_output_1
-            echo "Number of unknown owned area: $NUMBER_OF_UNKNOWN_OWNED_LANDS" >> $MODULE/temp_statistics_output_1
-            echo "Number of households on unknown owned land: $NUMBER_OF_HOUSES_UNKNOWN_OWNED_LANDS" >> $MODULE/temp_statistics_output_1
-            echo "Population on unknown owned land: $POPULATION_ON_UNKNOWN_OWNED_LANDS" >> $MODULE/temp_statistics_output_1
-            echo "" >> $MODULE/temp_statistics_output_1
-            echo "" >> $MODULE/temp_statistics_output_1
-            echo "Map colors:" >> $MODULE/temp_statistics_output_1
-            echo "Red: . . . . . . . . . . . . . Governmental owned lands" >> $MODULE/temp_statistics_output_1
-            echo "Blue: . . . . . . . . . . . .  Private lands" >> $MODULE/temp_statistics_output_1
-            echo "Yellow: . . . . . . . . . . .  Temple owned lands" >> $MODULE/temp_statistics_output_1
-            echo "Grey: . . . . . . . . . . . .  Unknow owner or no data" >> $MODULE/temp_statistics_output_1 
-            echo "Green with lightgrey fill: . . Query area" >> $MODULE/temp_statistics_output_1
-
-            
-            # Sending to frontend as 'info' file
-            rm -f $MESSAGE_SENT/*.info
-            cp $MODULE/temp_statistics_output_1 $MESSAGE_SENT/module_2b.1.info
-        
-            # Writing output to a pdf file
-            cat $MODULE/temp_statistics_output_1 | sed s'/"//'g | sed s'/{//'g | sed s'/}//'g > $MODULE/temp_statistics_text_1
-            enscript -p $MODULE/temp_statistics_1.ps $MODULE/temp_statistics_text_1
-            ps2pdf $MODULE/temp_statistics_1.ps $MODULE/temp_statistics_1.pdf
-            
-        # Second: creating a multilayer map for pdf output. For this end has to use maps and an external style file
-        
             ps.map input=$MODULE/ps_param_1 output=$MODULE/temp_query_map_1.ps --overwrite
             ps2pdf $MODULE/temp_query_map_1.ps $MODULE/temp_query_map_1.pdf
 
-            gs -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -dPDFSETTINGS=/prepress -sOutputFile=$MODULE/temp_query_results_$DATE_VALUE_2".pdf" $MODULE/temp_statistics_1.pdf $MODULE/temp_query_map_1.pdf
-            
-            mv $MODULE/temp_query_results_$DATE_VALUE_2".pdf" ~/cityapp/saved_results/query_results_$DATE_VALUE_2".pdf"
-        exit
+        # Setting region to the query area, allowing to export only the query area as a ps map
+            g.region vector=query_area_1
+
+            ps.map input=$MODULE/ps_param_2 output=$MODULE/temp_query_map_2.ps --overwrite
+            ps2pdf $MODULE/temp_query_map_2.ps $MODULE/temp_query_map_2.pdf
+    
+        # Merging pdf maps into a single pdf file
+            gs -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -dPDFSETTINGS=/prepress -sOutputFile=$MODULE/temp_map_2.pdf $MODULE/temp_query_map_1.pdf $MODULE/temp_query_map_2.pdf
+    
+    
+Process_Check stop calculations
+exit

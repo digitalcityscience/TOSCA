@@ -1,0 +1,28 @@
+/* @title Surface water lines*/
+* [waterway='river']
+{
+    stroke: #383adb,#bbbbff;
+    stroke-width: 12,11;
+  	z-index:1,2;
+}
+
+[waterway='stream']{
+    stroke: #383adb,#bbbbff;
+    stroke-width: 9,8;
+  	z-index:1,2;
+}
+[waterway='canal']{
+    stroke: #383adb,#bbbbff;
+    stroke-width: 6,5;
+  	z-index:1,2;
+}
+[waterway='drain']{
+    stroke: #383adb,#bbbbff;
+    stroke-width: 3,2;
+  	z-index:1,2;
+}
+[waterway='ditch']{
+    stroke: #383adb;
+    stroke-width: 2;
+  	z-index:1;
+}

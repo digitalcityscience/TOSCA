@@ -1,0 +1,16 @@
+<layer>
+  <name>selection</name>
+  <id>LayerInfoImpl-53a0964:16fc2624139:-7fde</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl-53a0964:16fc2624139:-7ff7</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl-53a0964:16fc2624139:-7fdf</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateModified>2020-06-02 09:09:55.22 UTC</dateModified>
+</layer>
