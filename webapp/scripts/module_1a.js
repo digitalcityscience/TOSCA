@@ -42,12 +42,6 @@ class ModuleOneA {
         message: { "text": "No valid location found. Run \"Set new location\" to create a valid location. Module is now exiting." }
       }
     }
-    this.fromPoints = ''
-    this.viaPoints = ''
-    this.toPoints = ''
-    this.strickenArea = ''
-    this.reductionRatio = null // Speed reduction ratio for roads of stricken area
-    this.roadsSpeed = null
   }
 
   launch() {
@@ -110,7 +104,8 @@ class ModuleOneA {
           this.strickenArea = 'm1_stricken_area'
           return this.messages[4]
         }
-        return this.messages[4]
+        this.calculate()
+        return this.messages[6]
 
       case 'module_1a.4':
         this.reductionRatio = parseFloat(message)
@@ -120,7 +115,7 @@ class ModuleOneA {
   }
 
   calculate() {
-    console.log("Calculating time maps …")
+    console.log("Calculating time map …")
 
     // Creating highways map. This is fundamental for the further work in this module
     grass('module_1', `v.extract input=lines@PERMANENT type=line where="highway>0" output=highways --overwrite`)
@@ -174,7 +169,7 @@ class ModuleOneA {
 
     if (this.strickenArea) {
       grass('module_1', `v.to.rast input=${this.strickenArea} output=${this.strickenArea} use=val value=${this.reductionRatio} --overwrite`)
-      grass('module_1', `r.null map="${this.strickenArea} null=1 --overwrite`)
+      grass('module_1', `r.null map=${this.strickenArea} null=1 --overwrite`)
       grass('module_1', `r.mapcalc expression="highways_points_connected_full=(highways_points_connected_temp*${this.strickenArea})" --overwrite`)
     } else {
       grass('module_1', `r.mapcalc expression="highways_points_connected_full=(highways_points_connected_temp*1)" --overwrite`)
