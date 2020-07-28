@@ -171,13 +171,7 @@ map.addControl(new L.Control.Draw({
   }
 }));
 
-const featureGroup = L.featureGroup().addTo(map);
-
-map.on('draw:created', (saving_draw) => {
-  /* Creating a new item (polygon, line ... ) will be added to the feature group */
-  featureGroup.addLayer(saving_draw.layer);
-});
-
+// Save drawed items in feature group
 map.on(L.Draw.Event.CREATED, (event) => {
   drawnItems.addLayer(event.layer);
 });

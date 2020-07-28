@@ -527,7 +527,7 @@ function reply(res, message) {
 }
 
 function saveDrawing(res) {
-  const geojson = featureGroup.toGeoJSON();
+  const geojson = drawnItems.toGeoJSON();
   if (geojson.features.length === 0) {
     return false;
   }
