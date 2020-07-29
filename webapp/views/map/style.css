@@ -22,7 +22,7 @@
 }
 
 .leaflet-control-layers-scrollbar {
-  overflow-y: scroll;
+  overflow-y: hidden;
   padding-right: 10px;
 }
 
@@ -36,4 +36,10 @@
 
 .leaflet-legend-item {
   padding: 10px 10px
+}
+
+
+.leaflet-control-layers{
+  overflow: auto;
+  max-height: 60vh;
 }

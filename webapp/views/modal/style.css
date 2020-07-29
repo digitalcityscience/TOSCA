@@ -5,9 +5,9 @@
     margin: 5% auto;
     /* 15% from the top and centered */
     padding: 20px;
-    border: 1px solid #888;
     width: 80%;
     /* Could be more or less, depending on screen size */
+    border-radius: 6px;
 }
 
 /* The Close Button */
