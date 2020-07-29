@@ -26,13 +26,14 @@ vlines lines
 	masked y
 	end
 	
-vlines m1_stricken_area_line
-	color #000000
-	width 0.4
-	masked n
+vpoints m1_from_points
+	color black
+	fcolor yellow
+	symbol basic/cross3
+	size 10
 	end
 
-raster m1_time_map
+raster m1a_time_map
 
 colortable y
   where 0 0

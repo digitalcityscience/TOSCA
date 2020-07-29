@@ -149,11 +149,11 @@ Json_To_Text ()
     touch $2
     if [[ $(cat $1 | grep '\{') ]]
         then
-            cat $J1 | sed s'/,"/\n/'g | sed s'/{/\n/'g | sed s'/"//'g | sed s'/text://'g | sed s'/list://'g | sed s'/}//'g | sed s'/ //'g | tail -n9 | cut -d":" -f2 > $2
+            cat $J1 | sed s'/,"/\n/'g | sed s'/{/\n/'g | sed s'/"//'g | sed s'/text://'g | sed s'/list://'g | sed s'/}//'g | tail -n9 | cut -d":" -f2 > $2
         else
-            if [[ $(cat $1 | grep '\[') ]]
+            if [[ ! $(cat $1 | grep '\{') ]] && [[ $(cat $1 | grep '\[') ]]
                 then
-                    cat $1 | sed s'/","/\n/'g | sed s'/\[//'g | sed s'/\]//'g | sed s'/"//'g | sed s'/ //'g > $2
+                    cat $1 | sed s'/\[//'g | sed s'/\]//'g | sed s'/,/\n/'g | sed s'/ \"//'g | sed s'/"//'g > $2
                     #cat $1 | sed s'/","/\n/'g | sed s'/\[//'g | sed s'/\]//'g | sed s'/"//'g | sed s'/ //'g | sed s'/,//'g > $2
             fi
     fi
@@ -384,7 +384,7 @@ Send_Message ()
             until [ $i -gt $LINE ];do
                 if [ $i -lt $LINE ]
                     then
-                        echo "\""$(cat $7 | head -n$i | tail -n1) | sed "/[a-zA-Z0-9]$/s/$/\",/" >> $MODULE/temp_message
+                        echo "\""$(cat $7 | head -n$i | tail -n1) | sed "/[a-zA-Z0-9]$/s/$/\",/" | sed "" >> $MODULE/temp_message
                 fi
                 if [ $i -eq $LINE ]
                     then
