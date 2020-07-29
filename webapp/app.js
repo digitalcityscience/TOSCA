@@ -33,7 +33,6 @@ app.use('/lib/leaflet', express.static('node_modules/leaflet/dist'));
 app.use('/lib/leaflet-draw', express.static('node_modules/leaflet-draw/dist'));
 app.use('/lib/leaflet-groupedlayercontrol', express.static('node_modules/leaflet-groupedlayercontrol/src'));
 
-
 // Views (using Pug template engine)
 app.set('views', './views')
 app.set('view engine', 'pug')
@@ -54,6 +53,7 @@ const AddMapModule = require('./scripts/add_map')
 const SetSelectionModule = require('./scripts/set_selection')
 const SetResolutionModule = require('./scripts/set_resolution')
 const ModuleOne = require('./scripts/module_1')
+const ModuleOneA = require('./scripts/module_1a')
 const ModuleTwo = require('./scripts/module_2')
 
 const modules = {
@@ -62,6 +62,7 @@ const modules = {
   set_selection: new SetSelectionModule(),
   set_resolution: new SetResolutionModule(),
   module_1: new ModuleOne(),
+  module_1a: new ModuleOneA(),
   module_2: new ModuleTwo()
 }
 
