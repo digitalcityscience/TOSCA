@@ -463,7 +463,7 @@ function formElement(id, isMultipart) {
 }
 
 function buttonElement(action) {
-  return $(`<button type="button" class="button button-green">${action}</button>`);
+  return $(`<button type="button" class="btn btn-primary btn-sm">${action}</button>`);
 }
 
 function clearDialog() {
@@ -491,9 +491,9 @@ function launch_app() {
   }
 }
 
-function launch_settings() {
+function launch_settings(el) {
   // Get the selected item
-  const value = $('#launch-settings-menu')[0].value;
+  const value = el.value;
   if (value) {
     sendMessage('/launch', { launch: value }, {}, handleResponse);
   }

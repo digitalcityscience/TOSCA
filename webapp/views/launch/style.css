@@ -3,6 +3,11 @@ body {
   height: 100%;
 }
 
+.title {
+  margin-left: 10px;
+  color: rgb(100,100,100)
+}
+
 .header {
   display: flex;
   justify-content: space-between;
@@ -10,6 +15,26 @@ body {
   height: 50px;
   margin-bottom: 5px;
   padding: 5px;
+  background-color: white;
+}
+
+.task-menu {
+  display: flex;
+  justify-content: flex-end;
+  font-size: 1.25rem;
+  padding: 10px;
+  margin: 10px;
+  border-radius: 10px;
+}
+
+.flex-group {
+  margin: 0 5px;
+  display: flex;
+}
+
+.flex-group span {
+  display: inline-flex;
+  align-items: center;
 }
 
 h1 {
@@ -18,17 +43,12 @@ h1 {
   font-weight: bold;
 }
 
-#help button {
-  margin: 4px;
-}
-
 .logo img {
   margin: 5px 10px;
 }
 
 #giz-logo {
   height: 40px;
-  margin-top: 10px;
 }
 
 #hcu-logo {
@@ -39,7 +59,7 @@ h1 {
 .main {
   display: flex;
   flex-direction: row;
-  height: calc(100% - 55px);
+  height: calc(100% - 143px);
 }
 
 .sidebar {
@@ -49,8 +69,10 @@ h1 {
 }
 
 .card {
-  margin: 5px;
+  margin: 10px;
   border: 0;
+  border-radius: 10px;
+  display: flex;
 }
 
 .card.row {
@@ -71,16 +93,16 @@ h1 {
 
 .card.card-border {
   padding: 10px;
-  border-width: 1px;
+  /* border-width: 1px;
   border-style: solid;
-  border-radius: 6px;
-  border-color: darkgreen;
+  border-radius: 6px; */
+  /* border-color: darkgreen; */
 }
 
-.card.card-border.card-border-yellow {
+/* .card.card-border.card-border-yellow {
   background-color: #fffdaa;
   border-color: #db0000;
-}
+} */
 
 .card form {
   margin-bottom: 0;
@@ -114,19 +136,6 @@ h1 {
   font-size: small;
 } */
 
-.select-menu {
-  margin-bottom: 10px;
-  padding: 10px 14px;
-  font-size: 16px;
-  text-align: center;
-  cursor: pointer;
-  outline: none;
-  color: #006600;
-  background-color: #ffffaa;
-  border: 1px solid #006600;
-  border-radius: 10px;
-}
-
 .button {
   padding: 8px 10px;
   font-size: 16px;
@@ -136,32 +145,12 @@ h1 {
   border-radius: 20px;
 }
 
-.button-green {
-  color: #006600;
-  background-color: #aaffaa;
-  border: 1px solid #006600;
-}
-
-.button-green:hover {
+.btn:hover {
   background-color: #ddffdd
 }
 
-.button-green:active {
+.btn:active {
   background-color: #ffffdd;
-  box-shadow: 0 2px #886;
-  transform: translateY(2px);
-}
-
-.button-yellow {
-  color: #666600;
-  background-color: #ffffaa;
-  border: 1px solid #666600;
-}
-
-.button-red {
-  color: #660000;
-  background-color: #ffaaaa;
-  border: 1px solid #660000;
 }
 
 #alert-anchor {
@@ -222,4 +211,8 @@ h1 {
   /* Fallback color */
   background-color: rgba(0, 0, 0, 0.4);
   /* Black w/ opacity */
+}
+
+.box-shadow {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }

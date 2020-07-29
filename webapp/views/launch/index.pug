@@ -23,39 +23,47 @@ html
         h1 Open City Toolkit
 
       div(class='logo')
-        div(id='help')
-          a: button(class='button button-yellow' title='user manuals') Help
-          img(src='images/giz-logo.gif' id='giz-logo')
-          img(src='images/hcu-logo.png' id='hcu-logo')
+        img(src='images/giz-logo.gif' id='giz-logo')
+        img(src='images/hcu-logo.png' id='hcu-logo')
+    
+    div(class='task-menu box-shadow') 
+
+      div(class='launch-menu flex-group')
+        span Modules:&nbsp;&nbsp;
+        select(id='launch-app-menu' class='custom-select custom-select-lg' onchange='launch_app()')
+          option(selected value='') -
+          option(value='module_1') Calculate time map
+          option(value='module_2') Query area
+
+      div(class='settings-menu flex-group')
+        span Settings:&nbsp;&nbsp;
+        div(class="btn-group" role="group" aria-label="Basic example")
+          button(type="button" class="btn btn-outline-secondary btn-lg" value='add_location' onclick='launch_settings(this)') location
+          button(type="button" class="btn btn-outline-secondary btn-lg" value='set_selection' onclick='launch_settings(this)') selection
+          button(type="button" class="btn btn-outline-secondary btn-lg" value='set_resolution' onclick='launch_settings(this)') resolution
+          button(type="button" class="btn btn-outline-secondary btn-lg" value='add_map' onclick='launch_settings(this)') add map
+
+        //- select(id='launch-settings-menu' class='custom-select custom-select-lg')
+        //-   option(selected value='') - Settings menu -
+        //-   option(value='add_location') Set new location
+        //-   option(value='set_selection') Set new selection
+        //-   option(value='set_resolution') Set resolution
+        //-   option(value='add_map') Add map to query mapset
+        //- a: button(class='btn btn-primary btn-lg' onclick='launch_settings()') OK
+      div(class='flex-group')
+        a: button(class='btn btn-success btn-lg' onclick='show_results()' title='user manuals') results
+      div(class='flex-group')
+        a: button(class='btn btn-info btn-lg' title='user manuals') Help
+
 
     div(class='main')
       div(class='sidebar')
-        div(id='launch-app' class='card card-border')
-          select(id='launch-app-menu' class='select-menu')
-            option(selected value='') - Applications menu -
-            option(value='module_1') Calculate time map
-            option(value='module_2') Query area
-          a: button(class='button button-green' onclick='launch_app()') OK
-
-        div(id='dialog' class='card card-border card-border-yellow')
+        div(id='dialog' class='card card-border card-border-yellow box-shadow')
           div(id='textarea')
           div(id='lists')
-
         div(id='buttonarea' class='card card-buttons row')
 
-        div(id='launch-settings' class='card card-border')
-          select(id='launch-settings-menu' class='select-menu')
-            option(selected value='') - Settings menu -
-            option(value='add_location') Set new location
-            option(value='set_selection') Set new selection
-            option(value='set_resolution') Set resolution
-            option(value='add_map') Add map to query mapset
-          a: button(class='button button-green' onclick='launch_settings()') OK
-        
-        div(id='result-settings' class='card card-border')
-          a: button(class='button button-yellow' onclick='show_results()' title='user manuals') Show results
-
-      div(id='map-container' class='card')
+      div(id='map-container' class='card box-shadow')
         include ../map/index.pug
 
       div(id='alert-anchor')
@@ -66,7 +74,7 @@ html
 
     div(id='results-modal')
       include ../modal/index.pug
-    
+
     script.
       const geoserverUrl = '#{geoserverUrl}';
       const [lat, lon] = [#{lat}, #{lon}];
