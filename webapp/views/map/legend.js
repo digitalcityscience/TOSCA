@@ -20,10 +20,13 @@
         // This will run when adding to the map.
         onAdd: function (map) {
             // This is a base div, containing the legends
-            const div = L.DomUtil.create('div');
-            div.id = 'leaflet-legend-container';
-            div.className = 'leaflet-legend';
-            return div;
+            const container = L.DomUtil.create('div'),
+                content = L.DomUtil.create('div')
+            container.id = 'leaflet-legend-container'
+            content.id = 'leaflet-legend-content'
+            container.className = 'leaflet-legend'
+            container.appendChild(content)
+            return container;
         },
 
         // It is not necessary to remove, it would be pointless
@@ -37,12 +40,13 @@
 
     // Actual linking to  'legend control'. The 'this' contains the layer, and the 'evt.target' contains the checkbox.
     function handleLegendClick(evt) {
-        const container = document.getElementById('leaflet-legend-container');
+
+        const content = document.getElementById('leaflet-legend-content');
         if (evt.target.checked) {
             const div = L.DomUtil.create('div')
             div.id = this.wmsParams.layers
             div.className = 'leaflet-legend-item'
-            container.appendChild(div)
+            content.appendChild(div)
 
             const p = L.DomUtil.create('p')
             p.className = 'leaflet-legend-layer-name'
@@ -55,8 +59,8 @@
             div.appendChild(img)
         } else {
             const img = document.getElementById(this.wmsParams.layers);
-            if (img && container.contains(img)) {
-                container.removeChild(img);
+            if (img && content.contains(img)) {
+                content.removeChild(img);
             }
         }
     }
