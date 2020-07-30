@@ -309,7 +309,11 @@ const groupedOverlays = {
     "From-points": FromPoints,
     "Via-points": ViaPoints,
     "To-points": ToPoints
-  },
+  }
+
+};
+
+const customLayers = {
   "Bhubaneshwar": {
     [Bbswr_Metropolitan_Area.options.name]: Bbswr_Metropolitan_Area,
     [Bbswr_City_Zone.options.name]: Bbswr_City_Zone,
@@ -329,10 +333,12 @@ const groupedOverlays = {
     [Slum_Tapwater.options.name]: Slum_Tapwater,
     [Slum_Toilettes.options.name]: Slum_Toilettes,
   }
-};
+}
 
 // Use the custom grouped layer control, not "L.control.layers"
 L.control.groupedLayers(baseLayers, groupedOverlays, { position: 'topright', collapsed: true }).addTo(map);
+
+L.control.groupedLayers({}, customLayers, { position: 'topright', collapsed: true }).addTo(map);
 
 map.addControl(new L.Control.Draw({
   edit: {
