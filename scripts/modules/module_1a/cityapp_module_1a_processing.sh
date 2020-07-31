@@ -37,10 +37,7 @@ DATE_VALUE_2=$(date +%Y_%m_%d_%H_%M);
     rm -f $MODULE/ps_param_1
     rm -f $MODULE/ps_param_temp
     touch $MODULE/ps_param_temp
-
     
-    SMOOTH=4
-    TENSION=30
     BASE_RESOLUTION=0.0005
     AVERAGE_SPEED=40
     ROAD_POINTS=0.003
@@ -141,8 +138,8 @@ DATE_VALUE_2=$(date +%Y_%m_%d_%H_%M);
         r.mapcalc expression="m1a_specific_time=$RES_VALUE/(m1a_highways_points_connected_area*0.27777)" --overwrite --quiet 
 
     # Calculating 'from--via' time map, 'via--to' time map and it sum. There is a NULL value replacement too. It is neccessary, because otherwise, if one of the maps containes NULL value, NULL value cells will not considering while summarizing the maps. Therefore, before mapcalc operation, NULL has to be replaced by 0.
-        if [ $VIA -eq 1 ]
-            then
+        case $VIA in
+            1)
                 r.cost input=m1a_specific_time output=m1a_from_to_cost start_points=$FROM_POINT stop_points=$TO_POINT --overwrite --quiet 
                 # olvassuk ki VIA pont értékét
                 VIA_VALUE=$(r.what map=m1a_from_to_cost points=$VIA_POINT | cut -d"|" -f4)
@@ -152,11 +149,13 @@ DATE_VALUE_2=$(date +%Y_%m_%d_%H_%M);
                 r.null map=m1a_via_to_cost --overwrite
                 r.mapcalc expression="m1a_time_map_temp=m1a_via_to_cost+$VIA_VALUE" --overwrite --quiet
                 r.mapcalc expression="m1a_time_map=m1a_time_map_temp/60" --overwrite --quiet
-            else
+                ;;
+            0)
                 r.cost input=m1a_specific_time output=m1a_from_to_cost start_points=$FROM_POINT stop_points=$TO_POINT --overwrite --quiet
                 r.mapcalc expression="m1a_time_map_temp=m1a_from_to_cost/60" --overwrite --quiet
                 g.rename raster=m1a_time_map_temp,m1a_time_map --overwrite --quiet
-        fi
+                ;;
+        esac
 
 # Map output into a pdf file ----------------------
         
@@ -198,7 +197,7 @@ DATE_VALUE_2=$(date +%Y_%m_%d_%H_%M);
     # Converting the result into vector point format
         g.region res=$CONVERSION_RESOLUTION
         r.to.vect input=m1a_time_map output=m1_time_map type=point column=data --overwrite
-        v.out.ogr -s input=m1_time_map@module_1 type=point output=/home/titusz/cityapp/geoserver_data/m1_time_map.gpkg --overwrite
+        v.out.ogr -s input=m1_time_map@module_1 type=point output=$GEOSERVER/m1_time_map.gpkg --overwrite
         
     # Generating pdf output
 

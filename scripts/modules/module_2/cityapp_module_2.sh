@@ -106,25 +106,20 @@ Running_Check start
 
                 Json_To_Text $MODULE/temp_query_request_1 $MODULE/query_request_1_temp
 
-                QUERY_COLUMN_1=$(cat $MODULE/query_request_1_temp | cut -d"," -f2)
+QUERY_COLUMN_1=$(cat $MODULE/query_request_1_temp | head -n1 | tail -n1 | cut -d"," -f2);
+WHERE_COLUMN_1=$(cat $MODULE/query_request_1_temp | head -n2 | tail -n1 | cut -d"," -f3);
+RELATION_1=$(cat $MODULE/query_request_1_temp | head -n3 | tail -n1 | cut -d"," -f4);
+VALUE_1=$(cat $MODULE/query_request_1_temp | head -n4 | tail -n1 | cut -d"," -f5);
+LOGICAL_1=$(cat $MODULE/query_request_1_temp | head -n5 | tail -n1 | cut -d"," -f6);
+WHERE_COLUMN_2=$(cat $MODULE/query_request_1_temp | head -n6 | tail -n1 | cut -d"," -f7);
+RELATION_2=$(cat $MODULE/query_request_1_temp | head -n7 | tail -n1 | cut -d"," -f8);
+VALUE_2=$(cat $MODULE/query_request_1_temp | head -n8 | tail -n1 | cut -d"," -f9);
+LOGICAL_2=$(cat $MODULE/query_request_1_temp | head -n9 | tail -n1 | cut -d"," -f10);
+WHERE_COLUMN_3=$(cat $MODULE/query_request_1_temp | head -n10 | tail -n1 | cut -d"," -f11);
+RELATION_3=$(cat $MODULE/query_request_1_temp | head -n11 | tail -n1 | cut -d"," -f12);
+VALUE_3=$(cat $MODULE/query_request_1_temp | head -n12 | tail -n1 | cut -d"," -f13);
 
-                WHERE_COLUMN_1=$(cat $MODULE/query_request_1_temp | cut -d"," -f3)
-                RELATION_1=$(cat $MODULE/query_request_1_temp | cut -d"," -f4)
-                VALUE_1=$(cat $MODULE/query_request_1_temp | cut -d"," -f5)
-
-                LOGICAL_1=$(cat $MODULE/query_request_1_temp | cut -d"," -f6)
-
-                WHERE_COLUMN_2=$(cat $MODULE/query_request_1_temp | cut -d"," -f7)
-                RELATION_2=$(cat $MODULE/query_request_1_temp | cut -d"," -f8)
-                VALUE_2=$(cat $MODULE/query_request_1_temp | cut -d"," -f9)
-
-                LOGICAL_2=$(cat $MODULE/query_request_1_temp | cut -d"," -f10)
-
-                WHERE_COLUMN_3=$(cat $MODULE/query_request_1_temp | cut -d"," -f11)
-                RELATION_3=$(cat $MODULE/query_request_1_temp | cut -d"," -f12)
-                VALUE_3=$(cat $MODULE/query_request_1_temp | cut -d"," -f13)
-
-                WHERE=$(echo $WHERE_COLUMN_1 $RELATION_1 $VALUE_1 $LOGICAL_1 $WHERE_COLUMN_2 $RELATION_2 $VALUE_2 $LOGICAL_2 $WHERE_COLUMN_3 $RELATION_3 $VALUE_3 | sed s'/,//'g)
+WHERE=$(echo $WHERE_COLUMN_1 $RELATION_1 $VALUE_1 $LOGICAL_1 $WHERE_COLUMN_2 $RELATION_2 $VALUE_2 $LOGICAL_2 $WHERE_COLUMN_3 $RELATION_3 $VALUE_3 | sed s'/,//'g)
 
 
 #####################################################################################

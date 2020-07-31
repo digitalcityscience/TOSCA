@@ -1,0 +1,17 @@
+<layer>
+  <name>m1b_accessibility_map</name>
+  <id>LayerInfoImpl--6d4d4993:1735313d2da:-7814</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl--6d4d4993:1735313d2da:-7813</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl--6d4d4993:1735313d2da:-7815</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateCreated>2020-07-31 16:54:29.806 UTC</dateCreated>
+  <dateModified>2020-07-31 17:13:13.932 UTC</dateModified>
+</layer>

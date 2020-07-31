@@ -84,18 +84,11 @@ const drawnItems = L.featureGroup().addTo(map);
     minZoom: 3
     });
 
-    const TimeMap = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/raster/wms/", {
-    layers: 'raster:m1_time_map',
+    const TimeMap = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+    layers: 'vector:m1_time_map',
     format: 'image/png',
     transparent: true,
-    maxZoom: 20,
-    minZoom: 1
-    });
-
-    const TimeMapInterpolated = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/raster/wms/", {
-    layers: 'raster:m1_time_map_interpolated',
-    format: 'image/png',
-    transparent: true,
+    legend_yes: true,
     maxZoom: 20,
     minZoom: 1
     });
@@ -116,13 +109,23 @@ const drawnItems = L.featureGroup().addTo(map);
     minZoom: 3
     });
 
-    const ToPoints = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
-    layers: 'vector:m1_to_points',
+    const AccessibilityMap = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+    layers: 'vector:m1b_accessibility_map',
+    format: 'image/png',
+    transparent: true,
+    legend_yes: true,
+    maxZoom: 20,
+    minZoom: 3
+    });
+    
+    const AccessibilityPoints = L.tileLayer.wms("http://127.1.1.1:8080/geoserver/vector/wms/", {
+    layers: 'vector:m1b_points',
     format: 'image/png',
     transparent: true,
     maxZoom: 20,
     minZoom: 3
     });
+        
     
  // Local layers (Bhubaneshwar)
  // Watch out the property 'legend_yes'. It must be  true if you want to allow a second checckbox to display (refer to views/launch/legend.js and views/index.pug)   
@@ -309,12 +312,12 @@ L.control.layers(
     'Query area 1': query_area_1,
     'Query results 1': query_result_area_1,
     'Query results 3': query_result_point_1,
-    "Stricken area": Stricken_Area,
     "Road-level time map": TimeMap,
-    "Interpolated time map": TimeMapInterpolated,
     "From-points": FromPoints,
     "Via-points": ViaPoints,
-    "To-points": ToPoints,
+    "Stricken area": Stricken_Area,
+    "Accessibility map": AccessibilityMap,
+    "Accessing points": AccessibilityPoints,
     },
   { position: 'topright', collapsed: false }
 ).addTo(map);

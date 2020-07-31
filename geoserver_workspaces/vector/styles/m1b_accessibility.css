@@ -1,0 +1,61 @@
+/* @title 0 */
+[data = 0] {
+  mark: symbol(square);
+   :mark {
+   size:7;
+   fill: #ffffff;
+   z-index: 0;
+   }
+}
+/* @title 1  */
+[data = 1] {
+  mark: symbol(square);
+   :mark {
+   size:7;
+   fill: #aa0000;
+   z-index: 0;
+   }
+}
+/* @title 2 */
+[data = 2] {
+  mark: symbol(square);
+   :mark {
+   size:7;
+   fill: #FF6464;
+   z-index: 0;
+   }
+}
+/* @title 3 */
+[data = 3] {
+  mark: symbol(square);
+   :mark {
+   size:7;
+   fill: #FFC800;
+   z-index: 0;
+   }
+}
+/* @title 4 */
+[data = 4] {
+  mark: symbol(square);
+   :mark {
+   size:7;
+   fill: #E6FF00;
+   z-index: 0;
+   }
+}
+/* @title 5 */
+[data = 5] {
+  mark: symbol(square);
+   :mark {
+   size:7;
+   fill: #00FF00;
+   }
+}
+/* @title 6 -- */
+[data >= 6] [data < 10000] {
+  mark: symbol(square);
+   :mark {
+   size:7;
+   fill: #00AA00;
+   }
+}
