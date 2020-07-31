@@ -314,9 +314,31 @@ const groupedOverlays = {
 
 };
 
+const customLayers = {
+  "Bhubaneshwar": {
+    [Bbswr_Metropolitan_Area.options.name]: Bbswr_Metropolitan_Area,
+    [Bbswr_City_Zone.options.name]: Bbswr_City_Zone,
+    [Slum_Areas.options.name]: Slum_Areas,
+    [Slum_Total_Population.options.name]: Slum_Total_Population,
+    [Female_Population.options.name]: Female_Population,
+    [Male_Population.options.name]: Male_Population,
+    [Empty_Place_Types.options.name]: Empty_Place_Types,
+    [Empty_Place_Category.options.name]: Empty_Place_Category,
+    [Land_Ownership.options.name]: Land_Ownership,
+    [Slums_Empty_Ownership.options.name]: Slums_Empty_Ownership,
+    [Slum_Ownerhip.options.name]: Slum_Ownerhip,
+    [Slum_Religions.options.name]: Slum_Religions,
+    [Monthly_Incomes.options.name]: Monthly_Incomes,
+    [Animals.options.name]: Animals,
+    [Slums_Bathrooms.options.name]: Slums_Bathrooms,
+    [Slum_Tapwater.options.name]: Slum_Tapwater,
+    [Slum_Toilettes.options.name]: Slum_Toilettes,
+  }
+}
 
 // Use the custom grouped layer control, not "L.control.layers"
 L.control.groupedLayers(baseLayers, groupedOverlays, { position: 'topright', collapsed: false }).addTo(map);
+L.control.groupedLayers({}, customLayers, { position: 'topright', collapsed: false }).addTo(map);
 
 map.addControl(new L.Control.Draw({
   edit: {
