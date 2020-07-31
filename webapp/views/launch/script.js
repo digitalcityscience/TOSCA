@@ -37,7 +37,7 @@ function handleResponse(res) {
   // == output ==
   // • get output file names
   if (res.message_id === 'output') {
-    $('#results-menu').html(function () {
+    $('#results-select').html(function () {
       return list.reduce((str, file) => str + `<option selected value="${file}">${file}</option>`, '');
     })
   }
@@ -508,8 +508,8 @@ function show_results() {
   $('#results-modal').show()
 }
 
-function hide_results() {
-  $('#results-modal').hide()
+function show_help() {
+  $('#help-modal').show()
 }
 
 /* Send messages to the backend */

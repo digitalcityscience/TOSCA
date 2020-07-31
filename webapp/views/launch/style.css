@@ -40,7 +40,7 @@ body {
   display: flex;
 }
 
-.flex-group span {
+.span-center {
   display: inline-flex;
   align-items: center;
 }
@@ -90,11 +90,7 @@ body {
   margin: 10px;
 }
 
-.card.card-buttons {
-  padding: 10px;
-}
-
-.card.card-buttons button {
+#buttonarea button {
   margin: 5px;
 }
 
@@ -186,7 +182,7 @@ body {
 
 /* The Modal (background) */
 
-#results-modal {
+#results-modal,#help-modal {
   display: none;
   /* Hidden by default */
   position: fixed;

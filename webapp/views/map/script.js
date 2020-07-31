@@ -3,7 +3,8 @@
 const map = new L.Map('map', {
   center: new L.LatLng(lat, lon),
   zoom: 13,
-  minZoom: 4
+  minZoom: 4,
+  touchZoom: true
 })
 
 // Base layers
@@ -315,7 +316,7 @@ const groupedOverlays = {
 
 
 // Use the custom grouped layer control, not "L.control.layers"
-L.control.groupedLayers(baseLayers, groupedOverlays, { position: 'topright', collapsed: true }).addTo(map);
+L.control.groupedLayers(baseLayers, groupedOverlays, { position: 'topright', collapsed: false }).addTo(map);
 
 map.addControl(new L.Control.Draw({
   edit: {
