@@ -15,7 +15,9 @@ html
     style
       include style.css
       include ../map/style.css
-      include ../modal/style.css
+      include ../results-modal/style.css
+      include ../help-modal/style.css
+
 
   body    
     div(class='header box-shadow') 
@@ -24,7 +26,7 @@ html
       div(class='menu')
         div(class='flex-group')  
           div(class='launch-menu flex-group')
-            span Modules&nbsp;&nbsp;
+            span(class='span-center') Modules&nbsp;&nbsp;
             select(id='launch-app-menu' class='custom-select custom-select-lg' onchange='launch_app()')
               option(selected value='') -
               option(value='module_1') Calculate time map
@@ -35,7 +37,7 @@ html
         
         div(class='flex-group')
           div(class='settings-menu flex-group')
-            span Settings&nbsp;&nbsp;
+            span(class='span-center') Settings&nbsp;&nbsp;
             div(class="btn-group" role="group" aria-label="Basic example")
               button(type="button" class="btn btn-outline-secondary btn-lg" value='add_map' onclick='launch_settings(this)') add map
               button(type="button" class="btn btn-outline-secondary btn-lg" value='set_selection' onclick='launch_settings(this)') selection
@@ -43,19 +45,18 @@ html
               button(type="button" class="btn btn-outline-secondary btn-lg" value='add_location' onclick='launch_settings(this)') location
 
           div(class='flex-group')
-            a: button(class='btn btn-secondary btn-lg' title='user manuals') Help
+            a: button(class='btn btn-secondary btn-lg' onclick='show_help()' title='user manuals') Help
 
 
     div(class='main')
       div(class='sidebar')
 
         div(id='dialog' class='card card-border box-shadow')
-          h5(class="card-title") message
+          //- h5(class="card-title") task panel
           div(id='textarea')
           div(id='lists')
-        div(class='card card-buttons box-shadow')
-          h5(class="card-title") operation
           div(id='buttonarea' class='row')
+
         div(class='logo box-shadow')
           img(src='images/giz-logo.gif' id='giz-logo')
           img(src='images/hcu-logo.png' id='hcu-logo')
@@ -70,7 +71,10 @@ html
         div(class='spinner spinner-border')
 
     div(id='results-modal')
-      include ../modal/index.pug
+      include ../results-modal/index.pug
+
+    div(id='help-modal')
+      include ../help-modal/index.pug
 
     script.
       const geoserverUrl = '#{geoserverUrl}';
@@ -79,3 +83,7 @@ html
       include ../map/legend.js
       include script.js
       include ../map/script.js
+      include ../results-modal/script.js
+      include ../help-modal/script.js
+
+

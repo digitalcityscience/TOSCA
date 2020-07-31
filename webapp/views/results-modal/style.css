@@ -1,6 +1,6 @@
 /* Modal Content/Box */
 
-#results-modal-content {
+#modal-content {
     background-color: #fefefe;
     margin: 5% auto;
     /* 15% from the top and centered */
@@ -8,19 +8,38 @@
     width: 80%;
     /* Could be more or less, depending on screen size */
     border-radius: 6px;
+    font-size: 1.25rem;
 }
 
 /* The Close Button */
 
-#results-modal-close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
+.modal-close-container {
+    display: flex;
+    justify-content: flex-end;
 }
 
-#results-modal-close:hover, #results-modal-close:focus {
+.modal-close {
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    align-self: flex-end;
+}
+
+.modal-close:hover, .modal-close:focus {
     color: black;
     text-decoration: none;
     cursor: pointer;
+}
+
+#results-header {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+#results-select{
+    width: auto;
+}
+
+iframe {
+    border: 0;
 }

@@ -1,0 +1,8 @@
+div(id='modal-content')
+  div(class='modal-close-container') 
+    span(class='modal-close' onclick='hide_results()') &times;
+  div(id='results-header')
+    span(class='span-center') select results to be displayed&nbsp;&nbsp;
+    select(id='results-select' class='custom-select custom-select-lg' onchange='display()')
+  
+  iframe(id='results-iframe' src="/output/time_map_results_2020-07-27_1214.pdf" width="100%" height="75%")

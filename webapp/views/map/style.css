@@ -33,9 +33,11 @@
 }
 
 #leaflet-legend-content {
-  min-width: 300px;
-  max-height: 300px;
-  overflow-y: scroll;
+  min-width: 50vw;
+  max-height: 30vh;
+  display: flex;
+  flex-wrap: wrap;
+  overflow-y: auto;
   overflow-x: hidden;
 }
 
@@ -43,7 +45,8 @@
   padding: 10px 10px
 }
 
-.leaflet-control-layers {
-  overflow: auto;
-  max-height: 60vh;
+.leaflet-control-layers-list {
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: 20vh;
 }
