@@ -21,10 +21,15 @@
         onAdd: function (map) {
             // This is a base div, containing the legends
             const container = L.DomUtil.create('div'),
-                content = L.DomUtil.create('div')
+                content = L.DomUtil.create('div'),
+                title = L.DomUtil.create('span')
+
+            title.id = 'leaflet-legend-title'
+            title.innerHTML = 'Map legend'
             container.id = 'leaflet-legend-container'
             content.id = 'leaflet-legend-content'
             container.className = 'leaflet-legend'
+            container.appendChild(title)
             container.appendChild(content)
             return container;
         },

@@ -11,7 +11,7 @@
   z-index: 1000;
 }
 
-.leaflet-control-layers-group-name, .leaflet-legend-layer-name {
+.leaflet-control-layers-group-name, #leaflet-legend-title {
   font-weight: bold;
   margin-bottom: .2em;
   margin-left: 3px;
@@ -33,7 +33,7 @@
 }
 
 #leaflet-legend-content {
-  min-width: 50vw;
+  max-width: 50vw;
   max-height: 30vh;
   display: flex;
   flex-wrap: wrap;
