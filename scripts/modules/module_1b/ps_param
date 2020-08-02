@@ -26,14 +26,16 @@ vlines lines
 	masked y
 	end
 	
-vpoints m1_from_points
+
+	
+vpoints m1b_points
 	color black
 	fcolor yellow
 	symbol basic/cross3
 	size 10
 	end
 
-raster m1a_time_map
+raster m1b_accessibility_map
 
 colortable y
   where 0 0

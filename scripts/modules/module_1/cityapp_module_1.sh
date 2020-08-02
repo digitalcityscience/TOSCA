@@ -204,7 +204,7 @@ fi
                     # Message Now you can change the speed values. Current values are:
                     Send_Message l 8 module_1.10 select actions [\"OK\"] $VARIABLES/roads_speed
                         Request
-                            # echo $REQUEST_CONTENT > $VARIABLES/roads_speed;;
+                            echo $REQUEST_CONTENT > $VARIABLES/roads_speed;;
                     # Specific value will serves as speed value for non classified elements and newly inserted connecting line segments. Speed of these features will set to speed of service roads
                     #REDUCING_RATIO=$(cat $VARIABLES/roads_speed | head -n$n | tail -n1 | cut -d":" -f2 | sed s'/ //'g)
                     ;;

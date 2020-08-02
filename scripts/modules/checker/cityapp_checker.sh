@@ -112,13 +112,6 @@ if [ -e ~/cityapp/scripts/external/csv2odf/csv2odf ]
         echo "No csv2odf found" >> $ERROR
 fi
 
-if [ $(which wkhtmltopdf) ]
-    then
-        echo "wkhtmltopdf found"
-    else
-        echo "No wkhtmltopdf found" >> $ERROR
-fi
-
 if [ $(echo $(stat --printf="%s" $ERROR)) -eq 0 ]
 then
     rm $ERROR

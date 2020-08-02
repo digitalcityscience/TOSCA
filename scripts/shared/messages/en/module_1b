@@ -1,0 +1,7 @@
+If you want use an existing map to add points, click Map button, select a map, then save. If you want to draw points directly on the map, click Darw, then save.
+Add a time limit value in minutes (integer numbers only)
+Stricken area is optional. If you want to add stricken area, click Yes, then draw one or more area and click Save button. If you do not want to add an area, click Cancel.
+Set speed reduction ratio (in percentage, without the % character) for roads of stricken area. Value has to be greater than 0 and less or equale to 100.
+Average speed values on road types of the area. Do you want to change them?
+Calculations are ready, display output time maps
+To exit, click OK.
