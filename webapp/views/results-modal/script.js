@@ -1,6 +1,10 @@
 function display() {
     const value = $('#results-select')[0].value;
-    $('#results-iframe').attr('src', '/output/' + value)
+    if(value != ''){
+        $('#results-iframe').attr('src', '/output/' + value)
+    }else{
+        $('#results-iframe').attr('src', '')
+    }
 }
 
 function hide_results() {
