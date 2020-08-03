@@ -377,6 +377,14 @@ function handleResponse(res) {
         ];
         break;
 
+      case 'module_1a.8':
+        buttons = [
+          buttonElement('No').click(() => {
+            reply(res, 'no');
+          })
+        ];
+        break;
+
       // == module_2 ==
 
       case 'module_2.1':
