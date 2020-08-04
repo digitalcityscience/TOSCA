@@ -1,14 +1,14 @@
 #! /bin/bash
 . ~/cityapp/scripts/shared/functions.sh
 
-# version 1.01
+# version 1.02
 # CityApp module
 # Import OSM maps into PERMANENT mapset. Points, lines, polygons, relations are only imported. Other maps can be extracted from these in separate modules.
 # To import other maps, use Add Layer module.
 #
 # Core module, do not modify.
 #
-# 2020. május 13.
+# 2020. július 29.
 # Author: BUGYA Titusz, CityScienceLab -- Hamburg, Germany
 
 #
@@ -111,21 +111,21 @@ function coordinates
 #
 #-- Process ----------------------------
 #
+    Process_Check start map_calculations
 
     # Refine or redefine the area selection
     rm -f $VARIABLES/location_new
     touch $VARIABLES/location_mod
 
     # Clipping the basemaps by the selection map. Results will used in the calculations and analysis
+    # highways is not a basemap, but it is faster to create it once now, that many times later in module_1
 
     # rm -f $GEOSERVER/m1_time_map.tif
-    Process_Check start map_calculations
 
     grass $GRASS/$MAPSET --exec v.clip input=polygons_osm clip=selection output=polygons --overwrite
     grass $GRASS/$MAPSET --exec v.clip input=lines_osm clip=selection output=lines --overwrite
     grass $GRASS/$MAPSET --exec v.clip input=relations_osm clip=selection output=relations --overwrite
-
-    Process_Check stop map_calculations
+    v.extract input=lines type=line where="highway>0" output=highways --overwrite --quiet
 
     # Finally, have to set Geoserver to display raster outputs (such as time_map) properly.
     # For this end, first have to prepare a "fake time_map". This is a simple geotiff, a raster version of "selection" vector map.
@@ -133,9 +133,6 @@ function coordinates
     # Now the Geoserver have to be restarted manually and from that point, rastermaps of this locations will accepted automatically.
     # This process only have to repeated, when new location is created.
     # First check if a new location was created, or only a refining of the current selection:
-
-
-    Process_Check start map_calculations
 
     grass $GRASS/$MAPSET --exec g.region vector=selection res=$(cat ~/cityapp/scripts/shared/variables/resolution | tail -n1) 
     grass $GRASS/$MAPSET --exec v.to.rast input=selection output=m1_time_map use=val value=1 --overwrite --quiet

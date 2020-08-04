@@ -305,11 +305,13 @@ const groupedOverlays = {
     'Query area 1': query_area_1,
     'Query results 1': query_result_area_1,
     'Query results 3': query_result_point_1,
-    "Stricken area": Stricken_Area,
     "Road-level time map": TimeMap,
     "From-points": FromPoints,
     "Via-points": ViaPoints,
-    "To-points": ToPoints
+    "To-points": ToPoints,
+    "Stricken area": Stricken_Area,
+    "Accessibility map": AccessibilityMap,
+    "Accessing points": AccessibilityPoints,
   }
 
 };
