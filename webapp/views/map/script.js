@@ -310,10 +310,9 @@ const groupedOverlays = {
     "Via-points": ViaPoints,
     "To-points": ToPoints,
     "Stricken area": Stricken_Area,
-    "Accessibility map": AccessibilityMap,
-    "Accessing points": AccessibilityPoints,
+    // "Accessibility map": AccessibilityMap,
+    // "Accessing points": AccessibilityPoints,
   }
-
 };
 
 const customLayers = {
