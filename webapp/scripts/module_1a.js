@@ -173,7 +173,7 @@ class ModuleOneA {
     if (this.strickenArea) {
       grass('module_1', `v.to.rast input=${this.strickenArea} output=${this.strickenArea} use=val value=${this.reductionRatio} --overwrite`)
       grass('module_1', `r.null map=${this.strickenArea} null=1 --overwrite`)
-      grass('module_1', `r.mapcalc expression="m1a_highways_points_connected_area_temp=(m1a_highways_points_connected_area_temp*${this.strickenArea})" --overwrite`)
+      grass('module_1', `r.mapcalc expression="m1a_highways_points_connected_area_temp=(m1a_highways_points_connected_temp*${this.strickenArea})" --overwrite`)
     } else {
       grass('module_1', `g.rename raster=m1a_highways_points_connected_temp,m1a_highways_points_connected_area_temp --overwrite`)
     }
