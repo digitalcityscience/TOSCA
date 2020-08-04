@@ -1,4 +1,4 @@
-const { addVector, clip, getCoordinates, gpkgOut, mapsetExists, remove } = require('./functions')
+const { addVector, clip, getCoordinates, gpkgOut, mapsetExists, remove, grass } = require('./functions')
 
 class SetSelectionModule {
   constructor() {
@@ -42,6 +42,9 @@ class SetSelectionModule {
         clip('PERMANENT', 'polygons_osm', 'selection', 'polygons')
         clip('PERMANENT', 'lines_osm', 'selection', 'lines')
         clip('PERMANENT', 'relations_osm', 'selection', 'relations')
+
+        // highways is not a basemap, but it is faster to create it once now, that many times later in module_1
+        grass('PERMANENT', `v.extract input=lines type=line where="highway>0" output=highways --overwrite`)
 
         let [east, north] = getCoordinates('PERMANENT')
 

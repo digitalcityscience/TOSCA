@@ -129,7 +129,7 @@ class ModuleOneA {
     grass('module_1', `g.region vector=selection@PERMANENT res=${this.resolution} --overwrite`)
 
     // "TO" points has a default value, the points of the road network will used for. But, because these points are on the road by its origin, therefore no further connecting is requested.
-    grass('module_1', `v.to.points input=highways output=m1a_highway_points dmax=${ROAD_POINTS} --overwrite`)
+    grass('module_1', `v.to.points input=highways@PERMANENT output=m1a_highway_points dmax=${ROAD_POINTS} --overwrite`)
     this.toPoints = 'm1a_highway_points'
 
     // threshold to connect is ~ 330 m
@@ -152,7 +152,7 @@ class ModuleOneA {
     }
 
     // Converting clipped and connected road network map into raster format and float number
-    grass('module_1', `v.extract -r input=m1a_highways_points_connected@module_1 where=avg_speed>0 output=m1a_temp_connections --overwrite`)
+    grass('module_1', `v.extract -r input=m1a_highways_points_connected@module_1 where="avg_speed>0" output=m1a_temp_connections --overwrite`)
     grass('module_1', `v.to.rast input=m1a_temp_connections output=m1a_temp_connections use=val value=${AVERAGE_SPEED} --overwrite`)
     grass('module_1', `v.to.rast input=m1a_highways_points_connected output=m1a_highways_points_connected_1 use=attr attribute_column=avg_speed --overwrite`)
     grass('module_1', `r.patch input=m1a_temp_connections,m1a_highways_points_connected_1 output=m1a_highways_points_connected --overwrite`)
