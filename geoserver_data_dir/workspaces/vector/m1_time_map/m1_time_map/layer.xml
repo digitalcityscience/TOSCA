@@ -1,0 +1,15 @@
+<layer>
+  <name>m1_time_map</name>
+  <id>LayerInfoImpl-4e8e1d32:173c4cc54b9:-7ffa</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl-50f2cee3:1719bd49253:-8000</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl-4e8e1d32:173c4cc54b9:-7ffb</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+</layer>
