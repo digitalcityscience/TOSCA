@@ -158,11 +158,14 @@ class ModuleOneA {
     grass('module_1', `r.patch input=m1a_temp_connections,m1a_highways_points_connected_1 output=m1a_highways_points_connected --overwrite`)
     grass('module_1', `r.mapcalc expression="m1a_highways_points_connected=float(m1a_highways_points_connected)" --overwrite`)
 
-    // Now vector zones are created around from and via points (its radius is equal to the curren resolution),
+    // Now vector zones are created around from and via points (its radius is equal to the current resolution),
     // converted into raster format, and patched to raster map 'temp' (just created in the previous step)
-    grass('module_1', `v.patch -e input=${this.fromPoints},${this.viaPoints} output=m1a_from_via_points --overwrite`)
-    grass('module_1', `v.buffer input=m1a_from_via_points output=m1a_from_via_zones distance=${this.resolution} minordistance=${this.resolution} --overwrite`)
-    grass('module_1', `r.mapcalc expression="m1a_from_via_zones=float(m1a_from_via_zones)" --overwrite`)
+    if (this.viaPoints) {
+      grass('module_1', `v.patch -e input=${this.fromPoints},${this.viaPoints} output=m1a_from_via_points --overwrite`)
+      grass('module_1', `v.buffer input=m1a_from_via_points output=m1a_from_via_zones distance=${this.resolution} --overwrite`)
+    } else {
+      grass('module_1', `v.buffer input=${this.fromPoints} output=m1a_from_via_zones distance=${this.resolution} --overwrite`)
+    }
     grass('module_1', `v.to.rast input=m1a_from_via_zones output=m1a_from_via_zones use=val val=${AVERAGE_SPEED} --overwrite`)
     grass('module_1', `r.patch input=m1a_highways_points_connected,m1a_from_via_zones output=m1a_highways_points_connected_zones --overwrite`)
 
@@ -208,6 +211,27 @@ class ModuleOneA {
 
     // Generating pdf output
 
+    let psParams = fs.readFileSync(`${GRASS}/variables/defaults/module_1a.ps_param`).toString()
+
+    if (this.viaPoints) {
+      psParams += `vpoints m1_via_points
+color black
+fcolor #ff77ff
+symbol basic/cross3
+size 10
+end`
+    }
+
+    if (this.strickenArea) {
+      psParams += `vlines m1_stricken_area_lines
+color #000000
+width 0.4
+masked n
+end`
+    }
+
+    fs.writeFileSync(`${GRASS}/variables/module_1a.ps_param`, psParams)
+
     // set color for maps:
     grass('module_1', `g.region res=${this.resolution}`)
     grass('module_1', `r.colors -e map=m1a_time_map color=gyr`)
@@ -237,7 +261,7 @@ Speed reduction coefficient for stricken area: ${this.reductionRatio}`)
     textToPS('tmp/time_map_info_text', 'tmp/time_map_info_text.ps')
     psToPDF('tmp/time_map_info_text.ps', 'tmp/time_map_info_text.pdf')
 
-    grass('module_1', `ps.map input="${GRASS}/variables/defaults/module_1a.ps_param_1" output=tmp/time_map_1.ps --overwrite`)
+    grass('module_1', `ps.map input="${GRASS}/variables/module_1a.ps_param" output=tmp/time_map_1.ps --overwrite`)
     psToPDF('tmp/time_map_1.ps', 'tmp/time_map_1.pdf')
 
     mergePDFs(`${OUTPUT}/time_map_results_${safeDateString}.pdf`, 'tmp/time_map_1.pdf', 'tmp/time_map_info_text.pdf')
