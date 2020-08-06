@@ -214,20 +214,24 @@ class ModuleOneA {
     let psParams = fs.readFileSync(`${GRASS}/variables/defaults/module_1a.ps_param`).toString()
 
     if (this.viaPoints) {
-      psParams += `vpoints m1_via_points
-color black
-fcolor #ff77ff
-symbol basic/cross3
-size 10
-end`
+      psParams += `
+      vpoints m1_via_points
+      color black
+      fcolor #ff77ff
+      symbol basic/cross3
+      size 10
+      end
+      `
     }
 
     if (this.strickenArea) {
-      psParams += `vlines m1_stricken_area_lines
-color #000000
-width 0.4
-masked n
-end`
+      psParams += `
+      vlines m1_stricken_area_lines
+      color #000000
+      width 0.4
+      masked n
+      end
+      `
     }
 
     fs.writeFileSync(`${GRASS}/variables/module_1a.ps_param`, psParams)
