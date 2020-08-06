@@ -1,4 +1,4 @@
-const { addRaster, addVector, mapsetExists } = require('./functions.js')
+const { addRaster, addVector, mapsetExists, gpkgOut } = require('./functions.js')
 
 class AddMapModule {
   constructor() {
@@ -57,6 +57,7 @@ class AddMapModule {
 
         if (this.mapType === 'vector') {
           addVector('PERMANENT', this.mapFile, message)
+          gpkgOut('PERMANENT', message, message)
         } else if (this.mapType === 'raster') {
           addRaster('PERMANENT', this.mapFile, message)
         }
