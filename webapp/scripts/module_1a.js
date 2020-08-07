@@ -99,6 +99,8 @@ class ModuleOneA {
           gpkgOut('module_1', 'm1_via_points', 'm1_via_points')
           this.viaPoints = 'm1_via_points'
           return this.messages[3]
+        } else {
+          this.viaPoints = null
         }
         return this.messages[3]
 
@@ -188,11 +190,9 @@ class ModuleOneA {
     // Calculating 'from--via' time map, 'via--to' time map and it sum. There is a NULL value replacenet too. It is neccessary, because otherwise, if one of the maps containes NULL value, NULL value cells will not considering while summarizing the maps. Therefore, before mapcalc operation, NULL has to be replaced by 0.
     // FIXME: when this.viaPoints == true, PDF results has a green background, probably due to null raster cells
     if (this.viaPoints) {
-      grass('module_1', `r.cost input=m1a_specific_time output=m1a_from_to_cost start_points=${this.fromPoints} stop_points=${this.viaPoints} --overwrite`)
+      grass('module_1', `r.cost -n input=m1a_specific_time output=m1a_from_to_cost start_points=${this.fromPoints} stop_points=${this.viaPoints} null_cost=0 --overwrite`)
       const VIA_VALUE = grass('module_1', `r.what map=m1a_from_to_cost points=${this.viaPoints}`).split('|')[3]
-      grass('module_1', `r.null map=m1a_from_to_cost null=0 --overwrite`)
-      grass('module_1', `r.cost input=m1a_specific_time output=m1a_via_to_cost start_points=${this.viaPoints} stop_points=${this.toPoints} --overwrite`)
-      grass('module_1', `r.null map=m1a_via_to_cost null=0 --overwrite`)
+      grass('module_1', `r.cost -n input=m1a_specific_time output=m1a_via_to_cost start_points=${this.viaPoints} stop_points=${this.toPoints} null_cost=0 --overwrite`)
       grass('module_1', `r.mapcalc expression="m1a_time_map_temp=m1a_via_to_cost+${VIA_VALUE}" --overwrite`)
       grass('module_1', `r.mapcalc expression="m1a_time_map=m1a_time_map_temp/60" --overwrite`)
     } else {
@@ -216,23 +216,23 @@ class ModuleOneA {
 
     if (this.viaPoints) {
       psParams += `
-      vpoints m1_via_points
-      color black
-      fcolor #ff77ff
-      symbol basic/cross3
-      size 10
-      end
-      `
+vpoints m1_via_points
+color black
+fcolor #ff77ff
+symbol basic/cross3
+size 10
+end
+`
     }
 
     if (this.strickenArea) {
       psParams += `
-      vlines m1_stricken_area_lines
-      color #000000
-      width 0.4
-      masked n
-      end
-      `
+vlines m1_stricken_area_lines
+color #000000
+width 0.4
+masked n
+end
+`
     }
 
     fs.writeFileSync(`${GRASS}/variables/module_1a.ps_param`, psParams)
