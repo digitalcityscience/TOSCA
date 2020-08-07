@@ -9,6 +9,7 @@ const AVERAGE_SPEED = 40
 const ROAD_POINTS = 0.003
 const CONNECT_DISTANCE = 0.003
 const CONVERSION_RESOLUTION = 0.0001
+const METER_TO_PROJ = process.env.METER_TO_PROJ
 
 class ModuleOneA {
   constructor() {
@@ -194,12 +195,15 @@ class ModuleOneA {
       const VIA_VALUE = grass('module_1', `r.what map=m1a_from_to_cost points=${this.viaPoints}`).split('|')[3]
       grass('module_1', `r.cost -n input=m1a_specific_time output=m1a_via_to_cost start_points=${this.viaPoints} stop_points=${this.toPoints} null_cost=0 --overwrite`)
       grass('module_1', `r.mapcalc expression="m1a_time_map_temp=m1a_via_to_cost+${VIA_VALUE}" --overwrite`)
-      grass('module_1', `r.mapcalc expression="m1a_time_map=m1a_time_map_temp/60" --overwrite`)
+      grass('module_1', `r.mapcalc expression="m1a_time_map=m1a_time_map_temp*${METER_TO_PROJ}/60" --overwrite`)
     } else {
       grass('module_1', `r.cost input=m1a_specific_time output=m1a_from_to_cost start_points=${this.fromPoints} stop_points=${this.toPoints} --overwrite`)
-      grass('module_1', `r.mapcalc expression="m1a_time_map_temp=m1a_from_to_cost/60" --overwrite`)
+      grass('module_1', `r.mapcalc expression="m1a_time_map_temp=m1a_from_to_cost*${METER_TO_PROJ}/60" --overwrite`)
       grass('module_1', `g.rename raster=m1a_time_map_temp,m1a_time_map --overwrite`)
     }
+
+    // export raster map
+    grass('module_1', `r.out.gdal input=m1a_time_map output="${GEOSERVER}/m1_time_map.tif" format=GTiff --overwrite`)
 
     if (this.strickenArea) {
       grass('module_1', `v.type input=m1_stricken_area output=m1_stricken_area_lines from_type=boundary to_type=line --overwrite`)

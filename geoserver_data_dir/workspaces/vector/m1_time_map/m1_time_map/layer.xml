@@ -1,15 +1,17 @@
 <layer>
   <name>m1_time_map</name>
-  <id>LayerInfoImpl-4e8e1d32:173c4cc54b9:-7ffa</id>
+  <id>LayerInfoImpl--6d4d4993:1735313d2da:-7c47</id>
   <type>VECTOR</type>
   <defaultStyle>
-    <id>StyleInfoImpl-50f2cee3:1719bd49253:-8000</id>
+    <id>StyleInfoImpl--6d4d4993:1735313d2da:-7c46</id>
   </defaultStyle>
   <resource class="featureType">
-    <id>FeatureTypeInfoImpl-4e8e1d32:173c4cc54b9:-7ffb</id>
+    <id>FeatureTypeInfoImpl--6d4d4993:1735313d2da:-7c48</id>
   </resource>
   <attribution>
     <logoWidth>0</logoWidth>
     <logoHeight>0</logoHeight>
   </attribution>
+  <dateCreated>2020-07-26 20:36:22.643 UTC</dateCreated>
+  <dateModified>2020-07-26 20:51:50.253 UTC</dateModified>
 </layer>

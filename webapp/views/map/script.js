@@ -87,6 +87,14 @@ const TimeMap = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
   minZoom: 1
 });
 
+const TimeMapRaster = L.tileLayer.wms(geoserverUrl + "geoserver/raster/wms/", {
+  layers: 'raster:m1_time_map',
+  format: 'image/png',
+  transparent: true,
+  maxZoom: 20,
+  minZoom: 1
+});
+
 const FromPoints = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
   layers: 'vector:m1_from_points',
   format: 'image/png',
@@ -151,6 +159,7 @@ const groupedOverlays = {
     'Query results 1': query_result_area_1,
     'Query results 3': query_result_point_1,
     "Road-level time map": TimeMap,
+    "time map raster": TimeMapRaster,
     "From-points": FromPoints,
     "Via-points": ViaPoints,
     "To-points": ToPoints,

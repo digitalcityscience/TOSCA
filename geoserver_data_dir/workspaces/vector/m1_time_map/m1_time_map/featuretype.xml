@@ -1,5 +1,5 @@
 <featureType>
-  <id>FeatureTypeInfoImpl-4e8e1d32:173c4cc54b9:-7ffb</id>
+  <id>FeatureTypeInfoImpl--6d4d4993:1735313d2da:-7c48</id>
   <name>m1_time_map</name>
   <nativeName>m1_time_map</nativeName>
   <namespace>
@@ -21,23 +21,26 @@
   AUTHORITY[&quot;EPSG&quot;,&quot;4326&quot;]]</nativeCRS>
   <srs>EPSG:4326</srs>
   <nativeBoundingBox>
-    <minx>85.81932296917807</minx>
-    <maxx>85.83381403082191</maxx>
-    <miny>20.264259857692306</miny>
-    <maxy>20.27712314230769</maxy>
+    <minx>85.7410459310715</minx>
+    <maxx>85.89418771247159</maxx>
+    <miny>20.21084443800257</miny>
+    <maxy>20.364762229910085</maxy>
     <crs>EPSG:4326</crs>
   </nativeBoundingBox>
   <latLonBoundingBox>
-    <minx>85.81932296917807</minx>
-    <maxx>85.83381403082191</maxx>
-    <miny>20.264259857692306</miny>
-    <maxy>20.27712314230769</maxy>
+    <minx>85.7410459310715</minx>
+    <maxx>85.89418771247159</maxx>
+    <miny>20.21084443800257</miny>
+    <maxy>20.364762229910085</maxy>
     <crs>EPSG:4326</crs>
   </latLonBoundingBox>
   <projectionPolicy>FORCE_DECLARED</projectionPolicy>
   <enabled>true</enabled>
+  <metadata>
+    <entry key="cachingEnabled">false</entry>
+  </metadata>
   <store class="dataStore">
-    <id>DataStoreInfoImpl-4e8e1d32:173c4cc54b9:-7ffc</id>
+    <id>DataStoreInfoImpl--6d4d4993:1735313d2da:-7c49</id>
   </store>
   <serviceConfiguration>false</serviceConfiguration>
   <maxFeatures>0</maxFeatures>
