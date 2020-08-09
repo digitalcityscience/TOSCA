@@ -195,7 +195,7 @@ class ModuleOneA {
       const VIA_VALUE = grass('module_1', `r.what map=m1a_from_to_cost points=${this.viaPoints}`).split('|')[3]
       grass('module_1', `r.cost -n input=m1a_specific_time output=m1a_via_to_cost start_points=${this.viaPoints} stop_points=${this.toPoints} null_cost=0 --overwrite`)
       grass('module_1', `r.mapcalc expression="m1a_time_map_temp=m1a_via_to_cost+${VIA_VALUE}" --overwrite`)
-      grass('module_1', `r.mapcalc expression="m1a_time_map=m1a_time_map_temp*${METER_TO_PROJ}/60" --overwrite`)
+      grass('module_1', `r.mapcalc expression="m1a_time_map=m1a_time_map_temp*${METER_TO_PROJ}" --overwrite`)
     } else {
       grass('module_1', `r.cost input=m1a_specific_time output=m1a_from_to_cost start_points=${this.fromPoints} stop_points=${this.toPoints} --overwrite`)
       grass('module_1', `r.mapcalc expression="m1a_time_map_temp=m1a_from_to_cost*${METER_TO_PROJ}/60" --overwrite`)
