@@ -400,7 +400,7 @@ function handleResponse(res) {
 
       case 'module_2.2':
         form = formElement(messageId);
-        lists.append($(`<select id="${messageId}-input" size="10">` + list.map(col => `<option selected value="${col}">${col}</option>`) + `</select>`));
+        lists.append($(`<select id="${messageId}-input" class='custom-select' size="10">` + list.map(col => `<option selected value="${col}">${col}</option>`) + `</select>`));
         buttons = [
           buttonElement('Submit').click(() => {
             const input = $(`#${messageId}-input`);
@@ -411,32 +411,46 @@ function handleResponse(res) {
 
       case 'module_2.3': {
         form = formElement(messageId);
-        const columns = list.map(col => `<option selected value="${col}">${col}</option>`);
+        const columns = list.map(col => `<option value="${col}">${col}</option>`);
+        const rel = ['AND', 'OR', 'NOT'].map(el => `<option value="${el}">${el}</option>`);
+        const op = ['>', '<', '=', '>=', '<='].map(el => `<option value="${el}">${el}</option>`);
         lists.append($('<span>SELECT</span>'));
-        lists.append($(`<select id="${messageId}-input0" size="2">${columns}</select>`));
+        lists.append($(`<select class='${messageId}-input custom-select custom-select-lg mr-2'>${columns}</select>`));
         lists.append($('<span>WHERE</span>'));
-        lists.append($(`<select id="${messageId}-input1" size="2">${columns}</select>`));
-        lists.append($(`<input id="${messageId}-input2" type="text" value="=" />`));
-        lists.append($(`<input id="${messageId}-input3" type="number" />`));
-        lists.append($(`<input id="${messageId}-input4" type="text" value="AND" />`));
-        lists.append($(`<select id="${messageId}-input5" size="2">${columns}</select>`));
-        lists.append($(`<input id="${messageId}-input6" type="text" value="=" />`));
-        lists.append($(`<input id="${messageId}-input7" type="number" />`));
-        lists.append($(`<input id="${messageId}-input8" type="text" value="AND" />`));
-        lists.append($(`<select id="${messageId}-input9" size="2">${columns}</select>`));
-        lists.append($(`<input id="${messageId}-input10" type="text" value="=" />`));
-        lists.append($(`<input id="${messageId}-input11" type="number" />`));
+        lists.append($(`
+        <li class='d-flex'>
+          <select class='${messageId}-input custom-select mr-2'>${columns}</select>
+          <select class='${messageId}-input custom-select mr-2'>${op}</select>
+          <input class='${messageId}-input form-control' type="number" />
+        </li>
+        `));
+        let inputs = $(`.${messageId}-input`)
         buttons = [
+          buttonElement('＋').click(() => {
+            lists.append($(`
+            <select class='${messageId}-input custom-select mt-2 mb-2'>${rel}</select>
+            <li class='d-flex'>
+              <select class='${messageId}-input custom-select mr-2'>${columns}</select>
+              <select class='${messageId}-input custom-select mr-2'>${op}</select>
+              <input class='${messageId}-input form-control' type="number" />
+            </li>
+            `));
+            inputs = $(`.${messageId}-input`)
+          }),
+          buttonElement('−').click(() => {
+            if (lists.children().length > 4) {
+              lists.children().last().remove()
+              lists.children().last().remove()
+            }
+            inputs = $(`.${messageId}-input`)
+          }),
           buttonElement('Submit').click(() => {
-            const input = [
-              $(`#${messageId}-input0`), $(`#${messageId}-input1`),
-              $(`#${messageId}-input2`), $(`#${messageId}-input3`),
-              $(`#${messageId}-input4`), $(`#${messageId}-input5`),
-              $(`#${messageId}-input6`), $(`#${messageId}-input7`),
-              $(`#${messageId}-input8`), $(`#${messageId}-input9`),
-              $(`#${messageId}-input10`), $(`#${messageId}-input11`)
-            ];
-            reply(res, input.map(item => item[0].value));
+            let msg = []
+            // inputs.map is problematic because jquery objs behave differently
+            for (let i = 0; i < inputs.length; i++) {
+              msg.push(inputs[i].value)
+            }
+            reply(res, msg);
           })
         ];
         break;

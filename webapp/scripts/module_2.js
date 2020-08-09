@@ -70,11 +70,8 @@ class ModuleTwo {
       }
 
       case 'module_2.3': {
-        const [queryColumn, whereColumn1, relation1, value1, logical1, whereColumn2, relation2, value2, logical2, whereColumn3, relation3, value3] = message
-        const where = `${whereColumn1} ${relation1} ${value1} ${logical1} ${whereColumn2} ${relation2} ${value2} ${logical2} ${whereColumn3} ${relation3} ${value3}`
-
-        this.calculate(queryColumn, where)
-
+        const where = message.reduce((sum, el)=> sum + el + ' ','').trim()
+        this.calculate(message[0], where)
         return this.messages[24]
       }
     }
