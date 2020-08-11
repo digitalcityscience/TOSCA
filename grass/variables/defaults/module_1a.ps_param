@@ -44,17 +44,3 @@ end
 
 paper a3
 end
-
-vpoints m1_via_points
-color black
-fcolor #ff77ff
-symbol basic/cross3
-size 10
-end
-
-vlines m1_stricken_area_lines
-color #000000
-width 0.4
-masked n
-end
-

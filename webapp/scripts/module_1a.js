@@ -9,6 +9,7 @@ const AVERAGE_SPEED = 40
 const ROAD_POINTS = 0.003
 const CONNECT_DISTANCE = 0.003
 const CONVERSION_RESOLUTION = 0.0001
+const METER_TO_PROJ = process.env.METER_TO_PROJ
 
 class ModuleOneA {
   constructor() {
@@ -99,6 +100,8 @@ class ModuleOneA {
           gpkgOut('module_1', 'm1_via_points', 'm1_via_points')
           this.viaPoints = 'm1_via_points'
           return this.messages[3]
+        } else {
+          this.viaPoints = null
         }
         return this.messages[3]
 
@@ -129,7 +132,7 @@ class ModuleOneA {
     grass('module_1', `g.region vector=selection@PERMANENT res=${this.resolution} --overwrite`)
 
     // "TO" points has a default value, the points of the road network will used for. But, because these points are on the road by its origin, therefore no further connecting is requested.
-    grass('module_1', `v.to.points input=highways output=m1a_highway_points dmax=${ROAD_POINTS} --overwrite`)
+    grass('module_1', `v.to.points input=highways@PERMANENT output=m1a_highway_points dmax=${ROAD_POINTS} --overwrite`)
     this.toPoints = 'm1a_highway_points'
 
     // threshold to connect is ~ 330 m
@@ -152,17 +155,20 @@ class ModuleOneA {
     }
 
     // Converting clipped and connected road network map into raster format and float number
-    grass('module_1', `v.extract -r input=m1a_highways_points_connected@module_1 where=avg_speed>0 output=m1a_temp_connections --overwrite`)
+    grass('module_1', `v.extract -r input=m1a_highways_points_connected@module_1 where="avg_speed>0" output=m1a_temp_connections --overwrite`)
     grass('module_1', `v.to.rast input=m1a_temp_connections output=m1a_temp_connections use=val value=${AVERAGE_SPEED} --overwrite`)
     grass('module_1', `v.to.rast input=m1a_highways_points_connected output=m1a_highways_points_connected_1 use=attr attribute_column=avg_speed --overwrite`)
     grass('module_1', `r.patch input=m1a_temp_connections,m1a_highways_points_connected_1 output=m1a_highways_points_connected --overwrite`)
     grass('module_1', `r.mapcalc expression="m1a_highways_points_connected=float(m1a_highways_points_connected)" --overwrite`)
 
-    // Now vector zones are created around from and via points (its radius is equal to the curren resolution),
+    // Now vector zones are created around from and via points (its radius is equal to the current resolution),
     // converted into raster format, and patched to raster map 'temp' (just created in the previous step)
-    grass('module_1', `v.patch -e input=${this.fromPoints},${this.viaPoints} output=m1a_from_via_points --overwrite`)
-    grass('module_1', `v.buffer input=m1a_from_via_points output=m1a_from_via_zones distance=${this.resolution} minordistance=${this.resolution} --overwrite`)
-    grass('module_1', `r.mapcalc expression="m1a_from_via_zones=float(m1a_from_via_zones)" --overwrite`)
+    if (this.viaPoints) {
+      grass('module_1', `v.patch -e input=${this.fromPoints},${this.viaPoints} output=m1a_from_via_points --overwrite`)
+      grass('module_1', `v.buffer input=m1a_from_via_points output=m1a_from_via_zones distance=${this.resolution} --overwrite`)
+    } else {
+      grass('module_1', `v.buffer input=${this.fromPoints} output=m1a_from_via_zones distance=${this.resolution} --overwrite`)
+    }
     grass('module_1', `v.to.rast input=m1a_from_via_zones output=m1a_from_via_zones use=val val=${AVERAGE_SPEED} --overwrite`)
     grass('module_1', `r.patch input=m1a_highways_points_connected,m1a_from_via_zones output=m1a_highways_points_connected_zones --overwrite`)
 
@@ -183,19 +189,21 @@ class ModuleOneA {
     grass('module_1', `r.mapcalc expression="m1a_specific_time=${this.resolution}/(m1a_highways_points_connected_area*0.27777)" --overwrite`)
 
     // Calculating 'from--via' time map, 'via--to' time map and it sum. There is a NULL value replacenet too. It is neccessary, because otherwise, if one of the maps containes NULL value, NULL value cells will not considering while summarizing the maps. Therefore, before mapcalc operation, NULL has to be replaced by 0.
+    // FIXME: when this.viaPoints == true, PDF results has a green background, probably due to null raster cells
     if (this.viaPoints) {
-      grass('module_1', `r.cost input=m1a_specific_time output=m1a_from_to_cost start_points=${this.fromPoints} stop_points=${this.viaPoints} --overwrite`)
+      grass('module_1', `r.cost -n input=m1a_specific_time output=m1a_from_to_cost start_points=${this.fromPoints} stop_points=${this.viaPoints} null_cost=0 --overwrite`)
       const VIA_VALUE = grass('module_1', `r.what map=m1a_from_to_cost points=${this.viaPoints}`).split('|')[3]
-      grass('module_1', `r.null map=m1a_from_to_cost null=0 --overwrite`)
-      grass('module_1', `r.cost input=m1a_specific_time output=m1a_via_to_cost start_points=${this.viaPoints} stop_points=${this.toPoints} --overwrite`)
-      grass('module_1', `r.null map=m1a_via_to_cost null=0 --overwrite`)
+      grass('module_1', `r.cost -n input=m1a_specific_time output=m1a_via_to_cost start_points=${this.viaPoints} stop_points=${this.toPoints} null_cost=0 --overwrite`)
       grass('module_1', `r.mapcalc expression="m1a_time_map_temp=m1a_via_to_cost+${VIA_VALUE}" --overwrite`)
-      grass('module_1', `r.mapcalc expression="m1a_time_map=m1a_time_map_temp/60" --overwrite`)
+      grass('module_1', `r.mapcalc expression="m1a_time_map=m1a_time_map_temp*${METER_TO_PROJ}" --overwrite`)
     } else {
       grass('module_1', `r.cost input=m1a_specific_time output=m1a_from_to_cost start_points=${this.fromPoints} stop_points=${this.toPoints} --overwrite`)
-      grass('module_1', `r.mapcalc expression="m1a_time_map_temp=m1a_from_to_cost/60" --overwrite`)
+      grass('module_1', `r.mapcalc expression="m1a_time_map_temp=m1a_from_to_cost*${METER_TO_PROJ}/60" --overwrite`)
       grass('module_1', `g.rename raster=m1a_time_map_temp,m1a_time_map --overwrite`)
     }
+
+    // export raster map
+    grass('module_1', `r.out.gdal input=m1a_time_map output="${GEOSERVER}/m1_time_map.tif" format=GTiff --overwrite`)
 
     if (this.strickenArea) {
       grass('module_1', `v.type input=m1_stricken_area output=m1_stricken_area_lines from_type=boundary to_type=line --overwrite`)
@@ -207,6 +215,31 @@ class ModuleOneA {
     grass('module_1', `v.out.ogr -s input=m1_time_map@module_1 type=point output="${GEOSERVER}/m1_time_map.gpkg" --overwrite`)
 
     // Generating pdf output
+
+    let psParams = fs.readFileSync(`${GRASS}/variables/defaults/module_1a.ps_param`).toString()
+
+    if (this.viaPoints) {
+      psParams += `
+vpoints m1_via_points
+color black
+fcolor #ff77ff
+symbol basic/cross3
+size 10
+end
+`
+    }
+
+    if (this.strickenArea) {
+      psParams += `
+vlines m1_stricken_area_lines
+color #000000
+width 0.4
+masked n
+end
+`
+    }
+
+    fs.writeFileSync(`${GRASS}/variables/module_1a.ps_param`, psParams)
 
     // set color for maps:
     grass('module_1', `g.region res=${this.resolution}`)
@@ -237,7 +270,7 @@ Speed reduction coefficient for stricken area: ${this.reductionRatio}`)
     textToPS('tmp/time_map_info_text', 'tmp/time_map_info_text.ps')
     psToPDF('tmp/time_map_info_text.ps', 'tmp/time_map_info_text.pdf')
 
-    grass('module_1', `ps.map input="${GRASS}/variables/defaults/module_1a.ps_param_1" output=tmp/time_map_1.ps --overwrite`)
+    grass('module_1', `ps.map input="${GRASS}/variables/module_1a.ps_param" output=tmp/time_map_1.ps --overwrite`)
     psToPDF('tmp/time_map_1.ps', 'tmp/time_map_1.pdf')
 
     mergePDFs(`${OUTPUT}/time_map_results_${safeDateString}.pdf`, 'tmp/time_map_1.pdf', 'tmp/time_map_info_text.pdf')

@@ -2,116 +2,27 @@ body {
   width: 100%;
   height: 100%;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  overflow: hidden;
-}
-
-.header {
-  flex-grow: 4;
-  display: flex;
   font-size: 1.25rem;
-  padding: 10px;
-  margin: 10px;
-  border-radius: 10px;
-  background-color: white;
 }
 
-.title {
-  flex-grow: 1;
-  display: flex;
+/* Navbar */
+
+.navbar-brand {
+  font-size: 1.5rem;
 }
 
-.title h1 {
-  font-size: 2rem;
-  font-weight: bold;
+.navbar-nav > li {
+  margin-left: 24px;
 }
 
-.menu {
-  flex-grow: 4;
-  display: flex;
-  justify-content: space-between;
+.dropdown-menu {
+  z-index: 1001;
 }
 
-.btn-group {
-  height: 48px;
-}
-
-.flex-group {
-  margin: 0 5px;
-  display: flex;
-}
-
-.span-center {
-  display: inline-flex;
-  align-items: center;
-}
-
-.logo {
-  margin: 10px;
-  border: 0;
-  padding: 10px;
-  border-radius: 10px;
-  background-color: white;
-}
-
-.logo img {
-  margin: 5px 10px;
-}
-
-#giz-logo {
-  height: 40px;
-}
-
-#hcu-logo {
-  height: 32px;
-  margin-top: 0;
-}
-
-.main {
-  display: flex;
-  flex-direction: row;
-  height: calc(100% - 88px);
-}
-
-.sidebar {
-  display: flex;
-  flex-direction: column;
-  width: 280px;
-}
-
-.card {
-  margin: 10px;
-  border: 0;
-  border-radius: 10px;
-  display: flex;
-}
-
-.card .row {
-  flex-direction: row;
-  margin: 10px;
-}
+/* Sidebar elements */
 
 #buttonarea button {
   margin: 5px;
-}
-
-.card.card-border {
-  padding: 10px;
-  /* border-width: 1px;
-  border-style: solid;
-  border-radius: 6px; */
-  /* border-color: darkgreen; */
-}
-
-.card form {
-  margin-bottom: 0;
-}
-
-.validation-error {
-  color: #db0000;
-}
-
-#dialog {
-  flex-grow: 1;
 }
 
 #textarea {
@@ -122,17 +33,47 @@ body {
   width: 100%;
 }
 
+#giz-logo {
+  height: 40px;
+  margin: 4px 12px 4px 0;
+}
+
+#hcu-logo {
+  height: 32px;
+  margin: 4px 0 12px;
+}
+
+/* Map */
+
 #map-container {
-  flex-grow: 2;
+  padding: 0;
   position: relative;
   overflow-y: hidden;
 }
 
-/* #info-container {
-  flex-grow: 0;
-  transition: .2s;
-  font-size: small;
-} */
+/* Components */
+
+.card {
+  margin: 10px;
+  border: 0;
+  border-radius: 10px;
+}
+
+.card.card-border {
+  padding: 10px;
+}
+
+.card form {
+  margin-bottom: 0;
+}
+
+.validation-error {
+  color: #db0000;
+}
+
+.box-shadow {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
 
 .button {
   padding: 8px 10px;
@@ -201,8 +142,4 @@ body {
   /* Fallback color */
   background-color: rgba(0, 0, 0, 0.4);
   /* Black w/ opacity */
-}
-
-.box-shadow {
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
