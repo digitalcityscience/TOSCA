@@ -513,7 +513,7 @@ function textElement(text) {
 }
 
 function formElement(id, isMultipart) {
-  return $(`<form id="${id}-form" enctype="${isMultipart ? 'multipart/form-data' : ''}"></form>`);
+  return $(`<form id="${id}-form" enctype="${isMultipart ? 'multipart/form-data' : ''}" onsubmit="event.preventDefault()"></form>`);
 }
 
 function buttonElement(action) {
