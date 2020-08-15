@@ -1,10 +1,12 @@
 const fs = require('fs')
-const { addVector, getNumericColumns, getTopology, gpkgOut, initMapset, grass, mergePDFs, psToPDF, textToPS } = require('./functions')
+const { addVector, getNumericColumns, getTopology, gpkgOut, initMapset, grass, mergePDFs, psToPDF, textToPS, remove } = require('./functions')
 
 const GRASS = process.env.GRASS_DIR
 const OUTPUT = process.env.OUTPUT_DIR
 
 const QUERY_RESOLUTION = 0.00002
+const QUERY_MAP_NAME = 'query_map'
+const QUERY_RESULT_NAME = 'query_result'
 
 class ModuleTwo {
   constructor() {
@@ -55,22 +57,29 @@ class ModuleTwo {
 
       case 'module_2.2': {
         this.mapToQuery = message
-
+        
+        // remove old query_map
+        remove('module_2', QUERY_MAP_NAME)
+        
         // Now it is possible to check if the map to query is in the default mapset 'module_2' or not. If not, the map has to be copied into the module_2 mapset.
         if (grass('PERMANENT', `g.list type=vector mapset=module_2`).split('\n').indexOf(this.mapToQuery) == -1) {
-          grass('module_2', `g.copy vector=${this.mapToQuery}@PERMANENT,${this.mapToQuery}`)
+          grass('module_2', `g.copy vector=${this.mapToQuery}@PERMANENT,${QUERY_MAP_NAME}`)
+        } else {
+          grass('module_2', `g.copy vector=${this.mapToQuery}@module_2,${QUERY_MAP_NAME}`)
         }
 
+        gpkgOut('module_2', QUERY_MAP_NAME, QUERY_MAP_NAME)
+
         // query map topology
-        getTopology('module_2', this.mapToQuery)
+        getTopology('module_2', QUERY_MAP_NAME)
 
         const msg = this.messages[3]
-        msg.message.list = getNumericColumns('module_2', this.mapToQuery).map(item => item.split(':')[1].trim())
+        msg.message.list = getNumericColumns('module_2', QUERY_MAP_NAME).map(item => item.split(':')[1].trim())
         return msg
       }
 
       case 'module_2.3': {
-        const where = message.reduce((sum, el)=> sum + el + ' ','').trim()
+        const where = message.reduce((sum, el) => sum + el + ' ', '').trim()
         this.calculate(message[0], where)
         return this.messages[24]
       }
@@ -78,23 +87,26 @@ class ModuleTwo {
   }
 
   calculate(queryColumn, where) {
+    // remove old query_result
+    remove('module_2', QUERY_RESULT_NAME)
+
     // Set region to query area, set resolution
-    grass('module_2', `g.region vector=${this.mapToQuery} res=${QUERY_RESOLUTION} --overwrite`)
+    grass('module_2', `g.region vector=${QUERY_MAP_NAME} res=${QUERY_RESOLUTION} --overwrite`)
 
     // Set mask to query area
     grass('module_2', `r.mask vector=${this.queryArea} --overwrite`)
 
     // Clip the basemep map by query area
-    grass('module_2', `v.select ainput=${this.mapToQuery} atype=point,line,boundary,centroid,area binput=${this.queryArea} btype=area output=clipped_1 operator=overlap --overwrite`)
+    grass('module_2', `v.select ainput=${QUERY_MAP_NAME} atype=point,line,boundary,centroid,area binput=${this.queryArea} btype=area output=clipped_1 operator=overlap --overwrite`)
 
     // Apply the query request
-    grass('module_2', `v.extract input=clipped_1 where="${where}" output=query_result_area_1 --overwrite`)
+    grass('module_2', `v.extract input=clipped_1 where="${where}" output=${QUERY_RESULT_NAME} --overwrite`)
 
     // Query statistics
-    const stats = grass('module_2', `v.db.univar -e -g map=query_result_area_1 column=${queryColumn}`).trim().split('\n').map(line => line.split('=')[1])
+    const stats = grass('module_2', `v.db.univar -e -g map=${QUERY_RESULT_NAME} column=${queryColumn}`).trim().split('\n').map(line => line.split('=')[1])
 
     // Data output
-    gpkgOut('module_2', 'query_result_area_1', 'query_result_area_1')
+    gpkgOut('module_2', QUERY_RESULT_NAME, QUERY_RESULT_NAME)
 
     const date = new Date()
     const dateString = date.toString()

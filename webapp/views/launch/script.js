@@ -414,8 +414,8 @@ function handleResponse(res) {
         const columns = list.map(col => `<option value="${col}">${col}</option>`);
         const rel = ['AND', 'OR', 'NOT'].map(el => `<option value="${el}">${el}</option>`);
         const op = ['>', '<', '=', '>=', '<='].map(el => `<option value="${el}">${el}</option>`);
-        lists.append($('<span>SELECT</span>'));
-        lists.append($(`<select class='${messageId}-input custom-select custom-select-lg mr-2'>${columns}</select>`));
+        // lists.append($('<span>SELECT</span>'));
+        // lists.append($(`<select class='${messageId}-input custom-select custom-select-lg mr-2'>${columns}</select>`));
         lists.append($('<span>WHERE</span>'));
         lists.append($(`
         <li class='d-flex'>

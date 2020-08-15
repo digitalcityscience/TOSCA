@@ -136,6 +136,22 @@ const AccessibilityPoints = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms
   minZoom: 3
 });
 
+const Query_map = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
+  layers: 'vector:query_map',
+  format: 'image/png',
+  transparent: true,
+  maxZoom: 20,
+  minZoom: 3
+});
+
+const Query_result = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
+  layers: 'vector:query_result',
+  format: 'image/png',
+  transparent: true,
+  maxZoom: 20,
+  minZoom: 3
+});
+
 //Control for map legends. For those item, where the linked map has a "legend_yes: true," property, a second checkbox will displayed.
 L.control.legend(
   { position: 'bottomleft' }
@@ -152,7 +168,8 @@ const groupedOverlays = {
     'Roads': roads,
     'Buildings': buildings,
     'Current selection': selection,
-    'Drawings on the map': drawnItems
+    'Drawings on the map': drawnItems,
+    'Query map': Query_map,
   },
   "Results": {
     'Query area 1': query_area_1,
@@ -166,6 +183,7 @@ const groupedOverlays = {
     "Stricken area": Stricken_Area,
     "Accessibility map": AccessibilityMap,
     "Accessing points": AccessibilityPoints,
+    'Query result': Query_result
   }
 };
 
