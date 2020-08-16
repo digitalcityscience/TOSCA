@@ -38,7 +38,7 @@ function handleResponse(res) {
   // • get output file names
   if (res.message_id === 'output') {
     $('#results-select').html(function () {
-      const html = "<option selected value=''> - </option>" + list.reduce((str, file) => str + `<option selected value="${file}">${file}</option>`, '');
+      const html = "<option selected value=''> - </option>" + list.reduce((str, file) => str + `<option value="${file}">${file}</option>`, '');
       return html
     })
   }
@@ -533,6 +533,8 @@ function clearDialog() {
 function show_results() {
   getOutput({})
   $('#results-modal').show()
+  // empty iframe content
+  $('#results-iframe').attr('src', '')
 }
 
 function show_help() {

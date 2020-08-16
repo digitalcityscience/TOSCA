@@ -16,7 +16,9 @@ class ModuleOneA {
     this.messages = {
       1: {
         message_id: 'module_1a.1',
-        message: { "text": "Start point is required. If you want to add a start point, draw one or more points and click 'Save'. To exit, click Cancel." }
+        message: {
+          "text": `Start point is required. If you want to add a start point, draw one or more points using the 'draw a circlemarker' button in the top left bar and click 'Save'. To exit, click Cancel.
+      <br> <small>To see your drawings, make sure the 'Drawings on the map' layer is ticked in the layer switcher on the top right corner.</small>` }
       },
       2: {
         message_id: 'module_1a.2',
@@ -28,7 +30,9 @@ class ModuleOneA {
       },
       4: {
         message_id: 'module_1a.4',
-        message: { "text": "Set speed reduction ratio (in percentage, without the % character) for roads of stricken area. Value has to be greater than 0 and less or equal to 100." }
+        message: {
+          "text": `Set speed reduction ratio (in percentage, without the % character) for roads of stricken area. Value has to be greater than 0 and less or equal to 100.
+        <br> <small>e.g. the value '40' will set the reduced speed as 40% of the original speed.</small>` }
       },
       5: {
         message_id: 'module_1a.5',
@@ -36,7 +40,9 @@ class ModuleOneA {
       },
       6: {
         message_id: 'module_1a.6',
-        message: { "text": "Calculations are ready, display output time maps." }
+        message: {
+          "text": `Calculations are ready. 
+        <br> <small>To display the results, you can activate the layer 'road-level time map' and/or use the 'results' button in the top bar to open a pdf version of the result.</small>` }
       },
       7: {
         message_id: 'module_1a.7',
@@ -119,7 +125,7 @@ class ModuleOneA {
         return this.messages[8]
 
       case 'module_1a.4':
-        this.reductionRatio = parseFloat(message)/100
+        this.reductionRatio = parseFloat(message) / 100
         return this.messages[8]
 
       case 'module_1a.8':
