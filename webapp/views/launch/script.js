@@ -367,6 +367,7 @@ function handleResponse(res) {
 
       // Speed reduction ratio
       case 'module_1a.4':
+      case 'module_1a.9':
         form = formElement(messageId);
         form.append($(`<input id="${messageId}-input" type="number" />`));
         buttons = [
@@ -379,6 +380,9 @@ function handleResponse(res) {
 
       case 'module_1a.8':
         buttons = [
+          buttonElement('Yes').click(() => {
+            reply(res, 'yes');
+          }),
           buttonElement('No').click(() => {
             reply(res, 'no');
           })
