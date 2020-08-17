@@ -83,6 +83,7 @@ const TimeMap = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
   layers: 'vector:m1_time_map',
   format: 'image/png',
   transparent: true,
+  legend_yes: true,
   maxZoom: 20,
   minZoom: 1
 });
@@ -91,6 +92,7 @@ const TimeMapRaster = L.tileLayer.wms(geoserverUrl + "geoserver/raster/wms/", {
   layers: 'raster:m1_time_map',
   format: 'image/png',
   transparent: true,
+  legend_yes: true,
   maxZoom: 20,
   minZoom: 1
 });
@@ -157,6 +159,7 @@ const Flood_risk_map = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
   layers: 'vector:ltca_flood_risk',
   format: 'image/png',
   transparent: true,
+  legend_yes: true,
   maxZoom: 20,
   minZoom: 3
 });
@@ -165,6 +168,7 @@ const Hospitals = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
   layers: 'vector:ltca_hospitals',
   format: 'image/png',
   transparent: true,
+  legend_yes: true,
   maxZoom: 20,
   minZoom: 3
 });
@@ -173,6 +177,7 @@ const Doctors = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
   layers: 'vector:ltca_doct_offices',
   format: 'image/png',
   transparent: true,
+  legend_yes: true,
   maxZoom: 20,
   minZoom: 3
 });
@@ -181,6 +186,7 @@ const Schools = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
   layers: 'vector:ltca_schools',
   format: 'image/png',
   transparent: true,
+  legend_yes: true,
   maxZoom: 20,
   minZoom: 3
 });
@@ -189,6 +195,7 @@ const Farms = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
   layers: 'vector:ltca_farms',
   format: 'image/png',
   transparent: true,
+  legend_yes: true,
   maxZoom: 20,
   minZoom: 3
 });
@@ -197,6 +204,7 @@ const Greenhouses = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
   layers: 'vector:ltca_greenhouses',
   format: 'image/png',
   transparent: true,
+  legend_yes: true,
   maxZoom: 20,
   minZoom: 3
 });
@@ -205,6 +213,7 @@ const administrative_units = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wm
   layers: 'vector:ltca_admin',
   format: 'image/png',
   transparent: true,
+  legend_yes: true,
   maxZoom: 20,
   minZoom: 3
 });
@@ -213,6 +222,7 @@ const Latacunga_elevation_map = L.tileLayer.wms(geoserverUrl + "geoserver/raster
   layers: 'raster:ltca_dem',
   format: 'image/png',
   transparent: true,
+  legend_yes: true,
   maxZoom: 20,
   minZoom: 3
 });
