@@ -1,5 +1,6 @@
 # Pull base system
 FROM debian:buster
+USER root
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV LANG=en_US.UTF-8
