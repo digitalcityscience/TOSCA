@@ -38,7 +38,7 @@ function handleResponse(res) {
   // • get output file names
   if (res.message_id === 'output') {
     $('#results-select').html(function () {
-      const html = "<option selected value=''> - </option>" + list.reduce((str, file) => str + `<option selected value="${file}">${file}</option>`, '');
+      const html = "<option selected value=''> - </option>" + list.reduce((str, file) => str + `<option value="${file}">${file}</option>`, '');
       return html
     })
   }
@@ -367,6 +367,7 @@ function handleResponse(res) {
 
       // Speed reduction ratio
       case 'module_1a.4':
+      case 'module_1a.9':
         form = formElement(messageId);
         form.append($(`<input id="${messageId}-input" type="number" />`));
         buttons = [
@@ -379,6 +380,9 @@ function handleResponse(res) {
 
       case 'module_1a.8':
         buttons = [
+          buttonElement('Yes').click(() => {
+            reply(res, 'yes');
+          }),
           buttonElement('No').click(() => {
             reply(res, 'no');
           })
@@ -414,8 +418,8 @@ function handleResponse(res) {
         const columns = list.map(col => `<option value="${col}">${col}</option>`);
         const rel = ['AND', 'OR', 'NOT'].map(el => `<option value="${el}">${el}</option>`);
         const op = ['>', '<', '=', '>=', '<='].map(el => `<option value="${el}">${el}</option>`);
-        lists.append($('<span>SELECT</span>'));
-        lists.append($(`<select class='${messageId}-input custom-select custom-select-lg mr-2'>${columns}</select>`));
+        // lists.append($('<span>SELECT</span>'));
+        // lists.append($(`<select class='${messageId}-input custom-select custom-select-lg mr-2'>${columns}</select>`));
         lists.append($('<span>WHERE</span>'));
         lists.append($(`
         <li class='d-flex'>
@@ -513,7 +517,7 @@ function textElement(text) {
 }
 
 function formElement(id, isMultipart) {
-  return $(`<form id="${id}-form" enctype="${isMultipart ? 'multipart/form-data' : ''}"></form>`);
+  return $(`<form id="${id}-form" enctype="${isMultipart ? 'multipart/form-data' : ''}" onsubmit="event.preventDefault()"></form>`);
 }
 
 function buttonElement(action) {
@@ -529,6 +533,8 @@ function clearDialog() {
 function show_results() {
   getOutput({})
   $('#results-modal').show()
+  // empty iframe content
+  $('#results-iframe').attr('src', '')
 }
 
 function show_help() {

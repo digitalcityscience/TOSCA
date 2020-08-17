@@ -16,7 +16,9 @@ class ModuleOneA {
     this.messages = {
       1: {
         message_id: 'module_1a.1',
-        message: { "text": "Start point is required. If you want to add a start point, draw one or more points and click 'Save'. To exit, click Cancel." }
+        message: {
+          "text": `Start point is required. If you want to add a start point, draw one or more points using the 'draw a circlemarker' button in the top left bar and click 'Save'. To exit, click Cancel.
+      <br> <small>To see your drawings, make sure the 'Drawings on the map' layer is ticked in the layer switcher on the top right corner.</small>` }
       },
       2: {
         message_id: 'module_1a.2',
@@ -28,7 +30,9 @@ class ModuleOneA {
       },
       4: {
         message_id: 'module_1a.4',
-        message: { "text": "Set speed reduction ratio (in percentage, without the % character) for roads of stricken area. Value has to be greater than 0 and less or equal to 100." }
+        message: {
+          "text": `Set speed reduction ratio (in percentage, without the % character) for roads of stricken area. Value has to be greater than 0 and less or equal to 100.
+        <br> <small>e.g. the value '40' will set the reduced speed as 40% of the original speed.</small>` }
       },
       5: {
         message_id: 'module_1a.5',
@@ -36,7 +40,9 @@ class ModuleOneA {
       },
       6: {
         message_id: 'module_1a.6',
-        message: { "text": "Calculations are ready, display output time maps." }
+        message: {
+          "text": `Calculations are ready. 
+        <br> <small>To display the results, you can activate the layer 'road-level time map' and/or use the 'results' button in the top bar to open a pdf version of the result.</small>` }
       },
       7: {
         message_id: 'module_1a.7',
@@ -45,6 +51,10 @@ class ModuleOneA {
       8: {
         message_id: 'module_1a.8',
         message: { "text": "Average speed values on road types of the area. Do you want to change them?" }
+      },
+      9: {
+        message_id: 'module_1a.9',
+        message: { "text": "Set the average speed on the roads (in 'km/hr')" }
       }
     }
   }
@@ -115,13 +125,24 @@ class ModuleOneA {
         return this.messages[8]
 
       case 'module_1a.4':
-        this.reductionRatio = parseFloat(message)/100
+        this.reductionRatio = parseFloat(message) / 100
         return this.messages[8]
 
       case 'module_1a.8':
-        // TODO user input: average speed values
+        if (message.toLowerCase() == 'yes') {
+          return this.messages[9]
+        }
+        else if (message.toLowerCase() == 'no') {
+          this.average_speed = AVERAGE_SPEED
+          this.calculate()
+          return this.messages[6]
+        }
+
+      case 'module_1a.9':
+        this.average_speed = message
         this.calculate()
         return this.messages[6]
+
     }
   }
 
@@ -156,7 +177,7 @@ class ModuleOneA {
 
     // Converting clipped and connected road network map into raster format and float number
     grass('module_1', `v.extract -r input=m1a_highways_points_connected@module_1 where="avg_speed>0" output=m1a_temp_connections --overwrite`)
-    grass('module_1', `v.to.rast input=m1a_temp_connections output=m1a_temp_connections use=val value=${AVERAGE_SPEED} --overwrite`)
+    grass('module_1', `v.to.rast input=m1a_temp_connections output=m1a_temp_connections use=val value=${this.average_speed} --overwrite`)
     grass('module_1', `v.to.rast input=m1a_highways_points_connected output=m1a_highways_points_connected_1 use=attr attribute_column=avg_speed --overwrite`)
     grass('module_1', `r.patch input=m1a_temp_connections,m1a_highways_points_connected_1 output=m1a_highways_points_connected --overwrite`)
     grass('module_1', `r.mapcalc expression="m1a_highways_points_connected=float(m1a_highways_points_connected)" --overwrite`)
@@ -169,11 +190,11 @@ class ModuleOneA {
     } else {
       grass('module_1', `v.buffer input=${this.fromPoints} output=m1a_from_via_zones distance=${this.resolution} --overwrite`)
     }
-    grass('module_1', `v.to.rast input=m1a_from_via_zones output=m1a_from_via_zones use=val val=${AVERAGE_SPEED} --overwrite`)
+    grass('module_1', `v.to.rast input=m1a_from_via_zones output=m1a_from_via_zones use=val val=${this.average_speed} --overwrite`)
     grass('module_1', `r.patch input=m1a_highways_points_connected,m1a_from_via_zones output=m1a_highways_points_connected_zones --overwrite`)
 
     // Now the Supplementary lines (formerly CAT_SUPP_LINES) raster map have to be added to map highways_from_points. First I convert highways_points_connected into raster setting value to 0(zero). Resultant map: temp. After I patch temp and highways_points_connected, result is:highways_points_connected_temp. Now have to reclass highways_points_connected_temp, setting 0 values to the speed value of residentals
-    grass('module_1', `v.to.rast input=m1a_highways_points_connected output=m1a_temp use=val val=${AVERAGE_SPEED} --overwrite`)
+    grass('module_1', `v.to.rast input=m1a_highways_points_connected output=m1a_temp use=val val=${this.average_speed} --overwrite`)
     grass('module_1', `r.patch input=m1a_highways_points_connected_zones,m1a_temp output=m1a_highways_points_connected_temp --overwrite`)
 
     if (this.strickenArea) {
