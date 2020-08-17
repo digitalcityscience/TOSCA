@@ -1,0 +1,13 @@
+<coverageStore>
+  <id>CoverageStoreInfoImpl-603fce8d:173ec88db00:-7f33</id>
+  <name>ltca_dem</name>
+  <description>ltca_dem</description>
+  <type>GeoTIFF</type>
+  <enabled>true</enabled>
+  <workspace>
+    <id>WorkspaceInfoImpl-53a0964:16fc2624139:-7fc9</id>
+  </workspace>
+  <__default>false</__default>
+  <dateCreated>2020-08-16 08:58:59.890 UTC</dateCreated>
+  <url>/usr/share/geoserver/data_dir/data/latacunga/ltca_dem.tif</url>
+</coverageStore>

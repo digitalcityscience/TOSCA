@@ -1,0 +1,17 @@
+<layer>
+  <name>ltca_dem</name>
+  <id>LayerInfoImpl-603fce8d:173ec88db00:-7f31</id>
+  <type>RASTER</type>
+  <defaultStyle>
+    <id>StyleInfoImpl-603fce8d:173ec88db00:-7f27</id>
+  </defaultStyle>
+  <resource class="coverage">
+    <id>CoverageInfoImpl-603fce8d:173ec88db00:-7f32</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateCreated>2020-08-16 08:59:13.461 UTC</dateCreated>
+  <dateModified>2020-08-16 09:10:13.202 UTC</dateModified>
+</layer>

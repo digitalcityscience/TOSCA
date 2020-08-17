@@ -152,6 +152,71 @@ const Query_result = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
   minZoom: 3
 });
 
+// Latacunga maps
+const Flood_risk_map = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
+  layers: 'vector:ltca_flood_risk',
+  format: 'image/png',
+  transparent: true,
+  maxZoom: 20,
+  minZoom: 3
+});
+
+const Hospitals = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
+  layers: 'vector:ltca_hospitals',
+  format: 'image/png',
+  transparent: true,
+  maxZoom: 20,
+  minZoom: 3
+});
+
+const Doctors = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
+  layers: 'vector:ltca_doct_offices',
+  format: 'image/png',
+  transparent: true,
+  maxZoom: 20,
+  minZoom: 3
+});
+
+const Schools = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
+  layers: 'vector:ltca_schools',
+  format: 'image/png',
+  transparent: true,
+  maxZoom: 20,
+  minZoom: 3
+});
+
+const Farms = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
+  layers: 'vector:ltca_farms',
+  format: 'image/png',
+  transparent: true,
+  maxZoom: 20,
+  minZoom: 3
+});
+
+const Greenhouses = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
+  layers: 'vector:ltca_greenhouses',
+  format: 'image/png',
+  transparent: true,
+  maxZoom: 20,
+  minZoom: 3
+});
+
+const administrative_units = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
+  layers: 'vector:ltca_admin',
+  format: 'image/png',
+  transparent: true,
+  maxZoom: 20,
+  minZoom: 3
+});
+
+const Latacunga_elevation_map = L.tileLayer.wms(geoserverUrl + "geoserver/raster/wms/", {
+  layers: 'raster:ltca_dem',
+  format: 'image/png',
+  transparent: true,
+  maxZoom: 20,
+  minZoom: 3
+});
+
 //Control for map legends. For those item, where the linked map has a "legend_yes: true," property, a second checkbox will displayed.
 L.control.legend(
   { position: 'bottomleft' }
@@ -187,8 +252,23 @@ const groupedOverlays = {
   }
 };
 
+const customLayers = {
+  "Latacunga": {
+    'Latacunga elevation map': Latacunga_elevation_map,
+    '8th level administrative units': administrative_units,
+    'Flood risk map': Flood_risk_map,
+    'Greenhouses': Greenhouses,
+    'Farms, farm buildings, orchilds': Farms,
+    'School buildings': Schools,
+    'Doctor or dentist office': Doctors,
+    'Hospitals and clinics': Hospitals
+  },
+}
+
 // Use the custom grouped layer control, not "L.control.layers"
 L.control.groupedLayers(baseLayers, groupedOverlays, { position: 'topright', collapsed: false }).addTo(map);
+
+L.control.groupedLayers({}, customLayers, { position: 'topright', collapsed: false }).addTo(map);
 
 map.addControl(new L.Control.Draw({
   edit: {

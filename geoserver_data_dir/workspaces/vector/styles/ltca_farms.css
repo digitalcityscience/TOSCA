@@ -1,0 +1,22 @@
+/* @title Farm areas and buildings */
+
+/* @title Farms */
+[landuse ='farmland' OR landuse='farmyard']{  
+  stroke: #880088;
+    stroke-width: 0.7;
+    fill: #ffddff;
+}
+
+/* @title Orchard */
+[landuse ='orchard' ]{
+  stroke: #880000;
+    stroke-width: 0.5;
+    fill: #ffdddd;
+}
+
+/* @title farm buildings */
+[landuse ='farm_building' ]{
+  stroke: #888800;
+    stroke-width: 0.7;
+    fill: #ffdd00;
+}

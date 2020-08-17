@@ -1,0 +1,105 @@
+/* @title Administrative units around Latacunga */
+
+/* @title Latacunga */
+[cat=1]{
+    stroke: #880000;
+    stroke-width: 0.2;
+    fill: #770000;
+  	fill-opacity: 0.4;
+}
+
+/* @title Alaques */
+[cat=2]{
+    stroke: #ee7777;
+    stroke-width: 0.2;
+    fill: #ff0000;
+	fill-opacity: 0.4;
+}
+
+/* @title Belisario Quevedo */
+[cat=3]{
+    stroke: #ff7722;
+    stroke-width: 0.2;
+    fill: #ffbbbb;
+  	fill-opacity: 0.4;
+}
+
+/* @title Chantilin */
+[cat=4]{
+    stroke: #ff7722;
+    stroke-width: 0.2;
+    fill: #ddaa00;
+  	fill-opacity: 0.4;
+}
+
+/* @title Guaytacama */
+[cat=5]{
+    stroke: #ff7722;
+    stroke-width: 0.2;
+    fill: #ffff00;
+  	fill-opacity: 0.4;
+}
+
+/* @title Joseguango Bajo */
+[cat=6]{
+    stroke: #ff7722;
+    stroke-width: 0.2;
+    fill: #008800;
+  	fill-opacity: 0.4;
+}
+
+/* @title La Victoria */
+[cat=7]{
+    stroke: #ff7722;
+    stroke-width: 0.2;
+    fill: #00ff00;
+  	fill-opacity: 0.4;
+}
+
+/* @title Mulliquindil */
+[cat=8]{
+    stroke: #ff7722;
+    stroke-width: 0.2;
+    fill: #00aaaa;
+  	fill-opacity: 0.4;
+}
+
+/* @title Once de Noviembre */
+[cat=9]{
+    stroke: #ff7722;
+    stroke-width: 0.2;
+    fill: #ddddff;
+  	fill-opacity: 0.4;
+}
+
+/* @title Poaló */
+[cat=10]{
+    stroke: #ff7722;
+    stroke-width: 0.2;
+    fill: #0000ff;
+  	fill-opacity: 0.4;
+}
+
+/* @title Pujilí */
+[cat=11]{
+    stroke: #ff7722;
+    stroke-width: 0.2;
+    fill: #aa44aa;
+  	fill-opacity: 0.4;
+}
+
+/* @title Salcedo */
+[cat=12]{
+    stroke: #ff7722;
+    stroke-width: 0.2;
+    fill: #ff00ff;
+  	fill-opacity: 0.4;
+}
+
+/* @title Saquisili */
+[cat=13]{
+    stroke: #ff7722;
+    stroke-width: 0.2;
+    fill: #777777;
+  	fill-opacity: 0.4;
+}

@@ -1,0 +1,16 @@
+<layer>
+  <name>ltca_hospitals</name>
+  <id>LayerInfoImpl-603fce8d:173ec88db00:-7781</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl-603fce8d:173ec88db00:-7784</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl-603fce8d:173ec88db00:-7782</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateCreated>2020-08-17 11:50:28.963 UTC</dateCreated>
+</layer>

@@ -1,0 +1,15 @@
+/* @title Doctor or dentist office */
+
+/* @title Doctor */
+[amenity ='doctors']{  
+  stroke: #ff0000;
+    stroke-width: 1.5;
+    fill: #ffff00;
+}
+
+/* @title Dentist */
+[amenity ='dentist']{  
+  stroke: #777700;
+    stroke-width: 0.5;
+    fill: #eeaa00;
+}

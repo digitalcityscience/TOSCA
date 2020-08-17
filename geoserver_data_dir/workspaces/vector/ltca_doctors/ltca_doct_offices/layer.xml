@@ -1,0 +1,16 @@
+<layer>
+  <name>ltca_doct_offices</name>
+  <id>LayerInfoImpl-603fce8d:173ec88db00:-779c</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl-603fce8d:173ec88db00:-779f</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl-603fce8d:173ec88db00:-779d</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateCreated>2020-08-17 11:40:57.1 UTC</dateCreated>
+</layer>

@@ -1,0 +1,8 @@
+/* @title School buildings */
+
+/* @title Schools */
+[amenity ='school']{  
+  stroke: #008888;
+    stroke-width: 0.7;
+    fill: #ddffff;
+}

@@ -1,0 +1,9 @@
+* {
+   raster-channels: auto;
+   raster-opacity: 0.7;
+    raster-color-map:color-map-entry(#000600, 2500)
+     				color-map-entry(#aaee33, 3000)
+      				color-map-entry(#aaaa00, 3500)
+      				color-map-entry(#eeeeee, 4500)
+                    color-map-entry(#fe5500, 5600);
+ }

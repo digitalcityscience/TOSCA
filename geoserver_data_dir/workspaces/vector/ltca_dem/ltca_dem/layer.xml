@@ -1,0 +1,17 @@
+<layer>
+  <name>ltca_dem</name>
+  <id>LayerInfoImpl-603fce8d:173ec88db00:-7f76</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl-603fce8d:173ec88db00:-7f79</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl-603fce8d:173ec88db00:-7f77</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateCreated>2020-08-16 08:43:36.684 UTC</dateCreated>
+  <dateModified>2020-08-16 08:44:04.295 UTC</dateModified>
+</layer>

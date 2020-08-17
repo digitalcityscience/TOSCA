@@ -1,0 +1,17 @@
+<layer>
+  <name>ltca_greenhouses</name>
+  <id>LayerInfoImpl-603fce8d:173ec88db00:-7a30</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl-603fce8d:173ec88db00:-7a9a</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl-603fce8d:173ec88db00:-7a31</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateCreated>2020-08-17 10:17:55.344 UTC</dateCreated>
+  <dateModified>2020-08-17 10:18:24.942 UTC</dateModified>
+</layer>

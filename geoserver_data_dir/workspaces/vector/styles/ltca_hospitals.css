@@ -1,0 +1,14 @@
+/* @title Hospitals and clinics */
+
+/* @title Hospital */
+[amenity ='hospital']{  
+  stroke: #880000;
+    stroke-width: 1;
+    fill: #ffffff;
+}
+/* @title Clinic */
+[amenity ='clinic']{  
+  stroke: #880000;
+    stroke-width: 1.5;
+    fill: #dddddd;
+}

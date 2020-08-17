@@ -1,0 +1,25 @@
+/* @title Latacunga flood risk */
+
+/* @title Low risk */
+[GRIDCODE=1]{
+    stroke: #ff9999;
+    stroke-width: 0.2;
+    fill: #ffbb77;
+  	fill-opacity: 0.5;
+}
+
+/* @title Medium risk */
+[GRIDCODE=2]{
+    stroke: #ee7777;
+    stroke-width: 0.2;
+    fill: #ff9999;
+	fill-opacity: 0.4;
+}
+
+/* @title High risk */
+[GRIDCODE=3]{
+    stroke: #ff7722;
+    stroke-width: 0.2;
+    fill: #ff0000;
+  	fill-opacity: 0.4;
+}

@@ -1,0 +1,30 @@
+/* @title Latacunga DEM */
+
+/* @title below 2600 m */
+[value < 2600] {
+  mark: symbol(square);
+   :mark {
+   size:22m;
+   fill: #FFffff;
+   z-index: 0;
+   }
+}
+
+/* @title 2650 -- 2660 */
+[value > 2650 AND value < 2660] {
+  mark: symbol(square);
+   :mark {
+   size:23m;
+   fill: #00aa00;
+   z-index: 0;
+   }
+}
+/* @title 2660 -- 2670 */
+[value > 2660 AND value < 2670] {
+  mark: symbol(square);
+   :mark {
+   size:23m;
+   fill: #00ee00;
+   z-index: 0;
+   }
+}

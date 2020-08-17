@@ -1,0 +1,8 @@
+/* @title Greenhouses */
+
+/* @title Greenhouse */
+[building ='greenhouse']{
+    stroke: #008800;
+    stroke-width: 0.5;
+    fill: #ccffcc;
+}
