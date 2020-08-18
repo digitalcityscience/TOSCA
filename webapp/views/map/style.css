@@ -22,49 +22,49 @@
 
 .leaflet-bar a,
 .leaflet-bar a:hover {
-  width: 40px;
-  height: 40px;
-  line-height: 40px;
-  font-size: 2rem;
-  font-weight: normal;
+  width: 40px !important;
+  height: 40px !important;
+  line-height: 40px !important;
+  font-size: 2rem !important;
+  font-weight: normal !important;
 }
 
 .leaflet-draw-toolbar a {
-  background-size: 400px 40px;
+  background-size: 400px 40px !important;
 }
 
 .leaflet-draw-toolbar .leaflet-draw-draw-polygon,
 .leaflet-draw-toolbar .leaflet-draw-draw-polygon.leaflet-disabled {
-  background-position: -40px 0px;
+  background-position: -40px 0px !important;
 }
 
 .leaflet-draw-toolbar .leaflet-draw-draw-circlemarker,
 .leaflet-draw-toolbar .leaflet-draw-draw-circlemarker.leaflet-disabled {
-  background-position: -360px 0px;
+  background-position: -360px 0px !important;
 }
 
 .leaflet-draw-toolbar .leaflet-draw-edit-edit,
 .leaflet-draw-toolbar .leaflet-draw-edit-edit.leaflet-disabled {
-  background-position: -200px 0px;
+  background-position: -200px 0px !important;
 }
 
 .leaflet-draw-toolbar .leaflet-draw-edit-remove,
 .leaflet-draw-toolbar .leaflet-draw-edit-remove.leaflet-disabled {
-  background-position: -240px 0px;
+  background-position: -240px 0px !important;
 }
 
 .leaflet-draw-actions {
-  left: 40px;
+  left: 40px !important;
 }
 
 .leaflet-draw-actions a {
-  font: inherit;
+  font: inherit !important;
 }
 
 .leaflet-draw-actions-top a,
 .leaflet-draw-actions-bottom a {
-  height: 40px;
-  line-height: 40px;
+  height: 40px !important;
+  line-height: 40px !important;
 }
 
 /* Layer control */
