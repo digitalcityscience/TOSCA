@@ -10,7 +10,7 @@ mapinfo
   color brown
   end
 
-vareas query_result_area_1
+vareas query_result
   color red
   width 1
   masked n
