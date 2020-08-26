@@ -216,8 +216,3 @@ map.on(L.Draw.Event.CREATED, (event) => {
 
 /* scale bar */
 L.control.scale({ maxWidth: 300, position: 'bottomright' }).addTo(map);
-
-/* north arrow */
-const north = L.control({ position: 'bottomright' });
-north.onAdd = () => document.getElementById('north-arrow');
-north.addTo(map);

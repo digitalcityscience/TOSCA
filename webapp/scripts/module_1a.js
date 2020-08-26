@@ -91,11 +91,9 @@ class ModuleOneA {
         if (message.toLowerCase() == 'yes') {
           return messages["9"]
         }
-        else if (message.toLowerCase() == 'no') {
-          this.average_speed = AVERAGE_SPEED
-          this.calculate()
-          return messages["6"]
-        }
+        this.average_speed = AVERAGE_SPEED
+        this.calculate()
+        return messages["6"]
 
       case 'module_1a.9':
         this.average_speed = message

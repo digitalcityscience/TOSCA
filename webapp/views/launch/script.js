@@ -8,8 +8,6 @@ function handleResponse(res) {
     return;
   }
 
-  console.log(`${res.message_id}:`, res.message);
-
   clearDialog();
 
   const messageId = res.message_id.replace(/\./g, '_');
@@ -107,18 +105,6 @@ function handleResponse(res) {
         break;
 
       // == set_selection ==
-
-      // • message id: set_selection.1
-      // • text: No valid location found. First have to add a location to the dataset. Without such location, CityApp will not work. To add a location, use Add Location menu. Now click OK to exit.
-      // • expectation: A request file with OK text
-      // • consequence: Module exit when message is acknowledged
-      case 'set_selection.1':
-        buttons = [
-          buttonElement('OK').click(() => {
-            clearDialog();
-          })
-        ];
-        break;
 
       // • message id: set_selection.2
       // • text: Now zoom to area of your interest, then use drawing tool to define your location. Next, save your selection.
