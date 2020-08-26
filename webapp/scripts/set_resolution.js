@@ -1,5 +1,5 @@
 const fs = require('fs')
-const { grass } = require('./functions')
+const { checkWritableDir, grass } = require('./functions')
 const { set_resolution: messages } = require('./messages.json')
 
 const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
@@ -9,6 +9,8 @@ class SetResolutionModule {
   constructor() { }
 
   launch() {
+    checkWritableDir(GEOSERVER)
+
     return messages["1"]
   }
 

@@ -1,5 +1,7 @@
-const { addRaster, addVector, mapsetExists, gpkgOut } = require('./functions.js')
+const { addRaster, addVector, checkWritableDir, mapsetExists, gpkgOut } = require('./functions.js')
 const { add_map: messages } = require('./messages.json')
+
+const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
 
 class AddMapModule {
   constructor() {
@@ -8,6 +10,8 @@ class AddMapModule {
   }
 
   launch() {
+    checkWritableDir(GEOSERVER)
+
     if (mapsetExists('PERMANENT')) {
       return messages["2"]
     }

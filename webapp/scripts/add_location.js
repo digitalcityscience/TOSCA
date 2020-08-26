@@ -1,13 +1,16 @@
 const fs = require('fs')
-const { addOsm, getCoordinates, gpkgOut, mapsetExists } = require('./functions')
+const { addOsm, checkWritableDir, getCoordinates, gpkgOut, mapsetExists } = require('./functions')
 const { add_location: messages } = require('./messages.json')
 
+const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
 const GRASS = process.env.GRASS_DIR
 
 class AddLocationModule {
   constructor() { }
 
   launch() {
+    checkWritableDir(GEOSERVER)
+
     if (mapsetExists('PERMANENT')) {
       return messages["1"]
     }

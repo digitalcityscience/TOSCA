@@ -1,7 +1,8 @@
 // Read config
 require('dotenv').config()
 
-const dataFromBrowser = process.env.DATA_FROM_BROWSER_DIR
+const dataFromBrowserDir = process.env.DATA_FROM_BROWSER_DIR
+const geoserverDataDir = process.env.GEOSERVER_DATA_DIR;
 const geoserverUrl = process.env.GEOSERVER_URL
 const lat = process.env.INITIAL_LAT || 0
 const lon = process.env.INITIAL_LON || 0
@@ -68,6 +69,14 @@ const modules = {
 
 // launch a module
 app.post('/launch', jsonParser, (req, res, next) => {
+  // do some checks first
+  if (!dataFromBrowserDir) {
+    throw new Error("Cannot launch module: DATA_FROM_BROWSER_DIR is not defined.")
+  }
+  if (!geoserverDataDir) {
+    throw new Error("Cannot launch module: GEOSERVER_DATA_DIR is not defined.")
+  }
+
   try {
     res.send(modules[req.body.launch].launch())
   } catch (err) {
@@ -95,7 +104,7 @@ app.post('/reply', jsonParser, (req, res, next) => {
 app.post('/file', uploadParser.single('file'), (req, res, next) => {
   try {
     const module = modules[req.query.message_id.split('.')[0]]
-    const file = `${dataFromBrowser}/${req.file.originalname}`
+    const file = `${dataFromBrowserDir}/${req.file.originalname}`
     const writer = fs.createWriteStream(file)
 
     writer.write(req.file.buffer, (error) => {
@@ -127,7 +136,7 @@ app.post('/file', uploadParser.single('file'), (req, res, next) => {
 app.post('/drawing', jsonParser, (req, res, next) => {
   try {
     const module = modules[req.query.message_id.split('.')[0]]
-    const file = `${dataFromBrowser}/drawing.geojson`
+    const file = `${dataFromBrowserDir}/drawing.geojson`
 
     fs.writeFileSync(file, JSON.stringify(req.body.data))
     res.send(module.process(file, req.query.message_id))

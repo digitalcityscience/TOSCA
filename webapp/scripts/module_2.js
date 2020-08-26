@@ -1,7 +1,8 @@
 const fs = require('fs')
-const { addVector, getNumericColumns, getTopology, gpkgOut, initMapset, grass, mergePDFs, psToPDF, textToPS, remove } = require('./functions')
+const { addVector, checkWritableDir, getNumericColumns, getTopology, gpkgOut, initMapset, grass, mergePDFs, psToPDF, textToPS, remove } = require('./functions')
 const { module_2: messages } = require('./messages.json')
 
+const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
 const GRASS = process.env.GRASS_DIR
 const OUTPUT = process.env.OUTPUT_DIR
 
@@ -13,6 +14,9 @@ class ModuleTwo {
   constructor() { }
 
   launch() {
+    checkWritableDir(GEOSERVER)
+    checkWritableDir(OUTPUT)
+
     initMapset('module_2')
 
     return messages["1"]
