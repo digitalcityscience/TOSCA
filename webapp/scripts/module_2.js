@@ -1,5 +1,6 @@
 const fs = require('fs')
 const { addVector, getNumericColumns, getTopology, gpkgOut, initMapset, grass, mergePDFs, psToPDF, textToPS, remove } = require('./functions')
+const { module_2: messages } = require('./messages.json')
 
 const GRASS = process.env.GRASS_DIR
 const OUTPUT = process.env.OUTPUT_DIR
@@ -9,31 +10,12 @@ const QUERY_MAP_NAME = 'query_map'
 const QUERY_RESULT_NAME = 'query_result'
 
 class ModuleTwo {
-  constructor() {
-    this.messages = {
-      1: {
-        message_id: 'module_2.1',
-        message: { text: "Draw an area to query." }
-      },
-      2: {
-        message_id: 'module_2.2',
-        message: { text: "Which map do you want to query? Available maps are:" }
-      },
-      3: {
-        message_id: 'module_2.3',
-        message: { text: "Fill the form and press save." }
-      },
-      24: {
-        message_id: 'module_2.24',
-        message: { text: "Statistics output is ready." }
-      }
-    }
-  }
+  constructor() { }
 
   launch() {
     initMapset('module_2')
 
-    return this.messages[1]
+    return messages["1"]
   }
 
   process(message, replyTo) {
@@ -49,7 +31,7 @@ class ModuleTwo {
             .filter(map => !map.match(/^lines(_osm)?$|^points(_osm)?$|^polygons(_osm)?$|^relations(_osm)?$|^selection$/))
             .filter(map => getNumericColumns('PERMANENT', map).length > 0)
 
-          const msg = this.messages[2]
+          const msg = messages["2"]
           msg.message.list = maps
           return msg
         }
@@ -57,10 +39,10 @@ class ModuleTwo {
 
       case 'module_2.2': {
         this.mapToQuery = message
-        
+
         // remove old query_map
         remove('module_2', QUERY_MAP_NAME)
-        
+
         // Now it is possible to check if the map to query is in the default mapset 'module_2' or not. If not, the map has to be copied into the module_2 mapset.
         if (grass('PERMANENT', `g.list type=vector mapset=module_2`).split('\n').indexOf(this.mapToQuery) == -1) {
           grass('module_2', `g.copy vector=${this.mapToQuery}@PERMANENT,${QUERY_MAP_NAME}`)
@@ -73,7 +55,7 @@ class ModuleTwo {
         // query map topology
         getTopology('module_2', QUERY_MAP_NAME)
 
-        const msg = this.messages[3]
+        const msg = messages["3"]
         msg.message.list = getNumericColumns('module_2', QUERY_MAP_NAME).map(item => item.split(':')[1].trim())
         return msg
       }
@@ -81,7 +63,7 @@ class ModuleTwo {
       case 'module_2.3': {
         const where = message.reduce((sum, el) => sum + el + ' ', '').trim()
         this.calculate(message[0], where)
-        return this.messages[24]
+        return messages["24"]
       }
     }
   }

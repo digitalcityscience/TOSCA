@@ -1,5 +1,6 @@
 const fs = require('fs')
 const { addVector, gpkgOut, initMapset, listVector, mapsetExists, grass, mergePDFs, psToPDF, textToPS } = require('./functions')
+const { module_1a: messages } = require('./messages.json')
 
 const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
 const GRASS = process.env.GRASS_DIR
@@ -12,56 +13,11 @@ const CONVERSION_RESOLUTION = 0.0001
 const METER_TO_PROJ = process.env.METER_TO_PROJ
 
 class ModuleOneA {
-  constructor() {
-    this.messages = {
-      1: {
-        message_id: 'module_1a.1',
-        message: {
-          "text": `Start point is required. If you want to add a start point, draw one or more points using the 'draw a circlemarker' button in the top left bar and click 'Save'. To exit, click Cancel.
-      <br> <small>To see your drawings, make sure the 'Drawings on the map' layer is ticked in the <a class="btn btn-secondary btn-sm" onclick="blink('.leaflet-control-layers')">layer switcher</a>.</small>` }
-      },
-      2: {
-        message_id: 'module_1a.2',
-        message: { "text": "Via point is optional. If you want to add via points, draw one or more points and click 'Save'. Only one via point can be added! If you do not want to add via points, click Cancel." }
-      },
-      3: {
-        message_id: 'module_1a.3',
-        message: { "text": "Stricken area is optional. If you want to add stricken area, draw one or more areas and click 'Save'. If you do not want to add stricken area, click Cancel." }
-      },
-      4: {
-        message_id: 'module_1a.4',
-        message: {
-          "text": `Set speed reduction ratio (in percentage, without the % character) for roads of stricken area. Value has to be greater than 0 and less or equal to 100.
-        <br> <small>e.g. the value '40' will set the reduced speed as 40% of the original speed.</small>` }
-      },
-      5: {
-        message_id: 'module_1a.5',
-        message: { "text": "Process cancelled." }
-      },
-      6: {
-        message_id: 'module_1a.6',
-        message: {
-          "text": `Calculations are ready. 
-        <br> <small>To display the results, you can activate the layer 'road-level time map' and/or use the 'results' button in the top bar to open a pdf version of the result.</small>` }
-      },
-      7: {
-        message_id: 'module_1a.7',
-        message: { "text": "No valid location found. Run \"Set new location\" to create a valid location. Module is now exiting." }
-      },
-      8: {
-        message_id: 'module_1a.8',
-        message: { "text": "Average speed values on road types of the area. Do you want to change them?" }
-      },
-      9: {
-        message_id: 'module_1a.9',
-        message: { "text": "Set the average speed on the roads (in 'km/hr')" }
-      }
-    }
-  }
+  constructor() { }
 
   launch() {
     if (!mapsetExists('PERMANENT')) {
-      return this.messages[7]
+      return messages["7"]
     }
 
     initMapset('module_1')
@@ -90,7 +46,7 @@ class ModuleOneA {
     grass('module_1', `v.edit map=m1_stricken_area tool=create --overwrite`)
     grass('module_1', `v.edit map=m1_stricken_area_line tool=create --overwrite`)
 
-    return this.messages[1]
+    return messages["1"]
   }
 
   process(message, replyTo) {
@@ -100,48 +56,48 @@ class ModuleOneA {
           addVector('module_1', message, 'm1_from_points')
           gpkgOut('module_1', 'm1_from_points', 'm1_from_points')
           this.fromPoints = 'm1_from_points'
-          return this.messages[2]
+          return messages["2"]
         }
-        return this.messages[5]
+        return messages["5"]
 
       case 'module_1a.2':
         if (message.match(/drawing\.geojson/)) {
           addVector('module_1', message, 'm1_via_points')
           gpkgOut('module_1', 'm1_via_points', 'm1_via_points')
           this.viaPoints = 'm1_via_points'
-          return this.messages[3]
+          return messages["3"]
         } else {
           this.viaPoints = null
         }
-        return this.messages[3]
+        return messages["3"]
 
       case 'module_1a.3':
         if (message.match(/drawing\.geojson/)) {
           addVector('module_1', message, 'm1_stricken_area')
           gpkgOut('module_1', 'm1_stricken_area', 'm1_stricken_area')
           this.strickenArea = 'm1_stricken_area'
-          return this.messages[4]
+          return messages["4"]
         }
-        return this.messages[8]
+        return messages["8"]
 
       case 'module_1a.4':
         this.reductionRatio = parseFloat(message) / 100
-        return this.messages[8]
+        return messages["8"]
 
       case 'module_1a.8':
         if (message.toLowerCase() == 'yes') {
-          return this.messages[9]
+          return messages["9"]
         }
         else if (message.toLowerCase() == 'no') {
           this.average_speed = AVERAGE_SPEED
           this.calculate()
-          return this.messages[6]
+          return messages["6"]
         }
 
       case 'module_1a.9':
         this.average_speed = message
         this.calculate()
-        return this.messages[6]
+        return messages["6"]
 
     }
   }
