@@ -11,7 +11,7 @@ body {
   font-size: 1.5rem;
 }
 
-.navbar-nav > li {
+.navbar-nav>li {
   margin-left: 24px;
 }
 
@@ -123,7 +123,7 @@ body {
 
 /* The Modal (background) */
 
-#results-modal,#help-modal {
+#results-modal, #help-modal {
   display: none;
   /* Hidden by default */
   position: fixed;
@@ -142,4 +142,22 @@ body {
   /* Fallback color */
   background-color: rgba(0, 0, 0, 0.4);
   /* Black w/ opacity */
+}
+
+@keyframes blinker {
+  from {
+    opacity: 1.0;
+  }
+  to {
+    opacity: 0.0;
+  }
+}
+
+.blink {
+  text-decoration: blink;
+  animation-name: blinker;
+  animation-duration: 0.6s;
+  animation-iteration-count: 6;
+  animation-timing-function: ease-in-out;
+  animation-direction: alternate;
 }

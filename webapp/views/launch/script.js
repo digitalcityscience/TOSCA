@@ -541,6 +541,17 @@ function show_help() {
   $('#help-modal').show()
 }
 
+let blink_timeout;
+function blink(selector) {
+  if (!blink_timeout) {
+    $(selector).addClass("blink");
+    blink_timeout = setTimeout(function () {
+      blink_timeout = null;
+      $(selector).removeClass("blink");
+    }, 3600);
+  }
+}
+
 /* Send messages to the backend */
 
 function launch_app() {

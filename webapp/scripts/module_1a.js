@@ -18,7 +18,7 @@ class ModuleOneA {
         message_id: 'module_1a.1',
         message: {
           "text": `Start point is required. If you want to add a start point, draw one or more points using the 'draw a circlemarker' button in the top left bar and click 'Save'. To exit, click Cancel.
-      <br> <small>To see your drawings, make sure the 'Drawings on the map' layer is ticked in the layer switcher on the top right corner.</small>` }
+      <br> <small>To see your drawings, make sure the 'Drawings on the map' layer is ticked in the <a class="btn btn-secondary btn-sm" onclick="blink('.leaflet-control-layers')">layer switcher</a>.</small>` }
       },
       2: {
         message_id: 'module_1a.2',
