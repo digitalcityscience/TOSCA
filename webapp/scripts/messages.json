@@ -3,13 +3,13 @@
         "1": {
             "message_id": "add_location.1",
             "message": {
-                "text": "There is an already added location, and it is not allowed to add further locations. If you want to add a new location, the already existing location will automatically removed. If you want to store the already existing location, save manually (refer to the manual, please). Do you want to add a new location? If yes, click Yes."
+                "text": "Location has already been set. If you want to set a new location, the existing location will be removed. If you want to store the already existing location, save manually (refer to the manual, please). Do you want to set a new location? If yes, click Yes."
             }
         },
         "2": {
             "message_id": "add_location.2",
             "message": {
-                "text": "No valid location found. First have to add a location to the dataset. Without such location, CityApp will not work. Adding a new location may take a long time, depending on the file size. If you want to continue, click Yes."
+                "text": "Setting location may take a long time if the file is large. Click Yes to continue."
             }
         },
         "3": {
@@ -21,7 +21,7 @@
         "4": {
             "message_id": "add_location.4",
             "message": {
-                "text": "Select a map to add to CityApp. Map has to be in Open Street Map format -- osm is the only accepted format."
+                "text": "Select a map file to set as location. The file has to be in osm(Open Street Map) format. You can download your map file from <a href=\"https://www.openstreetmap.org/\" target=\"_blank\">openstreetmap.org</a>."
             }
         },
         "5": {
@@ -35,19 +35,19 @@
         "1": {
             "message_id": "set_resolution.1",
             "message": {
-                "text": "Type the resolution in meters, you want to use. For further details see manual."
+                "text": "Set the resolution in meters. For further details see manual."
             }
         },
         "2": {
             "message_id": "set_resolution.2",
             "message": {
-                "text": "Resolution has to be an integer number, greater than 0. Please, define the resolution for calculations in meters."
+                "text": "The resolution value has to be a positive integer."
             }
         },
         "3": {
             "message_id": "set_resolution.3",
             "message": {
-                "text": "Resolution is now set."
+                "text": "Resolution is set."
             }
         }
     },
@@ -55,19 +55,19 @@
         "1": {
             "message_id": "set_selection.1",
             "message": {
-                "text": "No valid location found. First have to add a location to the dataset. Without such location, CityApp will not work. To add a location, use Add Location menu. Now click OK to exit."
+                "text": "No valid location found. Please set a location in the <a class=\"text-primary\" onclick=\"blink('#settings-menu')\">settings menu</a>. Now click OK to exit."
             }
         },
         "2": {
             "message_id": "set_selection.2",
             "message": {
-                "text": "Now zoom to area of your interest, then use drawing tool to define your location. Next, save your selection."
+                "text": "Use <a class=\"text-primary\" onclick=\"blink('.leaflet-draw-draw-polygon')\">the polygon tool</a> to set the selection. When you finish drawing, click the save button below to set your drawing as selection. <small>The selection area has to overlap with the 'location'.</small>"
             }
         },
         "3": {
             "message_id": "set_selection.3",
             "message": {
-                "text": "Process finished, selection is saved."
+                "text": "Process finished, selection is set."
             }
         }
     },
@@ -75,19 +75,19 @@
         "1": {
             "message_id": "add_map.1",
             "message": {
-                "text": "Selection map not found. Before adding a new layer, first you have to define a location and a selection. For this end please, use Location Selector tool of CityApp."
+                "text": "No valid location found. Please set a location in <a class=\"text-primary\" onclick=\"blink('#settings-menu')\">the settings menu</a> before adding a map. Now click OK to exit."
             }
         },
         "2": {
             "message_id": "add_map.2",
             "message": {
-                "text": "Select a map to add CityApp. Only gpkg (geopackage), geojson and openstreetmap vector files and geotiff (gtif or tif) raster files are accepted. Adding a map may take a long time."
+                "text": "Choose a map file. Only gpkg (geopackage), geojson, openstreetmap vector files and geotiff (gtif or tif) raster files are accepted. Depending on the file size, this process may take a long time."
             }
         },
         "3": {
             "message_id": "add_map.3",
             "message": {
-                "text": "Please, define an output map name. Name can contain only english characters, numbers, or underline character. Space and other specific characters are not allowed. For first character a letter only accepted."
+                "text": "Define a name for the map. Names have to start with an English character and can only contain English characters, numbers, and underline"
             }
         },
         "4": {
@@ -101,19 +101,19 @@
         "1": {
             "message_id": "module_1a.1",
             "message": {
-                "text": "Start point is required. If you want to add a start point, draw one or more points using the 'draw a circlemarker' button in the top left bar and click 'Save'. To exit, click Cancel.<br> <small>To see your drawings, make sure the 'Drawings on the map' layer is ticked in the <a class=\"btn btn-secondary btn-sm\" onclick=\"blink('.leaflet-control-layers')\">layer switcher</a>.</small>"
+                "text": "Start point is required. Use the <a class=\"text-primary\" onclick=\"blink('.leaflet-draw-draw-circlemarker')\">circle marker tool</a>  to draw a start point. <br> <small>The start point has to be within the selection area. Activate the 'current selection' layer in the  <a class=\"text-primary\" onclick=\"blink('.leaflet-control-layers')\">layer switcher</a> to view the selection area.</small>"
             }
         },
         "2": {
             "message_id": "module_1a.2",
             "message": {
-                "text": "Via point is optional. If you want to add via points, draw one or more points and click 'Save'. Only one via point can be added! If you do not want to add via points, click Cancel."
+                "text": "Via point is optional. If you want to add via points, draw one or more points and click 'Save'. Only one via point can be added! If you do not want to add via points, click Cancel. <br> <small>The via points have to be within the selection area. Activate the 'current selection' layer in the  <a class=\"text-primary\" onclick=\"blink('.leaflet-control-layers')\">layer switcher</a> to view the selection area.</small>"
             }
         },
         "3": {
             "message_id": "module_1a.3",
             "message": {
-                "text": "Stricken area is optional. If you want to add stricken area, draw one or more areas and click 'Save'. If you do not want to add stricken area, click Cancel."
+                "text": "Stricken area is optional. If you want to add stricken area, draw one or more areas using <a class=\"text-primary\" onclick=\"blink('.leaflet-draw-draw-polygon')\">the polygon tool</a> and click 'Save'. If you do not want to add stricken area, click Cancel.<br> <small>The stricken areas have to be within the selection area. Activate the 'current selection' layer in the  <a class=\"text-primary\" onclick=\"blink('.leaflet-control-layers')\">layer switcher</a> to view the selection area.</small>"
             }
         },
         "4": {
@@ -131,13 +131,13 @@
         "6": {
             "message_id": "module_1a.6",
             "message": {
-                "text": "Calculations are ready. <br> <small>To display the results, you can activate the layer 'road-level time map' and/or use the 'results' button in the top bar to open a pdf version of the result.</small>"
+                "text": "Calculations are ready. <br> <small>To display the results, you can activate the layer 'road-level time map' in the <a class=\"text-primary\" onclick=\"blink('.leaflet-control-layers')\">layer switcher</a> and/or use the <a class=\"text-primary\" onclick=\"blink('#result-btn')\">results button</a> in the top bar to display a pdf version of the result.</small>"
             }
         },
         "7": {
             "message_id": "module_1a.7",
             "message": {
-                "text": "No valid location found. Run \"Set new location\" to create a valid location. Module is now exiting."
+                "text": "No valid location found. Please set a location in the <a class=\"text-primary\" onclick=\"blink('#settings-menu')\">settings menu</a>. Module is now exiting."
             }
         },
         "8": {
@@ -157,13 +157,13 @@
         "1": {
             "message_id": "module_2.1",
             "message": {
-                "text": "Draw an area to query."
+                "text": "Draw an area in which the query will operate on. <small> Please use <a class=\"text-primary\" onclick=\"blink('.leaflet-draw-draw-polygon')\">the polygon tool</a> to draw the area. The polygon has to be within the selection area. Activate the 'current selection' layer in the  <a class=\"text-primary\" onclick=\"blink('.leaflet-control-layers')\">layer switcher</a> to view the selection area."
             }
         },
         "2": {
             "message_id": "module_2.2",
             "message": {
-                "text": "Which map do you want to query? Available maps are:"
+                "text": "Choose a map layer to query from."
             }
         },
         "3": {

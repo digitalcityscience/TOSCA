@@ -338,6 +338,7 @@ function handleResponse(res) {
       case 'module_1a.1':
       case 'module_1a.2':
       case 'module_1a.3':
+        map.addLayer(drawnItems)
         buttons = [
           buttonElement('Save').click(() => {
             $(`#${messageId}-error`).remove();
@@ -378,6 +379,7 @@ function handleResponse(res) {
       // == module_2 ==
 
       case 'module_2.1':
+        map.addLayer(drawnItems)
         buttons = [
           buttonElement('Save').click(() => {
             $(`#${messageId}-error`).remove();

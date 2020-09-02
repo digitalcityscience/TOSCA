@@ -31,10 +31,10 @@ html
                 option(selected value='module_1a') Calculate time map
                 option(value='module_2') Query area
               button(class='btn btn-success btn-lg mr-2' onclick='launch_app()') ▷&nbsp;Run
-              button(class='btn btn-light btn-lg' onclick='show_results()') Results
+              button(class='btn btn-light btn-lg' id="result-btn" onclick='show_results()') Results
             li(class="nav-item flex-grow-1")
             li(class="nav-item dropdown")
-              a(class="btn btn-lg nav-link dropdown-toggle" data-toggle="dropdown") Settings
+              a(class="btn btn-lg nav-link dropdown-toggle" id="settings-menu" data-toggle="dropdown") Settings
               div(class="dropdown-menu dropdown-menu-right")
                 a(class="btn dropdown-item" onclick="launch_settings('add_location')") Set location
                 div(class="dropdown-divider")
