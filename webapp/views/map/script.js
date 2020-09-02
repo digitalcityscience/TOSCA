@@ -157,38 +157,36 @@ L.control.legend(
   { position: 'bottomleft' }
 ).addTo(map);
 
-const baseLayers = {
-  'OpenStreetMap': osm
-};
-
 // Overlay layers are grouped
 const groupedOverlays = {
+  "Basemaps":{
+    'OpenStreetMap': osm
+  },
   "Location": {
     'Water lines': waterLines,
     'Roads': roads,
     'Buildings': buildings,
+  },
+  "User inputs":{
     'Current selection': selection,
     'Drawings on the map': drawnItems,
+    'Query area': query_area_1,
     'Query map': Query_map,
-  },
-  "Results": {
-    'Query area 1': query_area_1,
-    'Query results 1': query_result_area_1,
-    'Query results 3': query_result_point_1,
-    "Road-level time map": TimeMap,
-    "time map raster": TimeMapRaster,
     "From-points": FromPoints,
     "Via-points": ViaPoints,
     "To-points": ToPoints,
-    "Stricken area": Stricken_Area,
+    "Stricken area": Stricken_Area
+  },
+  "Results": {
+    "Road-level time map": TimeMap,
+    'Query result': Query_result,
     "Accessibility map": AccessibilityMap,
-    "Accessing points": AccessibilityPoints,
-    'Query result': Query_result
+    "Accessing points": AccessibilityPoints
   }
 };
 
 // Use the custom grouped layer control, not "L.control.layers"
-L.control.groupedLayers(baseLayers, groupedOverlays, { position: 'topright', collapsed: false }).addTo(map);
+L.control.groupedLayers({}, groupedOverlays, { position: 'topright', collapsed: false }).addTo(map);
 
 map.addControl(new L.Control.Draw({
   edit: {
