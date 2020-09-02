@@ -61,7 +61,7 @@
         "2": {
             "message_id": "set_selection.2",
             "message": {
-                "text": "Use <a class=\"text-primary\" onclick=\"blink('.leaflet-draw-draw-polygon')\">the polygon tool</a> to set the selection. When you finish drawing, click the save button below to set your drawing as selection. <small>The selection area has to overlap with the 'location'.</small>"
+                "text": "Use <a class=\"text-primary\" onclick=\"blink('.leaflet-draw-draw-polygon')\">the polygon tool</a> to set the selection. When you finish drawing, click the save button below to set your drawing as selection. <br> <small>The selection area has to overlap with the 'location'.</small>"
             }
         },
         "3": {
@@ -119,7 +119,7 @@
         "4": {
             "message_id": "module_1a.4",
             "message": {
-                "text": "Set speed reduction ratio (in percentage, without the % character) for roads of stricken area. Value has to be greater than 0 and less or equal to 100.<br> <small>e.g. the value '40' will set the reduced speed as 40% of the original speed.</small>"
+                "text": "Set speed reduction ratio (in percentage) for roads of stricken area. <br> <small>e.g. the value '40' will set the reduced speed as 40% of the original speed.</small>"
             }
         },
         "5": {

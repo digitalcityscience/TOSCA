@@ -136,6 +136,7 @@ function handleResponse(res) {
       case 'set_resolution.2':
         form = formElement(messageId);
         form.append($(`<input id="${messageId}-input" type="number" />`));
+        form.append($(`<span>&nbsp;m</span>`)); 
         buttons = [
           buttonElement('Submit').click(() => {
             $(`#${messageId}-error`).remove();
@@ -357,6 +358,7 @@ function handleResponse(res) {
       case 'module_1a.9':
         form = formElement(messageId);
         form.append($(`<input id="${messageId}-input" type="number" />`));
+        form.append($(`<span>&nbsp;%</span>`));
         buttons = [
           buttonElement('Submit').click(() => {
             const input = $(`#${messageId}-input`);
