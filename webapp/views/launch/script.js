@@ -111,6 +111,7 @@ function handleResponse(res) {
       // • expectation: Finding an uploaded goejson file in data_from_browser directory. This file is created by the browser, when the user define interactively the selection area. Request file is not expected, and therefore it is not neccessary to create.
       // • consequence: No specific consequences
       case 'set_selection.2':
+        drawnItems.clearLayers();
         buttons = [
           buttonElement('Save').click(() => {
             $(`#${messageId}-error`).remove();
@@ -339,6 +340,7 @@ function handleResponse(res) {
       case 'module_1a.1':
       case 'module_1a.2':
       case 'module_1a.3':
+        drawnItems.clearLayers();
         map.addLayer(drawnItems)
         buttons = [
           buttonElement('Save').click(() => {
@@ -368,6 +370,7 @@ function handleResponse(res) {
         break;
 
       case 'module_1a.8':
+        drawnItems.clearLayers();
         buttons = [
           buttonElement('Yes').click(() => {
             reply(res, 'yes');
@@ -381,6 +384,7 @@ function handleResponse(res) {
       // == module_2 ==
 
       case 'module_2.1':
+        drawnItems.clearLayers();
         map.addLayer(drawnItems)
         buttons = [
           buttonElement('Save').click(() => {
