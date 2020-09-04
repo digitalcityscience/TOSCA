@@ -8,8 +8,6 @@ function handleResponse(res) {
     return;
   }
 
-  console.log(`${res.message_id}:`, res.message);
-
   clearDialog();
 
   const messageId = res.message_id.replace(/\./g, '_');
@@ -108,23 +106,12 @@ function handleResponse(res) {
 
       // == set_selection ==
 
-      // • message id: set_selection.1
-      // • text: No valid location found. First have to add a location to the dataset. Without such location, CityApp will not work. To add a location, use Add Location menu. Now click OK to exit.
-      // • expectation: A request file with OK text
-      // • consequence: Module exit when message is acknowledged
-      case 'set_selection.1':
-        buttons = [
-          buttonElement('OK').click(() => {
-            clearDialog();
-          })
-        ];
-        break;
-
       // • message id: set_selection.2
       // • text: Now zoom to area of your interest, then use drawing tool to define your location. Next, save your selection.
       // • expectation: Finding an uploaded goejson file in data_from_browser directory. This file is created by the browser, when the user define interactively the selection area. Request file is not expected, and therefore it is not neccessary to create.
       // • consequence: No specific consequences
       case 'set_selection.2':
+        drawnItems.clearLayers();
         buttons = [
           buttonElement('Save').click(() => {
             $(`#${messageId}-error`).remove();
@@ -150,6 +137,7 @@ function handleResponse(res) {
       case 'set_resolution.2':
         form = formElement(messageId);
         form.append($(`<input id="${messageId}-input" type="number" />`));
+        form.append($(`<span>&nbsp;m</span>`)); 
         buttons = [
           buttonElement('Submit').click(() => {
             $(`#${messageId}-error`).remove();
@@ -352,6 +340,8 @@ function handleResponse(res) {
       case 'module_1a.1':
       case 'module_1a.2':
       case 'module_1a.3':
+        drawnItems.clearLayers();
+        map.addLayer(drawnItems)
         buttons = [
           buttonElement('Save').click(() => {
             $(`#${messageId}-error`).remove();
@@ -370,6 +360,7 @@ function handleResponse(res) {
       case 'module_1a.9':
         form = formElement(messageId);
         form.append($(`<input id="${messageId}-input" type="number" />`));
+        form.append($(`<span>&nbsp;%</span>`));
         buttons = [
           buttonElement('Submit').click(() => {
             const input = $(`#${messageId}-input`);
@@ -379,6 +370,7 @@ function handleResponse(res) {
         break;
 
       case 'module_1a.8':
+        drawnItems.clearLayers();
         buttons = [
           buttonElement('Yes').click(() => {
             reply(res, 'yes');
@@ -392,6 +384,8 @@ function handleResponse(res) {
       // == module_2 ==
 
       case 'module_2.1':
+        drawnItems.clearLayers();
+        map.addLayer(drawnItems)
         buttons = [
           buttonElement('Save').click(() => {
             $(`#${messageId}-error`).remove();
@@ -539,6 +533,17 @@ function show_results() {
 
 function show_help() {
   $('#help-modal').show()
+}
+
+let blink_timeout;
+function blink(selector) {
+  if (!blink_timeout) {
+    $(selector).addClass("blink");
+    blink_timeout = setTimeout(function () {
+      blink_timeout = null;
+      $(selector).removeClass("blink");
+    }, 3600);
+  }
 }
 
 /* Send messages to the backend */

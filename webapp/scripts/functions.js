@@ -36,6 +36,14 @@ module.exports = {
     grass(mapset, `v.import input="${infile}" output="${outfile}" --overwrite`)
   },
 
+  checkWritableDir(path) {
+    try {
+      fs.accessSync(path, fs.constants.W_OK)
+    } catch (err) {
+      throw new Error(`Cannot launch module: ${path} is not writable.`)
+    }
+  },
+
   /**
    * Clip a map layer using the bounds of another layer
    * @param {string} mapset
