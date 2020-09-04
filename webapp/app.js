@@ -2,7 +2,8 @@
 require('dotenv').config()
 
 const dataFromBrowserDir = process.env.DATA_FROM_BROWSER_DIR
-const geoserverDataDir = process.env.GEOSERVER_DATA_DIR;
+const geoserverDataDir = process.env.GEOSERVER_DATA_DIR
+const outputDir = process.env.OUTPUT_DIR
 const geoserverUrl = process.env.GEOSERVER_URL
 const lat = process.env.INITIAL_LAT || 0
 const lon = process.env.INITIAL_LON || 0
@@ -149,9 +150,9 @@ app.post('/drawing', jsonParser, (req, res, next) => {
 app.post('/output', jsonParser, (req, res, next) => {
   try {
     const list = []
-    fs.readdirSync('/root/cityapp/output').forEach(file => {
+    fs.readdirSync(outputDir).forEach(file => {
       list.push(file)
-    });
+    })
     const message = { message_id: 'output', message: { list } }
     res.send(message)
   } catch (err) {
