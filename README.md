@@ -6,10 +6,7 @@ The Open City Toolkit is a framework connecting several external tools in order 
 
 1. GeoServer
 1. GRASS GIS
-1. Gnuplot
-1. enscript
-1. ghostscript
-1. inotify-tools
+1. enscript + ghostscript
 1. Node.js
 
 The following instructions provide guidance for the installation of all required components.
@@ -38,171 +35,120 @@ docker build -t oct .
 
 Start a container using the newly created image.
 ```
-docker run -dti -v `pwd`/geoserver_data_dir:/usr/share/geoserver/data_dir -v `pwd`/grass:/root/cityapp/grass -v `pwd`/output:/root/cityapp/output -p 3000:3000 -p 8080:8080 --name oct oct
+docker run -dti -v `pwd`/geoserver_data_dir:/usr/share/geoserver/data_dir -v `pwd`/grass:/oct/grass -v `pwd`/output:/oct/output -p 3000:3000 -p 8080:8080 --name my_oct oct
 ```
 
 If you want to override any environment variables, you can do so using the `-e` option:
 ```
-docker run -dti -e GEOSERVER_URL=... -e INITIAL_LAT=... -e INITIAL_LON=... -v `pwd`/geoserver_data_dir:/usr/share/geoserver/data_dir -v `pwd`/grass:/root/cityapp/grass -v `pwd`/output:/root/cityapp/output -p 3000:3000 -p 8080:8080 --name oct oct
+docker run -dti -e GEOSERVER_URL=... -e INITIAL_LAT=... -e INITIAL_LON=... -v `pwd`/geoserver_data_dir:/usr/share/geoserver/data_dir -v `pwd`/grass:/oct/grass -v `pwd`/output:/oct/output -p 3000:3000 -p 8080:8080 --name my_oct oct
 ```
 
 The `geoserver_data`, `grass` and `output` directories are mounted into the container as volumes in order to make their contents persistent and accessible from the host system.
 
-While the container is running, the app is served at http://your-server:3000 and GeoServer is available at http://your-server:8080/geoserver/.
+While the container is running, the app is served at http://localhost:3000 and GeoServer is available at http://localhost:8080/geoserver/.
 
 ### Without Docker
 
 #### Operating system
 
-A Linux system is required. Neither the kernel version, nor the flavour has any significance. Nevertheless, a modern and up-to-date Linux environment is highly recommended.
+A Linux system is required. Any modern and up-to-date Linux environment can be used, however, these instructions are valid for a Debian Stable system.
 
 #### Installation directory
 
-It is recommended to install the app into a home directory of a dedicated user created for this purpose (e.g., `cityapp_user`). This is to clearly separate the data stored in the `cityapp` directory and to allow data management through file permissions. Here it is assumed that the dedicated user's home directory is `/home/cityapp_user`.
+It is recommended to install the app into a home directory of a dedicated user created for this purpose (e.g., `oct_user`). Here it is assumed that the dedicated user’s home directory is `/home/oct_user`.
 
 #### External components
 
-##### Geoserver
+##### GeoServer
 
-Use a current stable version of GeoServer, at least version 2.15. The expected path of the GeoServer data directory on your system is `/usr/share/geoserver/data_dir/data`, therefore it is required to install GeoServer into `/usr/share/geoserver`.
+Use a current stable version of GeoServer. While you can install GeoServer in an arbitrary location, it is recommended to install it in `/usr/share/geoserver`.
 
-1. Download a platform independent, fresh, binary version of GeoServer from geoserver.org. It is a zipped file, ready to run after unzip.
+Download a platform-independent binary of GeoServer (e.g., `geoserver-2.17.2-bin.zip`) from geoserver.org.
 
-2. Create a GeoServer directory:
+Create the directory:
 ```
-sudo mkdir /usr/share/geoserver
+mkdir /usr/share/geoserver
 ```
-3. Allow `cityapp_user` to access that directory. First change owner, and set `cityapp_user` as owner of the GeoServer directory:
+
+Move the zipped GeoServer to this new directory and unzip it:
 ```
-sudo chown cityapp_user /usr/share/geoserver
-```
-4. Copy zipped GeoServer to this new directory
-```
-cp Download/geoserver-2.17.0-bin.zip /usr/share/geoserver
-```
-5. Unzip:
-```
+mv geoserver-2.17.2-bin.zip /usr/share/geoserver
 cd /usr/share/geoserver
-unzip ./geoserver-2.17.0-bin.zip
-```
-6. Set permissions of startup and shutdown script:
-```
-chmod 744 /usr/share/geoserver/bin/startup.sh
-chmod 744 /usr/share/geoserver/bin/shutdown.sh
+unzip ./geoserver-2.17.2-bin.zip
 ```
 
-Geoserver is now ready to run, but not yet ready to use with the app.
+Geoserver is now ready to run: the startup and shutdown scripts are located in `/usr/share/geoserver/bin/`), but not yet ready to use with the app. Because stylesheets are in CSS format, it is required to install a CSS extension for GeoServer. Download the extension that matches your GeoServer version, e.g.: https://build.geoserver.org/geoserver/2.17.x/ext-latest/geoserver-2.17-SNAPSHOT-css-plugin.zip
 
-7. Stylesheets are in CSS format, therefore it is required to install a CSS extension for GeoServer. For this end first download the extension from the Geoserver site: https://docs.geoserver.org/latest/en/user/styling/css/install.html
-
-8. Copy the downloaded zip file:
+Move the downloaded file and unzip it:
 ```
-cp ~/Download/geoserver-2.16.0-css-plugin.zip /usr/share/geoserver/webapps/geoserver/WEB-INF/lib/
-```
-9. Unzip copied file:
-```
+mv geoserver-2.17-SNAPSHOT-css-plugin.zip /usr/share/geoserver/webapps/geoserver/WEB-INF/lib/
 cd /usr/share/geoserver/webapps/geoserver/WEB-INF/lib/
-unzip /usr/share/geoserver/webapps/geoserver/WEB-INF/lib/geoserver-2.16.0-css-plugin.zip
-```
-Geoserver is now able to interpret CSS stylesheets.
-
-10. After installing Geoserver, it is required to create a symbolic link pointing to `~cityapp/geoserver_data`, because GRASS GIS will export the results to that directory.
-```
-ln -s ~/cityapp/geoserver_data /usr/share/geoserver/data_dir/data/cityapp
+unzip geoserver-2.17-SNAPSHOT-css-plugin.zip
 ```
 
-Maps generated by OCTK require an adequate symbology too, stored as “workspace” in GeoServer’s “workspaces” directory. This new symbology is prepared for OCTK, therefore it can’t be found in the default installation of Geoserver. The `~/cityapp/geoserver_workspaces` directory is used to store these settings in subdirectories named `raster` and `vector`. Those are predefined GeoServer workspaces that need to be linked to the workspaces directory of GeoServer.
+After installing Geoserver, it is required to create a symbolic link pointing to `/home/oct_user/oct/geoserver_data`, because GRASS GIS will export the results to that directory.
 ```
-ln -s ~/cityapp/geoserver_workspaces/raster /usr/share/geoserver/data_dir/workspaces/raster
-ln -s ~/cityapp/geoserver_workspaces/vector /usr/share/geoserver/data_dir/workspaces/vector
+ln -s ~/oct/geoserver_data /usr/share/geoserver/data_dir/data/cityapp
+```
+
+Maps generated by OCT require an adequate symbology, stored as “workspace” in GeoServer’s “workspaces” directory. This new symbology is prepared for OCT, therefore it can’t be found in the default installation of Geoserver. The `~/oct/geoserver_workspaces` directory is used to store these settings in subdirectories named `raster` and `vector`. Those are predefined GeoServer workspaces that need to be linked to the workspaces directory of GeoServer.
+```
+ln -s ~/oct/geoserver_workspaces/raster /usr/share/geoserver/data_dir/workspaces/raster
+ln -s ~/oct/geoserver_workspaces/vector /usr/share/geoserver/data_dir/workspaces/vector
 ```
 
 ##### GRASS GIS
 
-GRASS GIS is the core component of the backend: a highly developed generic purpose, cross-platform GIS system. It is required to install GRASS GIS version 7.1 or newer. The GRASS GIS installation path has no importance. Download GRASS GIS from: https://grass.osgeo.org/
-
-On a Debian-based system:
+GRASS GIS is the core component of the backend: a highly developed, generic-purpose, cross-platform GIS system. It is required to install GRASS GIS version 7.1 or newer. Download GRASS GIS from: https://grass.osgeo.org/ or install it using a package manager:
 ```
 apt-get install grass
 ```
 
-For other systems and for further info, please visit: https://grasswiki.osgeo.org/wiki/Installation_Guide
-
-##### Gnuplot
-
-Gnuplot is used to create various data visualizations and export them into PNG format, allowing the browser to display them. Gnuplot is a default component of most Linux distributions, but if your installed system does not contain it, it can be downloaded from http://www.gnuplot.info/.
-
-On a Debian-based system:
-```
-apt-get install gnuplot
-```
-
 ##### Node.js
 
-Node.js is a crucial component to run the frontend, therefore it has to be installed properly. Version 12 or higher is required. The recommnded way of installing Node.js in Linux is via [NodeSource](https://github.com/nodesource/distributions) (follow the instructions for your distribution).
-
-On a Debian system:
+The recommended way of installing Node.js in Linux is via [NodeSource](https://github.com/nodesource/distributions) (follow the instructions for your distribution). On a Debian system:
 ```
-curl -sL https://deb.nodesource.com/setup_12.x | bash -
+curl -sL https://deb.nodesource.com/setup_14.x | bash -
 apt-get install -y nodejs
 ```
 
-Now change to the webapp directory:
+Now change to the webapp directory and install the dependencies:
 ```
-cd ~/cityapp/webapp
-```
-and, before you start the server for the first time, you must run:
-```
+cd ~/oct/webapp
 npm install
 ```
 
 ##### Enscript/Ghostscript
 
-Enscript is a command line tool to convert text files to PostScript, HTML, RTF, ANSI. It is used to create statistical output. If not installed, then:
+Enscript is a command line tool to convert text files to PostScript, HTML, RTF, ANSI. It is used to create statistical output.
+Ghostscript is a package containing tools to manage postscript files, including a ps to pdf converter too.
+Install both packages:
 ```
-apt-get install enscript
-```
-
-Ghostscript is a package containing tools to manage postscript files, including a ps to pdf converter too. If not installed, then:
-```
-apt-get install ghostscript
+apt-get install enscript ghostscript
 ```
 
-## Running the app
+#### Running the app
 
-### GIS backend
-
-To start the backend, run:
-```
-~/cityapp/scripts/base/ca_starter.sh
-```
-
-To stop it:
-```
-~/cityapp/scripts/base/ca_shutdown.sh
-```
-
-### Web app
-
-First change to the `webapp` directory. Before you start the server for the first time, you must run:
-```
-npm install
-```
-
-You must also set the environment variables in the `.env` file. The variables `DATA_FROM_BROWSER_DIR` and `DATA_TO_CLIENT_DIR` refer to the respective directories. The `GEOSERVER_URL` must point to the public URL of the GeoServer instance, which will be running on port 8080. If this is anything other than localhost, change the URL accordingly.
+Before starting the app, you need to set a few environment variables in the `.env` file:
+- `DATA_FROM_BROWSER_DIR`: directory to store temporary messages from the client
+- `GRASS_DIR`: directory to store map files
+- `OUTPUT_DIR`: directory to store human-readable analysis outputs
+- `GEOSERVER_URL`: URL of the GeoServer
+- `INITIAL_LAT`: latitude of map view center on startup
+- `INITIAL_LON`: longitude of map view center on startup
 
 Now to start the server, run:
 ```
 node app.js
 ```
 
-Open a browser at http://localhost:3000 and you should see the app's user interface.
+Open a browser at http://localhost:3000 and you should be greeted with the app’s interface.
 
-If you want to use the server in production, it is recommended to use the process manager [pm2](https://pm2.keymetrics.io/). To install it, run:
+If you use the server in production, it is recommended to use a process manager, such as [pm2](https://pm2.keymetrics.io/). To install pm2, run:
 ```
-sudo npm install -g pm2
+npm install -g pm2
 ```
-To start a process for Cityapp:
+To start a process for OCT:
 ```
-pm2 start ~/cityapp/webapp/app.js --name=cityapp
+pm2 start ~/oct/webapp/app.js
 ```
