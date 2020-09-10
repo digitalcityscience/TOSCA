@@ -10,7 +10,7 @@ const AVERAGE_SPEED = 40
 const ROAD_POINTS = 0.003
 const CONNECT_DISTANCE = 0.003
 const CONVERSION_RESOLUTION = 0.0001
-const METER_TO_PROJ = process.env.METER_TO_PROJ
+const METER_TO_PROJ = 111320 // length of a degree of latitude, or of a degree of longitude at the equator, in meters
 
 class ModuleOneA {
   constructor() { }
