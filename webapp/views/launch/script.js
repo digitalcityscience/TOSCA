@@ -336,9 +336,25 @@ function handleResponse(res) {
 
       // == module_1a ==
 
-      // Start points / via points / stricken area
+      // Start points / via points
       case 'module_1a.1':
       case 'module_1a.2':
+        drawnItems.clearLayers();
+        map.addLayer(drawnItems)
+        buttons = [
+          buttonElement('Save').click(() => {
+            $(`#${messageId}-error`).remove();
+            if (!saveDrawing(res)) {
+              textarea.append($(`<span id="${messageId}-error" class="validation-error">Please draw a point using the circlemarker drawing tool.</span>`));
+            }
+          }),
+          buttonElement('Cancel').click(() => {
+            reply(res, 'cancel');
+          })
+        ];
+        break;
+
+      // stricken area
       case 'module_1a.3':
         drawnItems.clearLayers();
         map.addLayer(drawnItems)
@@ -346,7 +362,7 @@ function handleResponse(res) {
           buttonElement('Save').click(() => {
             $(`#${messageId}-error`).remove();
             if (!saveDrawing(res)) {
-              textarea.append($(`<span id="${messageId}-error" class="validation-error">Please draw one or more points using the circlemarker drawing tool.</span>`));
+              textarea.append($(`<span id="${messageId}-error" class="validation-error">Please draw a polygon using the polygon drawing tool.</span>`));
             }
           }),
           buttonElement('Cancel').click(() => {

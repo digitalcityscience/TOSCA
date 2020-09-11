@@ -3,13 +3,7 @@
         "1": {
             "message_id": "add_location.1",
             "message": {
-                "text": "Location has already been set. If you want to set a new location, the existing location will be removed. If you want to store the already existing location, save manually (refer to the manual, please). Do you want to set a new location? If yes, click Yes."
-            }
-        },
-        "2": {
-            "message_id": "add_location.2",
-            "message": {
-                "text": "Setting location may take a long time if the file is large. Click Yes to continue."
+                "text": "A location has already been set. If you want to set a new location, the existing location will be overwritten. Do you want to set a new location?"
             }
         },
         "3": {
@@ -21,13 +15,13 @@
         "4": {
             "message_id": "add_location.4",
             "message": {
-                "text": "Select a map file to set as location. The file has to be in osm(Open Street Map) format. You can download your map file from <a href=\"https://www.openstreetmap.org/\" target=\"_blank\">openstreetmap.org</a>."
+                "text": "Select an OpenStreetMap (.osm) file to use for the new location. You can download an OSM file from <a href=\"https://www.openstreetmap.org/\" target=\"_blank\">openstreetmap.org</a>.<br><small>Setting a new location may take a long time if the file is large.</small>"
             }
         },
         "5": {
             "message_id": "add_location.5",
             "message": {
-                "text": "New location is set."
+                "text": "New location has been set."
             }
         }
     },
@@ -47,7 +41,7 @@
         "3": {
             "message_id": "set_resolution.3",
             "message": {
-                "text": "Resolution is set."
+                "text": "Resolution has been set."
             }
         }
     },
@@ -61,13 +55,13 @@
         "2": {
             "message_id": "set_selection.2",
             "message": {
-                "text": "Use <a class=\"text-primary\" onclick=\"blink('.leaflet-draw-draw-polygon')\">the polygon tool</a> to set the selection. When you finish drawing, click the save button below to set your drawing as selection. <br> <small>The selection area has to overlap with the 'location'.</small>"
+                "text": "A ‘selection’ is a selected part of the available map area. Calculations will only be performed for that selection. Use the <a class=\"text-primary\" onclick=\"blink('.leaflet-draw-draw-polygon')\">polygon tool</a> to set the selection. When you have finished drawing, click ‘Save’ to set your drawing as selection.<br><small>The selection area has to overlap with the ‘location’.</small>"
             }
         },
         "3": {
             "message_id": "set_selection.3",
             "message": {
-                "text": "Process finished, selection is set."
+                "text": "Selection has been set."
             }
         }
     },
@@ -81,19 +75,19 @@
         "2": {
             "message_id": "add_map.2",
             "message": {
-                "text": "Choose a map file. Only gpkg (geopackage), geojson, openstreetmap vector files and geotiff (gtif or tif) raster files are accepted. Depending on the file size, this process may take a long time."
+                "text": "Choose a map file. Only GeoPackage, GeoJSON, OSM and GeoTIFF files are allowed. Depending on the file size, this process may take some time."
             }
         },
         "3": {
             "message_id": "add_map.3",
             "message": {
-                "text": "Define a name for the map. Names have to start with an English character and can only contain English characters, numbers, and underline"
+                "text": "Choose a name for your new map. The name has to start with a letter and may only contain letters, numbers and underscores."
             }
         },
         "4": {
             "message_id": "add_map.4",
             "message": {
-                "text": "Selected map is now succesfully added to your mapset."
+                "text": "Your map has been added successfully."
             }
         }
     },
@@ -101,25 +95,25 @@
         "1": {
             "message_id": "module_1a.1",
             "message": {
-                "text": "Start point is required. Use the <a class=\"text-primary\" onclick=\"blink('.leaflet-draw-draw-circlemarker')\">circle marker tool</a>  to draw a start point. <br> <small>The start point has to be within the selection area. Activate the 'current selection' layer in the  <a class=\"text-primary\" onclick=\"blink('.leaflet-control-layers')\">layer switcher</a> to view the selection area.</small>"
+                "text": "A start point is required. Use the <a class=\"text-primary\" onclick=\"blink('.leaflet-draw-draw-circlemarker')\">circlemarker tool</a> to draw a start point.<br><small>The start point has to be within the selection area. Activate the ‘current selection’ layer in the  <a class=\"text-primary\" onclick=\"blink('.leaflet-control-layers')\">layer switcher</a> to view the selection area.</small>"
             }
         },
         "2": {
             "message_id": "module_1a.2",
             "message": {
-                "text": "Via point is optional. If you want to add via points, draw one or more points and click 'Save'. Only one via point can be added! If you do not want to add via points, click Cancel. <br> <small>The via points have to be within the selection area. Activate the 'current selection' layer in the  <a class=\"text-primary\" onclick=\"blink('.leaflet-control-layers')\">layer switcher</a> to view the selection area.</small>"
+                "text": "Optionally one via point can be added. If you want to add a via point, draw a point using the <a class=\"text-primary\" onclick=\"blink('.leaflet-draw-draw-circlemarker')\">circlemarker tool</a> and click ‘Save’. If you do not want to add a via point, click Cancel.<br><small>The via point has to be within the selection area. Activate the ‘current selection’ layer in the <a class=\"text-primary\" onclick=\"blink('.leaflet-control-layers')\">layer switcher</a> to view the selection area.</small>"
             }
         },
         "3": {
             "message_id": "module_1a.3",
             "message": {
-                "text": "Stricken area is optional. If you want to add stricken area, draw one or more areas using <a class=\"text-primary\" onclick=\"blink('.leaflet-draw-draw-polygon')\">the polygon tool</a> and click 'Save'. If you do not want to add stricken area, click Cancel.<br> <small>The stricken areas have to be within the selection area. Activate the 'current selection' layer in the  <a class=\"text-primary\" onclick=\"blink('.leaflet-control-layers')\">layer switcher</a> to view the selection area.</small>"
+                "text": "Defining an affected area is optional. An affected area is an area where the speed is limited by something, e.g. natural disaster, flooding, mass event, or revolt. If you want to add an affected area, draw one or more areas using the <a class=\"text-primary\" onclick=\"blink('.leaflet-draw-draw-polygon')\">polygon tool</a> and click ‘Save’. If you do not want to add an affected area, click Cancel.<br><small>The affected areas have to be within the selection area. Activate the ‘current selection’ layer in the <a class=\"text-primary\" onclick=\"blink('.leaflet-control-layers')\">layer switcher</a> to view the selection area.</small>"
             }
         },
         "4": {
             "message_id": "module_1a.4",
             "message": {
-                "text": "Set speed reduction ratio (in percentage) for roads of stricken area. <br> <small>e.g. the value '40' will set the reduced speed as 40% of the original speed.</small>"
+                "text": "Set the speed reduction ratio (in percent) for roads in the affected area.<br><small>E.g. a value of 40 will set the reduced speed to 40&nbsp;% of the normal speed.</small>"
             }
         },
         "5": {
@@ -131,25 +125,25 @@
         "6": {
             "message_id": "module_1a.6",
             "message": {
-                "text": "Calculations are ready. <br> <small>To display the results, you can activate the layer 'road-level time map' in the <a class=\"text-primary\" onclick=\"blink('.leaflet-control-layers')\">layer switcher</a> and/or use the <a class=\"text-primary\" onclick=\"blink('#result-btn')\">results button</a> in the top bar to display a pdf version of the result.</small>"
+                "text": "Calculations are ready.<br><small>To display the results, you can activate the layer ‘road-level time map’ in the <a class=\"text-primary\" onclick=\"blink('.leaflet-control-layers')\">layer switcher</a> and/or use the <a class=\"text-primary\" onclick=\"blink('#result-btn')\">results button</a> in the top bar to display a PDF version of the result.</small>"
             }
         },
         "7": {
             "message_id": "module_1a.7",
             "message": {
-                "text": "No valid location found. Please set a location in the <a class=\"text-primary\" onclick=\"blink('#settings-menu')\">settings menu</a>. Module is now exiting."
+                "text": "No valid location found. Please set a location in the <a class=\"text-primary\" onclick=\"blink('#settings-menu')\">settings menu</a>."
             }
         },
         "8": {
             "message_id": "module_1a.8",
             "message": {
-                "text": "Average speed values on road types of the area. Do you want to change them?"
+                "text": "Average speed values are used for the different road types of the area. Do you want to change them?<br>In case you want to calculate the time map for walking or cycling, you can set the average speed value to:<ul><li>Walking: xxx</li><li>Cycling: xxx</li></ul>"
             }
         },
         "9": {
             "message_id": "module_1a.9",
             "message": {
-                "text": "Set the average speed on the roads (in 'km/hr')"
+                "text": "Set the average speed for different road types in km/h."
             }
         }
     },
@@ -157,7 +151,7 @@
         "1": {
             "message_id": "module_2.1",
             "message": {
-                "text": "Draw an area in which the query will operate on. <small> Please use <a class=\"text-primary\" onclick=\"blink('.leaflet-draw-draw-polygon')\">the polygon tool</a> to draw the area. The polygon has to be within the selection area. Activate the 'current selection' layer in the  <a class=\"text-primary\" onclick=\"blink('.leaflet-control-layers')\">layer switcher</a> to view the selection area."
+                "text": "Draw an area in which the query will operate on.<br><small>Please use the <a class=\"text-primary\" onclick=\"blink('.leaflet-draw-draw-polygon')\">polygon tool</a> to draw the area. The polygon has to be within the selection area. Activate the ‘current selection’ layer in the <a class=\"text-primary\" onclick=\"blink('.leaflet-control-layers')\">layer switcher</a> to view the selection area."
             }
         },
         "2": {
@@ -169,7 +163,7 @@
         "3": {
             "message_id": "module_2.3",
             "message": {
-                "text": "Fill the form and press save."
+                "text": "Fill the form and press ‘Save’."
             }
         },
         "24": {
