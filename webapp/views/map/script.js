@@ -71,7 +71,7 @@ const query_result_point_1 = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wm
   minZoom: 1
 });
 
-const Stricken_Area = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
+const StrickenArea = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
   layers: 'vector:m1_stricken_area',
   format: 'image/png',
   transparent: true,
@@ -175,7 +175,7 @@ const groupedOverlays = {
     "From-points": FromPoints,
     "Via-points": ViaPoints,
     "To-points": ToPoints,
-    "Stricken area": Stricken_Area
+    "Stricken area": StrickenArea
   },
   "Results": {
     "Road-level time map": TimeMap,

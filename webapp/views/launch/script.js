@@ -342,6 +342,11 @@ function handleResponse(res) {
       case 'module_1a.3':
         drawnItems.clearLayers();
         map.addLayer(drawnItems)
+        map.addLayer(FromPoints)
+        map.addLayer(ViaPoints)
+        map.addLayer(ToPoints)
+        map.addLayer(StrickenArea)
+
         buttons = [
           buttonElement('Save').click(() => {
             $(`#${messageId}-error`).remove();
