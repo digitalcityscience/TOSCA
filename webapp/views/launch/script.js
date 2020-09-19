@@ -32,15 +32,6 @@ function handleResponse(res) {
 
   $('#loading').hide();
 
-  // == output ==
-  // • get output file names
-  if (res.message_id === 'output') {
-    $('#results-select').html(function () {
-      const html = "<option selected value=''> - </option>" + list.reduce((str, file) => str + `<option value="${file}">${file}</option>`, '');
-      return html
-    })
-  }
-
   if (res.message.text) {
     let text = textElement(res.message.text), form, buttons;
 
@@ -137,7 +128,7 @@ function handleResponse(res) {
       case 'set_resolution.2':
         form = formElement(messageId);
         form.append($(`<input id="${messageId}-input" type="number" />`));
-        form.append($(`<span>&nbsp;m</span>`)); 
+        form.append($(`<span>&nbsp;m</span>`));
         buttons = [
           buttonElement('Submit').click(() => {
             $(`#${messageId}-error`).remove();
@@ -405,6 +396,10 @@ function handleResponse(res) {
         form = formElement(messageId);
         lists.append($(`<select id="${messageId}-input" class='custom-select' size="10">` + list.map(col => `<option selected value="${col}">${col}</option>`) + `</select>`));
         buttons = [
+          buttonElement('Attributes').click(() => {
+            const input = $(`#${messageId}-input`);
+            getAttributes(input[0].value)
+          }),
           buttonElement('Submit').click(() => {
             const input = $(`#${messageId}-input`);
             reply(res, input[0].value);
@@ -578,8 +573,21 @@ function saveDrawing(res) {
   return true;
 }
 
-function getOutput(res, message) {
-  sendMessage('/output', { msg: message }, { message_id: res.message_id }, handleResponse);
+function getOutput() {
+  sendMessage('/output', {}, {}, function(res){
+    $('#results-select').html(function () {
+      const html = "<option selected value=''> - </option>" + res.message.list.reduce((str, file) => str + `<option value="${file}">${file}</option>`, '');
+      return html
+    })
+  });
+}
+
+function getAttributes(table) {
+  sendMessage('/attributes', { table }, {}, function (res) {
+    // TODO: format attributes result
+    $('#attributes-content').html(`${res.message.attributes}`)
+    $('#table-attributes-modal').show()
+  });
 }
 
 function sendMessage(target, message, params, callback) {

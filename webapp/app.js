@@ -56,7 +56,8 @@ const SetSelectionModule = require('./scripts/set_selection')
 const SetResolutionModule = require('./scripts/set_resolution')
 const ModuleOne = require('./scripts/module_1')
 const ModuleOneA = require('./scripts/module_1a')
-const ModuleTwo = require('./scripts/module_2')
+const ModuleTwo = require('./scripts/module_2');
+const { grass } = require('./scripts/functions');
 
 const modules = {
   add_location: new AddLocationModule(),
@@ -154,6 +155,17 @@ app.post('/output', jsonParser, (req, res, next) => {
       list.push(file)
     })
     const message = { message_id: 'output', message: { list } }
+    res.send(message)
+  } catch (err) {
+    next(err)
+  }
+})
+
+// return all output filenames
+app.post('/attributes', jsonParser, async (req, res, next) => {
+  try {
+    const attributes = await grass('PERMANENT', `db.describe table="${req.body.table}"`)
+    const message = { message_id: 'attributes', message: { attributes } }
     res.send(message)
   } catch (err) {
     next(err)
