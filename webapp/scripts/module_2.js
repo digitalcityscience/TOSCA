@@ -1,5 +1,5 @@
 const fs = require('fs')
-const { addVector, checkWritableDir, getNumericColumns, getTopology, gpkgOut, initMapset, grass, mergePDFs, psToPDF, textToPS, remove } = require('./functions')
+const { checkWritableDir, getNumericColumns, getTopology, gpkgOut, initMapset, grass, mergePDFs, psToPDF, textToPS, remove } = require('./functions')
 const { module_2: messages } = require('./messages.json')
 
 const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
@@ -34,23 +34,6 @@ class ModuleTwo {
 
   process(message, replyTo) {
     switch (replyTo) {
-      // case 'module_2.1':
-      //   if (message.match(/drawing\.geojson/)) {
-      //     addVector('module_2', message, 'query_area_1')
-      //     gpkgOut('module_2', 'query_area_1', 'query_area_1')
-      //     this.queryArea = 'query_area_1'
-
-      //     // Only maps of PERMANENT mapset can be queried. Default maps and "selection" map are not included in the list. Only maps with numeric column (except column "CAT") will be listed.
-      //     let maps = grass('PERMANENT', `g.list type=vector`).trim().split('\n')
-      //       .filter(map => !map.match(/^lines(_osm)?$|^points(_osm)?$|^polygons(_osm)?$|^relations(_osm)?$|^selection$/))
-      //       .filter(map => getNumericColumns('PERMANENT', map).length > 0)
-
-      //     const msg = messages["2"]
-      //     msg.message.list = maps
-      //     return msg
-      //   }
-      //   return
-
       case 'module_2.2': {
         this.mapToQuery = message
 

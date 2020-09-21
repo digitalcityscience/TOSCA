@@ -348,7 +348,7 @@ function handleResponse(res) {
           })
         ];
         break;
-  
+
       // Speed reduction ratio
       case 'module_1a.4':
       case 'module_1a.9':
@@ -394,7 +394,7 @@ function handleResponse(res) {
         form = formElement(messageId);
         lists.append($(`<select id="${messageId}-input" class='custom-select' size="10">` + list.map(col => `<option selected value="${col}">${col}</option>`) + `</select>`));
         buttons = [
-          buttonElement('Attributes').click(() => {
+          buttonElement('Show attributes').click(() => {
             const input = $(`#${messageId}-input`);
             getAttributes(input[0].value)
           }),
@@ -582,16 +582,15 @@ function saveDrawing(res) {
 }
 
 function getOutput() {
-  sendMessage('/output', {}, {}, function(res){
-    $('#results-select').html(function () {
-      const html = "<option selected value=''> - </option>" + res.message.list.reduce((str, file) => str + `<option value="${file}">${file}</option>`, '');
-      return html
-    })
+  get('/output', {}, function (res) {
+    const baseOption = "<option selected value=''> - </option>"
+    const options = res.message.list.reduce((str, file) => str + `<option value="${file}">${file}</option>`, '')
+    $('#results-select').html(baseOption + options)
   });
 }
 
 function getAttributes(table) {
-  sendMessage('/attributes', { table }, {}, function (res) {
+  get('/attributes',  { table }, function (res) {
     // TODO: format attributes result
     $('#attributes-content').html(`${res.message.attributes}`)
     $('#table-attributes-modal').show()
@@ -606,6 +605,21 @@ function sendMessage(target, message, params, callback) {
     url: target + '?' + $.param(params),
     data: JSON.stringify(message),
     dataType: 'json',
+    contentType: 'application/json; encoding=utf-8',
+    error: onServerError
+  })
+    .done(callback)
+    .always(() => $('#loading').hide());
+}
+
+function get(target, params, callback) {
+  $('#loading').show();
+  console.log('params: ',params);
+  console.log('$.param(params): ',$.param(params));
+
+  $.ajax({
+    type: 'GET',
+    url: target + '?' + $.param(params),
     contentType: 'application/json; encoding=utf-8',
     error: onServerError
   })

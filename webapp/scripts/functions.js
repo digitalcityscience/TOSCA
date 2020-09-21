@@ -3,6 +3,7 @@ const fs = require('fs')
 
 const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
 const GRASS = process.env.GRASS_DIR
+const outputDir = process.env.OUTPUT_DIR
 
 module.exports = {
   /**
@@ -182,6 +183,26 @@ module.exports = {
    */
   textToPS(infile, outfile) {
     execSync(`enscript -p ${outfile} ${infile}`)
+  },
+
+  /**
+   * Prints all attribute descriptions of a table
+   * @param {string} table
+   */
+  describeTable(table) {
+    return grass('PERMANENT', `db.describe table="${table}"`)
+  },
+
+  /**
+   * Prints all the result files in the 'output' folder
+   * @returns {array} list of result filenames
+   */
+  getResults() {
+    const list = []
+    fs.readdirSync(outputDir).forEach(file => {
+      list.push(file)
+    })
+    return list
   },
 
   grass
