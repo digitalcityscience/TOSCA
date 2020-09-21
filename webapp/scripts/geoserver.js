@@ -12,5 +12,9 @@ module.exports = {
   async addDatastore(workspaceName, body) {
     const res = await geoServer.post(`/rest/workspaces/${workspaceName}/datastores`, body)
     return res.data
+  },
+  async addFeatureType(workspaceName, datastoreName, body) {
+    const res = await geoServer.post(`/rest/workspaces/${workspaceName}/datastores/${datastoreName}/featuretypes/`, body)
+    return res.data
   }
 }
