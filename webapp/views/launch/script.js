@@ -57,24 +57,6 @@ function handleResponse(res) {
         ];
         break;
 
-      // • message id: add_location.2
-      // • text: No valid location found. First have to add a location to the dataset. Without such location, CityApp will not work. Adding a new location may take a long time, depending on the file size. If you want to continue, click Yes.
-      // • expectation: A request file with yes or no text.
-      // • consequence:
-      //   - If answer is NO, then add_location send a message and when the message is acknowledged, exit: => add_location.3
-      //   - If answer is YES: => add_location.4
-
-      case 'add_location.2':
-        buttons = [
-          buttonElement('Yes').click(() => {
-            reply(res, 'yes');
-          }),
-          buttonElement('No').click(() => {
-            reply(res, 'no');
-          })
-        ];
-        break;
-
       // • message id: add_location.4
       // • text: Select a map to add to CityApp. Map has to be in Open Street Map format -- osm is the only accepted format.
       // • expectation: Finding an uploaded osm file in data_from_browser directory. Request file is not expected, and therefore it is not neccessary to create.
@@ -327,10 +309,9 @@ function handleResponse(res) {
 
       // == module_1a ==
 
-      // Start points / via points / stricken area
+      // Start points / via points
       case 'module_1a.1':
       case 'module_1a.2':
-      case 'module_1a.3':
         drawnItems.clearLayers();
         map.addLayer(drawnItems)
         map.addLayer(FromPoints)
@@ -342,7 +323,7 @@ function handleResponse(res) {
           buttonElement('Save').click(() => {
             $(`#${messageId}-error`).remove();
             if (!saveDrawing(res)) {
-              textarea.append($(`<span id="${messageId}-error" class="validation-error">Please draw one or more points using the circlemarker drawing tool.</span>`));
+              textarea.append($(`<span id="${messageId}-error" class="validation-error">Please draw a point using the circlemarker drawing tool.</span>`));
             }
           }),
           buttonElement('Cancel').click(() => {
@@ -351,6 +332,23 @@ function handleResponse(res) {
         ];
         break;
 
+      // stricken area
+      case 'module_1a.3':
+        drawnItems.clearLayers();
+        map.addLayer(drawnItems)
+        buttons = [
+          buttonElement('Save').click(() => {
+            $(`#${messageId}-error`).remove();
+            if (!saveDrawing(res)) {
+              textarea.append($(`<span id="${messageId}-error" class="validation-error">Please draw a polygon using the polygon drawing tool.</span>`));
+            }
+          }),
+          buttonElement('Cancel').click(() => {
+            reply(res, 'cancel');
+          })
+        ];
+        break;
+  
       // Speed reduction ratio
       case 'module_1a.4':
       case 'module_1a.9':
@@ -522,7 +520,7 @@ function clearDialog() {
   $('#lists').empty();
 }
 
-function show_results() {
+function showResults() {
   getOutput({})
   $('#results-modal').show()
   // empty iframe content
@@ -533,28 +531,38 @@ function show_help() {
   $('#help-modal').show()
 }
 
-let blink_timeout;
+let blinkTimeout;
 function blink(selector) {
-  if (!blink_timeout) {
+  if (!blinkTimeout) {
     $(selector).addClass("blink");
-    blink_timeout = setTimeout(function () {
-      blink_timeout = null;
+    blinkTimeout = setTimeout(function () {
+      blinkTimeout = null;
       $(selector).removeClass("blink");
     }, 3600);
   }
 }
 
+$('#launch-module-menu').on('change', (event) => {
+  clearDialog();
+  const value = $(event.target).val();
+  if (value.match(/module_1/)) {
+    $('#textarea').append('The Calculate Time Map Module creates a heat map, showing the time it takes to reach any part of the selected area from a ‘start point’. Optionally, affected areas with reduced speed limit, and via-points can be defined.');
+  } else if (value.match(/module_2/)) {
+    $('#textarea').append('To query an area means to filter the map features/elements based on some user-determined values. For example, a housing map layer can be queried based on the household population and monthly income, and only the houses with the corresponding value range will be returned.');
+  }
+})
+
 /* Send messages to the backend */
 
-function launch_app() {
+function launchModule() {
   // Get the selected item
-  const value = $('#launch-app-menu')[0].value;
+  const value = $('#launch-module-menu')[0].value;
   if (value) {
     sendMessage('/launch', { launch: value }, {}, handleResponse);
   }
 }
 
-function launch_settings(value) {
+function launchSettings(value) {
   if (value) {
     sendMessage('/launch', { launch: value }, {}, handleResponse);
   }
