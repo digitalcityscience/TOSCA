@@ -1,4 +1,5 @@
 const { addRaster, addVector, checkWritableDir, mapsetExists, gpkgOut } = require('./functions.js')
+const { addDatastore } = require('./geoserver.js')
 const { add_map: messages } = require('./messages.json')
 
 const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
@@ -18,7 +19,7 @@ class AddMapModule {
     return messages["1"]
   }
 
-  process(message, replyTo) {
+  async process(message, replyTo) {
     switch (replyTo) {
       case 'add_map.2':
         // uploaded file
@@ -33,8 +34,9 @@ class AddMapModule {
         this.mapFile = message
         return messages["3"]
 
-      case 'add_map.3':
-        if (!message.match(/^[a-zA-Z]\w*$/)) {
+      case 'add_map.3': {
+        const mapName = message
+        if (!mapName.match(/^[a-zA-Z]\w*$/)) {
           throw new Error("Invalid map name. Use alphanumeric characters only")
         }
 
@@ -43,12 +45,27 @@ class AddMapModule {
         }
 
         if (this.mapType === 'vector') {
-          addVector('PERMANENT', this.mapFile, message)
-          gpkgOut('PERMANENT', message, message)
+          addVector('PERMANENT', this.mapFile, mapName)
+          gpkgOut('PERMANENT', mapName, mapName)
+
+          if (this.mapFile.match(/.*.gpkg/i)) {
+            await addDatastore('vector', {
+              dataStore: {
+                name: mapName,
+                connectionParameters: {
+                  entry: [
+                    { "@key": "database", "$": `file://${GEOSERVER}/${this.mapFile}` },
+                    { "@key": "dbtype", "$": "geopkg" }
+                  ]
+                }
+              }
+            })
+          }
         } else if (this.mapType === 'raster') {
           addRaster('PERMANENT', this.mapFile, message)
         }
         return messages["4"]
+      }
     }
   }
 }

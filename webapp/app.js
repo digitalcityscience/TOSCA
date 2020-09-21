@@ -69,7 +69,7 @@ const modules = {
 }
 
 // launch a module
-app.post('/launch', jsonParser, (req, res, next) => {
+app.post('/launch', jsonParser, async (req, res, next) => {
   // do some checks first
   if (!dataFromBrowserDir) {
     throw new Error("Cannot launch module: DATA_FROM_BROWSER_DIR is not defined.")
@@ -79,23 +79,18 @@ app.post('/launch', jsonParser, (req, res, next) => {
   }
 
   try {
-    res.send(modules[req.body.launch].launch())
+    const module = modules[req.body.launch]
+    res.send(await module.launch())
   } catch (err) {
     next(err)
   }
 })
 
 // message request
-app.post('/reply', jsonParser, (req, res, next) => {
+app.post('/reply', jsonParser, async (req, res, next) => {
   try {
     const module = modules[req.query.message_id.split('.')[0]]
-    const message = module.process(req.body.msg, req.query.message_id)
-
-    if (message) {
-      res.send(message)
-    } else {
-      next("Something went wrong")
-    }
+    res.send(await module.process(req.body.msg, req.query.message_id))
   } catch (err) {
     next(err)
   }
@@ -108,7 +103,7 @@ app.post('/file', uploadParser.single('file'), (req, res, next) => {
     const file = `${dataFromBrowserDir}/${req.file.originalname}`
     const writer = fs.createWriteStream(file)
 
-    writer.write(req.file.buffer, (error) => {
+    writer.write(req.file.buffer, async (error) => {
       if (error) {
         next(error)
       }
@@ -117,13 +112,7 @@ app.post('/file', uploadParser.single('file'), (req, res, next) => {
       // Process file after it's finished downloading.
       // Have to add another try/catch block, as we're inside an async function
       try {
-        const message = module.process(file, req.query.message_id)
-
-        if (message) {
-          res.send(message)
-        } else {
-          next("Something went wrong")
-        }
+        res.send(await module.process(file, req.query.message_id))
       } catch (err) {
         next(err)
       }
