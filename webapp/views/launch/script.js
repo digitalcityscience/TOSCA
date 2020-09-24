@@ -410,25 +410,20 @@ function handleResponse(res) {
         const columns = list.map(col => `<option value="${col}">${col}</option>`);
         const rel = ['AND', 'OR', 'NOT'].map(el => `<option value="${el}">${el}</option>`);
         const op = ['>', '<', '=', '>=', '<='].map(el => `<option value="${el}">${el}</option>`);
-        lists.append($('<span>WHERE</span>'));
-        lists.append($(`
+        const condition = `
         <li class='d-flex'>
-          <select class='${messageId}-input custom-select mr-2'>${columns}</select>
-          <select class='${messageId}-input custom-select mr-2'>${op}</select>
-          <input class='${messageId}-input form-control' type="number" />
-        </li>
-        `));
-        let inputs = $(`.${messageId}-input`)
-        buttons = [
-          buttonElement('＋').click(() => {
-            lists.append($(`
-            <select class='${messageId}-input custom-select mt-2 mb-2'>${rel}</select>
-            <li class='d-flex'>
               <select class='${messageId}-input custom-select mr-2'>${columns}</select>
               <select class='${messageId}-input custom-select mr-2'>${op}</select>
               <input class='${messageId}-input form-control' type="number" />
-            </li>
-            `));
+        </li>
+        `
+        lists.append($('<span>WHERE</span>'));
+        lists.append($(condition));
+        let inputs = $(`.${messageId}-input`)
+        buttons = [
+          buttonElement('＋').click(() => {
+            lists.append($(`<select class='${messageId}-input custom-select mt-2 mb-2'>${rel}</select>`));
+            lists.append($(condition));
             inputs = $(`.${messageId}-input`)
           }),
           buttonElement('−').click(() => {
@@ -439,12 +434,22 @@ function handleResponse(res) {
             inputs = $(`.${messageId}-input`)
           }),
           buttonElement('Submit').click(() => {
+            $(`#${messageId}-error`).remove();
             let msg = []
             // inputs.map is problematic because jquery objs behave differently
             for (let i = 0; i < inputs.length; i++) {
-              msg.push(inputs[i].value)
+              // validate input
+              if ((inputs[i].type === 'number' && inputs[i].value.match(/^(-?\d+\.\d+)$|^(-?\d+)$/))
+                ||
+                (inputs[i].type != 'number')) {
+                msg.push(inputs[i].value)
+              } else {
+                msg = []
+                textarea.append($(`<span id="${messageId}-error" class="validation-error">Please enter valid numbers in the fields.</span>`));
+                break
+              }
             }
-            reply(res, msg);
+            if (msg.length) reply(res, msg)
           })
         ];
         break;
@@ -590,7 +595,7 @@ function getOutput() {
 }
 
 function getAttributes(table) {
-  get('/attributes',  { table }, function (res) {
+  get('/attributes', { table }, function (res) {
     // TODO: format attributes result
     $('#attributes-content').html(`${res.message.attributes}`)
     $('#table-attributes-modal').show()
@@ -614,8 +619,8 @@ function sendMessage(target, message, params, callback) {
 
 function get(target, params, callback) {
   $('#loading').show();
-  console.log('params: ',params);
-  console.log('$.param(params): ',$.param(params));
+  console.log('params: ', params);
+  console.log('$.param(params): ', $.param(params));
 
   $.ajax({
     type: 'GET',
