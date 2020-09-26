@@ -190,7 +190,8 @@ module.exports = {
    * @param {string} table
    */
   describeTable(table) {
-    return grass('PERMANENT', `db.describe table="${table}"`)
+    const raw = grass('PERMANENT', `db.describe table="${table}"`)
+    return parseDescription(raw)
   },
 
   /**
@@ -215,4 +216,32 @@ module.exports = {
  */
 function grass(mapset, args) {
   return execSync(`grass "${GRASS}/global/${mapset}" --exec ${args}`, { shell: '/bin/bash', encoding: 'utf-8' })
+}
+
+/**
+ * Parse raw stream from db.describe
+ * @param {string} raw
+ */
+function parseDescription(raw) {
+  const msg = { head: [{}], body: [] }
+
+  const rawArray = raw.split('\n')
+  let i = rawArray.indexOf('')
+
+  rawArray.slice(0, i).forEach(h => {
+    const splitter = h.indexOf(':')
+    msg.head[0][h.substring(0, splitter)] = h.substring(splitter + 1)
+  })
+  while (i < rawArray.length - 1) {
+    const prev = i
+    i = rawArray.indexOf('', i + 1)
+    const column = rawArray.slice(prev + 1, i)
+    const obj = {}
+    column.forEach(line => {
+      const splitter = line.indexOf(':')
+      obj[line.substring(0, splitter)] = line.substring(splitter + 1)
+    })
+    msg.body.push(obj)
+  }
+  return JSON.stringify(msg)
 }

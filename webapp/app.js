@@ -162,7 +162,7 @@ app.get('/attributes', jsonParser, async (req, res, next) => {
   try {
     const attributes = await describeTable(req.query.table)
     const message = { message_id: 'attributes', message: { attributes } }
-    res.send(message)
+    res.json(message)
   } catch (err) {
     next(err)
   }

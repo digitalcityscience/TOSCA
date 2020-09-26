@@ -519,6 +519,28 @@ function buttonElement(action) {
   return $(`<button type="button" class="btn btn-primary">${action}</button>`);
 }
 
+/**
+ * create a table element from data
+ * @param {Array} data an array of identically structured js objects 
+ * @param {string} className className of the table
+ */
+function tableElement(className, data) {
+  let html = `<table class=${className}><tr>`
+  Object.keys(data[0]).forEach(field => {
+    html += `<th>${field}</th>`
+  })
+  html += '</tr>'
+  data.forEach(entry => {
+    html += '<tr>'
+    Object.keys(entry).forEach(field => {
+      html += `<td>${entry[field]}</td>`
+    })
+    html += '</tr>'
+  })
+  html += '</table>'
+  return html
+}
+
 function clearDialog() {
   $('#textarea').empty();
   $('#buttonarea').empty();
@@ -596,8 +618,9 @@ function getOutput() {
 
 function getAttributes(table) {
   get('/attributes', { table }, function (res) {
-    // TODO: format attributes result
-    $('#attributes-content').html(`${res.message.attributes}`)
+    const { head, body } = JSON.parse(res.message.attributes)
+    const html = "<h5>Table description</h5>" + tableElement('table table-bordered', head) + "<br><h5>Column description</h5>" + tableElement('table table-bordered', body)
+    $('#attributes-content').html(html)
     $('#table-attributes-modal').show()
   });
 }
