@@ -17,32 +17,28 @@ RUN apt-get install -y locales curl unzip openjdk-11-jre-headless
 RUN sed -i -e 's/# \(en_US\.UTF-8 .*\)/\1/' /etc/locale.gen && locale-gen
 
 # Install GeoServer and CSS plugin
-WORKDIR /usr/share
-RUN curl -L -o geoserver.zip https://sourceforge.net/projects/geoserver/files/GeoServer/2.16.2/geoserver-2.16.2-bin.zip
+WORKDIR /usr/share/geoserver
+RUN curl -L -o geoserver.zip https://sourceforge.net/projects/geoserver/files/GeoServer/2.17.2/geoserver-2.17.2-bin.zip
 RUN unzip -q geoserver.zip && rm geoserver.zip
-RUN mv geoserver-2.16.2 geoserver
 WORKDIR /usr/share/geoserver/webapps/geoserver/WEB-INF/lib
-RUN curl -o css-plugin.zip https://build.geoserver.org/geoserver/2.16.x/ext-latest/geoserver-2.16-SNAPSHOT-css-plugin.zip
-RUN unzip css-plugin.zip && rm css-plugin.zip
+RUN curl -o css-plugin.zip https://build.geoserver.org/geoserver/2.17.x/ext-latest/geoserver-2.17-SNAPSHOT-css-plugin.zip
+RUN unzip -q css-plugin.zip && rm css-plugin.zip
 
 # Install GRASS GIS
 RUN apt-get install -y grass-core
-
-# Install Gnuplot
-RUN apt-get install -y gnuplot-nox
 
 # Install Enscript/Ghostscript
 RUN apt-get install -y enscript ghostscript
 
 # Install Node.js
-RUN curl -L https://deb.nodesource.com/setup_12.x | bash -
+RUN curl -L https://deb.nodesource.com/setup_14.x | bash -
 RUN apt-get install -y nodejs
 
 # Clean up
 RUN apt-get clean
 
 # Install webapp
-WORKDIR /root/cityapp
+WORKDIR /oct
 RUN mkdir -p data_from_browser
 COPY webapp/package*.json ./webapp/
 RUN cd webapp && npm i --only=production --ignore-scripts

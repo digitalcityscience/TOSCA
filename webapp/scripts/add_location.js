@@ -14,13 +14,12 @@ class AddLocationModule {
     if (mapsetExists('PERMANENT')) {
       return messages["1"]
     }
-    return messages["2"]
+    return messages["4"]
   }
 
   process(message, replyTo) {
     switch (replyTo) {
       case 'add_location.1':
-      case 'add_location.2':
         if (message.toLowerCase() == 'yes') {
           return messages["4"]
         }
