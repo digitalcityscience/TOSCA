@@ -8,8 +8,6 @@ function handleResponse(res) {
     return;
   }
 
-  console.log(`${res.message_id}:`, res.message);
-
   clearDialog();
 
   const messageId = res.message_id.replace(/\./g, '_');
@@ -68,24 +66,6 @@ function handleResponse(res) {
         ];
         break;
 
-      // • message id: add_location.2
-      // • text: No valid location found. First have to add a location to the dataset. Without such location, CityApp will not work. Adding a new location may take a long time, depending on the file size. If you want to continue, click Yes.
-      // • expectation: A request file with yes or no text.
-      // • consequence:
-      //   - If answer is NO, then add_location send a message and when the message is acknowledged, exit: => add_location.3
-      //   - If answer is YES: => add_location.4
-
-      case 'add_location.2':
-        buttons = [
-          buttonElement('Yes').click(() => {
-            reply(res, 'yes');
-          }),
-          buttonElement('No').click(() => {
-            reply(res, 'no');
-          })
-        ];
-        break;
-
       // • message id: add_location.4
       // • text: Select a map to add to CityApp. Map has to be in Open Street Map format -- osm is the only accepted format.
       // • expectation: Finding an uploaded osm file in data_from_browser directory. Request file is not expected, and therefore it is not neccessary to create.
@@ -108,23 +88,12 @@ function handleResponse(res) {
 
       // == set_selection ==
 
-      // • message id: set_selection.1
-      // • text: No valid location found. First have to add a location to the dataset. Without such location, CityApp will not work. To add a location, use Add Location menu. Now click OK to exit.
-      // • expectation: A request file with OK text
-      // • consequence: Module exit when message is acknowledged
-      case 'set_selection.1':
-        buttons = [
-          buttonElement('OK').click(() => {
-            clearDialog();
-          })
-        ];
-        break;
-
       // • message id: set_selection.2
       // • text: Now zoom to area of your interest, then use drawing tool to define your location. Next, save your selection.
       // • expectation: Finding an uploaded goejson file in data_from_browser directory. This file is created by the browser, when the user define interactively the selection area. Request file is not expected, and therefore it is not neccessary to create.
       // • consequence: No specific consequences
       case 'set_selection.2':
+        drawnItems.clearLayers();
         buttons = [
           buttonElement('Save').click(() => {
             $(`#${messageId}-error`).remove();
@@ -150,6 +119,7 @@ function handleResponse(res) {
       case 'set_resolution.2':
         form = formElement(messageId);
         form.append($(`<input id="${messageId}-input" type="number" />`));
+        form.append($(`<span>&nbsp;m</span>`)); 
         buttons = [
           buttonElement('Submit').click(() => {
             $(`#${messageId}-error`).remove();
@@ -348,15 +318,16 @@ function handleResponse(res) {
 
       // == module_1a ==
 
-      // Start points / via points / stricken area
+      // Start points / via points
       case 'module_1a.1':
       case 'module_1a.2':
-      case 'module_1a.3':
+        drawnItems.clearLayers();
+        map.addLayer(drawnItems)
         buttons = [
           buttonElement('Save').click(() => {
             $(`#${messageId}-error`).remove();
             if (!saveDrawing(res)) {
-              textarea.append($(`<span id="${messageId}-error" class="validation-error">Please draw one or more points using the circlemarker drawing tool.</span>`));
+              textarea.append($(`<span id="${messageId}-error" class="validation-error">Please draw a point using the circlemarker drawing tool.</span>`));
             }
           }),
           buttonElement('Cancel').click(() => {
@@ -365,11 +336,29 @@ function handleResponse(res) {
         ];
         break;
 
+      // stricken area
+      case 'module_1a.3':
+        drawnItems.clearLayers();
+        map.addLayer(drawnItems)
+        buttons = [
+          buttonElement('Save').click(() => {
+            $(`#${messageId}-error`).remove();
+            if (!saveDrawing(res)) {
+              textarea.append($(`<span id="${messageId}-error" class="validation-error">Please draw a polygon using the polygon drawing tool.</span>`));
+            }
+          }),
+          buttonElement('Cancel').click(() => {
+            reply(res, 'cancel');
+          })
+        ];
+        break;
+  
       // Speed reduction ratio
       case 'module_1a.4':
       case 'module_1a.9':
         form = formElement(messageId);
         form.append($(`<input id="${messageId}-input" type="number" />`));
+        form.append($(`<span>&nbsp;%</span>`));
         buttons = [
           buttonElement('Submit').click(() => {
             const input = $(`#${messageId}-input`);
@@ -379,6 +368,7 @@ function handleResponse(res) {
         break;
 
       case 'module_1a.8':
+        drawnItems.clearLayers();
         buttons = [
           buttonElement('Yes').click(() => {
             reply(res, 'yes');
@@ -392,6 +382,8 @@ function handleResponse(res) {
       // == module_2 ==
 
       case 'module_2.1':
+        drawnItems.clearLayers();
+        map.addLayer(drawnItems)
         buttons = [
           buttonElement('Save').click(() => {
             $(`#${messageId}-error`).remove();
@@ -530,7 +522,7 @@ function clearDialog() {
   $('#lists').empty();
 }
 
-function show_results() {
+function showResults() {
   getOutput({})
   $('#results-modal').show()
   // empty iframe content
@@ -541,17 +533,38 @@ function show_help() {
   $('#help-modal').show()
 }
 
+let blinkTimeout;
+function blink(selector) {
+  if (!blinkTimeout) {
+    $(selector).addClass("blink");
+    blinkTimeout = setTimeout(function () {
+      blinkTimeout = null;
+      $(selector).removeClass("blink");
+    }, 3600);
+  }
+}
+
+$('#launch-module-menu').on('change', (event) => {
+  clearDialog();
+  const value = $(event.target).val();
+  if (value.match(/module_1/)) {
+    $('#textarea').append('The Calculate Time Map Module creates a heat map, showing the time it takes to reach any part of the selected area from a ‘start point’. Optionally, affected areas with reduced speed limit, and via-points can be defined.');
+  } else if (value.match(/module_2/)) {
+    $('#textarea').append('To query an area means to filter the map features/elements based on some user-determined values. For example, a housing map layer can be queried based on the household population and monthly income, and only the houses with the corresponding value range will be returned.');
+  }
+})
+
 /* Send messages to the backend */
 
-function launch_app() {
+function launchModule() {
   // Get the selected item
-  const value = $('#launch-app-menu')[0].value;
+  const value = $('#launch-module-menu')[0].value;
   if (value) {
     sendMessage('/launch', { launch: value }, {}, handleResponse);
   }
 }
 
-function launch_settings(value) {
+function launchSettings(value) {
   if (value) {
     sendMessage('/launch', { launch: value }, {}, handleResponse);
   }

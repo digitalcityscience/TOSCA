@@ -1,5 +1,5 @@
 const fs = require('fs')
-const { addVector, gpkgOut, initMapset, listVector, mapsetExists, grass, mergePDFs, psToPDF, textToPS } = require('./functions')
+const { addVector, checkWritableDir, gpkgOut, initMapset, listVector, mapsetExists, grass, mergePDFs, psToPDF, textToPS } = require('./functions')
 
 const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
 const GRASS = process.env.GRASS_DIR
@@ -77,6 +77,9 @@ class ModuleOne {
   }
 
   launch() {
+    checkWritableDir(GEOSERVER)
+    checkWritableDir(OUTPUT)
+
     if (!mapsetExists('PERMANENT')) {
       return this.messages[11]
     }
