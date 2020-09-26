@@ -410,30 +410,33 @@ function handleResponse(res) {
         const columns = list.map(col => `<option value="${col}">${col}</option>`);
         const rel = ['AND', 'OR', 'NOT'].map(el => `<option value="${el}">${el}</option>`);
         const op = ['>', '<', '=', '>=', '<='].map(el => `<option value="${el}">${el}</option>`);
+        const firstCondition = `
+        <div class='d-flex'>
+          <select class='${messageId}-input custom-select mr-2'>${columns}</select>
+          <select class='${messageId}-input custom-select mr-2'>${op}</select>
+          <input class='${messageId}-input form-control' type="number" />
+        </div>
+        `
         const condition = `
-        <li class='d-flex'>
-              <select class='${messageId}-input custom-select mr-2'>${columns}</select>
-              <select class='${messageId}-input custom-select mr-2'>${op}</select>
-              <input class='${messageId}-input form-control' type="number" />
-        </li>
+        <div>
+          <select class='${messageId}-input custom-select mt-2 mb-2'>${rel}</select>
+          <div class='d-flex'>
+                <select class='${messageId}-input custom-select mr-2'>${columns}</select>
+                <select class='${messageId}-input custom-select mr-2'>${op}</select>
+                <input class='${messageId}-input form-control mr-2' type="number" />
+                <button type="button" class="btn btn-danger" onclick="removeCondition(this)">remove</button>
+          </div>
+        </div>
         `
         lists.append($('<span>WHERE</span>'));
-        lists.append($(condition));
+        lists.append($(firstCondition));
         let inputs = $(`.${messageId}-input`)
         buttons = [
           buttonElement('＋').click(() => {
-            lists.append($(`<select class='${messageId}-input custom-select mt-2 mb-2'>${rel}</select>`));
             lists.append($(condition));
             inputs = $(`.${messageId}-input`)
           }),
-          buttonElement('−').click(() => {
-            if (lists.children().length > 3) {
-              lists.children().last().remove()
-              lists.children().last().remove()
-            }
-            inputs = $(`.${messageId}-input`)
-          }),
-          buttonElement('Submit').click(() => {
+          buttonElement('OK').click(() => {
             $(`#${messageId}-error`).remove();
             let msg = []
             // inputs.map is problematic because jquery objs behave differently
@@ -568,6 +571,11 @@ function blink(selector) {
     }, 3600);
   }
 }
+
+function removeCondition(e) {
+  e.parentNode.parentNode.parentNode.removeChild(e.parentNode.parentNode);
+}
+
 
 $('#launch-module-menu').on('change', (event) => {
   clearDialog();
