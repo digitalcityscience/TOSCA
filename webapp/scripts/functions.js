@@ -223,25 +223,22 @@ function grass(mapset, args) {
  * @param {string} raw
  */
 function parseDescription(raw) {
-  const msg = { head: [{}], body: [] }
+  const msg = { head: {}, body: [] }
+  const rawArray = raw.split('\n\n')
 
-  const rawArray = raw.split('\n')
-  let i = rawArray.indexOf('')
-
-  rawArray.slice(0, i).forEach(h => {
+  rawArray[0].split('\n').forEach(h => {
     const splitter = h.indexOf(':')
-    msg.head[0][h.substring(0, splitter)] = h.substring(splitter + 1)
+    msg.head[h.substring(0, splitter)] = h.substring(splitter + 1)
   })
-  while (i < rawArray.length - 1) {
-    const prev = i
-    i = rawArray.indexOf('', i + 1)
-    const column = rawArray.slice(prev + 1, i)
+
+  for (let i = 1; i < rawArray.length; i++) {
     const obj = {}
-    column.forEach(line => {
+    rawArray[i].split('\n').forEach(line => {
       const splitter = line.indexOf(':')
       obj[line.substring(0, splitter)] = line.substring(splitter + 1)
     })
     msg.body.push(obj)
   }
+  
   return JSON.stringify(msg)
 }

@@ -528,20 +528,34 @@ function buttonElement(action) {
  * @param {string} className className of the table
  */
 function tableElement(className, data) {
-  let html = `<table class=${className}><tr>`
-  Object.keys(data[0]).forEach(field => {
-    html += `<th>${field}</th>`
-  })
-  html += '</tr>'
-  data.forEach(entry => {
-    html += '<tr>'
-    Object.keys(entry).forEach(field => {
-      html += `<td>${entry[field]}</td>`
+  const table = $(`<table class=${className}><tr>`)
+  const headRow = $(`<tr></tr>`)
+
+  table.append(headRow)
+
+  if (Array.isArray(data)) {
+    Object.keys(data[0]).forEach(field => {
+      headRow.append($(`<th>${field}</th>`))
     })
-    html += '</tr>'
-  })
-  html += '</table>'
-  return html
+    data.forEach(entry => {
+      const contentRow = $(`<tr></tr>`)
+      table.append(contentRow)
+
+      Object.keys(entry).forEach(field => {
+        contentRow.append($(`<td>${entry[field]}</td>`))
+      })
+    })
+  } else if (typeof data === 'object') {
+    Object.keys(data).forEach(field => {
+      headRow.append($(`<th>${field}</th>`))
+    })
+    const contentRow = $(`<tr></tr>`)
+    table.append(contentRow)
+    Object.keys(data).forEach(field => {
+      contentRow.append($(`<td>${data[field]}</td>`))
+    })
+  }
+  return table
 }
 
 function clearDialog() {
@@ -573,7 +587,8 @@ function blink(selector) {
 }
 
 function removeCondition(e) {
-  e.parentNode.parentNode.parentNode.removeChild(e.parentNode.parentNode);
+  const rootNode = e.parentNode.parentNode;
+  rootNode.parentNode.removeChild(rootNode);
 }
 
 
@@ -621,16 +636,17 @@ function getOutput() {
     const baseOption = "<option selected value=''> - </option>"
     const options = res.message.list.reduce((str, file) => str + `<option value="${file}">${file}</option>`, '')
     $('#results-select').html(baseOption + options)
-  });
+  })
 }
 
 function getAttributes(table) {
   get('/attributes', { table }, function (res) {
     const { head, body } = JSON.parse(res.message.attributes)
-    const html = "<h5>Table description</h5>" + tableElement('table table-bordered', head) + "<br><h5>Column description</h5>" + tableElement('table table-bordered', body)
-    $('#attributes-content').html(html)
+
+    $('#table-description').html(tableElement('table table-bordered', head))
+    $('#column-description').html(tableElement('table table-bordered', body))
     $('#table-attributes-modal').show()
-  });
+  })
 }
 
 function sendMessage(target, message, params, callback) {
@@ -645,13 +661,11 @@ function sendMessage(target, message, params, callback) {
     error: onServerError
   })
     .done(callback)
-    .always(() => $('#loading').hide());
+    .always(() => $('#loading').hide())
 }
 
 function get(target, params, callback) {
   $('#loading').show();
-  console.log('params: ', params);
-  console.log('$.param(params): ', $.param(params));
 
   $.ajax({
     type: 'GET',
@@ -660,7 +674,7 @@ function get(target, params, callback) {
     error: onServerError
   })
     .done(callback)
-    .always(() => $('#loading').hide());
+    .always(() => $('#loading').hide())
 }
 
 function upload(form, params, callback) {
