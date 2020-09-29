@@ -226,18 +226,19 @@ function parseDescription(raw) {
   const msg = { head: {}, body: [] }
   const rawArray = raw.split('\n\n')
 
-  rawArray[0].split('\n').forEach(h => {
-    const splitter = h.indexOf(':')
-    msg.head[h.substring(0, splitter)] = h.substring(splitter + 1)
-  })
+  msg.head = rawArray[0].split('\n').reduce((obj, line) => {
+    const [key, value] = line.split(':')
+    obj[key] = value
+    return obj
+  }, {})
 
-  for (let i = 1; i < rawArray.length; i++) {
-    const obj = {}
-    rawArray[i].split('\n').forEach(line => {
-      const splitter = line.indexOf(':')
-      obj[line.substring(0, splitter)] = line.substring(splitter + 1)
-    })
-    msg.body.push(obj)
+  for (const column of rawArray.slice(1)) {
+    const columnObject = column.split('\n').reduce((obj, line) => {
+      const [key, value] = line.split(':')
+      obj[key] = value
+      return obj
+    }, {})
+    msg.body.push(columnObject)
   }
   
   return JSON.stringify(msg)
