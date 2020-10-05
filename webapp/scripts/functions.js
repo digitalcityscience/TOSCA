@@ -223,23 +223,28 @@ function grass(mapset, args) {
  * @param {string} raw
  */
 function parseDescription(raw) {
-  const msg = { head: {}, body: [] }
   const rawArray = raw.split('\n\n')
+  const msg = {
+    tableObj: formatDesc(rawArray.slice(0, 1)),
+    columnObj: formatDesc(rawArray.slice(1))
+  }
+  return JSON.stringify(msg)
+}
 
-  msg.head = rawArray[0].split('\n').reduce((obj, line) => {
-    const [key, value] = line.split(':')
-    obj[key] = value
-    return obj
-  }, {})
-
-  for (const column of rawArray.slice(1)) {
-    const columnObject = column.split('\n').reduce((obj, line) => {
+/**
+ * format array of description items into a table object
+ * @param {Array} rawArray 
+ */
+function formatDesc(rawArray) {
+  const table = { headFields: [], rows: [] }
+  table.headFields = rawArray[0].split('\n').map(line => line.split(':')[0])
+  for (const column of rawArray) {
+    const row = column.split('\n').reduce((obj, line) => {
       const [key, value] = line.split(':')
       obj[key] = value
       return obj
     }, {})
-    msg.body.push(columnObject)
+    table.rows.push(row)
   }
-  
-  return JSON.stringify(msg)
+  return table
 }

@@ -532,29 +532,19 @@ function tableElement(className, data) {
   const headRow = $(`<tr></tr>`)
 
   table.append(headRow)
+  data.headFields.forEach(field => {
+    headRow.append($(`<th>${field}</th>`))
+  })
 
-  if (Array.isArray(data)) {
-    Object.keys(data[0]).forEach(field => {
-      headRow.append($(`<th>${field}</th>`))
-    })
-    data.forEach(entry => {
-      const contentRow = $(`<tr></tr>`)
-      table.append(contentRow)
-
-      Object.keys(entry).forEach(field => {
-        contentRow.append($(`<td>${entry[field]}</td>`))
-      })
-    })
-  } else if (typeof data === 'object') {
-    Object.keys(data).forEach(field => {
-      headRow.append($(`<th>${field}</th>`))
-    })
+  data.rows.forEach(row => {
     const contentRow = $(`<tr></tr>`)
     table.append(contentRow)
-    Object.keys(data).forEach(field => {
-      contentRow.append($(`<td>${data[field]}</td>`))
+
+    Object.keys(row).forEach(field => {
+      contentRow.append($(`<td>${row[field]}</td>`))
     })
-  }
+  })
+
   return table
 }
 
@@ -641,10 +631,10 @@ function getOutput() {
 
 function getAttributes(table) {
   get('/attributes', { table }, function (res) {
-    const { head, body } = JSON.parse(res.message.attributes)
+    const { tableObj, columnObj } = JSON.parse(res.message.attributes)
 
-    $('#table-description').html(tableElement('table table-bordered', head))
-    $('#column-description').html(tableElement('table table-bordered', body))
+    $('#table-description').html(tableElement('table table-bordered', tableObj))
+    $('#column-description').html(tableElement('table table-bordered', columnObj))
     $('#table-attributes-modal').show()
   })
 }
