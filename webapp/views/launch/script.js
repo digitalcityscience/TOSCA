@@ -32,15 +32,6 @@ function handleResponse(res) {
 
   $('#loading').hide();
 
-  // == output ==
-  // • get output file names
-  if (res.message_id === 'output') {
-    $('#results-select').html(function () {
-      const html = "<option selected value=''> - </option>" + list.reduce((str, file) => str + `<option value="${file}">${file}</option>`, '');
-      return html
-    })
-  }
-
   if (res.message.text) {
     let text = textElement(res.message.text), form, buttons;
 
@@ -119,7 +110,7 @@ function handleResponse(res) {
       case 'set_resolution.2':
         form = formElement(messageId);
         form.append($(`<input id="${messageId}-input" type="number" />`));
-        form.append($(`<span>&nbsp;m</span>`)); 
+        form.append($(`<span>&nbsp;m</span>`));
         buttons = [
           buttonElement('Submit').click(() => {
             $(`#${messageId}-error`).remove();
@@ -323,6 +314,11 @@ function handleResponse(res) {
       case 'module_1a.2':
         drawnItems.clearLayers();
         map.addLayer(drawnItems)
+        map.addLayer(FromPoints)
+        map.addLayer(ViaPoints)
+        map.addLayer(ToPoints)
+        map.addLayer(StrickenArea)
+
         buttons = [
           buttonElement('Save').click(() => {
             $(`#${messageId}-error`).remove();
@@ -352,7 +348,7 @@ function handleResponse(res) {
           })
         ];
         break;
-  
+
       // Speed reduction ratio
       case 'module_1a.4':
       case 'module_1a.9':
@@ -398,6 +394,10 @@ function handleResponse(res) {
         form = formElement(messageId);
         lists.append($(`<select id="${messageId}-input" class='custom-select' size="10">` + list.map(col => `<option selected value="${col}">${col}</option>`) + `</select>`));
         buttons = [
+          buttonElement('Show attributes').click(() => {
+            const input = $(`#${messageId}-input`);
+            getAttributes(input[0].value)
+          }),
           buttonElement('Submit').click(() => {
             const input = $(`#${messageId}-input`);
             reply(res, input[0].value);
@@ -410,43 +410,49 @@ function handleResponse(res) {
         const columns = list.map(col => `<option value="${col}">${col}</option>`);
         const rel = ['AND', 'OR', 'NOT'].map(el => `<option value="${el}">${el}</option>`);
         const op = ['>', '<', '=', '>=', '<='].map(el => `<option value="${el}">${el}</option>`);
-        // lists.append($('<span>SELECT</span>'));
-        // lists.append($(`<select class='${messageId}-input custom-select custom-select-lg mr-2'>${columns}</select>`));
-        lists.append($('<span>WHERE</span>'));
-        lists.append($(`
-        <li class='d-flex'>
+        const firstCondition = `
+        <div class='d-flex'>
           <select class='${messageId}-input custom-select mr-2'>${columns}</select>
           <select class='${messageId}-input custom-select mr-2'>${op}</select>
           <input class='${messageId}-input form-control' type="number" />
-        </li>
-        `));
+        </div>
+        `
+        const condition = `
+        <div>
+          <select class='${messageId}-input custom-select mt-2 mb-2'>${rel}</select>
+          <div class='d-flex'>
+                <select class='${messageId}-input custom-select mr-2'>${columns}</select>
+                <select class='${messageId}-input custom-select mr-2'>${op}</select>
+                <input class='${messageId}-input form-control mr-2' type="number" />
+                <button type="button" class="btn btn-danger" onclick="removeCondition(this)">remove</button>
+          </div>
+        </div>
+        `
+        lists.append($('<span>WHERE</span>'));
+        lists.append($(firstCondition));
         let inputs = $(`.${messageId}-input`)
         buttons = [
           buttonElement('＋').click(() => {
-            lists.append($(`
-            <select class='${messageId}-input custom-select mt-2 mb-2'>${rel}</select>
-            <li class='d-flex'>
-              <select class='${messageId}-input custom-select mr-2'>${columns}</select>
-              <select class='${messageId}-input custom-select mr-2'>${op}</select>
-              <input class='${messageId}-input form-control' type="number" />
-            </li>
-            `));
+            lists.append($(condition));
             inputs = $(`.${messageId}-input`)
           }),
-          buttonElement('−').click(() => {
-            if (lists.children().length > 4) {
-              lists.children().last().remove()
-              lists.children().last().remove()
-            }
-            inputs = $(`.${messageId}-input`)
-          }),
-          buttonElement('Submit').click(() => {
+          buttonElement('OK').click(() => {
+            $(`#${messageId}-error`).remove();
             let msg = []
             // inputs.map is problematic because jquery objs behave differently
             for (let i = 0; i < inputs.length; i++) {
-              msg.push(inputs[i].value)
+              // validate input
+              if ((inputs[i].type === 'number' && inputs[i].value.match(/^(-?\d+\.\d+)$|^(-?\d+)$/))
+                ||
+                (inputs[i].type != 'number')) {
+                msg.push(inputs[i].value)
+              } else {
+                msg = []
+                textarea.append($(`<span id="${messageId}-error" class="validation-error">Please enter valid numbers in the fields.</span>`));
+                break
+              }
             }
-            reply(res, msg);
+            if (msg.length) reply(res, msg)
           })
         ];
         break;
@@ -516,6 +522,32 @@ function buttonElement(action) {
   return $(`<button type="button" class="btn btn-primary">${action}</button>`);
 }
 
+/**
+ * create a table element from data
+ * @param {Array} data an array of identically structured js objects 
+ * @param {string} className className of the table
+ */
+function tableElement(className, data) {
+  const table = $(`<table class=${className}><tr>`)
+  const headRow = $(`<tr></tr>`)
+
+  table.append(headRow)
+  data.headFields.forEach(field => {
+    headRow.append($(`<th>${field}</th>`))
+  })
+
+  data.rows.forEach(row => {
+    const contentRow = $(`<tr></tr>`)
+    table.append(contentRow)
+
+    Object.keys(row).forEach(field => {
+      contentRow.append($(`<td>${row[field]}</td>`))
+    })
+  })
+
+  return table
+}
+
 function clearDialog() {
   $('#textarea').empty();
   $('#buttonarea').empty();
@@ -543,6 +575,12 @@ function blink(selector) {
     }, 3600);
   }
 }
+
+function removeCondition(e) {
+  const rootNode = e.parentNode.parentNode;
+  rootNode.parentNode.removeChild(rootNode);
+}
+
 
 $('#launch-module-menu').on('change', (event) => {
   clearDialog();
@@ -583,8 +621,22 @@ function saveDrawing(res) {
   return true;
 }
 
-function getOutput(res, message) {
-  sendMessage('/output', { msg: message }, { message_id: res.message_id }, handleResponse);
+function getOutput() {
+  get('/output', {}, function (res) {
+    const baseOption = "<option selected value=''> - </option>"
+    const options = res.message.list.reduce((str, file) => str + `<option value="${file}">${file}</option>`, '')
+    $('#results-select').html(baseOption + options)
+  })
+}
+
+function getAttributes(table) {
+  get('/attributes', { table }, function (res) {
+    const { tableObj, columnObj } = JSON.parse(res.message.attributes)
+
+    $('#table-description').html(tableElement('table table-bordered', tableObj))
+    $('#column-description').html(tableElement('table table-bordered', columnObj))
+    $('#table-attributes-modal').show()
+  })
 }
 
 function sendMessage(target, message, params, callback) {
@@ -599,7 +651,20 @@ function sendMessage(target, message, params, callback) {
     error: onServerError
   })
     .done(callback)
-    .always(() => $('#loading').hide());
+    .always(() => $('#loading').hide())
+}
+
+function get(target, params, callback) {
+  $('#loading').show();
+
+  $.ajax({
+    type: 'GET',
+    url: target + '?' + $.param(params),
+    contentType: 'application/json; encoding=utf-8',
+    error: onServerError
+  })
+    .done(callback)
+    .always(() => $('#loading').hide())
 }
 
 function upload(form, params, callback) {

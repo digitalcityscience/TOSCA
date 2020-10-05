@@ -67,11 +67,14 @@ html
           div(class='loading-text') Processing …
           div(class='spinner spinner-border')
 
-    div(id='results-modal')
+    div(id='results-modal' class='modal-background')
       include ../results-modal/index.pug
 
-    div(id='help-modal')
+    div(id='help-modal' class='modal-background')
       include ../help-modal/index.pug
+
+    div(id='table-attributes-modal' class='modal-background')
+      include ../table-attributes-modal/index.pug
 
     script.
       const geoserverUrl = '#{geoserverUrl}';
@@ -82,3 +85,5 @@ html
       include ../map/script.js
       include ../results-modal/script.js
       include ../help-modal/script.js
+      include ../table-attributes-modal/script.js
+
