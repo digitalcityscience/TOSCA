@@ -310,11 +310,10 @@ function handleResponse(res) {
       case 'module_1a.1':
       case 'module_1a.2':
         drawnItems.clearLayers();
-        map.addLayer(drawnItems)
-        map.addLayer(fromPoints)
-        map.addLayer(viaPoints)
-        map.addLayer(toPoints)
-        map.addLayer(strickenArea)
+        map.addLayer(drawnItems);
+        map.addLayer(fromPoints);
+        map.addLayer(viaPoints);
+        map.addLayer(strickenArea);
 
         buttons = [
           buttonElement('Save').click(() => {
