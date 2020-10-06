@@ -577,17 +577,6 @@ function removeCondition(e) {
   rootNode.parentNode.removeChild(rootNode);
 }
 
-
-$('#launch-module-menu').on('change', (event) => {
-  clearDialog();
-  const value = $(event.target).val();
-  if (value.match(/module_1/)) {
-    $('#textarea').append('The Calculate Time Map Module creates a heat map, showing the time it takes to reach any part of the selected area from a ‘start point’. Optionally, affected areas with reduced speed limit, and via-points can be defined.');
-  } else if (value.match(/module_2/)) {
-    $('#textarea').append('To query an area means to filter the map features/elements based on some user-determined values. For example, a housing map layer can be queried based on the household population and monthly income, and only the houses with the corresponding value range will be returned.');
-  }
-})
-
 /* Send messages to the backend */
 
 function launchModule() {

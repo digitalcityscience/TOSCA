@@ -187,3 +187,13 @@ body {
   text-decoration: none;
   cursor: pointer;
 }
+
+/* Tooltip */
+
+.tooltip {
+  font-size: 1rem;
+}
+
+.tooltip-inner {
+  max-width: 300px;
+}
