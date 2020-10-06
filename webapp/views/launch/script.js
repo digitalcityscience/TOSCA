@@ -1,6 +1,3 @@
-/* eslint-disable no-undef */
-/* eslint-disable no-unused-vars */
-
 /* Handle incoming messages from backend */
 
 function handleResponse(res) {
@@ -314,10 +311,10 @@ function handleResponse(res) {
       case 'module_1a.2':
         drawnItems.clearLayers();
         map.addLayer(drawnItems)
-        map.addLayer(FromPoints)
-        map.addLayer(ViaPoints)
-        map.addLayer(ToPoints)
-        map.addLayer(StrickenArea)
+        map.addLayer(fromPoints)
+        map.addLayer(viaPoints)
+        map.addLayer(toPoints)
+        map.addLayer(strickenArea)
 
         buttons = [
           buttonElement('Save').click(() => {

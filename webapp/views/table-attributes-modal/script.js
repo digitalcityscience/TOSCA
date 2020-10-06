@@ -1,3 +1,3 @@
 function hideAttributes() {
-    $('#table-attributes-modal').hide()
+  $('#table-attributes-modal').hide();
 }

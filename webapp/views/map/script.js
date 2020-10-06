@@ -1,11 +1,9 @@
-/* eslint-disable no-undef */
-
 const map = new L.Map('map', {
   center: new L.LatLng(lat, lon),
   zoom: 13,
   minZoom: 4,
   touchZoom: true
-})
+});
 
 // Base layers
 const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -135,7 +133,7 @@ L.control.legend(
 
 // Overlay layers are grouped
 const groupedOverlays = {
-  "Basemaps":{
+  "Basemaps": {
     'OpenStreetMap': osm
   },
   "Location": {
@@ -143,7 +141,7 @@ const groupedOverlays = {
     'Roads': roads,
     'Buildings': buildings,
   },
-  "User inputs":{
+  "User inputs": {
     'Current selection': selection,
     'Drawings on the map': drawnItems,
     'Query area': queryArea1,
