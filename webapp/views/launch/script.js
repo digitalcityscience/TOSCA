@@ -408,32 +408,29 @@ function handleResponse(res) {
       case 'module_2.3': {
         form = formElement(messageId);
         const columns = list.map(col => `<option value="${col}">${col}</option>`);
-        const rel = ['AND', 'OR', 'NOT'].map(el => `<option value="${el}">${el}</option>`);
-        const op = ['>', '<', '=', '>=', '<='].map(el => `<option value="${el}">${el}</option>`);
-        const firstCondition = `
+        const relationOption = ['AND', 'OR', 'NOT'].map(el => `<option value="${el}">${el}</option>`);
+        const operators = ['>', '<', '=', '>=', '<='].map(el => `<option value="${el}">${el}</option>`);
+        const firstCondition = $(`
         <div class='d-flex'>
           <select class='${messageId}-input custom-select mr-2'>${columns}</select>
-          <select class='${messageId}-input custom-select mr-2'>${op}</select>
+          <select class='${messageId}-input custom-select mr-2'>${operators}</select>
           <input class='${messageId}-input form-control' type="number" />
         </div>
-        `
-        const condition = `
-        <div>
-          <select class='${messageId}-input custom-select mt-2 mb-2'>${rel}</select>
-          <div class='d-flex'>
-                <select class='${messageId}-input custom-select mr-2'>${columns}</select>
-                <select class='${messageId}-input custom-select mr-2'>${op}</select>
-                <input class='${messageId}-input form-control mr-2' type="number" />
-                <button type="button" class="btn btn-danger" onclick="removeCondition(this)">remove</button>
-          </div>
-        </div>
-        `
+        `)
+        const condition = firstCondition.clone()
+        const removeButton = $('<button type="button" class="btn btn-danger ml-2" onclick="removeCondition(this)">remove</button>')
+        const relationSelect = selectElement(messageId+'-input', relationOption)
+        const conditionGroup = $(`<div></div>`)
+        condition.append(removeButton)
+        conditionGroup.append(relationSelect)
+        conditionGroup.append(condition)
+
         lists.append($('<span>WHERE</span>'));
-        lists.append($(firstCondition));
+        lists.append(firstCondition);
         let inputs = $(`.${messageId}-input`)
         buttons = [
           buttonElement('＋').click(() => {
-            lists.append($(condition));
+            lists.append(conditionGroup.clone());
             inputs = $(`.${messageId}-input`)
           }),
           buttonElement('OK').click(() => {
@@ -522,6 +519,9 @@ function buttonElement(action) {
   return $(`<button type="button" class="btn btn-primary">${action}</button>`);
 }
 
+function selectElement(id, options){
+  return  $(`<select class='${id} custom-select mt-2 mb-2'>${options}</select>`)
+}
 /**
  * create a table element from data
  * @param {Array} data an array of identically structured js objects 
