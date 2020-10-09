@@ -13,6 +13,9 @@ module.exports = {
     "parserOptions": {
         "ecmaVersion": 2018
     },
+    "plugins": [
+        "pug"
+    ],
     "rules": {
         "no-console": "off"
     }

@@ -1,5 +1,3 @@
-/* eslint-disable no-undef */
-
 const map = new L.Map('map', {
   center: new L.LatLng(lat, lon),
   zoom: 13,
@@ -48,8 +46,8 @@ const selection = L.tileLayer.wms(vectorWMS, {
 
 const drawnItems = L.featureGroup().addTo(map);
 
-//Extension layers
-const query_area_1 = L.tileLayer.wms(vectorWMS, {
+// extension layers
+const queryArea1 = L.tileLayer.wms(vectorWMS, {
   layers: 'vector:query_area_1',
   format: 'image/png',
   transparent: true,
@@ -57,7 +55,7 @@ const query_area_1 = L.tileLayer.wms(vectorWMS, {
   minZoom: 1
 });
 
-const Stricken_Area = L.tileLayer.wms(vectorWMS, {
+const strickenArea = L.tileLayer.wms(vectorWMS, {
   layers: 'vector:m1_stricken_area',
   format: 'image/png',
   transparent: true,
@@ -65,7 +63,7 @@ const Stricken_Area = L.tileLayer.wms(vectorWMS, {
   minZoom: 3
 });
 
-const TimeMap = L.tileLayer.wms(vectorWMS, {
+const timeMap = L.tileLayer.wms(vectorWMS, {
   layers: 'vector:m1_time_map',
   format: 'image/png',
   transparent: true,
@@ -73,7 +71,7 @@ const TimeMap = L.tileLayer.wms(vectorWMS, {
   minZoom: 1
 });
 
-const FromPoints = L.tileLayer.wms(vectorWMS, {
+const fromPoints = L.tileLayer.wms(vectorWMS, {
   layers: 'vector:m1_from_points',
   format: 'image/png',
   transparent: true,
@@ -81,7 +79,7 @@ const FromPoints = L.tileLayer.wms(vectorWMS, {
   minZoom: 3
 });
 
-const ViaPoints = L.tileLayer.wms(vectorWMS, {
+const viaPoints = L.tileLayer.wms(vectorWMS, {
   layers: 'vector:m1_via_points',
   format: 'image/png',
   transparent: true,
@@ -89,7 +87,7 @@ const ViaPoints = L.tileLayer.wms(vectorWMS, {
   minZoom: 3
 });
 
-const ToPoints = L.tileLayer.wms(vectorWMS, {
+const toPoints = L.tileLayer.wms(vectorWMS, {
   layers: 'vector:m1_to_points',
   format: 'image/png',
   transparent: true,
@@ -97,7 +95,7 @@ const ToPoints = L.tileLayer.wms(vectorWMS, {
   minZoom: 3
 });
 
-const AccessibilityMap = L.tileLayer.wms(vectorWMS, {
+const accessibilityMap = L.tileLayer.wms(vectorWMS, {
   layers: 'vector:m1b_accessibility_map',
   format: 'image/png',
   transparent: true,
@@ -106,7 +104,7 @@ const AccessibilityMap = L.tileLayer.wms(vectorWMS, {
   minZoom: 3
 });
 
-const AccessibilityPoints = L.tileLayer.wms(vectorWMS, {
+const accessibilityPoints = L.tileLayer.wms(vectorWMS, {
   layers: 'vector:m1b_points',
   format: 'image/png',
   transparent: true,
@@ -114,7 +112,7 @@ const AccessibilityPoints = L.tileLayer.wms(vectorWMS, {
   minZoom: 3
 });
 
-const Query_map = L.tileLayer.wms(vectorWMS, {
+const queryMap = L.tileLayer.wms(vectorWMS, {
   layers: 'vector:query_map',
   format: 'image/png',
   transparent: true,
@@ -122,7 +120,7 @@ const Query_map = L.tileLayer.wms(vectorWMS, {
   minZoom: 3
 });
 
-const Query_result = L.tileLayer.wms(vectorWMS, {
+const queryResult = L.tileLayer.wms(vectorWMS, {
   layers: 'vector:query_result',
   format: 'image/png',
   transparent: true,
@@ -137,7 +135,7 @@ L.control.legend(
 
 // Overlay layers are grouped
 const groupedOverlays = {
-  "Basemaps":{
+  "Basemaps": {
     'OpenStreetMap': osm
   },
   "Location": {
@@ -145,21 +143,21 @@ const groupedOverlays = {
     'Roads': roads,
     'Buildings': buildings,
   },
-  "User inputs":{
+  "User inputs": {
     'Current selection': selection,
     'Drawings on the map': drawnItems,
-    'Query area': query_area_1,
-    'Query map': Query_map,
-    "From-points": FromPoints,
-    "Via-points": ViaPoints,
-    "To-points": ToPoints,
-    "Stricken area": Stricken_Area
+    'Query area': queryArea1,
+    'Query map': queryMap,
+    "From-points": fromPoints,
+    "Via-points": viaPoints,
+    "To-points": toPoints,
+    "Stricken area": strickenArea
   },
   "Results": {
-    "Road-level time map": TimeMap,
-    'Query result': Query_result,
-    "Accessibility map": AccessibilityMap,
-    "Accessing points": AccessibilityPoints
+    "Road-level time map": timeMap,
+    'Query result': queryResult,
+    "Accessibility map": accessibilityMap,
+    "Accessing points": accessibilityPoints
   }
 };
 

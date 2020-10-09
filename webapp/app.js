@@ -3,7 +3,6 @@ require('dotenv').config()
 
 const dataFromBrowserDir = process.env.DATA_FROM_BROWSER_DIR
 const geoserverDataDir = process.env.GEOSERVER_DATA_DIR
-const outputDir = process.env.OUTPUT_DIR
 const geoserverUrl = process.env.GEOSERVER_URL
 const lat = process.env.INITIAL_LAT || 0
 const lon = process.env.INITIAL_LON || 0
@@ -56,7 +55,8 @@ const SetSelectionModule = require('./scripts/set_selection')
 const SetResolutionModule = require('./scripts/set_resolution')
 const ModuleOne = require('./scripts/module_1')
 const ModuleOneA = require('./scripts/module_1a')
-const ModuleTwo = require('./scripts/module_2')
+const ModuleTwo = require('./scripts/module_2');
+const { describeTable, getResults } = require('./scripts/functions');
 
 const modules = {
   add_location: new AddLocationModule(),
@@ -136,14 +136,22 @@ app.post('/drawing', jsonParser, (req, res, next) => {
 })
 
 // return all output filenames
-app.post('/output', jsonParser, (req, res, next) => {
+app.get('/output', jsonParser, (req, res, next) => {
   try {
-    const list = []
-    fs.readdirSync(outputDir).forEach(file => {
-      list.push(file)
-    })
+    const list = getResults()
     const message = { message_id: 'output', message: { list } }
     res.send(message)
+  } catch (err) {
+    next(err)
+  }
+})
+
+// return all attribute descriptions of a table
+app.get('/attributes', jsonParser, async (req, res, next) => {
+  try {
+    const attributes = await describeTable(req.query.table)
+    const message = { message_id: 'attributes', message: { attributes } }
+    res.json(message)
   } catch (err) {
     next(err)
   }
