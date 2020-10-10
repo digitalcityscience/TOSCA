@@ -48,89 +48,9 @@ class AddMapModule {
           addVector('PERMANENT', this.mapFile, mapName)
           gpkgOut('PERMANENT', mapName, mapName)
 
-          if (this.mapFile.match(/.*.gpkg/i)) {
-            await addDatastore('vector', {
-              dataStore: {
-                name: mapName,
-                connectionParameters: {
-                  entry: [
-                    { "@key": "database", "$": `file://${GEOSERVER}/${this.mapFile}` },
-                    { "@key": "dbtype", "$": "geopkg" }
-                  ]
-                }
-              }
-            })
-            await addFeatureType('vector', mapName, {
-              featureType: {
-                "name": mapName,
-                "namespace": {
-                  "name": 'vector',
-                  "href": "http://localhost:8080/geoserver/rest/namespaces/vector.json"
-                },
-                "title": mapName,
-                "keywords": {
-                  "string": [
-                    "features",
-                    mapName
-                  ]
-                },
-                "nativeCRS": "GEOGCS[\"WGS 84\", \n  DATUM[\"World Geodetic System 1984\", \n    SPHEROID[\"WGS 84\", 6378137.0, 298.257223563, AUTHORITY[\"EPSG\",\"7030\"]], \n    AUTHORITY[\"EPSG\",\"6326\"]], \n  PRIMEM[\"Greenwich\", 0.0, AUTHORITY[\"EPSG\",\"8901\"]], \n  UNIT[\"degree\", 0.017453292519943295], \n  AXIS[\"Geodetic longitude\", EAST], \n  AXIS[\"Geodetic latitude\", NORTH], \n  AUTHORITY[\"EPSG\",\"4326\"]]",
-                "srs": "EPSG:4326",
-                "nativeBoundingBox": {
-                  "minx": -180,
-                  "maxx": 180,
-                  "miny": -90,
-                  "maxy": 90,
-                  "crs": "EPSG:4326"
-                },
-                "latLonBoundingBox": {
-                  "minx": -180,
-                  "maxx": 180,
-                  "miny": -90,
-                  "maxy": 90,
-                  "crs": "EPSG:4326"
-                },
-                "projectionPolicy": "FORCE_DECLARED",
-                "enabled": true,
-                "metadata": {
-                  "entry": {
-                    "@key": "cachingEnabled",
-                    "$": "false"
-                  }
-                },
-                "store": {
-                  "@class": "dataStore",
-                  "name":  `vector:${mapName}`,
-                  "href": `http://localhost:8080/geoserver/rest/workspaces/vector/datastores/${mapName}.json`
-                },
-                "serviceConfiguration": false,
-                "maxFeatures": 0,
-                "numDecimals": 0,
-                "padWithZeros": false,
-                "forcedDecimal": false,
-                "overridingServiceSRS": false,
-                "skipNumberMatched": false,
-                "circularArcPresent": false,
-                "attributes": {
-                  "attribute": [
-                    {
-                      "name": "geom",
-                      "minOccurs": 0,
-                      "maxOccurs": 1,
-                      "nillable": true,
-                      "binding": "org.locationtech.jts.geom.Polygon"
-                    },
-                    {
-                      "name": "cat",
-                      "minOccurs": 0,
-                      "maxOccurs": 1,
-                      "nillable": true,
-                      "binding": "java.lang.Integer"
-                    }
-                  ]
-                }
-              }
-            })
+          if (this.mapFile.match(/.*\.gpkg/i)) {
+            await addDatastore(mapName, 'vector', this.mapFile.split('/').pop())
+            await addFeatureType(mapName, mapName, 'vector')
           }
         } else if (this.mapType === 'raster') {
           addRaster('PERMANENT', this.mapFile, message)
