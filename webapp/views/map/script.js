@@ -126,6 +126,16 @@ const queryResult = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
   minZoom: 3
 });
 
+// user-added maps
+const userMapLayers = userMaps.reduce((layers, userMap) => {
+  const layerName = userMap.replace(/\.gpkg$/, '');
+  layers[layerName] =  L.geoPackageFeatureLayer([], {
+    geoPackageUrl: `maps/${userMap}`,
+    layerName: layerName
+  });
+  return layers;
+}, {})
+
 //Control for map legends. For those item, where the linked map has a "legend_yes: true," property, a second checkbox will displayed.
 L.control.legend(
   { position: 'bottomleft' }
@@ -141,7 +151,7 @@ const groupedOverlays = {
     'Roads': roads,
     'Buildings': buildings,
   },
-  "User inputs": {
+  "User inputs": Object.assign({
     'Current selection': selection,
     'Drawings on the map': drawnItems,
     'Query area': queryArea1,
@@ -149,8 +159,8 @@ const groupedOverlays = {
     "From-points": fromPoints,
     "Via-points": viaPoints,
     "To-points": toPoints,
-    "Stricken area": strickenArea
-  },
+    "Stricken area": strickenArea,
+  }, userMapLayers),
   "Results": {
     "Road-level time map": timeMap,
     'Query result': queryResult,

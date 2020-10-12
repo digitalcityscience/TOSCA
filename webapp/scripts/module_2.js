@@ -16,7 +16,7 @@ class ModuleTwo {
   launch() {
     checkWritableDir(GEOSERVER)
     checkWritableDir(OUTPUT)
-    
+
     initMapset('module_2')
     // update selection and set selection as the queryArea
     grass('module_2', `g.copy vector=selection@PERMANENT,selection --overwrite`)
@@ -47,7 +47,7 @@ class ModuleTwo {
           grass('module_2', `g.copy vector=${this.mapToQuery}@module_2,${QUERY_MAP_NAME}`)
         }
 
-        gpkgOut('module_2', QUERY_MAP_NAME, QUERY_MAP_NAME)
+        gpkgOut('module_2', QUERY_MAP_NAME, `${GEOSERVER}/${QUERY_MAP_NAME}.gpkg`)
 
         // query map topology
         getTopology('module_2', QUERY_MAP_NAME)
@@ -85,7 +85,7 @@ class ModuleTwo {
     const stats = grass('module_2', `v.db.univar -e -g map=${QUERY_RESULT_NAME} column=${queryColumn}`).trim().split('\n').map(line => line.split('=')[1])
 
     // Data output
-    gpkgOut('module_2', QUERY_RESULT_NAME, QUERY_RESULT_NAME)
+    gpkgOut('module_2', QUERY_RESULT_NAME, `${GEOSERVER}/${QUERY_RESULT_NAME}.gpkg`)
 
     const date = new Date()
     const dateString = date.toString()

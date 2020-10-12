@@ -9,19 +9,6 @@
 !/grass/variables/defaults
 /maps/*
 /output/*
-*.geojson
-*.osm
-*.gpkg
-*.gpkg-shm
-*.gpkg-wal
-*.tif
-*.tif.aux.xml
-*.tiff
-*.tiff.aux.xml
-*.gtif
-*.gtif.aux.xml
-*.pdf
-*.ps
 
 # Node.js dependencies
 node_modules

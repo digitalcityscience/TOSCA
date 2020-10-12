@@ -1,9 +1,7 @@
 const { execSync } = require('child_process') // Documentation: https://nodejs.org/api/child_process.html
 const fs = require('fs')
 
-const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
 const GRASS = process.env.GRASS_DIR
-const MAPS_DIR = process.env.MAPS_DIR
 const OUTPUT_DIR = process.env.OUTPUT_DIR
 
 module.exports = {
@@ -107,8 +105,7 @@ module.exports = {
    * @param {string} outfile output filename
    */
   gpkgOut(mapset, infile, outfile) {
-    grass(mapset, `v.out.ogr format=GPKG input="${infile}" output="${GEOSERVER}/${outfile}.gpkg" --overwrite`)
-    grass(mapset, `v.out.ogr format=GPKG input="${infile}" output="${MAPS_DIR}/${outfile}.gpkg" --overwrite`)
+    grass(mapset, `v.out.ogr format=GPKG input="${infile}" output="${outfile}" --overwrite`)
   },
 
   /**

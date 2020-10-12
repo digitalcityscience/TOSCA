@@ -47,7 +47,8 @@ app.get('/', (req, res) => {
   let options = {
     geoserverUrl: GEOSERVER_URL,
     lat: INITIAL_LAT,
-    lon: INITIAL_LON
+    lon: INITIAL_LON,
+    userMaps: JSON.stringify(fs.readdirSync(MAPS_DIR))
   }
   res.render('launch', options)
 })

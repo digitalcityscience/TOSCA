@@ -57,7 +57,7 @@ class ModuleOneA {
       case 'module_1a.1':
         if (message.match(/drawing\.geojson/)) {
           addVector('module_1', message, 'm1_from_points')
-          gpkgOut('module_1', 'm1_from_points', 'm1_from_points')
+          gpkgOut('module_1', 'm1_from_points', `${GEOSERVER}/m1_from_points.gpkg`)
           this.fromPoints = 'm1_from_points'
           return messages["2"]
         }
@@ -66,7 +66,7 @@ class ModuleOneA {
       case 'module_1a.2':
         if (message.match(/drawing\.geojson/)) {
           addVector('module_1', message, 'm1_via_points')
-          gpkgOut('module_1', 'm1_via_points', 'm1_via_points')
+          gpkgOut('module_1', 'm1_via_points', `${GEOSERVER}/m1_via_points.gpkg`)
           this.viaPoints = 'm1_via_points'
           return messages["3"]
         } else {
@@ -77,7 +77,7 @@ class ModuleOneA {
       case 'module_1a.3':
         if (message.match(/drawing\.geojson/)) {
           addVector('module_1', message, 'm1_stricken_area')
-          gpkgOut('module_1', 'm1_stricken_area', 'm1_stricken_area')
+          gpkgOut('module_1', 'm1_stricken_area', `${GEOSERVER}/m1_stricken_area.gpkg`)
           this.strickenArea = 'm1_stricken_area'
           return messages["4"]
         }

@@ -45,9 +45,9 @@ class AddLocationModule {
         addOsm('PERMANENT', message, 'multipolygons', 'polygons_osm')
         addOsm('PERMANENT', message, 'other_relations', 'relations_osm')
 
-        gpkgOut('PERMANENT', 'points_osm', 'points')
-        gpkgOut('PERMANENT', 'lines_osm', 'lines')
-        gpkgOut('PERMANENT', 'polygons_osm', 'polygons')
+        gpkgOut('PERMANENT', 'points_osm', `${GEOSERVER}/points.gpkg`)
+        gpkgOut('PERMANENT', 'lines_osm', `${GEOSERVER}/lines.gpkg`)
+        gpkgOut('PERMANENT', 'polygons_osm', `${GEOSERVER}/polygons.gpkg`)
 
         // Get center coordinate of imported location
         let [east, north] = getCoordinates('PERMANENT')

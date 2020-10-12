@@ -26,7 +26,7 @@ class SetSelectionModule {
         remove('PERMANENT', 'selection')
         addVector('PERMANENT', message, 'selection')
 
-        gpkgOut('PERMANENT', 'selection', 'selection')
+        gpkgOut('PERMANENT', 'selection', `${GEOSERVER}/selection.gpkg`)
 
         // Clip the basemaps by the selection map. Results will be used in the calculations and analyses
         clip('PERMANENT', 'polygons_osm', 'selection', 'polygons')

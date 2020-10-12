@@ -77,8 +77,9 @@ html
       include ../table-attributes-modal/index.pug
 
     script.
-      const geoserverUrl = '#{geoserverUrl}';
-      const [lat, lon] = [#{lat}, #{lon}];
+      const geoserverUrl = '!{geoserverUrl}';
+      const [lat, lon] = [!{lat}, !{lon}];
+      const userMaps = JSON.parse('!{userMaps}');
     script
       include script.js
       include ../map/legend.js
