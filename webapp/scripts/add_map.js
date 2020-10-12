@@ -49,8 +49,8 @@ class AddMapModule {
           gpkgOut('PERMANENT', mapName, mapName)
 
           if (this.mapFile.match(/.*\.gpkg/i)) {
-            await addDatastore(mapName, 'vector', this.mapFile.split('/').pop())
-            await addFeatureType(mapName, mapName, 'vector')
+            await addDatastore('vector', mapName, this.mapFile.split('/').pop(), 'geopkg')
+            await addFeatureType('vector', mapName, mapName)
           }
         } else if (this.mapType === 'raster') {
           addRaster('PERMANENT', this.mapFile, message)
