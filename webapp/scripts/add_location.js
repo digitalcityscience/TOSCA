@@ -33,7 +33,8 @@ class AddLocationModule {
 
         // Clear previous mapset
         fs.rmdirSync(`${GRASS}/global/PERMANENT`, { recursive: true })
-        fs.mkdirSync(`${GRASS}/global/PERMANENT`)
+        fs.mkdirSync(`${GRASS}/global/PERMANENT`, { recursive: true })
+
         for (const file of fs.readdirSync(`${GRASS}/skel_permanent`)) {
           fs.copyFileSync(`${GRASS}/skel_permanent/${file}`, `${GRASS}/global/PERMANENT/${file}`)
         }
@@ -48,6 +49,7 @@ class AddLocationModule {
         gpkgOut('PERMANENT', 'lines_osm', 'lines')
         gpkgOut('PERMANENT', 'polygons_osm', 'polygons')
 
+        // Get center coordinate of imported location
         let [east, north] = getCoordinates('PERMANENT')
 
         let msg = messages["5"]

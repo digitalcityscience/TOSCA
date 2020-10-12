@@ -1,15 +1,14 @@
 # runtime files
-/data_from_browser
-/data_to_client
-temp_*
-launch_locked
+/data_from_browser/*
 
 # user data
-/geoserver_data_dir/data
+/geoserver_data_dir/data/*
 /geoserver_data_dir/logs/geoserver.log*
-/grass/global
+/grass/global/*
 /grass/variables/*
 !/grass/variables/defaults
+/maps/*
+/output/*
 *.geojson
 *.osm
 *.gpkg

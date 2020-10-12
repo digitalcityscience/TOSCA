@@ -1,11 +1,13 @@
 // Read config
 require('dotenv').config()
 
-const dataFromBrowserDir = process.env.DATA_FROM_BROWSER_DIR
-const geoserverDataDir = process.env.GEOSERVER_DATA_DIR
-const geoserverUrl = process.env.GEOSERVER_URL
-const lat = process.env.INITIAL_LAT || 0
-const lon = process.env.INITIAL_LON || 0
+const DATA_FROM_BROWSER_DIR = process.env.DATA_FROM_BROWSER_DIR
+const MAPS_DIR = process.env.MAPS_DIR
+const OUTPUT_DIR = process.env.OUTPUT_DIR
+const GEOSERVER_DATA_DIR = process.env.GEOSERVER_DATA_DIR
+const GEOSERVER_URL = process.env.GEOSERVER_URL
+const INITIAL_LAT = process.env.INITIAL_LAT || 0
+const INITIAL_LON = process.env.INITIAL_LON || 0
 
 // File system
 const fs = require('fs')
@@ -27,12 +29,14 @@ app.listen(expressPort, () => {
 
 // Static files
 app.use(express.static('public'))
-app.use('/output', express.static('../output'))
-app.use('/lib/jquery', express.static('node_modules/jquery/dist'));
-app.use('/lib/bootstrap', express.static('node_modules/bootstrap/dist'));
-app.use('/lib/leaflet', express.static('node_modules/leaflet/dist'));
-app.use('/lib/leaflet-draw', express.static('node_modules/leaflet-draw/dist'));
-app.use('/lib/leaflet-groupedlayercontrol', express.static('node_modules/leaflet-groupedlayercontrol/src'));
+app.use('/maps', express.static(MAPS_DIR))
+app.use('/output', express.static(OUTPUT_DIR))
+app.use('/lib/jquery', express.static('node_modules/jquery/dist'))
+app.use('/lib/bootstrap', express.static('node_modules/bootstrap/dist'))
+app.use('/lib/leaflet', express.static('node_modules/leaflet/dist'))
+app.use('/lib/leaflet-draw', express.static('node_modules/leaflet-draw/dist'))
+app.use('/lib/leaflet-geopackage', express.static('node_modules/@ngageoint/leaflet-geopackage/dist'))
+app.use('/lib/leaflet-groupedlayercontrol', express.static('node_modules/leaflet-groupedlayercontrol/dist'))
 
 // Views (using Pug template engine)
 app.set('views', './views')
@@ -41,9 +45,9 @@ app.set('view engine', 'pug')
 // index page
 app.get('/', (req, res) => {
   let options = {
-    geoserverUrl,
-    lat,
-    lon
+    geoserverUrl: GEOSERVER_URL,
+    lat: INITIAL_LAT,
+    lon: INITIAL_LON
   }
   res.render('launch', options)
 })
@@ -55,8 +59,8 @@ const SetSelectionModule = require('./scripts/set_selection')
 const SetResolutionModule = require('./scripts/set_resolution')
 const ModuleOne = require('./scripts/module_1')
 const ModuleOneA = require('./scripts/module_1a')
-const ModuleTwo = require('./scripts/module_2');
-const { describeTable, getResults } = require('./scripts/functions');
+const ModuleTwo = require('./scripts/module_2')
+const { describeTable, getResults } = require('./scripts/functions')
 
 const modules = {
   add_location: new AddLocationModule(),
@@ -71,10 +75,10 @@ const modules = {
 // launch a module
 app.post('/launch', jsonParser, (req, res, next) => {
   // do some checks first
-  if (!dataFromBrowserDir) {
+  if (!DATA_FROM_BROWSER_DIR) {
     throw new Error("Cannot launch module: DATA_FROM_BROWSER_DIR is not defined.")
   }
-  if (!geoserverDataDir) {
+  if (!GEOSERVER_DATA_DIR) {
     throw new Error("Cannot launch module: GEOSERVER_DATA_DIR is not defined.")
   }
 
@@ -105,7 +109,7 @@ app.post('/reply', jsonParser, (req, res, next) => {
 app.post('/file', uploadParser.single('file'), (req, res, next) => {
   try {
     const module = modules[req.query.message_id.split('.')[0]]
-    const file = `${dataFromBrowserDir}/${req.file.originalname}`
+    const file = `${DATA_FROM_BROWSER_DIR}/${req.file.originalname}`
     const writer = fs.createWriteStream(file)
 
     writer.write(req.file.buffer, (error) => {
@@ -137,7 +141,7 @@ app.post('/file', uploadParser.single('file'), (req, res, next) => {
 app.post('/drawing', jsonParser, (req, res, next) => {
   try {
     const module = modules[req.query.message_id.split('.')[0]]
-    const file = `${dataFromBrowserDir}/drawing.geojson`
+    const file = `${DATA_FROM_BROWSER_DIR}/drawing.geojson`
 
     fs.writeFileSync(file, JSON.stringify(req.body.data))
     res.send(module.process(file, req.query.message_id))

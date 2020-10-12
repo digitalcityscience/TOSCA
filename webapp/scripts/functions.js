@@ -3,7 +3,8 @@ const fs = require('fs')
 
 const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
 const GRASS = process.env.GRASS_DIR
-const outputDir = process.env.OUTPUT_DIR
+const MAPS_DIR = process.env.MAPS_DIR
+const OUTPUT_DIR = process.env.OUTPUT_DIR
 
 module.exports = {
   /**
@@ -107,6 +108,7 @@ module.exports = {
    */
   gpkgOut(mapset, infile, outfile) {
     grass(mapset, `v.out.ogr format=GPKG input="${infile}" output="${GEOSERVER}/${outfile}.gpkg" --overwrite`)
+    grass(mapset, `v.out.ogr format=GPKG input="${infile}" output="${MAPS_DIR}/${outfile}.gpkg" --overwrite`)
   },
 
   /**
@@ -200,7 +202,7 @@ module.exports = {
    */
   getResults() {
     const list = []
-    fs.readdirSync(outputDir).forEach(file => {
+    fs.readdirSync(OUTPUT_DIR).forEach(file => {
       list.push(file)
     })
     return list
@@ -233,7 +235,7 @@ function parseDescription(raw) {
 
 /**
  * format array of description items into a table object
- * @param {Array} rawArray 
+ * @param {Array} rawArray
  */
 function formatDesc(rawArray) {
   const table = { headFields: [], rows: [] }
