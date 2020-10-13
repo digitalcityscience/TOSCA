@@ -128,6 +128,39 @@ const queryResult = L.tileLayer.wms(vectorWMS, {
   minZoom: 3
 });
 
+/**
+ * WFS
+ */
+const owsrootUrl = 'http://localhost:8080/geoserver/ows';
+
+const defaultParameters = {
+  service: 'WFS',
+  request: 'GetFeature',
+  typeName: 'vector:lines_osm',
+  outputFormat: 'application/json',
+  SrsName: 'EPSG:4326'
+};
+const parameters = L.Util.extend(defaultParameters);
+const URL = owsrootUrl + L.Util.getParamString(parameters);
+let WFSLayer = null;
+
+const ajax = $.ajax({
+  type: 'GET',
+  url: URL,
+  success: function (response) {
+    WFSLayer = L.geoJson(response, {
+      style: function (feature) { },
+      onEachFeature: function (feature, layer) {
+        popupOptions = { maxWidth: 200 };
+        const text = Object.keys(feature.properties).map(key => `${key}: ${feature.properties[key]}`).join('<br>')
+        layer.bindPopup(text
+          , popupOptions);
+      }
+    }).addTo(map);
+  }
+});
+
+
 //Control for map legends. For those item, where the linked map has a "legend_yes: true," property, a second checkbox will displayed.
 L.control.legend(
   { position: 'bottomleft' }
