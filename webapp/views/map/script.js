@@ -85,14 +85,6 @@ const viaPoints = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
   minZoom: 3
 });
 
-const toPoints = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
-  layers: 'vector:m1_to_points',
-  format: 'image/png',
-  transparent: true,
-  maxZoom: 20,
-  minZoom: 3
-});
-
 const accessibilityMap = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
   layers: 'vector:m1b_accessibility_map',
   format: 'image/png',
@@ -148,7 +140,6 @@ const groupedOverlays = {
     'Query map': queryMap,
     "From-points": fromPoints,
     "Via-points": viaPoints,
-    "To-points": toPoints,
     "Stricken area": strickenArea
   },
   "Results": {
