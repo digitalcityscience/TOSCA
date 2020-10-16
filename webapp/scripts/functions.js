@@ -3,6 +3,7 @@ const fs = require('fs')
 
 const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
 const GRASS = process.env.GRASS_DIR
+const outputDir = process.env.OUTPUT_DIR
 
 module.exports = {
   /**
@@ -184,6 +185,27 @@ module.exports = {
     execSync(`enscript -p ${outfile} ${infile}`)
   },
 
+  /**
+   * Prints all attribute descriptions of a table
+   * @param {string} table
+   */
+  describeTable(table) {
+    const raw = grass('PERMANENT', `db.describe table="${table}"`)
+    return parseDescription(raw)
+  },
+
+  /**
+   * Prints all the result files in the 'output' folder
+   * @returns {array} list of result filenames
+   */
+  getResults() {
+    const list = []
+    fs.readdirSync(outputDir).forEach(file => {
+      list.push(file)
+    })
+    return list
+  },
+
   grass
 }
 
@@ -194,4 +216,35 @@ module.exports = {
  */
 function grass(mapset, args) {
   return execSync(`grass "${GRASS}/global/${mapset}" --exec ${args}`, { shell: '/bin/bash', encoding: 'utf-8' })
+}
+
+/**
+ * Parse raw stream from db.describe
+ * @param {string} raw
+ */
+function parseDescription(raw) {
+  const rawArray = raw.split('\n\n')
+  const msg = {
+    tableObj: formatDesc(rawArray.slice(0, 1)),
+    columnObj: formatDesc(rawArray.slice(1))
+  }
+  return JSON.stringify(msg)
+}
+
+/**
+ * format array of description items into a table object
+ * @param {Array} rawArray 
+ */
+function formatDesc(rawArray) {
+  const table = { headFields: [], rows: [] }
+  table.headFields = rawArray[0].split('\n').map(line => line.split(':')[0])
+  for (const column of rawArray) {
+    const row = column.split('\n').reduce((obj, line) => {
+      const [key, value] = line.split(':')
+      obj[key] = value
+      return obj
+    }, {})
+    table.rows.push(row)
+  }
+  return table
 }

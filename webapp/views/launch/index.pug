@@ -7,7 +7,7 @@ html
     link(rel='stylesheet' href='/lib/leaflet-draw/leaflet.draw.css')
 
     script(src='/lib/jquery/jquery.min.js')
-    script(src='/lib/bootstrap/js/bootstrap.min.js')
+    script(src='/lib/bootstrap/js/bootstrap.bundle.min.js')
     script(src='/lib/leaflet/leaflet.js')
     script(src='/lib/leaflet-draw/leaflet.draw.js')
     script(src='/lib/leaflet-groupedlayercontrol/leaflet.groupedlayercontrol.js')
@@ -17,7 +17,6 @@ html
       include ../map/style.css
       include ../results-modal/style.css
       include ../help-modal/style.css
-
 
   body
     div(class="d-flex flex-column h-100")
@@ -67,18 +66,40 @@ html
           div(class='loading-text') Processing …
           div(class='spinner spinner-border')
 
-    div(id='results-modal')
+    div(id='results-modal' class='modal-background')
       include ../results-modal/index.pug
 
-    div(id='help-modal')
+    div(id='help-modal' class='modal-background')
       include ../help-modal/index.pug
 
+    div(id='table-attributes-modal' class='modal-background')
+      include ../table-attributes-modal/index.pug
+
     script.
+      //- enable Bootstrap tooltip on module select
+      $(function () {
+        const options = {
+          placement: 'bottom',
+          title: function () {
+            switch ($(this).val()) {
+              case 'module_1a': return 'The ‘Calculate time map’ module creates a map showing the time it takes to reach any part of the selected area from a given start point. Optionally, via points and/or affected areas with reduced speed can be defined.';
+              case 'module_2': return 'The ‘Query area’ module lets you filter map features based on a given set of constraints. For example, if a housing map layer is queried based on the household population and monthly income, only the houses within the given range will be returned.';
+            }
+          },
+          trigger: 'manual'
+        };
+        const target = $('#launch-module-menu');
+        target.tooltip(options);
+        target.on('focusin change', () => target.tooltip('show'));
+        target.on('focusout', () => target.tooltip('hide'));
+      });
+      //- environment variables
       const geoserverUrl = '#{geoserverUrl}';
       const [lat, lon] = [#{lat}, #{lon}];
     script
-      include ../map/legend.js
       include script.js
+      include ../map/legend.js
       include ../map/script.js
       include ../results-modal/script.js
       include ../help-modal/script.js
+      include ../table-attributes-modal/script.js

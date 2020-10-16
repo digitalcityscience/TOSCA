@@ -51,7 +51,7 @@ vlines lines
   masked y
   end
 
-vareas query_area_1
+vareas selection
   color green
   width 2
   fcolor #eeeeee

@@ -7,21 +7,22 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Jan Behrens (HCU Hamburg)",
+  "author": "CityScienceLab @ HCU Hamburg",
   "license": "MIT",
   "dependencies": {
     "body-parser": "^1.19.0",
-    "bootstrap": "^4.4.1",
+    "bootstrap": "^4.5.3",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "jquery": "^3.5.0",
-    "leaflet": "^1.6.0",
+    "jquery": "^3.5.1",
+    "leaflet": "^1.7.1",
     "leaflet-draw": "^1.0.4",
     "leaflet-groupedlayercontrol": "^0.6.1",
     "multer": "^1.4.2",
-    "pug": "^2.0.4"
+    "pug": "^3.0.0"
   },
   "devDependencies": {
-    "eslint": "^6.8.0"
+    "eslint": "^7.11.0",
+    "eslint-plugin-pug": "^1.2.2"
   }
 }
