@@ -92,6 +92,13 @@ function handleResponse(res) {
         ];
         break;
 
+      case 'set_selection.3':
+        // Force reloading of the selection layer
+        selection.setParams({ ts: Date.now() });
+        map.addLayer(selection);
+        drawnItems.clearLayers();
+        break;
+
       // == set_resolution ==
 
       // • message id: set_resolution.1
@@ -520,7 +527,7 @@ function selectElement(id, options){
 }
 /**
  * create a table element from data
- * @param {Array} data an array of identically structured js objects 
+ * @param {Array} data an array of identically structured js objects
  * @param {string} className className of the table
  */
 function tableElement(className, data) {

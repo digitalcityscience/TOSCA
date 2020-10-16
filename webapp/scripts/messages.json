@@ -49,7 +49,7 @@
         "1": {
             "message_id": "set_selection.1",
             "message": {
-                "text": "No valid location found. Please set a location in the <a class=\"text-primary\" onclick=\"blink('#settings-menu')\">settings menu</a>. Now click OK to exit."
+                "text": "No valid location found. Please set a location in the <a class=\"text-primary\" onclick=\"blink('#settings-menu')\">settings menu</a>."
             }
         },
         "2": {
