@@ -81,7 +81,6 @@ function handleResponse(res) {
       // • expectation: Finding an uploaded goejson file in data_from_browser directory. This file is created by the browser, when the user define interactively the selection area. Request file is not expected, and therefore it is not neccessary to create.
       // • consequence: No specific consequences
       case 'set_selection.2':
-        drawnItems.clearLayers();
         buttons = [
           buttonElement('Save').click(() => {
             $(`#${messageId}-error`).remove();
@@ -90,6 +89,8 @@ function handleResponse(res) {
             }
           })
         ];
+        drawnItems.clearLayers();
+        startDrawPolygon();
         break;
 
       case 'set_selection.3':
@@ -201,6 +202,8 @@ function handleResponse(res) {
             reply(res, 'no');
           })
         ];
+        drawnItems.clearLayers();
+        startDrawCirclemarker();
         break;
 
       // • message id: module_1.2
@@ -276,6 +279,8 @@ function handleResponse(res) {
             reply(res, 'cancel');
           })
         ];
+        drawnItems.clearLayers();
+        startDrawPolygon();
         break;
 
       // • message id: module_1.9
@@ -316,12 +321,6 @@ function handleResponse(res) {
       // Start points / via points
       case 'module_1a.1':
       case 'module_1a.2':
-        drawnItems.clearLayers();
-        map.addLayer(drawnItems);
-        map.addLayer(fromPoints);
-        map.addLayer(viaPoints);
-        map.addLayer(strickenArea);
-
         buttons = [
           buttonElement('Save').click(() => {
             $(`#${messageId}-error`).remove();
@@ -333,12 +332,13 @@ function handleResponse(res) {
             reply(res, 'cancel');
           })
         ];
+        map.addLayer(selection);
+        drawnItems.clearLayers();
+        startDrawCirclemarker();
         break;
 
       // stricken area
       case 'module_1a.3':
-        drawnItems.clearLayers();
-        map.addLayer(drawnItems)
         buttons = [
           buttonElement('Save').click(() => {
             $(`#${messageId}-error`).remove();
@@ -350,6 +350,8 @@ function handleResponse(res) {
             reply(res, 'cancel');
           })
         ];
+        drawnItems.clearLayers();
+        startDrawPolygon();
         break;
 
       // Speed reduction ratio
@@ -367,7 +369,6 @@ function handleResponse(res) {
         break;
 
       case 'module_1a.8':
-        drawnItems.clearLayers();
         buttons = [
           buttonElement('Yes').click(() => {
             reply(res, 'yes');
@@ -381,8 +382,6 @@ function handleResponse(res) {
       // == module_2 ==
 
       case 'module_2.1':
-        drawnItems.clearLayers();
-        map.addLayer(drawnItems)
         buttons = [
           buttonElement('Save').click(() => {
             $(`#${messageId}-error`).remove();
@@ -391,6 +390,8 @@ function handleResponse(res) {
             }
           })
         ];
+        drawnItems.clearLayers();
+        startDrawPolygon();
         break;
 
       case 'module_2.2':
@@ -480,6 +481,8 @@ function handleResponse(res) {
             reply('cancel', true);
           })
         ];
+        drawnItems.clearLayers();
+        startDrawPolygon();
         break;
 
       // • message id: module_2b.2
@@ -582,6 +585,16 @@ function blink(selector) {
 function removeCondition(e) {
   const rootNode = e.parentNode.parentNode;
   rootNode.parentNode.removeChild(rootNode);
+}
+
+function startDrawPolygon() {
+  const btn = $('.leaflet-draw-draw-polygon')[0];
+  btn && btn.dispatchEvent(new Event('click'));
+}
+
+function startDrawCirclemarker() {
+  const btn = $('.leaflet-draw-draw-circlemarker')[0];
+  btn && btn.dispatchEvent(new Event('click'));
 }
 
 /* Send messages to the backend */
