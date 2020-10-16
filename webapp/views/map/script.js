@@ -1,11 +1,9 @@
-/* eslint-disable no-undef */
-
 const map = new L.Map('map', {
   center: new L.LatLng(lat, lon),
   zoom: 13,
   minZoom: 4,
   touchZoom: true
-})
+});
 
 // Base layers
 const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -46,8 +44,8 @@ const selection = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
 
 const drawnItems = L.featureGroup().addTo(map);
 
-//Extension layers
-const query_area_1 = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
+// extension layers
+const queryArea1 = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
   layers: 'vector:query_area_1',
   format: 'image/png',
   transparent: true,
@@ -55,23 +53,7 @@ const query_area_1 = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
   minZoom: 1
 });
 
-const query_result_area_1 = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
-  layers: 'vector:query_result_area_1',
-  format: 'image/png',
-  transparent: true,
-  maxZoom: 20,
-  minZoom: 1
-});
-
-const query_result_point_1 = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
-  layers: 'vector:query_result_point_1',
-  format: 'image/png',
-  transparent: true,
-  maxZoom: 20,
-  minZoom: 1
-});
-
-const Stricken_Area = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
+const strickenArea = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
   layers: 'vector:m1_stricken_area',
   format: 'image/png',
   transparent: true,
@@ -79,7 +61,7 @@ const Stricken_Area = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
   minZoom: 3
 });
 
-const TimeMap = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
+const timeMap = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
   layers: 'vector:m1_time_map',
   format: 'image/png',
   transparent: true,
@@ -87,15 +69,7 @@ const TimeMap = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
   minZoom: 1
 });
 
-const TimeMapRaster = L.tileLayer.wms(geoserverUrl + "geoserver/raster/wms/", {
-  layers: 'raster:m1_time_map',
-  format: 'image/png',
-  transparent: true,
-  maxZoom: 20,
-  minZoom: 1
-});
-
-const FromPoints = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
+const fromPoints = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
   layers: 'vector:m1_from_points',
   format: 'image/png',
   transparent: true,
@@ -103,7 +77,7 @@ const FromPoints = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
   minZoom: 3
 });
 
-const ViaPoints = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
+const viaPoints = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
   layers: 'vector:m1_via_points',
   format: 'image/png',
   transparent: true,
@@ -111,14 +85,23 @@ const ViaPoints = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
   minZoom: 3
 });
 
-const ToPoints = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
-  layers: 'vector:m1_to_points',
+const accessibilityMap = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
+  layers: 'vector:m1b_accessibility_map',
   format: 'image/png',
   transparent: true,
+  legend_yes: true,
   maxZoom: 20,
-  minZoom: 3
+  minZoom: 1,
 });
 
+const accessibilityPoints = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
+  layers: 'vector:m1b_points',
+  format: 'image/png',
+  transparent: true,
+  legend_yes: true,
+  maxZoom: 20,
+  minZoom: 1,
+});
 
 // Local layers (Bhubaneshwar)
 // Watch out the property 'legend_yes'. It must be  true if you want to allow a second checckbox to display (refer to views/launch/legend.js and views/index.pug)   
@@ -291,7 +274,7 @@ const Slum_Toilettes = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
   minZoom: 1,
 });
 
-const Query_map = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
+const queryMap = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
   layers: 'vector:query_map',
   format: 'image/png',
   transparent: true,
@@ -299,7 +282,7 @@ const Query_map = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
   minZoom: 3
 });
 
-const Query_result = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
+const queryResult = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
   layers: 'vector:query_result',
   format: 'image/png',
   transparent: true,
@@ -315,7 +298,7 @@ L.control.legend(
 
 // Overlay layers are grouped
 const groupedOverlays = {
-  "Basemaps":{
+  "Basemaps": {
     'OpenStreetMap': osm
   },
   "Location": {
@@ -323,21 +306,20 @@ const groupedOverlays = {
     'Roads': roads,
     'Buildings': buildings,
   },
-  "User inputs":{
+  "User inputs": {
     'Current selection': selection,
     'Drawings on the map': drawnItems,
-    'Query area': query_area_1,
-    'Query map': Query_map,
-    "From-points": FromPoints,
-    "Via-points": ViaPoints,
-    "To-points": ToPoints,
-    "Stricken area": Stricken_Area
+    'Query area': queryArea1,
+    'Query map': queryMap,
+    "From-points": fromPoints,
+    "Via-points": viaPoints,
+    "Stricken area": strickenArea
   },
   "Results": {
-    "Road-level time map": TimeMap,
-    'Query result': Query_result,
-    // "Accessibility map": AccessibilityMap,
-    // "Accessing points": AccessibilityPoints
+    "Road-level time map": timeMap,
+    'Query result': queryResult,
+    "Accessibility map": accessibilityMap,
+    "Accessing points": accessibilityPoints
   }
 };
 

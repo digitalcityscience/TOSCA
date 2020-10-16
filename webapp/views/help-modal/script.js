@@ -1,3 +1,3 @@
-function hide_help() {
-    $('#help-modal').hide()
+function hideHelp() {
+  $('#help-modal').hide();
 }
