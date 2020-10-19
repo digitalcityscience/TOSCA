@@ -43,6 +43,12 @@
             "message": {
                 "text": "Resolution has been set."
             }
+        },
+        "7": {
+            "message_id": "set_resolution.7",
+            "message": {
+                "text": "No valid location found. Please set a location in the <a class=\"text-primary\" onclick=\"blink('#settings-menu')\">settings menu</a>."
+            }
         }
     },
     "set_selection": {
@@ -164,6 +170,12 @@
             "message_id": "module_2.3",
             "message": {
                 "text": "Fill the form and press ‘ok’."
+            }
+        },
+        "7": {
+            "message_id": "module_2.7",
+            "message": {
+                "text": "No valid location found. Please set a location in the <a class=\"text-primary\" onclick=\"blink('#settings-menu')\">settings menu</a>."
             }
         },
         "24": {

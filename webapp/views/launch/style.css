@@ -100,6 +100,10 @@ body {
   margin: 10px;
 }
 
+.alert .close {
+  margin-left: 16px;
+}
+
 #loading {
   display: none;
   position: fixed;
