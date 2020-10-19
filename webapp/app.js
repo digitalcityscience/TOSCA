@@ -55,8 +55,9 @@ const SetSelectionModule = require('./scripts/set_selection')
 const SetResolutionModule = require('./scripts/set_resolution')
 const ModuleOne = require('./scripts/module_1')
 const ModuleOneA = require('./scripts/module_1a')
-const ModuleTwo = require('./scripts/module_2');
-const { describeTable, getResults } = require('./scripts/functions');
+const ModuleTwo = require('./scripts/module_2')
+const LatacungaLaharModule = require('./scripts/latacunga_lahar')
+const { describeTable, getResults } = require('./scripts/functions')
 
 const modules = {
   add_location: new AddLocationModule(),
@@ -65,7 +66,8 @@ const modules = {
   set_resolution: new SetResolutionModule(),
   module_1: new ModuleOne(),
   module_1a: new ModuleOneA(),
-  module_2: new ModuleTwo()
+  module_2: new ModuleTwo(),
+  latacunga_lahar: new LatacungaLaharModule()
 }
 
 // launch a module

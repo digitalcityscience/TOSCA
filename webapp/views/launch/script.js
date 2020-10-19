@@ -442,6 +442,27 @@ function handleResponse(res) {
         ];
         break;
       }
+
+      /* Latacunga Lahar module */
+
+      case 'latacunga_lahar.1':
+        form = formElement(messageId);
+        form.append($(`<input id="${messageId}-input" type="file" name="file" />`));
+        buttons = [
+          buttonElement('Submit').click(() => {
+            $(`#${messageId}-error`).remove();
+            const input = $(`#${messageId}-input`);
+            if (input[0].files.length) {
+              upload(form[0], { message_id: res.message_id }, handleResponse);
+            } else {
+              textarea.append($(`<span id="${messageId}-error" class="validation-error">Please choose a file to upload.</span>`));
+            }
+          })
+        ];
+        break;
+
+      case 'latacunga_lahar.2':
+        // TODO
     }
 
     textarea.append(text);
