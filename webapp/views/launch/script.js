@@ -13,14 +13,6 @@ function handleResponse(res) {
   const buttonarea = $('#buttonarea');
   const lists = $('#lists');
 
-  if (res.message.success !== undefined) {
-    if (res.message.success) {
-      textarea.append(textElement('Success!'));
-    } else {
-      textarea.append(textElement('Failed!'));
-    }
-  }
-
   if (res.message.lat && res.message.lon) {
     map.panTo(new L.LatLng(res.message.lat, res.message.lon));
   }
@@ -160,7 +152,7 @@ function handleResponse(res) {
       // • expectation: a request file with a single word as output name, defined by the user
       case 'add_map.3':
         form = formElement(messageId);
-        form.append($(`<input id="${messageId}-input" type="text" />`));
+        form.append($(`<input id="${messageId}-input" type="text" value="${res.message.layerName}" />`));
         buttons = [
           buttonElement('Submit').click(() => {
             $(`#${messageId}-error`).remove();
@@ -520,7 +512,7 @@ function selectElement(id, options){
 }
 /**
  * create a table element from data
- * @param {Array} data an array of identically structured js objects 
+ * @param {Array} data an array of identically structured js objects
  * @param {string} className className of the table
  */
 function tableElement(className, data) {
@@ -670,8 +662,9 @@ function upload(form, params, callback) {
 }
 
 function onServerError(xhr, textStatus) {
-  const text = xhr.responseJSON && xhr.responseJSON.message || textStatus || 'Unknown error';
-  const alert = $(`<div class="alert alert-danger" role="alert"><b>Server error:</b> ${text}&nbsp;&nbsp;<button class="close" data-dismiss="alert">×</button></div>`);
+  const text = $('<span>').text(xhr.responseJSON && xhr.responseJSON.message || textStatus || 'Unknown error');
+  const alert = $('<div class="alert alert-danger" role="alert"></div>');
+  alert.append($('<b>Server error: </b>')).append(text).append($('<button class="close" data-dismiss="alert">×</button>'));
   $('#alert-anchor').append(alert);
   $('#loading').hide();
 }
