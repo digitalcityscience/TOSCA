@@ -1,5 +1,5 @@
 const fs = require('fs')
-const { checkWritableDir, grass } = require('./functions')
+const { checkWritableDir, grass, mapsetExists } = require('./functions')
 const { set_resolution: messages } = require('./messages.json')
 
 const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
@@ -10,6 +10,10 @@ class SetResolutionModule {
 
   launch() {
     checkWritableDir(GEOSERVER)
+
+    if (!mapsetExists('PERMANENT')) {
+      return messages["7"]
+    }
 
     return messages["1"]
   }
