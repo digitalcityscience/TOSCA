@@ -156,11 +156,12 @@ L.control.groupedLayers({}, groupedOverlays, { position: 'topright', collapsed: 
 map.addControl(new L.Control.Draw({
   edit: {
     featureGroup: drawnItems,
-    poly: { allowIntersection: false }
+    poly: {
+      allowIntersection: false
+    }
   },
   draw: {
     polygon: {
-      allowIntersection: false,
       showArea: true,
       fill: '#FFFFFF',
     },
