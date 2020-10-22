@@ -1,5 +1,5 @@
 const fs = require('fs')
-const { checkWritableDir, getNumericColumns, getTopology, gpkgOut, initMapset, grass, mergePDFs, psToPDF, textToPS, remove } = require('./functions')
+const { checkWritableDir, getNumericColumns, getTopology, gpkgOut, initMapset, grass, mergePDFs, psToPDF, textToPS, remove, getUnivar, getUnivarBounds } = require('./functions')
 const { module_2: messages } = require('./messages.json')
 
 const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
@@ -16,7 +16,6 @@ class ModuleTwo {
   launch() {
     checkWritableDir(GEOSERVER)
     checkWritableDir(OUTPUT)
-    
     initMapset('module_2')
     // update selection and set selection as the queryArea
     grass('module_2', `g.copy vector=selection@PERMANENT,selection --overwrite`)
@@ -51,9 +50,15 @@ class ModuleTwo {
 
         // query map topology
         getTopology('module_2', QUERY_MAP_NAME)
-
+        
+        // get value bounds of all numeric columns
+        const columns = getNumericColumns('module_2', QUERY_MAP_NAME).map(line => line.split(':')[1].trim())
+        const list = []
+        columns.forEach(column => {
+          list.push({'column':column,'bounds': getUnivarBounds('module_2', QUERY_MAP_NAME, column)})
+        })
         const msg = messages["3"]
-        msg.message.list = getNumericColumns('module_2', QUERY_MAP_NAME).map(item => item.split(':')[1].trim())
+        msg.message.list = list
         return msg
       }
 
@@ -81,8 +86,9 @@ class ModuleTwo {
     // Apply the query request
     grass('module_2', `v.extract input=clipped_1 where="${where}" output=${QUERY_RESULT_NAME} --overwrite`)
 
+    // TODO: handle output when query_result is empty
     // Query statistics
-    const stats = grass('module_2', `v.db.univar -e -g map=${QUERY_RESULT_NAME} column=${queryColumn}`).trim().split('\n').map(line => line.split('=')[1])
+    const stats = getUnivar('module_2', QUERY_RESULT_NAME, queryColumn).map(line => line.split('=')[1])
 
     // Data output
     gpkgOut('module_2', QUERY_RESULT_NAME, QUERY_RESULT_NAME)

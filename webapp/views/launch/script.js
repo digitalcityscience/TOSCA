@@ -403,43 +403,31 @@ function handleResponse(res) {
         break;
 
       case 'module_2.3': {
-        form = formElement(messageId);
-        const columns = list.map(col => `<option value="${col}">${col}</option>`);
-        const relationOption = ['AND', 'OR', 'NOT'].map(el => `<option value="${el}">${el}</option>`);
-        const operators = ['>', '<', '=', '>=', '<='].map(el => `<option value="${el}">${el}</option>`);
-        const firstCondition = $(`
-        <div class='d-flex'>
-          <select class='${messageId}-input custom-select mr-2'>${columns}</select>
-          <select class='${messageId}-input custom-select mr-2'>${operators}</select>
-          <input class='${messageId}-input form-control' type="number" />
-        </div>
-        `)
-        const condition = firstCondition.clone()
-        const removeButton = $('<button type="button" class="btn btn-danger ml-2" onclick="removeCondition(this)">remove</button>')
-        const relationSelect = selectElement(messageId+'-input', relationOption)
-        const conditionGroup = $(`<div></div>`)
-        condition.append(removeButton)
-        conditionGroup.append(relationSelect)
-        conditionGroup.append(condition)
-
-        lists.append($('<span>WHERE</span>'));
-        lists.append(firstCondition);
-        let inputs = $(`.${messageId}-input`)
+        // form = formElement(messageId);
         buttons = [
           buttonElement('＋').click(() => {
-            lists.append(conditionGroup.clone());
-            inputs = $(`.${messageId}-input`)
+            len = $('.query').length
+            const query = $(`<div class='query'></div>`)
+            if (len > 0) query.append(relationSelect())
+            query.append(conditionElement(list))
+            lists.append(query);
           }),
           buttonElement('OK').click(() => {
             $(`#${messageId}-error`).remove();
             let msg = []
+            const querys = $('.query')
+
             // inputs.map is problematic because jquery objs behave differently
-            for (let i = 0; i < inputs.length; i++) {
-              // validate input
-              if ((inputs[i].type === 'number' && inputs[i].value.match(/^(-?\d+\.\d+)$|^(-?\d+)$/))
-                ||
-                (inputs[i].type != 'number')) {
-                msg.push(inputs[i].value)
+            for (const query of querys) {
+              const [rel, sel, min, max] = [
+                $(query).find('.rel').val(),
+                $(query).find('.sel').val(),
+                $(query).find('.min').val(),
+                $(query).find('.max').val()
+              ]
+              if (rel != undefined) msg.push(rel)
+              if (validateNum(min) && validateNum(max)) {
+                msg.push(sel, '>=', min, 'AND', sel, '<=', max)
               } else {
                 msg = []
                 textarea.append($(`<span id="${messageId}-error" class="validation-error">Please enter valid numbers in the fields.</span>`));
@@ -516,9 +504,40 @@ function buttonElement(action) {
   return $(`<button type="button" class="btn btn-primary">${action}</button>`);
 }
 
-function selectElement(id, options){
-  return  $(`<select class='${id} custom-select mt-2 mb-2'>${options}</select>`)
+function relationSelect() {
+  const relationOption = ['AND', 'OR', 'NOT'].map(el => `<option value="${el}">${el}</option>`);
+  return $(`<select class="rel custom-select mb-2">${relationOption}</select>`)
 }
+
+function conditionElement(data, id) {
+  const container = $(`<div class='d-flex mb-2' id='${id}'></div>`)
+  const columns = data.map(item => `<option value="${item.column}">${item.column}</option>`)
+  const select = $(`<select class='custom-select mr-2 sel'>${columns}</select>`)
+  const remove = $('<button type="button" class="btn btn-secondary ml-2">&times;</button>')
+  const info = $(`<div class="mb-2 text-light bg-dark">${'min: ' + data[0].bounds[0] + ' max: ' + data[0].bounds[1]}</div>`)
+  const inputs = $(`
+  <div class='d-flex justify-content-between mb-2'>
+    <label for='${id}-input-min'>min</label>
+    <input id='${id}-input-min' type='number' class='form-control ml-2 mr-2 min'>
+    <label for='${id}-input-max'>max</label>
+    <input id='${id}-input-max' type='number' class='form-control ml-2 mr-2 max'>
+  </div>
+  `)
+
+  container.append(select)
+  container.append(remove)
+
+  remove.click((e) => {
+    $(e.target).parent().parent().remove();
+  })
+
+  select.change((e) => {
+    const bounds = data.filter(d => d.column === e.target.value)[0].bounds
+    info.html('min: ' + bounds[0] + ' max: ' + bounds[1])
+  })
+  return container.add(info).add(inputs)
+}
+
 /**
  * create a table element from data
  * @param {Array} data an array of identically structured js objects 
@@ -551,6 +570,10 @@ function clearDialog() {
   $('#lists').empty();
 }
 
+function validateNum(num) {
+  return num.match(/^(-?\d+\.\d+)$|^(-?\d+)$/)
+}
+
 function showResults() {
   getOutput({})
   $('#results-modal').show()
@@ -573,10 +596,6 @@ function blink(selector) {
   }
 }
 
-function removeCondition(e) {
-  const rootNode = e.parentNode.parentNode;
-  rootNode.parentNode.removeChild(rootNode);
-}
 
 
 $('#launch-module-menu').on('change', (event) => {

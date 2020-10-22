@@ -83,6 +83,27 @@ module.exports = {
   },
 
   /**
+   * Returns univariate statistics on selected table column for a GRASS vector map.
+   * @param {string} mapset 
+   * @param {string} map 
+   * @param {string} column 
+   */
+  getUnivar(mapset, map, column) {
+    return grass(mapset, `v.db.univar -e -g map=${map} column=${column}`).trim().split('\n')
+  },
+
+  /**
+   * Returns min and max value of a univariate stat on selected table column for a GRASS vector map.
+   * @param {string} mapset 
+   * @param {string} map 
+   * @param {string} column 
+   */
+  getUnivarBounds(mapset, map, column) {
+    const univar = grass(mapset, `v.db.univar -e -g map=${map} column=${column}`).trim().split('\n')
+    return [univar[1].split('=')[1], univar[2].split('=')[1]]
+  },
+
+  /**
    * Identify the topology of a vector map
    * @param {string} mapset
    * @param {string} layer layer name
@@ -189,8 +210,8 @@ module.exports = {
    * Prints all attribute descriptions of a table
    * @param {string} table
    */
-  describeTable(table) {
-    const raw = grass('PERMANENT', `db.describe table="${table}"`)
+  describeTable(mapset, table) {
+    const raw = grass(mapset, `db.describe table="${table}"`)
     return parseDescription(raw)
   },
 

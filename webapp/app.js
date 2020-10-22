@@ -160,7 +160,7 @@ app.get('/output', jsonParser, (req, res, next) => {
 // return all attribute descriptions of a table
 app.get('/attributes', jsonParser, async (req, res, next) => {
   try {
-    const attributes = await describeTable(req.query.table)
+    const attributes = await describeTable('PERMANENT',req.query.table)
     const message = { message_id: 'attributes', message: { attributes } }
     res.json(message)
   } catch (err) {
