@@ -136,17 +136,17 @@ const groupedOverlays = {
   "User inputs": {
     'Current selection': selection,
     'Drawings on the map': drawnItems,
-    'Query area': queryArea1,
-    'Query map': queryMap,
+    // 'Query area': queryArea1,
+    // 'Query map': queryMap,
     "From-points": fromPoints,
     "Via-points": viaPoints,
     "Stricken area": strickenArea
   },
   "Results": {
     "Road-level time map": timeMap,
-    'Query result': queryResult,
-    "Accessibility map": accessibilityMap,
-    "Accessing points": accessibilityPoints
+    // 'Query result': queryResult,
+    // "Accessibility map": accessibilityMap,
+    // "Accessing points": accessibilityPoints
   }
 };
 
