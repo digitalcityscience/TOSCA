@@ -56,15 +56,16 @@ class ModuleTwo {
 
         // query map topology
         getTopology('module_2', QUERY_MAP_NAME)
-        
+
         // get value bounds of all numeric columns
         const columns = getNumericColumns('module_2', QUERY_MAP_NAME).map(line => line.split(':')[1].trim())
         const list = []
         columns.forEach(column => {
-          list.push({'column':column,'bounds': getUnivarBounds('module_2', QUERY_MAP_NAME, column)})
+          list.push({ 'column': column, 'bounds': getUnivarBounds('module_2', QUERY_MAP_NAME, column) })
         })
         const msg = messages["3"]
         msg.message.list = list
+        msg.message.map = this.mapToQuery
         return msg
       }
 

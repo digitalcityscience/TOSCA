@@ -404,6 +404,9 @@ function handleResponse(res) {
       case 'module_2.3': {
         // form = formElement(messageId);
         buttons = [
+          buttonElement('Show attributes').click(() => {
+            getAttributes(res.message.map)
+          }),
           buttonElement('＋').click(() => {
             len = $('.query').length
             const query = $(`<div class='query'></div>`)
