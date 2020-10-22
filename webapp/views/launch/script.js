@@ -13,14 +13,6 @@ function handleResponse(res) {
   const buttonarea = $('#buttonarea');
   const lists = $('#lists');
 
-  if (res.message.success !== undefined) {
-    if (res.message.success) {
-      textarea.append(textElement('Success!'));
-    } else {
-      textarea.append(textElement('Failed!'));
-    }
-  }
-
   if (res.message.lat && res.message.lon) {
     map.panTo(new L.LatLng(res.message.lat, res.message.lon));
   }
@@ -81,7 +73,6 @@ function handleResponse(res) {
       // • expectation: Finding an uploaded goejson file in data_from_browser directory. This file is created by the browser, when the user define interactively the selection area. Request file is not expected, and therefore it is not neccessary to create.
       // • consequence: No specific consequences
       case 'set_selection.2':
-        drawnItems.clearLayers();
         buttons = [
           buttonElement('Save').click(() => {
             $(`#${messageId}-error`).remove();
@@ -90,6 +81,15 @@ function handleResponse(res) {
             }
           })
         ];
+        drawnItems.clearLayers();
+        startDrawPolygon();
+        break;
+
+      case 'set_selection.3':
+        // Force reloading of the selection layer
+        selection.setParams({ ts: Date.now() });
+        map.addLayer(selection);
+        drawnItems.clearLayers();
         break;
 
       // == set_resolution ==
@@ -160,7 +160,7 @@ function handleResponse(res) {
       // • expectation: a request file with a single word as output name, defined by the user
       case 'add_map.3':
         form = formElement(messageId);
-        form.append($(`<input id="${messageId}-input" type="text" />`));
+        form.append($(`<input id="${messageId}-input" type="text" value="${res.message.layerName}" />`));
         buttons = [
           buttonElement('Submit').click(() => {
             $(`#${messageId}-error`).remove();
@@ -194,6 +194,8 @@ function handleResponse(res) {
             reply(res, 'no');
           })
         ];
+        drawnItems.clearLayers();
+        startDrawCirclemarker();
         break;
 
       // • message id: module_1.2
@@ -269,6 +271,8 @@ function handleResponse(res) {
             reply(res, 'cancel');
           })
         ];
+        drawnItems.clearLayers();
+        startDrawPolygon();
         break;
 
       // • message id: module_1.9
@@ -309,13 +313,6 @@ function handleResponse(res) {
       // Start points / via points
       case 'module_1a.1':
       case 'module_1a.2':
-        drawnItems.clearLayers();
-        map.addLayer(drawnItems)
-        map.addLayer(fromPoints)
-        map.addLayer(viaPoints)
-        map.addLayer(toPoints)
-        map.addLayer(strickenArea)
-
         buttons = [
           buttonElement('Save').click(() => {
             $(`#${messageId}-error`).remove();
@@ -327,12 +324,13 @@ function handleResponse(res) {
             reply(res, 'cancel');
           })
         ];
+        map.addLayer(selection);
+        drawnItems.clearLayers();
+        startDrawCirclemarker();
         break;
 
       // stricken area
       case 'module_1a.3':
-        drawnItems.clearLayers();
-        map.addLayer(drawnItems)
         buttons = [
           buttonElement('Save').click(() => {
             $(`#${messageId}-error`).remove();
@@ -344,6 +342,8 @@ function handleResponse(res) {
             reply(res, 'cancel');
           })
         ];
+        drawnItems.clearLayers();
+        startDrawPolygon();
         break;
 
       // Speed reduction ratio
@@ -361,7 +361,6 @@ function handleResponse(res) {
         break;
 
       case 'module_1a.8':
-        drawnItems.clearLayers();
         buttons = [
           buttonElement('Yes').click(() => {
             reply(res, 'yes');
@@ -375,8 +374,6 @@ function handleResponse(res) {
       // == module_2 ==
 
       case 'module_2.1':
-        drawnItems.clearLayers();
-        map.addLayer(drawnItems)
         buttons = [
           buttonElement('Save').click(() => {
             $(`#${messageId}-error`).remove();
@@ -385,6 +382,8 @@ function handleResponse(res) {
             }
           })
         ];
+        drawnItems.clearLayers();
+        startDrawPolygon();
         break;
 
       case 'module_2.2':
@@ -439,43 +438,6 @@ function handleResponse(res) {
         ];
         break;
       }
-
-      // == module_2b ==
-
-      // • message id: module_2b.1
-      // • text: If you want to use an existing map as query area, click 'Map' button, then draw the area, and click 'Save'.  If you want to draw a new query area, click 'Draw' button. If you want to exit, click 'Cancel'.
-      // • expectation: request file with text "map", "draw" or "cancel"
-      // • consequence:
-      //    - If answer is "draw", the module is waiting for a geojson file in data_from_browser. Module only goes to the next step, when geojson file is created.
-      //    - If answer is "map", module send a new message: => module_2b.2
-      //    - If answer is cancel, module exit.
-      case 'module_2b.1.message':
-        buttons = [
-          buttonElement('Draw').click(() => {
-            reply('draw', false);
-            const saveButton = buttonElement('Save').click(() => {
-              saveDrawing();
-            })
-            buttonarea.append(saveButton);
-          }),
-          buttonElement('Cancel').click(() => {
-            reply('cancel', true);
-          })
-        ];
-        break;
-
-      // • message id: module_2b.2
-      // • text: To process exit, click OK.
-      // • expectation: A request file with a single "OK" word
-      // • consequence: After the user acknowledge the message, the module exit.
-      case 'module_2b.2.message':
-        buttons = [
-          buttonElement('OK').click(() => {
-            reply('ok', false);
-            clearDialog();
-          })
-        ];
-        break;
     }
 
     textarea.append(text);
@@ -540,7 +502,7 @@ function conditionElement(data, id) {
 
 /**
  * create a table element from data
- * @param {Array} data an array of identically structured js objects 
+ * @param {Array} data an array of identically structured js objects
  * @param {string} className className of the table
  */
 function tableElement(className, data) {
@@ -597,16 +559,15 @@ function blink(selector) {
 }
 
 
+function startDrawPolygon() {
+  const btn = $('.leaflet-draw-draw-polygon')[0];
+  btn && btn.dispatchEvent(new Event('click'));
+}
 
-$('#launch-module-menu').on('change', (event) => {
-  clearDialog();
-  const value = $(event.target).val();
-  if (value.match(/module_1/)) {
-    $('#textarea').append('The Calculate Time Map Module creates a heat map, showing the time it takes to reach any part of the selected area from a ‘start point’. Optionally, affected areas with reduced speed limit, and via-points can be defined.');
-  } else if (value.match(/module_2/)) {
-    $('#textarea').append('To query an area means to filter the map features/elements based on some user-determined values. For example, a housing map layer can be queried based on the household population and monthly income, and only the houses with the corresponding value range will be returned.');
-  }
-})
+function startDrawCirclemarker() {
+  const btn = $('.leaflet-draw-draw-circlemarker')[0];
+  btn && btn.dispatchEvent(new Event('click'));
+}
 
 /* Send messages to the backend */
 
@@ -701,8 +662,9 @@ function upload(form, params, callback) {
 }
 
 function onServerError(xhr, textStatus) {
-  const text = xhr.responseJSON && xhr.responseJSON.message || textStatus || 'Unknown error';
-  const alert = $(`<div class="alert alert-danger" role="alert"><b>Server error:</b> ${text}&nbsp;&nbsp;<button class="close" data-dismiss="alert">×</button></div>`);
+  const text = $('<span>').text(xhr.responseJSON && xhr.responseJSON.message || textStatus || 'Unknown error');
+  const alert = $('<div class="alert alert-danger" role="alert"></div>');
+  alert.append($('<b>Server error: </b>')).append(text).append($('<button class="close" data-dismiss="alert">×</button>'));
   $('#alert-anchor').append(alert);
   $('#loading').hide();
 }

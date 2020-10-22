@@ -43,13 +43,19 @@
             "message": {
                 "text": "Resolution has been set."
             }
+        },
+        "7": {
+            "message_id": "set_resolution.7",
+            "message": {
+                "text": "No valid location found. Please set a location in the <a class=\"text-primary\" onclick=\"blink('#settings-menu')\">settings menu</a>."
+            }
         }
     },
     "set_selection": {
         "1": {
             "message_id": "set_selection.1",
             "message": {
-                "text": "No valid location found. Please set a location in the <a class=\"text-primary\" onclick=\"blink('#settings-menu')\">settings menu</a>. Now click OK to exit."
+                "text": "No valid location found. Please set a location in the <a class=\"text-primary\" onclick=\"blink('#settings-menu')\">settings menu</a>."
             }
         },
         "2": {
@@ -137,7 +143,7 @@
         "8": {
             "message_id": "module_1a.8",
             "message": {
-                "text": "Average speed values are used for the different road types of the area. Do you want to change them?<br>In case you want to calculate the time map for walking or cycling, you can set the average speed value to:<ul><li>Walking: xxx</li><li>Cycling: xxx</li></ul>"
+                "text": "Average speed values are used for the different road types of the area. Do you want to change them?<br>In case you want to calculate the time map for walking or cycling, you can set the average speed value to:<ul><li>Walking: 5 km/h</li><li>Cycling: 12 km/h</li></ul>"
             }
         },
         "9": {
@@ -164,6 +170,12 @@
             "message_id": "module_2.3",
             "message": {
                 "text": "Fill the form and press ‘ok’."
+            }
+        },
+        "7": {
+            "message_id": "module_2.7",
+            "message": {
+                "text": "No valid location found. Please set a location in the <a class=\"text-primary\" onclick=\"blink('#settings-menu')\">settings menu</a>."
             }
         },
         "24": {

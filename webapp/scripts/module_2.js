@@ -1,5 +1,5 @@
 const fs = require('fs')
-const { checkWritableDir, getNumericColumns, getTopology, gpkgOut, initMapset, grass, mergePDFs, psToPDF, textToPS, remove, getUnivar, getUnivarBounds } = require('./functions')
+const { checkWritableDir, getNumericColumns, getTopology, gpkgOut, initMapset, grass, mapsetExists, mergePDFs, psToPDF, textToPS, remove, getUnivar, getUnivarBounds } = require('./functions')
 const { module_2: messages } = require('./messages.json')
 
 const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
@@ -16,7 +16,13 @@ class ModuleTwo {
   launch() {
     checkWritableDir(GEOSERVER)
     checkWritableDir(OUTPUT)
+
+    if (!mapsetExists('PERMANENT')) {
+      return messages["7"]
+    }
+
     initMapset('module_2')
+
     // update selection and set selection as the queryArea
     grass('module_2', `g.copy vector=selection@PERMANENT,selection --overwrite`)
     this.queryArea = 'selection'

@@ -174,5 +174,24 @@ app.use((err, req, res, next) => {
     return next(err)
   }
   res.status(500)
-  res.json({ message: err.message && err.message.split('\n')[0] || err })
+
+  // GRASS errors
+  let grassError = ''
+  if (err.message.match(/Starting GRASS GIS/)) {
+    let errorMessageOngoing = false
+    for (const line of err.message.split('\n')) {
+      const errorMatch = line.match(/^ERROR/)
+      if (errorMatch) {
+        errorMessageOngoing = true
+      }
+      if (!errorMatch && !line.match(/^\s/)) {
+        errorMessageOngoing = false
+      }
+      if (errorMessageOngoing) {
+        grassError += line + ' '
+      }
+    }
+  }
+
+  res.json({ message: grassError || err.message })
 })
