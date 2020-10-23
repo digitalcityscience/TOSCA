@@ -125,10 +125,10 @@ L.control.legend(
 
 // Overlay layers are grouped
 const groupedOverlays = {
-  "Basemaps": {
+  "Background map": {
     'OpenStreetMap': osm
   },
-  "Location": {
+  "Basemaps": {
     'Water lines': waterLines,
     'Roads': roads,
     'Buildings': buildings,
