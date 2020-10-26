@@ -56,7 +56,7 @@ const SetResolutionModule = require('./scripts/set_resolution')
 const ModuleOne = require('./scripts/module_1')
 const ModuleOneA = require('./scripts/module_1a')
 const ModuleTwo = require('./scripts/module_2')
-const LatacungaLaharModule = require('./scripts/latacunga_lahar')
+const LatacungaModule = require('./scripts/cotopaxi_scenarios')
 const { describeTable, getResults } = require('./scripts/functions')
 
 const modules = {
@@ -67,7 +67,7 @@ const modules = {
   module_1: new ModuleOne(),
   module_1a: new ModuleOneA(),
   module_2: new ModuleTwo(),
-  latacunga_lahar: new LatacungaLaharModule()
+  cotopaxi_scenarios: new LatacungaModule()
 }
 
 // launch a module

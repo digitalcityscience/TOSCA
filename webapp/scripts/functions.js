@@ -130,7 +130,7 @@ module.exports = {
    * @return {string[]} names of available maps
    */
   listVector(mapset) {
-    return grass(mapset, `g.list -m type=vector`).trim().split('\n')
+    return grass(mapset, `g.list type=vector`).trim().split('\n')
   },
 
   /**

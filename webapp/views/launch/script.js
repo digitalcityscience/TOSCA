@@ -451,9 +451,27 @@ function handleResponse(res) {
         break;
       }
 
-      /* Latacunga Lahar module */
+      /* Cotopaxi module */
 
-      case 'latacunga_lahar.1':
+      // Choose type of volcanic threat
+      case 'cotopaxi_scenarios.0':
+        form = formElement(messageId);
+        buttons = [
+          buttonElement('Ash fall').click(() => {
+            reply(res, 'ash_fall');
+          }),
+          buttonElement('Lahar flows').click(() => {
+            reply(res, 'lahar_flow');
+          }),
+          buttonElement('Lava flows').click(() => {
+            reply(res, 'lava_flow');
+          })
+        ];
+        form.append(buttons);
+        break;
+
+      // Upload dataset containing risk zones
+      case 'cotopaxi_scenarios.1':
         form = formElement(messageId);
         form.append($(`<input id="${messageId}-input" type="file" name="file" />`));
         buttons = [
@@ -469,8 +487,29 @@ function handleResponse(res) {
         ];
         break;
 
-      case 'latacunga_lahar.2':
-        // TODO
+      // Select scenario (i.e., feature of risk zones layer)
+      case 'cotopaxi_scenarios.2':
+        form = formElement(messageId);
+        lists.append($(`<select id="${messageId}-input" class='custom-select' size="10">` + list.map(col => `<option selected value="${col}">${col}</option>`) + `</select>`));
+        buttons = [
+          buttonElement('Submit').click(() => {
+            const input = $(`#${messageId}-input`);
+            reply(res, input[0].value);
+          })
+        ];
+        break;
+
+      // Select dataset for analysis
+      case 'cotopaxi_scenarios.3':
+        form = formElement(messageId);
+        lists.append($(`<select id="${messageId}-input" class='custom-select' size="10">` + list.map(col => `<option selected value="${col}">${col}</option>`) + `</select>`));
+        buttons = [
+          buttonElement('Submit').click(() => {
+            const input = $(`#${messageId}-input`);
+            reply(res, input[0].value);
+          })
+        ];
+        break;
     }
 
     textarea.append(text);
