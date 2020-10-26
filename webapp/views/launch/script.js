@@ -491,14 +491,14 @@ function saveDrawing(res) {
 function getOutput() {
   get('/output', {}, function (res) {
     const baseOption = "<option selected value=''> - </option>"
-    const options = res.message.list.reduce((str, file) => str + `<option value="${file}">${file}</option>`, '')
+    const options = res.list.reduce((str, file) => str + `<option value="${file}">${file}</option>`, '')
     $('#results-select').html(baseOption + options)
   })
 }
 
 function getAttributes(table) {
   get('/attributes', { table }, function (res) {
-    const { tableObj, columnObj } = JSON.parse(res.message.attributes)
+    const { tableObj, columnObj } = JSON.parse(res.attributes)
 
     $('#table-description').html(tableElement('table table-bordered', tableObj))
     $('#column-description').html(tableElement('table table-bordered', columnObj))

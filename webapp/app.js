@@ -150,8 +150,7 @@ app.post('/drawing', jsonParser, (req, res, next) => {
 app.get('/output', jsonParser, (req, res, next) => {
   try {
     const list = getResults()
-    const message = { messageId: 'output', message: { list } }
-    res.send(message)
+    res.json({ list })
   } catch (err) {
     next(err)
   }
@@ -160,9 +159,8 @@ app.get('/output', jsonParser, (req, res, next) => {
 // return all attribute descriptions of a table
 app.get('/attributes', jsonParser, async (req, res, next) => {
   try {
-    const attributes = await describeTable(req.query.table)
-    const message = { messageId: 'attributes', message: { attributes } }
-    res.json(message)
+    const attributes = describeTable(req.query.table)
+    res.json({ attributes })
   } catch (err) {
     next(err)
   }
