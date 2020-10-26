@@ -91,15 +91,14 @@ class ModuleOneA {
         if (message.toLowerCase() == 'yes') {
           return messages["9"]
         }
-        this.average_speed = AVERAGE_SPEED
+        this.averageSpeed = AVERAGE_SPEED
         this.calculate()
         return messages["6"]
 
       case 'module_1a.9':
-        this.average_speed = message
+        this.averageSpeed = message
         this.calculate()
         return messages["6"]
-
     }
   }
 
@@ -134,7 +133,7 @@ class ModuleOneA {
 
     // Converting clipped and connected road network map into raster format and float number
     grass('module_1', `v.extract -r input=m1a_highways_points_connected@module_1 where="avg_speed>0" output=m1a_temp_connections --overwrite`)
-    grass('module_1', `v.to.rast input=m1a_temp_connections output=m1a_temp_connections use=val value=${this.average_speed} --overwrite`)
+    grass('module_1', `v.to.rast input=m1a_temp_connections output=m1a_temp_connections use=val value=${this.averageSpeed} --overwrite`)
     grass('module_1', `v.to.rast input=m1a_highways_points_connected output=m1a_highways_points_connected_1 use=attr attribute_column=avg_speed --overwrite`)
     grass('module_1', `r.patch input=m1a_temp_connections,m1a_highways_points_connected_1 output=m1a_highways_points_connected --overwrite`)
     grass('module_1', `r.mapcalc expression="m1a_highways_points_connected=float(m1a_highways_points_connected)" --overwrite`)
@@ -147,11 +146,11 @@ class ModuleOneA {
     } else {
       grass('module_1', `v.buffer input=${this.fromPoints} output=m1a_from_via_zones distance=${this.resolution} --overwrite`)
     }
-    grass('module_1', `v.to.rast input=m1a_from_via_zones output=m1a_from_via_zones use=val val=${this.average_speed} --overwrite`)
+    grass('module_1', `v.to.rast input=m1a_from_via_zones output=m1a_from_via_zones use=val val=${this.averageSpeed} --overwrite`)
     grass('module_1', `r.patch input=m1a_highways_points_connected,m1a_from_via_zones output=m1a_highways_points_connected_zones --overwrite`)
 
     // Now the Supplementary lines (formerly CAT_SUPP_LINES) raster map have to be added to map highways_from_points. First I convert highways_points_connected into raster setting value to 0(zero). Resultant map: temp. After I patch temp and highways_points_connected, result is:highways_points_connected_temp. Now have to reclass highways_points_connected_temp, setting 0 values to the speed value of residentals
-    grass('module_1', `v.to.rast input=m1a_highways_points_connected output=m1a_temp use=val val=${this.average_speed} --overwrite`)
+    grass('module_1', `v.to.rast input=m1a_highways_points_connected output=m1a_temp use=val val=${this.averageSpeed} --overwrite`)
     grass('module_1', `r.patch input=m1a_highways_points_connected_zones,m1a_temp output=m1a_highways_points_connected_temp --overwrite`)
 
     if (this.strickenArea) {

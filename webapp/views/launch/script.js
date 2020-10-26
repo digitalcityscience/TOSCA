@@ -1,3 +1,5 @@
+/* global $, L, map, drawnItems, selection */
+
 /* Handle incoming messages from backend */
 
 function handleResponse(res) {
@@ -28,13 +30,6 @@ function handleResponse(res) {
       // The various actions required in response to server messages are defined here.
 
       // == add_location ==
-
-      // • message id: add_location.1
-      // • text: There is an already added location, and it is not allowed to add further locations. If you want to add a new location, the already existing location will automatically removed. If you want to store the already existing location, save manually (refer to the manual, please). Do you want to add a new location? If yes, click OK.
-      // • expectation: A request file with yes or no text.
-      // • consequence:
-      //   - If answer is NO, then add_location send a message and when the message is acknowledged, exit: => add_location.3
-      //   - If answer is YES: => add_location.4
       case 'add_location.1':
         buttons = [
           buttonElement('Yes').click(() => {
@@ -46,10 +41,6 @@ function handleResponse(res) {
         ];
         break;
 
-      // • message id: add_location.4
-      // • text: Select a map to add to CityApp. Map has to be in Open Street Map format -- osm is the only accepted format.
-      // • expectation: Finding an uploaded osm file in data_from_browser directory. Request file is not expected, and therefore it is not neccessary to create.
-      // • consequence: No specific consequences
       case 'add_location.4':
         form = formElement(messageId);
         form.append($(`<input id="${messageId}-input" type="file" name="file" />`));
@@ -58,7 +49,7 @@ function handleResponse(res) {
             $(`#${messageId}-error`).remove();
             const input = $(`#${messageId}-input`);
             if (input[0].files.length) {
-              upload(form[0], { message_id: res.message_id }, handleResponse);
+              upload(form[0], { messageId: res.message_id }, handleResponse);
             } else {
               textarea.append($(`<span id="${messageId}-error" class="validation-error">Please choose a file for upload.</span>`));
             }
@@ -67,11 +58,6 @@ function handleResponse(res) {
         break;
 
       // == set_selection ==
-
-      // • message id: set_selection.2
-      // • text: Now zoom to area of your interest, then use drawing tool to define your location. Next, save your selection.
-      // • expectation: Finding an uploaded goejson file in data_from_browser directory. This file is created by the browser, when the user define interactively the selection area. Request file is not expected, and therefore it is not neccessary to create.
-      // • consequence: No specific consequences
       case 'set_selection.2':
         buttons = [
           buttonElement('Save').click(() => {
@@ -93,16 +79,6 @@ function handleResponse(res) {
         break;
 
       // == set_resolution ==
-
-      // • message id: set_resolution.1
-      // • text: Type the resolution in meters, you want to use. For further details see manual.
-      // • expectation: A request file with a positive number.
-      // • consequence: If user gives a negative number, then UNTIL number is greater than zero: => set_resolution.2
-      // ----
-      // • message id: set_resolution.2
-      // • text: Resolution has to be an integer number, greater than 0. Please, define the resolution for calculations in meters.
-      // • expectation: A request file with a positive number.
-      // • consequence: No specific consequences
       case 'set_resolution.1':
       case 'set_resolution.2':
         form = formElement(messageId);
@@ -122,11 +98,6 @@ function handleResponse(res) {
         break;
 
       // == add_map ==
-
-      // • message id: add_map.1
-      // • text: "Selection" map not found. Before adding a new layer, first you have to define a location and a selection. For this end please, use Location Selector tool of CityApp. Add_Map modul now quit.
-      // • expectation: A request file with text OK
-      // • consequence: Since no valid selection, the module exit after the user acknowledge the message.
       case 'add_map.1':
         buttons = [
           buttonElement('OK').click(() => {
@@ -135,10 +106,6 @@ function handleResponse(res) {
         ];
         break;
 
-      // • message id: add_map.2
-      // • text: Select a map to add CityApp. Only gpkg (geopackage), geojson and openstreetmap vector files and geotiff (gtif or tif) raster files are accepted.
-      // • expectation: An uploaded file with a supported filename extension in data_from_browser directory. Request file is not expected, the question is only to draw the user's focus to the next step (select a file). Therefore in this case the trigger for the back-end is the presence of the uploaded file (and not a request file)
-      // • consequence: When the selected file is uploaded succesfully, there is a new message: => add_map.3
       case 'add_map.2':
         form = formElement(messageId);
         form.append($(`<input id="${messageId}-input" type="file" name="file" />`));
@@ -147,7 +114,7 @@ function handleResponse(res) {
             $(`#${messageId}-error`).remove();
             const input = $(`#${messageId}-input`);
             if (input[0].files.length) {
-              upload(form[0], { message_id: res.message_id }, handleResponse);
+              upload(form[0], { messageId: res.message_id }, handleResponse);
             } else {
               textarea.append($(`<span id="${messageId}-error" class="validation-error">Please choose a file for upload.</span>`));
             }
@@ -155,9 +122,6 @@ function handleResponse(res) {
         ];
         break;
 
-      // • message id: add_map.3
-      // • text: Please, define an output map name. Name can contain only english characters, numbers, or underline character. Space and other specific characters are not allowed. For first character a letter only accepted.
-      // • expectation: a request file with a single word as output name, defined by the user
       case 'add_map.3':
         form = formElement(messageId);
         form.append($(`<input id="${messageId}-input" type="text" value="${res.message.layerName}" />`));
@@ -175,13 +139,6 @@ function handleResponse(res) {
         break;
 
       // == module_1 ==
-
-      // • message id: module_1.1
-      // • text: Start points are required. Do you want to draw start points on the basemap now? If yes, click Yes, then draw one or more point and click Save button. If you want to use an already existing map, select No.
-      // • expectation: request file with text Yes or No
-      // • consequence:
-      //   - If answer is "yes", the module is waiting for a geojson file in data_from_browser. Module only goes to the next step, when geojson file is created.
-      //   - If answer is "no", module send a new message: => module_1.2
       case 'module_1.1':
         buttons = [
           buttonElement('Yes').click(() => {
@@ -198,25 +155,6 @@ function handleResponse(res) {
         startDrawCirclemarker();
         break;
 
-      // • message id: module_1.2
-      // • text: Select a map (only point maps are supported). Avilable maps are:
-      // • expectation: request file with the select item only.
-      //   Since „message.module_1.2” containes a list in json format (list items are the availabe maps), user has to select one of them. The modal type is select, therefore the answer (new request file) conatains only the selected item (in this case: a map name). It is not expected to create a separate request file containig "yes".
-      // ----
-      // • message id: module_1.4
-      // • text: Select a map (only point maps are supported). Avilable maps are:
-      // • expectation: request file with the select item only.
-      //   Since „message.module_1.4” containes a list in json format (list items are the availabe maps), user has to select one of them. The modal type is select, therefore the answer (new request file) conatains only the selected item (in this case: a map name). It is not expected to create a separate request file containig "yes".
-      // ----
-      // • message id: module_1.6
-      // • text: Select a map (only point maps are supported). Avilable maps are:
-      // • expectation: request file with the select item only
-      //   Since „message.module_1.6” containes a list in json format (list items are the availabe maps), user has to select one of them. The modal type is select, therefore the answer (new request file) conatains only the selected item (in this case: a map name). It is not expected to create a separate request file containig "yes".
-      // ----
-      // • message id: module_1.8
-      // • text: Select a map (only area maps are supported). Avilable maps are:
-      // • expectation: request file with the select item only
-      //   Since „message.module_1.8” containes a list in json format (list items are the availabe maps), user has to select one of them. The modal type is select, therefore the answer (new request file) conatains only the selected item (in this case: a map name). It is not expected to create a separate request file containig "yes"
       case 'module_1.2':
       case 'module_1.4':
       case 'module_1.6':
@@ -231,29 +169,6 @@ function handleResponse(res) {
         ];
         break;
 
-      // • message id: module_1.3
-      // • text: Via points are optional. If you want to select 'via' points from the map, click Yes. If you want to use an already existing map, select No. If you do not want to use via points, click Cancel.
-      // • expectation: request file with text yes or no or cancel.
-      // • consequence:
-      //   - If answer is "yes", the module is waiting for a geojson file in data_from_browser. Module only goes to the next step, when geojson file is created.
-      //   - If answer is "no", module send a new message: => module_1.4
-      //   - If answer is "cancel": => module_1.5
-      // ----
-      // • message id: module_1.5
-      // • text: Target points are required. If you want to select target points from the map, click Yes. If you want to use an already existing map containing target points, click No. If you want to use the default target points map, click Cancel.
-      // • expectation: request file with text yes or no or cancel.
-      // • consequence:
-      //   - If answer is "yes", the module is waiting for a geojson file in data_from_browser. Module only goes to the next step, when geojson file is created.
-      //   - If answer is "no", module send a new message: => module_1.6
-      //   - If answer is "cancel": => module_1.7
-      // ----
-      // • message id: module_1.7
-      // • text: Optionally you may define stricken area. If you want to draw area on the map, click Yes. If you want to select a map already containing area, click No. If you do not want to use any area, click Cancel.
-      // • expectation: request file with text yes or no or cancel.
-      // • consequence:
-      //   - If answer is "yes", the module is waiting for a geojson file in data_from_browser. Module only goes to the next step, when geojson file is created.
-      //   - If answer is "no", module send a new message: => module_1.8
-      //   - If answer is "cancel": => module_1.9
       case 'module_1.3':
       case 'module_1.5':
       case 'module_1.7':
@@ -275,10 +190,6 @@ function handleResponse(res) {
         startDrawPolygon();
         break;
 
-      // • message id: module_1.9
-      // • text: Do you want to set the speed on the road network? If not, the current values will used.
-      // • expectation: request file with a single yes or no.
-      // • consequence: If answer is "yes", there is a new message: => module_1.11
       case 'module_1.9':
         buttons = [
           buttonElement('Yes').click(() => {
@@ -290,12 +201,6 @@ function handleResponse(res) {
         ];
         break;
 
-      // • message id: module_1.12
-      // • text: Set speed reduction ratio for roads of stricken area
-      // • expectation: reqest file with single a floating point numeric value
-      // • message id: module_1.10
-      // • text: Set the speed on the road network.
-      // • expectation: reqest file with single a floating point numeric value
       case 'module_1.12':
       case 'module_1.10':
         form = formElement(messageId);
@@ -309,7 +214,6 @@ function handleResponse(res) {
         break;
 
       // == module_1a ==
-
       // Start points / via points
       case 'module_1a.1':
       case 'module_1a.2':
@@ -372,7 +276,6 @@ function handleResponse(res) {
         break;
 
       // == module_2 ==
-
       case 'module_2.1':
         buttons = [
           buttonElement('Save').click(() => {
@@ -513,6 +416,7 @@ function clearDialog() {
   $('#lists').empty();
 }
 
+// eslint-disable-next-line no-unused-vars
 function showResults() {
   getOutput({})
   $('#results-modal').show()
@@ -520,11 +424,13 @@ function showResults() {
   $('#results-iframe').attr('src', '')
 }
 
-function show_help() {
+// eslint-disable-next-line no-unused-vars
+function showHelp() {
   $('#help-modal').show()
 }
 
 let blinkTimeout;
+// eslint-disable-next-line no-unused-vars
 function blink(selector) {
   if (!blinkTimeout) {
     $(selector).addClass("blink");
@@ -535,6 +441,7 @@ function blink(selector) {
   }
 }
 
+// eslint-disable-next-line no-unused-vars
 function removeCondition(e) {
   const rootNode = e.parentNode.parentNode;
   rootNode.parentNode.removeChild(rootNode);
@@ -552,6 +459,7 @@ function startDrawCirclemarker() {
 
 /* Send messages to the backend */
 
+// eslint-disable-next-line no-unused-vars
 function launchModule() {
   // Get the selected item
   const value = $('#launch-module-menu')[0].value;
@@ -560,6 +468,7 @@ function launchModule() {
   }
 }
 
+// eslint-disable-next-line no-unused-vars
 function launchSettings(value) {
   if (value) {
     sendMessage('/launch', { launch: value }, {}, handleResponse);
@@ -567,7 +476,7 @@ function launchSettings(value) {
 }
 
 function reply(res, message) {
-  sendMessage('/reply', { msg: message }, { message_id: res.message_id }, handleResponse);
+  sendMessage('/reply', { msg: message }, { messageId: res.message_id }, handleResponse);
 }
 
 function saveDrawing(res) {
@@ -575,7 +484,7 @@ function saveDrawing(res) {
   if (geojson.features.length === 0) {
     return false;
   }
-  sendMessage('/drawing', { data: geojson }, { message_id: res.message_id }, handleResponse);
+  sendMessage('/drawing', { data: geojson }, { messageId: res.message_id }, handleResponse);
   return true;
 }
 
