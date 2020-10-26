@@ -613,8 +613,21 @@ function getAttributes(table) {
   get('/attributes', { table }, function (res) {
     const { tableObj, columnObj } = JSON.parse(res.message.attributes)
 
-    $('#table-description').html(tableElement('table table-bordered', tableObj))
-    $('#column-description').html(tableElement('table table-bordered', columnObj))
+    // the headFields are GRASS GIS attribute names
+    const tObj = { headFields: ['table', 'description'], rows: [] }
+    const cObj = { headFields: ['column', 'description'], rows: [] }
+    // filter unwanted fields
+    for (const row of tableObj.rows) {
+      tObj.rows.push({ 'table': row.table, 'description': row.description })
+    }
+    for (const row of columnObj.rows) {
+      if (['DOUBLE PRECISION', 'INTEGER'].indexOf(row.type) > -1 &&
+        ['ID', 'id', 'cat'].indexOf(row.column) == -1)
+        cObj.rows.push({ 'column': row.column, 'description': row.description })
+    }
+
+    $('#table-description').html(tableElement('table table-bordered', tObj))
+    $('#column-description').html(tableElement('table table-bordered', cObj))
     $('#table-attributes-modal').show()
   })
 }
