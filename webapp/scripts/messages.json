@@ -3,7 +3,7 @@
         "1": {
             "message_id": "add_location.1",
             "message": {
-                "text": "The basemaps have already been set. If you want to set a new set of basemaps, the existing basemaps will be overwritten. Do you want to set new basemaps?"
+                "text": "The basemap has already been set. If you want to set a new basemap, the existing basemap will be overwritten. Do you want to set a new basemap?"
             }
         },
         "3": {
@@ -15,13 +15,13 @@
         "4": {
             "message_id": "add_location.4",
             "message": {
-                "text": "Select an OpenStreetMap (.osm) file to use for the new basemaps. You can download an OSM file from <a href=\"https://www.openstreetmap.org/\" target=\"_blank\">openstreetmap.org</a>.<br><small>Setting a new set of basemaps may take a long time if the file is large.</small>"
+                "text": "Select an OpenStreetMap (.osm) file to use for the new basemap. You can download an OSM file from <a href=\"https://www.openstreetmap.org/\" target=\"_blank\">openstreetmap.org</a>.<br><small>Setting a new basemap may take a long time if the file is large.</small>"
             }
         },
         "5": {
             "message_id": "add_location.5",
             "message": {
-                "text": "New basemaps have been set."
+                "text": "New basemap has been set."
             }
         }
     },
@@ -47,7 +47,7 @@
         "7": {
             "message_id": "set_resolution.7",
             "message": {
-                "text": "No valid basemap found. Please set the basemaps in the <a class=\"text-primary\" onclick=\"blink('#settings-menu')\">settings menu</a>."
+                "text": "No valid basemap found. Please set the basemap in the <a class=\"text-primary\" onclick=\"blink('#settings-menu')\">settings menu</a>."
             }
         }
     },
@@ -55,7 +55,7 @@
         "1": {
             "message_id": "set_selection.1",
             "message": {
-                "text": "No valid basemap found. Please set the basemaps in the <a class=\"text-primary\" onclick=\"blink('#settings-menu')\">settings menu</a>."
+                "text": "No valid basemap found. Please set the basemap in the <a class=\"text-primary\" onclick=\"blink('#settings-menu')\">settings menu</a>."
             }
         },
         "2": {
@@ -75,7 +75,7 @@
         "1": {
             "message_id": "add_map.1",
             "message": {
-                "text": "No valid basemap found. Please set the basemaps in <a class=\"text-primary\" onclick=\"blink('#settings-menu')\">the settings menu</a> before adding a map. Now click OK to exit."
+                "text": "No valid basemap found. Please set the basemap in <a class=\"text-primary\" onclick=\"blink('#settings-menu')\">the settings menu</a> before adding a map. Now click OK to exit."
             }
         },
         "2": {
@@ -137,7 +137,7 @@
         "7": {
             "message_id": "module_1a.7",
             "message": {
-                "text": "No valid basemap found. Please set the basemaps in the <a class=\"text-primary\" onclick=\"blink('#settings-menu')\">settings menu</a>."
+                "text": "No valid basemap found. Please set the basemap in the <a class=\"text-primary\" onclick=\"blink('#settings-menu')\">settings menu</a>."
             }
         },
         "8": {
@@ -175,7 +175,7 @@
         "7": {
             "message_id": "module_2.7",
             "message": {
-                "text": "No valid basemap found. Please set the basemaps in the <a class=\"text-primary\" onclick=\"blink('#settings-menu')\">settings menu</a>."
+                "text": "No valid basemap found. Please set the basemap in the <a class=\"text-primary\" onclick=\"blink('#settings-menu')\">settings menu</a>."
             }
         },
         "24": {

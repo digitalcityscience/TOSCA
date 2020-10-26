@@ -128,7 +128,7 @@ const groupedOverlays = {
   "Background map": {
     'OpenStreetMap': osm
   },
-  "Basemaps": {
+  "Basemap": {
     'Water lines': waterLines,
     'Roads': roads,
     'Buildings': buildings,
