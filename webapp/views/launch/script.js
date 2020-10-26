@@ -470,37 +470,45 @@ function buttonElement(action) {
 }
 
 function relationSelect() {
-  const relationOption = ['AND', 'OR', 'NOT'].map(el => `<option value="${el}">${el}</option>`);
+  const relationOption = ['AND', 'OR'].map(el => `<option value="${el}">${el}</option>`);
   return $(`<select class="rel custom-select mb-2">${relationOption}</select>`)
 }
 
 function conditionElement(data, id) {
-  const container = $(`<div class='d-flex mb-2' id='${id}'></div>`)
+  const container = $(`<div class='card-body border-info m-0 p-10'></div>`)
+  const row1 = $(`<div class='d-flex mb-2' id='${id}'><small>query attribute</small></div>`)
   const columns = data.map(item => `<option value="${item.column}">${item.column}</option>`)
-  const select = $(`<select class='custom-select mr-2 sel'>${columns}</select>`)
+  const select = $(`<select class='custom-select mr-2 ml-2 sel'>${columns}</select>`)
   const remove = $('<button type="button" class="btn btn-secondary ml-2">&times;</button>')
-  const info = $(`<div class="mb-2 text-light bg-dark">${'min: ' + data[0].bounds[0] + ' max: ' + data[0].bounds[1]}</div>`)
-  const inputs = $(`
+  // const info = $(`<div class="mb-2 text-light bg-dark">${'min: ' + data[0].bounds[0] + ' max: ' + data[0].bounds[1]}</div>`)
+  const row2 = $(`
   <div class='d-flex justify-content-between mb-2'>
-    <label for='${id}-input-min'>min</label>
+    <small>min <span class='min-badge badge badge-secondary'> >= ${data[0].bounds[0]}</span></small>
     <input id='${id}-input-min' type='number' class='form-control ml-2 mr-2 min'>
-    <label for='${id}-input-max'>max</label>
+  </div>
+  <div class='d-flex justify-content-between mb-2'>
+    <small>max <span class='max-badge badge badge-secondary'> <= ${data[0].bounds[1]}</span></small>
     <input id='${id}-input-max' type='number' class='form-control ml-2 mr-2 max'>
   </div>
   `)
 
-  container.append(select)
-  container.append(remove)
+  row1.append(select)
+  row1.append(remove)
+  container.append(row1)
+  container.append(row2)
 
   remove.click((e) => {
-    $(e.target).parent().parent().remove();
+    $(e.target).parent().parent().parent().remove();
   })
 
   select.change((e) => {
     const bounds = data.filter(d => d.column === e.target.value)[0].bounds
-    info.html('min: ' + bounds[0] + ' max: ' + bounds[1])
+    const min = $(e.target).parent().parent().find('.min-badge')
+    const max = $(e.target).parent().parent().find('.max-badge')
+    min.html('>= ' + bounds[0])
+    max.html('<= ' + bounds[1])
   })
-  return container.add(info).add(inputs)
+  return container
 }
 
 /**
@@ -622,7 +630,7 @@ function getAttributes(table) {
     }
     for (const row of columnObj.rows) {
       if (['DOUBLE PRECISION', 'INTEGER'].indexOf(row.type) > -1 &&
-        ['ID', 'id', 'cat'].indexOf(row.column) == -1)
+        ['cat'].indexOf(row.column) == -1)
         cObj.rows.push({ 'column': row.column, 'description': row.description })
     }
 

@@ -100,7 +100,8 @@ module.exports = {
    */
   getUnivarBounds(mapset, map, column) {
     const univar = grass(mapset, `v.db.univar -e -g map=${map} column=${column}`).trim().split('\n')
-    return [univar[1].split('=')[1], univar[2].split('=')[1]]
+    const [min, max] = [univar[1].split('=')[1], univar[2].split('=')[1]]
+    return [round(min, 2), round(max, 2)]
   },
 
   /**
@@ -268,4 +269,17 @@ function formatDesc(rawArray) {
     table.rows.push(row)
   }
   return table
+}
+
+function round(val, n) {
+  let i = 0
+  let dot = false
+  while (val[i] && ['0', '.'].indexOf(val[i]) > -1) {
+    if (val[i] === '.') dot = true
+    i++
+  }
+  if (!dot) {
+    while (val[i] && val[i] != '.') i++
+  }
+  return val.substring(0, i + n + 1)
 }
