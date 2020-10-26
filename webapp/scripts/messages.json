@@ -3,7 +3,7 @@
         "1": {
             "message_id": "add_location.1",
             "message": {
-                "text": "A location has already been set. If you want to set a new location, the existing location will be overwritten. Do you want to set a new location?"
+                "text": "The basemap has already been set. If you want to set a new basemap, the existing basemap will be overwritten. Do you want to set a new basemap?"
             }
         },
         "3": {
@@ -15,13 +15,13 @@
         "4": {
             "message_id": "add_location.4",
             "message": {
-                "text": "Select an OpenStreetMap (.osm) file to use for the new location. You can download an OSM file from <a href=\"https://www.openstreetmap.org/\" target=\"_blank\">openstreetmap.org</a>.<br><small>Setting a new location may take a long time if the file is large.</small>"
+                "text": "Select an OpenStreetMap (.osm) file to use for the new basemap. You can download an OSM file from <a href=\"https://www.openstreetmap.org/\" target=\"_blank\">openstreetmap.org</a>.<br><small>Setting a new basemap may take a long time if the file is large.</small>"
             }
         },
         "5": {
             "message_id": "add_location.5",
             "message": {
-                "text": "New location has been set."
+                "text": "New basemap has been set."
             }
         }
     },
@@ -47,7 +47,7 @@
         "7": {
             "message_id": "set_resolution.7",
             "message": {
-                "text": "No valid location found. Please set a location in the <a class=\"text-primary\" onclick=\"blink('#settings-menu')\">settings menu</a>."
+                "text": "No valid basemap found. Please set the basemap in the <a class=\"text-primary\" onclick=\"blink('#settings-menu')\">settings menu</a>."
             }
         }
     },
@@ -55,13 +55,13 @@
         "1": {
             "message_id": "set_selection.1",
             "message": {
-                "text": "No valid location found. Please set a location in the <a class=\"text-primary\" onclick=\"blink('#settings-menu')\">settings menu</a>."
+                "text": "No valid basemap found. Please set the basemap in the <a class=\"text-primary\" onclick=\"blink('#settings-menu')\">settings menu</a>."
             }
         },
         "2": {
             "message_id": "set_selection.2",
             "message": {
-                "text": "A ‘selection’ is a selected part of the available map area. Calculations will only be performed for that selection. Use the <a class=\"text-primary\" onclick=\"blink('.leaflet-draw-draw-polygon')\">polygon tool</a> to set the selection. When you have finished drawing, click ‘Save’ to set your drawing as selection.<br><small>The selection area has to overlap with the ‘location’.</small>"
+                "text": "A ‘selection’ is a selected part of the available map area. Calculations will only be performed for that selection. Use the <a class=\"text-primary\" onclick=\"blink('.leaflet-draw-draw-polygon')\">polygon tool</a> to set the selection. When you have finished drawing, click ‘Save’ to set your drawing as selection.<br><small>The selection area has to overlap with the ‘basemap boundary’.</small>"
             }
         },
         "3": {
@@ -75,7 +75,7 @@
         "1": {
             "message_id": "add_map.1",
             "message": {
-                "text": "No valid location found. Please set a location in <a class=\"text-primary\" onclick=\"blink('#settings-menu')\">the settings menu</a> before adding a map. Now click OK to exit."
+                "text": "No valid basemap found. Please set the basemap in <a class=\"text-primary\" onclick=\"blink('#settings-menu')\">the settings menu</a> before adding a map. Now click OK to exit."
             }
         },
         "2": {
@@ -137,13 +137,13 @@
         "7": {
             "message_id": "module_1a.7",
             "message": {
-                "text": "No valid location found. Please set a location in the <a class=\"text-primary\" onclick=\"blink('#settings-menu')\">settings menu</a>."
+                "text": "No valid basemap found. Please set the basemap in the <a class=\"text-primary\" onclick=\"blink('#settings-menu')\">settings menu</a>."
             }
         },
         "8": {
             "message_id": "module_1a.8",
             "message": {
-                "text": "Average speed values are used for the different road types of the area. Do you want to change them?<br>In case you want to calculate the time map for walking or cycling, you can set the average speed value to:<ul><li>Walking: xxx</li><li>Cycling: xxx</li></ul>"
+                "text": "Average speed values are used for the different road types of the area. Do you want to change them?<br>In case you want to calculate the time map for walking or cycling, you can set the average speed value to:<ul><li>Walking: 5 km/h</li><li>Cycling: 12 km/h</li></ul>"
             }
         },
         "9": {
@@ -175,7 +175,7 @@
         "7": {
             "message_id": "module_2.7",
             "message": {
-                "text": "No valid location found. Please set a location in the <a class=\"text-primary\" onclick=\"blink('#settings-menu')\">settings menu</a>."
+                "text": "No valid basemap found. Please set the basemap in the <a class=\"text-primary\" onclick=\"blink('#settings-menu')\">settings menu</a>."
             }
         },
         "24": {

@@ -199,10 +199,10 @@ L.control.legend(
 
 // Overlay layers are grouped
 const groupedOverlays = {
-  "Basemaps": {
+  "Background map": {
     'OpenStreetMap': osm
   },
-  "Location": {
+  "Basemap": {
     'Water lines': waterLines,
     'Roads': roads,
     'Buildings': buildings,
@@ -245,11 +245,12 @@ L.control.groupedLayers({}, customLayers, { position: 'topright', collapsed: fal
 map.addControl(new L.Control.Draw({
   edit: {
     featureGroup: drawnItems,
-    poly: { allowIntersection: false }
+    poly: {
+      allowIntersection: false
+    }
   },
   draw: {
     polygon: {
-      allowIntersection: false,
       showArea: true,
       fill: '#FFFFFF',
     },
