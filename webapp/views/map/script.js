@@ -34,6 +34,14 @@ const buildings = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
   minZoom: 1
 });
 
+const location_bbox = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
+  layers: 'vector:location_bbox',
+  format: 'image/png',
+  transparent: true,
+  maxZoom: 20,
+  minZoom: 1
+});
+
 const selection = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
   layers: 'vector:selection',
   format: 'image/png',
@@ -129,9 +137,10 @@ const groupedOverlays = {
     'OpenStreetMap': osm
   },
   "Basemap": {
+    'Basemap boundary': location_bbox,
     'Water lines': waterLines,
     'Roads': roads,
-    'Buildings': buildings,
+    'Buildings': buildings
   },
   "User inputs": {
     'Current selection': selection,
