@@ -305,43 +305,37 @@ function handleResponse(res) {
         break;
 
       case 'module_2.3': {
-        form = formElement(messageId);
-        const columns = list.map(col => `<option value="${col}">${col}</option>`);
-        const relationOption = ['AND', 'OR', 'NOT'].map(el => `<option value="${el}">${el}</option>`);
-        const operators = ['>', '<', '=', '>=', '<='].map(el => `<option value="${el}">${el}</option>`);
-        const firstCondition = $(`
-        <div class='d-flex'>
-          <select class='${messageId}-input custom-select mr-2'>${columns}</select>
-          <select class='${messageId}-input custom-select mr-2'>${operators}</select>
-          <input class='${messageId}-input form-control' type="number" />
-        </div>
-        `)
-        const condition = firstCondition.clone()
-        const removeButton = $('<button type="button" class="btn btn-danger ml-2" onclick="removeCondition(this)">remove</button>')
-        const relationSelect = selectElement(messageId+'-input', relationOption)
-        const conditionGroup = $(`<div></div>`)
-        condition.append(removeButton)
-        conditionGroup.append(relationSelect)
-        conditionGroup.append(condition)
+        const query = $(`<div class='query'></div>`)
+        query.append(conditionElement(list))
+        lists.append(query);
 
-        lists.append($('<span>WHERE</span>'));
-        lists.append(firstCondition);
-        let inputs = $(`.${messageId}-input`)
         buttons = [
+          buttonElement('Show attributes').click(() => {
+            getAttributes(res.message.map)
+          }),
           buttonElement('＋').click(() => {
-            lists.append(conditionGroup.clone());
-            inputs = $(`.${messageId}-input`)
+            len = $('.query').length
+            const query = $(`<div class='query'></div>`)
+            if (len > 0) query.append(relationSelect())
+            query.append(conditionElement(list))
+            lists.append(query);
           }),
           buttonElement('OK').click(() => {
             $(`#${messageId}-error`).remove();
             let msg = []
+            const querys = $('.query')
+
             // inputs.map is problematic because jquery objs behave differently
-            for (let i = 0; i < inputs.length; i++) {
-              // validate input
-              if ((inputs[i].type === 'number' && inputs[i].value.match(/^(-?\d+\.\d+)$|^(-?\d+)$/))
-                ||
-                (inputs[i].type != 'number')) {
-                msg.push(inputs[i].value)
+            for (const query of querys) {
+              const [rel, sel, min, max] = [
+                $(query).find('.rel').val(),
+                $(query).find('.sel').val(),
+                $(query).find('.min').val(),
+                $(query).find('.max').val()
+              ]
+              if (rel != undefined) msg.push(rel)
+              if (validateNum(min) && validateNum(max)) {
+                msg.push(sel, '>=', min, 'AND', sel, '<=', max)
               } else {
                 msg = []
                 textarea.append($(`<span id="${messageId}-error" class="validation-error">Please enter valid numbers in the fields.</span>`));
@@ -381,9 +375,47 @@ function buttonElement(action) {
   return $(`<button type="button" class="btn btn-primary">${action}</button>`);
 }
 
-function selectElement(id, options){
-  return  $(`<select class='${id} custom-select mt-2 mb-2'>${options}</select>`)
+function relationSelect() {
+  const relationOption = ['AND', 'OR'].map(el => `<option value="${el}">${el}</option>`);
+  return $(`<select class="rel custom-select mb-2">${relationOption}</select>`)
 }
+
+function conditionElement(data, id) {
+  const container = $(`<div class='card-body border-info m-0 p-10'></div>`)
+  const row1 = $(`<div class='d-flex mb-2' id='${id}'><small>query attribute</small></div>`)
+  const columns = data.map(item => `<option value="${item.column}">${item.column}</option>`)
+  const select = $(`<select class='custom-select mr-2 ml-2 sel'>${columns}</select>`)
+  const remove = $('<button type="button" class="btn btn-secondary ml-2">&times;</button>')
+  const row2 = $(`
+  <div class='d-flex justify-content-between mb-2'>
+    <small>min <span class='min-badge badge badge-secondary'> >= ${data[0].bounds[0]}</span></small>
+    <input id='${id}-input-min' type='number' class='form-control ml-2 mr-2 min'>
+  </div>
+  <div class='d-flex justify-content-between mb-2'>
+    <small>max <span class='max-badge badge badge-secondary'> <= ${data[0].bounds[1]}</span></small>
+    <input id='${id}-input-max' type='number' class='form-control ml-2 mr-2 max'>
+  </div>
+  `)
+
+  row1.append(select)
+  row1.append(remove)
+  container.append(row1)
+  container.append(row2)
+
+  remove.click((e) => {
+    $(e.target).parent().parent().parent().remove();
+  })
+
+  select.change((e) => {
+    const bounds = data.filter(d => d.column === e.target.value)[0].bounds
+    const min = $(e.target).parent().parent().find('.min-badge')
+    const max = $(e.target).parent().parent().find('.max-badge')
+    min.html('>= ' + bounds[0])
+    max.html('<= ' + bounds[1])
+  })
+  return container
+}
+
 /**
  * create a table element from data
  * @param {Array} data an array of identically structured js objects
@@ -414,6 +446,10 @@ function clearDialog() {
   $('#textarea').empty();
   $('#buttonarea').empty();
   $('#lists').empty();
+}
+
+function validateNum(num) {
+  return !isNaN(parseFloat(num))
 }
 
 // eslint-disable-next-line no-unused-vars
@@ -500,8 +536,21 @@ function getAttributes(table) {
   get('/attributes', { table }, function (res) {
     const { tableObj, columnObj } = JSON.parse(res.attributes)
 
-    $('#table-description').html(tableElement('table table-bordered', tableObj))
-    $('#column-description').html(tableElement('table table-bordered', columnObj))
+    // the headFields are GRASS GIS attribute names (except 'min' and 'max')
+    const tObj = { headFields: ['table', 'description'], rows: [] }
+    const cObj = { headFields: ['column', 'description', 'min', 'max'], rows: [] }
+    // filter unwanted fields
+    for (const row of tableObj.rows) {
+      tObj.rows.push({ 'table': row.table, 'description': row.description })
+    }
+    for (const row of columnObj.rows) {
+      if (['DOUBLE PRECISION', 'INTEGER'].indexOf(row.type) > -1 &&
+        ['cat'].indexOf(row.column) == -1)
+        cObj.rows.push({ 'column': row.column, 'description': row.description, 'min': row.min, 'max': row.max })
+    }
+
+    $('#table-description').html(tableElement('table table-bordered', tObj))
+    $('#column-description').html(tableElement('table table-bordered', cObj))
     $('#table-attributes-modal').show()
   })
 }

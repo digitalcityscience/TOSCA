@@ -83,6 +83,32 @@ module.exports = {
   },
 
   /**
+   * Returns univariate statistics on selected table column for a GRASS vector map.
+   * @param {string} mapset 
+   * @param {string} map 
+   * @param {string} column 
+   */
+  getUnivar(mapset, map, column) {
+    const rawArray = grass(mapset, `v.db.univar -e -g map=${map} column=${column}`).trim().split('\n')
+    return rawArray.reduce((dict, line) => {
+      const a = line.split('=')
+      dict[a[0]] = a[1]
+      return dict
+    }, {})
+  },
+
+  /**
+   * Returns min and max value of a univariate stat on selected table column for a GRASS vector map.
+   * @param {string} mapset 
+   * @param {string} map 
+   * @param {string} column 
+   */
+  getUnivarBounds(mapset, map, column) {
+    const stats = module.exports.getUnivar(mapset, map, column)
+    return [round(stats.min, 2), round(stats.max, 2)]
+  },
+
+  /**
    * Identify the topology of a vector map
    * @param {string} mapset
    * @param {string} layer layer name
@@ -189,9 +215,11 @@ module.exports = {
    * Prints all attribute descriptions of a table
    * @param {string} table
    */
-  describeTable(table) {
-    const raw = grass('PERMANENT', `db.describe table="${table}"`)
-    return parseDescription(raw)
+  describeTable(mapset, table) {
+    const raw = grass(mapset, `db.describe table="${table}"`)
+    const desc = parseDescription(raw)
+    addBounds(desc, mapset, table)
+    return JSON.stringify(desc)
   },
 
   /**
@@ -224,11 +252,27 @@ function grass(mapset, args) {
  */
 function parseDescription(raw) {
   const rawArray = raw.split('\n\n')
-  const msg = {
+  const desc = {
     tableObj: formatDesc(rawArray.slice(0, 1)),
     columnObj: formatDesc(rawArray.slice(1))
   }
-  return JSON.stringify(msg)
+  return desc
+}
+
+/**
+ * add max and min attributes to each element of desc.columnObj.rows
+ * @param {*} desc table description object
+ * @param {*} mapset mapset name
+ * @param {*} table table name
+ */
+function addBounds(desc, mapset, table) {
+  desc.columnObj.rows.forEach(row => {
+    if (['DOUBLE PRECISION', 'INTEGER'].indexOf(row.type) > -1) {
+      const [min, max] = module.exports.getUnivarBounds(mapset, table, row.column)
+      row.min = min
+      row.max = max
+    }
+  })
 }
 
 /**
@@ -238,6 +282,7 @@ function parseDescription(raw) {
 function formatDesc(rawArray) {
   const table = { headFields: [], rows: [] }
   table.headFields = rawArray[0].split('\n').map(line => line.split(':')[0])
+  table.headFields.push('min', 'max')
   for (const column of rawArray) {
     const row = column.split('\n').reduce((obj, line) => {
       const [key, value] = line.split(':')
@@ -247,4 +292,17 @@ function formatDesc(rawArray) {
     table.rows.push(row)
   }
   return table
+}
+
+function round(val, n) {
+  let i = 0
+  let dot = false
+  while (val[i] && ['0', '.'].indexOf(val[i]) > -1) {
+    if (val[i] === '.') dot = true
+    i++
+  }
+  if (!dot) {
+    while (val[i] && val[i] != '.') i++
+  }
+  return val.substring(0, i + n + 1)
 }
