@@ -89,7 +89,12 @@ module.exports = {
    * @param {string} column 
    */
   getUnivar(mapset, map, column) {
-    return grass(mapset, `v.db.univar -e -g map=${map} column=${column}`).trim().split('\n')
+    const rawArray = grass(mapset, `v.db.univar -e -g map=${map} column=${column}`).trim().split('\n')
+    return rawArray.reduce((dict, line) => {
+      const a = line.split('=')
+      dict[a[0]] = a[1]
+      return dict
+    }, {})
   },
 
   /**
@@ -99,8 +104,8 @@ module.exports = {
    * @param {string} column 
    */
   getUnivarBounds(mapset, map, column) {
-    const univar = module.exports.getUnivar(mapset, map, column)
-    return univar.slice(1, 3).map(v => round(v.split('=')[1], 2))
+    const stats = module.exports.getUnivar(mapset, map, column)
+    return [round(stats.min, 2), round(stats.max, 2)]
   },
 
   /**

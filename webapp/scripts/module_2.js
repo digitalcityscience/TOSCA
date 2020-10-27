@@ -95,8 +95,7 @@ class ModuleTwo {
 
     // TODO: handle output when query_result is empty
     // Query statistics
-    const stats = getUnivar('module_2', QUERY_RESULT_NAME, queryColumn).map(line => line.split('=')[1])
-
+    const stats = getUnivar('module_2', QUERY_RESULT_NAME, queryColumn)
     // Data output
     gpkgOut('module_2', QUERY_RESULT_NAME, QUERY_RESULT_NAME)
 
@@ -110,20 +109,20 @@ Date of creation: ${dateString}
 Queried column: ${queryColumn}
 Criteria: ${where}
 Results:
-Number of features:          ${stats[0]}
-Sum of values:               ${stats[9]}
-Minimum value:               ${stats[1]}
-Maximum value:               ${stats[2]}
-Range of values:             ${stats[3]}
-Mean:                        ${stats[4]}
-Mean of absolute values:     ${stats[5]}
-Median:                      ${stats[11]}
-Standard deviation:          ${stats[7]}
-Variance:                    ${stats[6]}
-Relative standard deviation: ${stats[8]}
-1st quartile:                ${stats[10]}
-3rd quartile:                ${stats[12]}
-90th percentile:             ${stats[13]}`
+Number of features:          ${stats.n}
+Sum of values:               ${stats.sum}
+Minimum value:               ${stats.min}
+Maximum value:               ${stats.max}
+Range of values:             ${stats.range}
+Mean:                        ${stats.mean}
+Mean of absolute values:     ${stats.mean_abs}
+Median:                      ${stats.median}
+Standard deviation:          ${stats.stddev}
+Variance:                    ${stats.variance}
+Relative standard deviation: ${stats.coeff_var}
+1st quartile:                ${stats.first_quartile}
+3rd quartile:                ${stats.third_quartile}
+90th percentile:             ${stats.percentile_90}`
 
     // Generate PDF
 
