@@ -402,7 +402,10 @@ function handleResponse(res) {
         break;
 
       case 'module_2.3': {
-        // form = formElement(messageId);
+        const query = $(`<div class='query'></div>`)
+        query.append(conditionElement(list))
+        lists.append(query);
+
         buttons = [
           buttonElement('Show attributes').click(() => {
             getAttributes(res.message.map)
@@ -480,7 +483,6 @@ function conditionElement(data, id) {
   const columns = data.map(item => `<option value="${item.column}">${item.column}</option>`)
   const select = $(`<select class='custom-select mr-2 ml-2 sel'>${columns}</select>`)
   const remove = $('<button type="button" class="btn btn-secondary ml-2">&times;</button>')
-  // const info = $(`<div class="mb-2 text-light bg-dark">${'min: ' + data[0].bounds[0] + ' max: ' + data[0].bounds[1]}</div>`)
   const row2 = $(`
   <div class='d-flex justify-content-between mb-2'>
     <small>min <span class='min-badge badge badge-secondary'> >= ${data[0].bounds[0]}</span></small>
@@ -544,7 +546,7 @@ function clearDialog() {
 }
 
 function validateNum(num) {
-  return num.match(/^(-?\d+\.\d+)$|^(-?\d+)$/)
+  return !isNaN(parseFloat(num))
 }
 
 function showResults() {
@@ -621,9 +623,9 @@ function getAttributes(table) {
   get('/attributes', { table }, function (res) {
     const { tableObj, columnObj } = JSON.parse(res.message.attributes)
 
-    // the headFields are GRASS GIS attribute names
+    // the headFields are GRASS GIS attribute names (except 'min' and 'max')
     const tObj = { headFields: ['table', 'description'], rows: [] }
-    const cObj = { headFields: ['column', 'description'], rows: [] }
+    const cObj = { headFields: ['column', 'description', 'min', 'max'], rows: [] }
     // filter unwanted fields
     for (const row of tableObj.rows) {
       tObj.rows.push({ 'table': row.table, 'description': row.description })
@@ -631,7 +633,7 @@ function getAttributes(table) {
     for (const row of columnObj.rows) {
       if (['DOUBLE PRECISION', 'INTEGER'].indexOf(row.type) > -1 &&
         ['cat'].indexOf(row.column) == -1)
-        cObj.rows.push({ 'column': row.column, 'description': row.description })
+        cObj.rows.push({ 'column': row.column, 'description': row.description, 'min': row.min, 'max': row.max })
     }
 
     $('#table-description').html(tableElement('table table-bordered', tObj))

@@ -99,9 +99,8 @@ module.exports = {
    * @param {string} column 
    */
   getUnivarBounds(mapset, map, column) {
-    const univar = grass(mapset, `v.db.univar -e -g map=${map} column=${column}`).trim().split('\n')
-    const [min, max] = [univar[1].split('=')[1], univar[2].split('=')[1]]
-    return [round(min, 2), round(max, 2)]
+    const univar = module.exports.getUnivar(mapset, map, column)
+    return univar.slice(1, 3).map(v => round(v.split('=')[1], 2))
   },
 
   /**
@@ -213,7 +212,9 @@ module.exports = {
    */
   describeTable(mapset, table) {
     const raw = grass(mapset, `db.describe table="${table}"`)
-    return parseDescription(raw)
+    const desc = parseDescription(raw)
+    addBounds(desc, mapset, table)
+    return JSON.stringify(desc)
   },
 
   /**
@@ -246,11 +247,27 @@ function grass(mapset, args) {
  */
 function parseDescription(raw) {
   const rawArray = raw.split('\n\n')
-  const msg = {
+  const desc = {
     tableObj: formatDesc(rawArray.slice(0, 1)),
     columnObj: formatDesc(rawArray.slice(1))
   }
-  return JSON.stringify(msg)
+  return desc
+}
+
+/**
+ * add max and min attributes to each element of desc.columnObj.rows
+ * @param {*} desc table description object
+ * @param {*} mapset mapset name
+ * @param {*} table table name
+ */
+function addBounds(desc, mapset, table) {
+  desc.columnObj.rows.forEach(row => {
+    if (['DOUBLE PRECISION', 'INTEGER'].indexOf(row.type) > -1) {
+      const [min, max] = module.exports.getUnivarBounds(mapset, table, row.column)
+      row.min = min
+      row.max = max
+    }
+  })
 }
 
 /**
@@ -260,6 +277,7 @@ function parseDescription(raw) {
 function formatDesc(rawArray) {
   const table = { headFields: [], rows: [] }
   table.headFields = rawArray[0].split('\n').map(line => line.split(':')[0])
+  table.headFields.push('min', 'max')
   for (const column of rawArray) {
     const row = column.split('\n').reduce((obj, line) => {
       const [key, value] = line.split(':')
