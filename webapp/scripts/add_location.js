@@ -1,5 +1,5 @@
 const fs = require('fs')
-const { addOsm, checkWritableDir, getCoordinates, gpkgOut, mapsetExists } = require('./functions')
+const { addOsm, checkWritableDir, getCoordinates, gpkgOut, mapsetExists, grass } = require('./functions')
 const { add_location: messages } = require('./messages.json')
 
 const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
@@ -47,6 +47,10 @@ class AddLocationModule {
         gpkgOut('PERMANENT', 'points_osm', 'points')
         gpkgOut('PERMANENT', 'lines_osm', 'lines')
         gpkgOut('PERMANENT', 'polygons_osm', 'polygons')
+        // use buildings/municipality boundaries to set the location bbox
+        grass('PERMANENT', `g.region vector=polygons_osm`)
+        grass('PERMANENT', 'v.in.region output=location_bbox')
+        gpkgOut('PERMANENT', 'location_bbox', 'location_bbox')
 
         let [east, north] = getCoordinates('PERMANENT')
 

@@ -1,0 +1,17 @@
+<layer>
+  <name>location_bbox</name>
+  <id>LayerInfoImpl--7d32349b:17564db7347:-7ffa</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl--30af9c43:17564f1c471:-7ffc</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl--7d32349b:17564db7347:-7ffb</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateCreated>2020-10-26 12:27:52.159 UTC</dateCreated>
+  <dateModified>2020-10-26 12:56:54.890 UTC</dateModified>
+</layer>
