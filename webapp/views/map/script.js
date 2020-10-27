@@ -34,7 +34,7 @@ const buildings = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
   minZoom: 1
 });
 
-const location_bbox = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
+const locationBbox = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
   layers: 'vector:location_bbox',
   format: 'image/png',
   transparent: true,
@@ -137,7 +137,7 @@ const groupedOverlays = {
     'OpenStreetMap': osm
   },
   "Basemap": {
-    'Basemap boundary': location_bbox,
+    'Basemap boundary': locationBbox,
     'Water lines': waterLines,
     'Roads': roads,
     'Buildings': buildings
