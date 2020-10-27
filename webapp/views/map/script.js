@@ -1,3 +1,5 @@
+/* global L, lat, lon, geoserverUrl */
+
 const map = new L.Map('map', {
   center: new L.LatLng(lat, lon),
   zoom: 13,
@@ -89,7 +91,7 @@ const accessibilityMap = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/",
   layers: 'vector:m1b_accessibility_map',
   format: 'image/png',
   transparent: true,
-  legend_yes: true,
+  legendYes: true,
   maxZoom: 20,
   minZoom: 3
 });
@@ -118,17 +120,17 @@ const queryResult = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
   minZoom: 3
 });
 
-//Control for map legends. For those item, where the linked map has a "legend_yes: true," property, a second checkbox will displayed.
+// Control for map legends. For those item, where the linked map has a "legendYes: true," property, a second checkbox will displayed.
 L.control.legend(
   { position: 'bottomleft' }
 ).addTo(map);
 
 // Overlay layers are grouped
 const groupedOverlays = {
-  "Basemaps": {
+  "Background map": {
     'OpenStreetMap': osm
   },
-  "Location": {
+  "Basemap": {
     'Water lines': waterLines,
     'Roads': roads,
     'Buildings': buildings,

@@ -35,15 +35,15 @@ html
             li(class="nav-item dropdown")
               a(class="btn btn-lg nav-link dropdown-toggle" id="settings-menu" data-toggle="dropdown") Settings
               div(class="dropdown-menu dropdown-menu-right")
-                a(class="btn dropdown-item" onclick="launchSettings('add_location')") Set location
+                a(class="btn dropdown-item" onclick="launchSettings('add_location')") Add basemap
                 div(class="dropdown-divider")
                 a(class="btn dropdown-item" onclick="launchSettings('set_selection')") Set selection
                 div(class="dropdown-divider")
                 a(class="btn dropdown-item" onclick="launchSettings('set_resolution')") Set resolution
                 div(class="dropdown-divider")
-                a(class="btn dropdown-item" onclick="launchSettings('add_map')") Add map
+                a(class="btn dropdown-item" onclick="launchSettings('add_map')") Add layer
             li(class="nav-item")
-              button(class='btn btn-secondary btn-lg' onclick='show_help()') Help
+              button(class='btn btn-secondary btn-lg' onclick='showHelp()') Help
 
       div(class="d-flex flex-grow-1 main")
         div(class='d-flex flex-column w-25 sidebar')
