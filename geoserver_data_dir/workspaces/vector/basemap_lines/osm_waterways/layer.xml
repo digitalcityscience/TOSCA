@@ -1,0 +1,17 @@
+<layer>
+  <name>osm_waterways</name>
+  <id>LayerInfoImpl--3b92b020:1757517531c:-7ffa</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl-53a0964:16fc2624139:-7ff9</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl--3b92b020:1757517531c:-7ffb</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateCreated>2020-10-29 16:04:24.59 UTC</dateCreated>
+  <dateModified>2020-10-29 17:02:07.860 UTC</dateModified>
+</layer>
