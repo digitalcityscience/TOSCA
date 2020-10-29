@@ -12,6 +12,10 @@ const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(map);
 
+const hot = L.tileLayer('https://tile-{s}.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors; Humanitarian map style by <a href="https://www.hotosm.org/">HOT</a>'
+});
+
 const waterLines = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
   layers: 'vector:water_lines_osm',
   format: 'image/png',
@@ -133,11 +137,12 @@ L.control.legend(
   { position: 'bottomleft' }
 ).addTo(map);
 
-// Overlay layers are grouped
+// Grouped layer control
+const baseLayers = {
+  "OSM Standard style": osm,
+  "OSM Humanitarian style": hot
+}
 const groupedOverlays = {
-  "Background map": {
-    'OpenStreetMap': osm
-  },
   "Basemap": {
     'Basemap boundary': locationBbox,
     'Water lines': waterLines,
@@ -162,7 +167,7 @@ const groupedOverlays = {
 };
 
 // Use the custom grouped layer control, not "L.control.layers"
-L.control.groupedLayers({}, groupedOverlays, { position: 'topright', collapsed: false }).addTo(map);
+L.control.groupedLayers(baseLayers, groupedOverlays, { position: 'topright', collapsed: false }).addTo(map);
 
 // Prevent click/scroll events from propagating to the map through the layer control
 const layerControlElement = $('.leaflet-control-layers')[0];
