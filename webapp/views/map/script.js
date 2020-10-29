@@ -1,3 +1,5 @@
+/* global L, lat, lon, geoserverUrl */
+
 const map = new L.Map('map', {
   center: new L.LatLng(lat, lon),
   zoom: 13,
@@ -28,6 +30,14 @@ const roads = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
 
 const buildings = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
   layers: 'vector:polygons_osm',
+  format: 'image/png',
+  transparent: true,
+  maxZoom: 20,
+  minZoom: 1
+});
+
+const locationBbox = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
+  layers: 'vector:location_bbox',
   format: 'image/png',
   transparent: true,
   maxZoom: 20,
@@ -65,7 +75,7 @@ const timeMap = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
   layers: 'vector:m1_time_map',
   format: 'image/png',
   transparent: true,
-  legend_yes: true,
+  legend: true,
   maxZoom: 20,
   minZoom: 1
 });
@@ -90,7 +100,7 @@ const accessibilityMap = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/",
   layers: 'vector:m1b_accessibility_map',
   format: 'image/png',
   transparent: true,
-  legend_yes: true,
+  legend: true,
   maxZoom: 20,
   minZoom: 3
 });
@@ -120,79 +130,79 @@ const queryResult = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
 });
 
 // Latacunga maps
-const Flood_risk_map = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
+const floodRiskMap = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
   layers: 'vector:ltca_flood_risk',
   format: 'image/png',
   transparent: true,
-  legend_yes: true,
+  legend: true,
   maxZoom: 20,
   minZoom: 3
 });
 
-const Hospitals = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
+const hospitals = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
   layers: 'vector:ltca_hospitals',
   format: 'image/png',
   transparent: true,
-  legend_yes: true,
+  legend: true,
   maxZoom: 20,
   minZoom: 3
 });
 
-const Doctors = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
+const doctors = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
   layers: 'vector:ltca_doct_offices',
   format: 'image/png',
   transparent: true,
-  legend_yes: true,
+  legend: true,
   maxZoom: 20,
   minZoom: 3
 });
 
-const Schools = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
+const schools = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
   layers: 'vector:ltca_schools',
   format: 'image/png',
   transparent: true,
-  legend_yes: true,
+  legend: true,
   maxZoom: 20,
   minZoom: 3
 });
 
-const Farms = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
+const farms = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
   layers: 'vector:ltca_farms',
   format: 'image/png',
   transparent: true,
-  legend_yes: true,
+  legend: true,
   maxZoom: 20,
   minZoom: 3
 });
 
-const Greenhouses = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
+const greenhouses = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
   layers: 'vector:ltca_greenhouses',
   format: 'image/png',
   transparent: true,
-  legend_yes: true,
+  legend: true,
   maxZoom: 20,
   minZoom: 3
 });
 
-const administrative_units = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
+const administrativeUnits = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
   layers: 'vector:ltca_admin',
   format: 'image/png',
   transparent: true,
-  legend_yes: true,
+  legend: true,
   maxZoom: 20,
   minZoom: 3
 });
 
-const Latacunga_elevation_map = L.tileLayer.wms(geoserverUrl + "geoserver/raster/wms/", {
+const latacungaElevationMap = L.tileLayer.wms(geoserverUrl + "geoserver/raster/wms/", {
   layers: 'raster:ltca_dem',
   format: 'image/png',
   transparent: true,
-  legend_yes: true,
+  legend: true,
   maxZoom: 20,
   minZoom: 3
 });
 
-//Control for map legends. For those item, where the linked map has a "legend_yes: true," property, a second checkbox will displayed.
+// Control for map legends. For those item, where the linked map has a "legend: true," property, a second checkbox will displayed.
 L.control.legend(
   { position: 'bottomleft' }
 ).addTo(map);
@@ -203,37 +213,38 @@ const groupedOverlays = {
     'OpenStreetMap': osm
   },
   "Basemap": {
+    'Basemap boundary': locationBbox,
     'Water lines': waterLines,
     'Roads': roads,
-    'Buildings': buildings,
+    'Buildings': buildings
   },
   "User inputs": {
     'Current selection': selection,
     'Drawings on the map': drawnItems,
-    'Query area': queryArea1,
-    'Query map': queryMap,
+    // 'Query area': queryArea1,
+    // 'Query map': queryMap,
     "From-points": fromPoints,
     "Via-points": viaPoints,
     "Stricken area": strickenArea
   },
   "Results": {
     "Road-level time map": timeMap,
-    'Query result': queryResult,
-    "Accessibility map": accessibilityMap,
-    "Accessing points": accessibilityPoints
+    // 'Query result': queryResult,
+    // "Accessibility map": accessibilityMap,
+    // "Accessing points": accessibilityPoints
   }
 };
 
 const customLayers = {
   "Latacunga": {
-    'Latacunga elevation map': Latacunga_elevation_map,
-    '8th level administrative units': administrative_units,
-    'Flood risk map': Flood_risk_map,
-    'Greenhouses': Greenhouses,
-    'Farms, farm buildings, orchilds': Farms,
-    'School buildings': Schools,
-    'Doctor or dentist office': Doctors,
-    'Hospitals and clinics': Hospitals
+    'Latacunga elevation map': latacungaElevationMap,
+    '8th level administrative units': administrativeUnits,
+    'Flood risk map': floodRiskMap,
+    'Greenhouses': greenhouses,
+    'Farms, farm buildings, orchilds': farms,
+    'School buildings': schools,
+    'Doctor or dentist office': doctors,
+    'Hospitals and clinics': hospitals
   },
 }
 

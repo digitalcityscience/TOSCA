@@ -60,14 +60,14 @@ const LatacungaModule = require('./scripts/cotopaxi_scenarios')
 const { describeTable, getResults } = require('./scripts/functions')
 
 const modules = {
-  add_location: new AddLocationModule(),
-  add_map: new AddMapModule(),
-  set_selection: new SetSelectionModule(),
-  set_resolution: new SetResolutionModule(),
-  module_1: new ModuleOne(),
-  module_1a: new ModuleOneA(),
-  module_2: new ModuleTwo(),
-  cotopaxi_scenarios: new LatacungaModule()
+  "add_location": new AddLocationModule(),
+  "add_map": new AddMapModule(),
+  "set_selection": new SetSelectionModule(),
+  "set_resolution": new SetResolutionModule(),
+  "module_1": new ModuleOne(),
+  "module_1a": new ModuleOneA(),
+  "module_2": new ModuleTwo(),
+  "cotopaxi_scenarios": new LatacungaModule()
 }
 
 // launch a module
@@ -90,8 +90,8 @@ app.post('/launch', jsonParser, (req, res, next) => {
 // message request
 app.post('/reply', jsonParser, (req, res, next) => {
   try {
-    const module = modules[req.query.message_id.split('.')[0]]
-    const message = module.process(req.body.msg, req.query.message_id)
+    const module = modules[req.query.messageId.split('.')[0]]
+    const message = module.process(req.body.msg, req.query.messageId)
 
     if (message) {
       res.send(message)
@@ -106,7 +106,7 @@ app.post('/reply', jsonParser, (req, res, next) => {
 // file upload
 app.post('/file', uploadParser.single('file'), (req, res, next) => {
   try {
-    const module = modules[req.query.message_id.split('.')[0]]
+    const module = modules[req.query.messageId.split('.')[0]]
     const file = `${dataFromBrowserDir}/${req.file.originalname}`
     const writer = fs.createWriteStream(file)
 
@@ -119,7 +119,7 @@ app.post('/file', uploadParser.single('file'), (req, res, next) => {
       // Process file after it's finished downloading.
       // Have to add another try/catch block, as we're inside an async function
       try {
-        const message = module.process(file, req.query.message_id)
+        const message = module.process(file, req.query.messageId)
 
         if (message) {
           res.send(message)
@@ -138,11 +138,11 @@ app.post('/file', uploadParser.single('file'), (req, res, next) => {
 // send a GeoJSON
 app.post('/drawing', jsonParser, (req, res, next) => {
   try {
-    const module = modules[req.query.message_id.split('.')[0]]
+    const module = modules[req.query.messageId.split('.')[0]]
     const file = `${dataFromBrowserDir}/drawing.geojson`
 
     fs.writeFileSync(file, JSON.stringify(req.body.data))
-    res.send(module.process(file, req.query.message_id))
+    res.send(module.process(file, req.query.messageId))
   } catch (err) {
     next(err)
   }
@@ -152,8 +152,7 @@ app.post('/drawing', jsonParser, (req, res, next) => {
 app.get('/output', jsonParser, (req, res, next) => {
   try {
     const list = getResults()
-    const message = { message_id: 'output', message: { list } }
-    res.send(message)
+    res.json({ list })
   } catch (err) {
     next(err)
   }
@@ -162,9 +161,8 @@ app.get('/output', jsonParser, (req, res, next) => {
 // return all attribute descriptions of a table
 app.get('/attributes', jsonParser, async (req, res, next) => {
   try {
-    const attributes = await describeTable(req.query.table)
-    const message = { message_id: 'attributes', message: { attributes } }
-    res.json(message)
+    const attributes = describeTable('PERMANENT', req.query.table)
+    res.json({ attributes })
   } catch (err) {
     next(err)
   }
