@@ -164,6 +164,11 @@ const groupedOverlays = {
 // Use the custom grouped layer control, not "L.control.layers"
 L.control.groupedLayers({}, groupedOverlays, { position: 'topright', collapsed: false }).addTo(map);
 
+// Prevent click/scroll events from propagating to the map through the layer control
+const layerControlElement = $('.leaflet-control-layers')[0];
+L.DomEvent.disableClickPropagation(layerControlElement);
+L.DomEvent.disableScrollPropagation(layerControlElement);
+
 map.addControl(new L.Control.Draw({
   edit: {
     featureGroup: drawnItems,
