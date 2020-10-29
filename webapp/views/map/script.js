@@ -92,53 +92,8 @@ const timeMap = L.tileLayer.wms(rasterWMS, {
 });
 
 // Latacunga thematic maps
-const floodRiskMap = L.tileLayer.wms(vectorWMS, {
-  layers: 'vector:ltca_flood_risk',
-  format: 'image/png',
-  transparent: true,
-  legend: true,
-  maxZoom: 20,
-  minZoom: 3
-});
-
-const hospitals = L.tileLayer.wms(vectorWMS, {
-  layers: 'vector:ltca_hospitals',
-  format: 'image/png',
-  transparent: true,
-  legend: true,
-  maxZoom: 20,
-  minZoom: 3
-});
-
-const doctors = L.tileLayer.wms(vectorWMS, {
-  layers: 'vector:ltca_doct_offices',
-  format: 'image/png',
-  transparent: true,
-  legend: true,
-  maxZoom: 20,
-  minZoom: 3
-});
-
-const schools = L.tileLayer.wms(vectorWMS, {
-  layers: 'vector:ltca_schools',
-  format: 'image/png',
-  transparent: true,
-  legend: true,
-  maxZoom: 20,
-  minZoom: 3
-});
-
-const farms = L.tileLayer.wms(vectorWMS, {
-  layers: 'vector:ltca_farms',
-  format: 'image/png',
-  transparent: true,
-  legend: true,
-  maxZoom: 20,
-  minZoom: 3
-});
-
-const greenhouses = L.tileLayer.wms(vectorWMS, {
-  layers: 'vector:ltca_greenhouses',
+const latacungaElevationMap = L.tileLayer.wms(rasterWMS, {
+  layers: 'ltca_dem',
   format: 'image/png',
   transparent: true,
   legend: true,
@@ -147,7 +102,7 @@ const greenhouses = L.tileLayer.wms(vectorWMS, {
 });
 
 const administrativeUnits = L.tileLayer.wms(vectorWMS, {
-  layers: 'vector:ltca_admin',
+  layers: 'ltca_admin',
   format: 'image/png',
   transparent: true,
   legend: true,
@@ -155,8 +110,53 @@ const administrativeUnits = L.tileLayer.wms(vectorWMS, {
   minZoom: 3
 });
 
-const latacungaElevationMap = L.tileLayer.wms(rasterWMS, {
-  layers: 'raster:ltca_dem',
+const floodRiskMap = L.tileLayer.wms(vectorWMS, {
+  layers: 'ltca_flood_risk',
+  format: 'image/png',
+  transparent: true,
+  legend: true,
+  maxZoom: 20,
+  minZoom: 3
+});
+
+const greenhouses = L.tileLayer.wms(vectorWMS, {
+  layers: 'ltca_greenhouses',
+  format: 'image/png',
+  transparent: true,
+  legend: true,
+  maxZoom: 20,
+  minZoom: 3
+});
+
+const farms = L.tileLayer.wms(vectorWMS, {
+  layers: 'ltca_farms',
+  format: 'image/png',
+  transparent: true,
+  legend: true,
+  maxZoom: 20,
+  minZoom: 3
+});
+
+const schools = L.tileLayer.wms(vectorWMS, {
+  layers: 'ltca_schools',
+  format: 'image/png',
+  transparent: true,
+  legend: true,
+  maxZoom: 20,
+  minZoom: 3
+});
+
+const doctors = L.tileLayer.wms(vectorWMS, {
+  layers: 'ltca_doct_offices',
+  format: 'image/png',
+  transparent: true,
+  legend: true,
+  maxZoom: 20,
+  minZoom: 3
+});
+
+const hospitals = L.tileLayer.wms(vectorWMS, {
+  layers: 'ltca_hospitals',
   format: 'image/png',
   transparent: true,
   legend: true,
@@ -168,9 +168,7 @@ const latacungaElevationMap = L.tileLayer.wms(rasterWMS, {
 const drawnItems = L.featureGroup().addTo(map);
 
 // Control for map legends. For those item, where the linked map has a "legend: true," property, a second checkbox will displayed.
-L.control.legend(
-  { position: 'bottomleft' }
-).addTo(map);
+L.control.legend({ position: 'bottomleft' }).addTo(map);
 
 // Overlay layers are grouped
 const groupedOverlays = {
@@ -189,18 +187,15 @@ const groupedOverlays = {
     "Via point": viaPoints,
     "Affected area": strickenArea,
     "Road-level time map": timeMap
-  }
-};
-
-const customLayers = {
-  "Latacunga": {
+  },
+  "Latacunga thematic maps": {
     "Elevation map": latacungaElevationMap,
-    "8th level administrative units": administrativeUnits,
-    "Flood risk map": floodRiskMap,
+    "Administrative units": administrativeUnits,
+    "Lahar risk map": floodRiskMap,
     "Greenhouses": greenhouses,
     "Farms and orchards": farms,
-    "School": schools,
-    "Doctor and dentists": doctors,
+    "Schools": schools,
+    "Doctors and dentists": doctors,
     "Hospitals and clinics": hospitals
   },
 }
@@ -208,7 +203,7 @@ const customLayers = {
 // Use the custom grouped layer control, not "L.control.layers"
 L.control.groupedLayers({}, groupedOverlays, { position: 'topright', collapsed: false }).addTo(map);
 
-L.control.groupedLayers({}, customLayers, { position: 'topright', collapsed: false }).addTo(map);
+// L.control.groupedLayers({}, customLayers, { position: 'topright', collapsed: false }).addTo(map);
 
 map.addControl(new L.Control.Draw({
   edit: {
