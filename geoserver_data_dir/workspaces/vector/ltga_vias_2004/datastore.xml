@@ -1,0 +1,24 @@
+<dataStore>
+  <id>DataStoreInfoImpl--55b2dee0:173fd156fd2:-7b5c</id>
+  <name>ltga_vias_2004</name>
+  <description>ltga_vias_2004</description>
+  <type>Directory of spatial files (shapefiles)</type>
+  <enabled>true</enabled>
+  <workspace>
+    <id>WorkspaceInfoImpl-53a0964:16fc2624139:-7fff</id>
+  </workspace>
+  <connectionParameters>
+    <entry key="charset">ISO-8859-1</entry>
+    <entry key="filetype">shapefile</entry>
+    <entry key="create spatial index">true</entry>
+    <entry key="memory mapped buffer">false</entry>
+    <entry key="timezone">Etc/UTC</entry>
+    <entry key="enable spatial index">true</entry>
+    <entry key="namespace">vector</entry>
+    <entry key="cache and reuse memory maps">true</entry>
+    <entry key="url">file:data/latacunga/Vias2004</entry>
+    <entry key="fstype">shape</entry>
+  </connectionParameters>
+  <__default>false</__default>
+  <dateModified>2020-10-29 19:59:15.614 UTC</dateModified>
+</dataStore>

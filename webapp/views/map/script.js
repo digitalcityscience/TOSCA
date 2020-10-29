@@ -92,7 +92,7 @@ const timeMap = L.tileLayer.wms(rasterWMS, {
 });
 
 // Latacunga thematic maps
-const latacungaElevationMap = L.tileLayer.wms(rasterWMS, {
+const latacungaDEM = L.tileLayer.wms(rasterWMS, {
   layers: 'ltca_dem',
   format: 'image/png',
   transparent: true,
@@ -164,6 +164,69 @@ const hospitals = L.tileLayer.wms(vectorWMS, {
   minZoom: 3
 });
 
+const ltgaVulnerabilityMap = L.tileLayer.wms(vectorWMS, {
+  layers: 'ltga_vulnerabilidad',
+  format: 'image/png',
+  transparent: true,
+  legend: true,
+  maxZoom: 20,
+  minZoom: 3
+});
+
+const ltgaPopdenMap = L.tileLayer.wms(vectorWMS, {
+  layers: 'ltga_densidad_poblacion',
+  format: 'image/png',
+  transparent: true,
+  legend: true,
+  maxZoom: 20,
+  minZoom: 3
+});
+
+const ltgaAxisMap = L.tileLayer.wms(vectorWMS, {
+  layers: 'ltga_eje_vial',
+  format: 'image/png',
+  transparent: true,
+  legend: true,
+  maxZoom: 20,
+  minZoom: 3
+});
+
+const ltgaRoadMap = L.tileLayer.wms(vectorWMS, {
+  layers: 'ltga_vias_2004',
+  format: 'image/png',
+  transparent: true,
+  legend: true,
+  maxZoom: 20,
+  minZoom: 3
+});
+
+const ltgaCropMap = L.tileLayer.wms(vectorWMS, {
+  layers: 'ltga_cultivo_principal',
+  format: 'image/png',
+  transparent: true,
+  legend: true,
+  maxZoom: 20,
+  minZoom: 3
+});
+
+const ltgaAshMap = L.tileLayer.wms(vectorWMS, {
+  layers: 'ltga_isopacas',
+  format: 'image/png',
+  transparent: true,
+  legend: true,
+  maxZoom: 20,
+  minZoom: 3
+});
+
+const ltgaEruptMap = L.tileLayer.wms(vectorWMS, {
+  layers: 'ltga_amenaza_coto',
+  format: 'image/png',
+  transparent: true,
+  legend: true,
+  maxZoom: 20,
+  minZoom: 3
+});
+
 // Drawings
 const drawnItems = L.featureGroup().addTo(map);
 
@@ -188,15 +251,24 @@ const groupedOverlays = {
     "Affected area": strickenArea,
     "Road-level time map": timeMap
   },
-  "Latacunga thematic maps": {
-    "Elevation map": latacungaElevationMap,
+  "Latacunga: thematic maps": {
+    "Elevation map": latacungaDEM,
     "Administrative units": administrativeUnits,
-    "Lahar risk map": floodRiskMap,
+    "Population density": ltgaPopdenMap,
     "Greenhouses": greenhouses,
     "Farms and orchards": farms,
     "Schools": schools,
     "Doctors and dentists": doctors,
-    "Hospitals and clinics": hospitals
+    "Hospitals and clinics": hospitals,
+    "AxisMap": ltgaAxisMap,
+    "RoadMap": ltgaRoadMap,
+    "CropMap": ltgaCropMap,
+  },
+  "Latacunga: volcanic threats": {
+    "Affected areas": ltgaEruptMap,
+    "Lahar risk": floodRiskMap,
+    "Ash fall risk": ltgaAshMap,
+    "Vulnerability": ltgaVulnerabilityMap,
   },
 }
 

@@ -1,0 +1,17 @@
+<layer>
+  <name>ltga_cultivo_principal</name>
+  <id>LayerInfoImpl-415df118:17550c845d0:-7ff2</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl-415df118:17550c845d0:-7ff1</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl-415df118:17550c845d0:-7ff3</id>
+  </resource>
+  <opaque>true</opaque>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateModified>2020-10-29 20:20:10.492 UTC</dateModified>
+</layer>

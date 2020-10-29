@@ -1,0 +1,16 @@
+<layer>
+  <name>ltga_eje_vial</name>
+  <id>LayerInfoImpl-415df118:17550c845d0:-7f65</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl-415df118:17550c845d0:-7f63</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl-415df118:17550c845d0:-7f66</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateModified>2020-10-29 20:19:02.608 UTC</dateModified>
+</layer>

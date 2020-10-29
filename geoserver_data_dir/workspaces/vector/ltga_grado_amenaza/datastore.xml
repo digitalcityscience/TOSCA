@@ -1,7 +1,6 @@
 <dataStore>
-  <id>DataStoreInfoImpl-603fce8d:173ec88db00:-7f78</id>
-  <name>ltca_dem</name>
-  <description>ltca_dem</description>
+  <id>DataStoreInfoImpl--5e4b8723:17401e38cbf:-6fb0</id>
+  <name>ltga_grado_amenaza</name>
   <type>GeoPackage</type>
   <enabled>true</enabled>
   <workspace>
@@ -9,12 +8,12 @@
   </workspace>
   <connectionParameters>
     <entry key="Batch insert size">1</entry>
-    <entry key="database">/usr/share/geoserver/data_dir/data/latacunga/ltca_dem.gpkg</entry>
+    <entry key="database">file:data/latacunga/grado_amenaza.gpkg</entry>
     <entry key="fetch size">1000</entry>
     <entry key="Expose primary keys">false</entry>
     <entry key="dbtype">geopkg</entry>
     <entry key="namespace">vector</entry>
   </connectionParameters>
   <__default>false</__default>
-  <dateCreated>2020-08-16 08:43:19.237 UTC</dateCreated>
+  <dateModified>2020-10-29 20:03:06.712 UTC</dateModified>
 </dataStore>

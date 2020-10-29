@@ -1,0 +1,16 @@
+<layer>
+  <name>ltga_densidad_poblacion</name>
+  <id>LayerInfoImpl-415df118:17550c845d0:-7f58</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl-415df118:17550c845d0:-7f56</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl-415df118:17550c845d0:-7f59</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateModified>2020-10-29 20:18:33.366 UTC</dateModified>
+</layer>

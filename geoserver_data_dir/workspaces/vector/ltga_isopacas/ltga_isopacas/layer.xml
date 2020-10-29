@@ -1,0 +1,22 @@
+<layer>
+  <name>ltga_isopacas</name>
+  <id>LayerInfoImpl--5e4b8723:17401e38cbf:-6fb6</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl--5e4b8723:17401e38cbf:-6fb4</id>
+  </defaultStyle>
+  <styles class="linked-hash-set">
+    <style>
+      <id>StyleInfoImpl--5e4b8723:17401e38cbf:-6fb4</id>
+    </style>
+  </styles>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl--5e4b8723:17401e38cbf:-6fb7</id>
+  </resource>
+  <opaque>true</opaque>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateModified>2020-10-29 20:21:16.82 UTC</dateModified>
+</layer>
