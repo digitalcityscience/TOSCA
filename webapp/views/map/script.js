@@ -101,22 +101,19 @@ L.control.legend(
 // Overlay layers are grouped
 const groupedOverlays = {
   "Background map": {
-    'OpenStreetMap': osm
+    "OpenStreetMap": osm
   },
   "Basemap": {
-    'Basemap boundary': basemapBbox,
-    'Water lines': waterways,
-    'Roads': roads,
-    'Buildings': buildings
+    "Waterways": waterways,
+    "Roads": roads,
+    "Buildings": buildings,
+    "Basemap boundary": basemapBbox,
+    "Current selection": selection
   },
-  "User inputs": {
-    'Current selection': selection,
-    'Drawings on the map': drawnItems,
-    "From-points": fromPoints,
-    "Via-points": viaPoints,
-    "Stricken area": strickenArea
-  },
-  "Results": {
+  "Time map": {
+    "Start point": fromPoints,
+    "Via point": viaPoints,
+    "Affected area": strickenArea,
     "Road-level time map": timeMap
   }
 };
