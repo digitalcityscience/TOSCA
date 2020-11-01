@@ -15,6 +15,10 @@ const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(map);
 
+const hot = L.tileLayer('https://tile-{s}.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors; Humanitarian map style by <a href="https://www.hotosm.org/">HOT</a>'
+});
+
 // Basemap
 const waterways = L.tileLayer.wms(vectorWMS, {
   layers: 'osm_waterways',
@@ -98,11 +102,12 @@ L.control.legend(
   { position: 'bottomleft' }
 ).addTo(map);
 
-// Overlay layers are grouped
+// Grouped layer control
+const baseLayers = {
+  "OSM Standard style": osm,
+  "OSM Humanitarian style": hot
+}
 const groupedOverlays = {
-  "Background map": {
-    "OpenStreetMap": osm
-  },
   "Basemap": {
     "Waterways": waterways,
     "Roads": roads,
@@ -119,7 +124,12 @@ const groupedOverlays = {
 };
 
 // Use the custom grouped layer control, not "L.control.layers"
-L.control.groupedLayers({}, groupedOverlays, { position: 'topright', collapsed: false }).addTo(map);
+L.control.groupedLayers(baseLayers, groupedOverlays, { position: 'topright', collapsed: false }).addTo(map);
+
+// Prevent click/scroll events from propagating to the map through the layer control
+const layerControlElement = $('.leaflet-control-layers')[0];
+L.DomEvent.disableClickPropagation(layerControlElement);
+L.DomEvent.disableScrollPropagation(layerControlElement);
 
 map.addControl(new L.Control.Draw({
   edit: {
