@@ -1,0 +1,17 @@
+<layer>
+  <name>ltca_markets_squares</name>
+  <id>LayerInfoImpl-62541fb6:17582a8f9e8:-7fed</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl-50f2cee3:1719bd49253:-7ffe</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl-62541fb6:17582a8f9e8:-7fee</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateCreated>2020-11-01 12:24:22.795 UTC</dateCreated>
+  <dateModified>2020-11-01 13:11:42.17 UTC</dateModified>
+</layer>

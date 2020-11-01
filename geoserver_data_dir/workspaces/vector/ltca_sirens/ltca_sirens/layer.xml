@@ -1,0 +1,16 @@
+<layer>
+  <name>ltca_sirens</name>
+  <id>LayerInfoImpl-62541fb6:17582a8f9e8:-7fe4</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl-50f2cee3:1719bd49253:-8000</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl-62541fb6:17582a8f9e8:-7fe5</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateCreated>2020-11-01 12:29:06.904 UTC</dateCreated>
+</layer>

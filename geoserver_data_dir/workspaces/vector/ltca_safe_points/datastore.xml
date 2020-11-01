@@ -1,6 +1,7 @@
 <dataStore>
-  <id>DataStoreInfoImpl-415df118:17550c845d0:-7f5a</id>
-  <name>ltga_densidad_poblacion</name>
+  <id>DataStoreInfoImpl-62541fb6:17582a8f9e8:-7fec</id>
+  <name>ltca_safe_points</name>
+  <description>Safe points</description>
   <type>GeoPackage</type>
   <enabled>true</enabled>
   <workspace>
@@ -8,12 +9,13 @@
   </workspace>
   <connectionParameters>
     <entry key="Batch insert size">1</entry>
-    <entry key="database">file:data/latacunga/densidad_poblacion_latacunga.gpkg</entry>
+    <entry key="database">file:data/latacunga/puntos_seguros.gpkg</entry>
     <entry key="fetch size">1000</entry>
     <entry key="Expose primary keys">false</entry>
     <entry key="dbtype">geopkg</entry>
     <entry key="namespace">vector</entry>
   </connectionParameters>
   <__default>false</__default>
-  <dateModified>2020-11-01 13:17:41.497 UTC</dateModified>
+  <dateCreated>2020-11-01 12:25:36.306 UTC</dateCreated>
+  <dateModified>2020-11-01 13:06:52.371 UTC</dateModified>
 </dataStore>

@@ -1,0 +1,17 @@
+<layer>
+  <name>ltca_safe_points</name>
+  <id>LayerInfoImpl-62541fb6:17582a8f9e8:-7fea</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl-50f2cee3:1719bd49253:-8000</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl-62541fb6:17582a8f9e8:-7feb</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateCreated>2020-11-01 12:26:10.816 UTC</dateCreated>
+  <dateModified>2020-11-01 13:09:24.376 UTC</dateModified>
+</layer>

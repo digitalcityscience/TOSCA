@@ -1,0 +1,64 @@
+<featureType>
+  <id>FeatureTypeInfoImpl-62541fb6:17582a8f9e8:-7ff1</id>
+  <name>ltca_producer_associations</name>
+  <nativeName>Asociaciones_productoras</nativeName>
+  <namespace>
+    <id>NamespaceInfoImpl-53a0964:16fc2624139:-7ffe</id>
+  </namespace>
+  <title>Latacunga: producer associations</title>
+  <keywords>
+    <string>features</string>
+    <string>Asociaciones_productoras</string>
+  </keywords>
+  <nativeCRS class="projected">PROJCS[&quot;SIRGAS 1995 / UTM zone 17S&quot;, 
+  GEOGCS[&quot;SIRGAS 1995&quot;, 
+    DATUM[&quot;Sistema de Referencia Geocentrico para America del Sur 1995&quot;, 
+      SPHEROID[&quot;GRS 1980&quot;, 6378137.0, 298.257222101, AUTHORITY[&quot;EPSG&quot;,&quot;7019&quot;]], 
+      TOWGS84[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 
+      AUTHORITY[&quot;EPSG&quot;,&quot;6170&quot;]], 
+    PRIMEM[&quot;Greenwich&quot;, 0.0, AUTHORITY[&quot;EPSG&quot;,&quot;8901&quot;]], 
+    UNIT[&quot;degree&quot;, 0.017453292519943295], 
+    AXIS[&quot;Geodetic longitude&quot;, EAST], 
+    AXIS[&quot;Geodetic latitude&quot;, NORTH], 
+    AUTHORITY[&quot;EPSG&quot;,&quot;4170&quot;]], 
+  PROJECTION[&quot;Transverse_Mercator&quot;, AUTHORITY[&quot;EPSG&quot;,&quot;9807&quot;]], 
+  PARAMETER[&quot;semi_minor&quot;, 6356752.314245179], 
+  PARAMETER[&quot;central_meridian&quot;, -81.0], 
+  PARAMETER[&quot;latitude_of_origin&quot;, 0.0], 
+  PARAMETER[&quot;scale_factor&quot;, 0.9996], 
+  PARAMETER[&quot;false_easting&quot;, 500000.0], 
+  PARAMETER[&quot;false_northing&quot;, 10000000.0], 
+  UNIT[&quot;m&quot;, 1.0], 
+  AXIS[&quot;Easting&quot;, EAST], 
+  AXIS[&quot;Northing&quot;, NORTH], 
+  AUTHORITY[&quot;EPSG&quot;,&quot;31992&quot;]]</nativeCRS>
+  <srs>EPSG:4326</srs>
+  <nativeBoundingBox>
+    <minx>688443.0</minx>
+    <maxx>785153.9999999999</maxx>
+    <miny>9873769.0</miny>
+    <maxy>9960994.0</maxy>
+    <crs class="projected">EPSG:31992</crs>
+  </nativeBoundingBox>
+  <latLonBoundingBox>
+    <minx>-79.30672663227823</minx>
+    <maxx>-78.43774779429971</maxx>
+    <miny>-1.1415478379781263</miny>
+    <maxy>-0.3525444147887442</maxy>
+    <crs>EPSG:4326</crs>
+  </latLonBoundingBox>
+  <projectionPolicy>REPROJECT_TO_DECLARED</projectionPolicy>
+  <enabled>true</enabled>
+  <store class="dataStore">
+    <id>DataStoreInfoImpl-62541fb6:17582a8f9e8:-7ff2</id>
+  </store>
+  <serviceConfiguration>false</serviceConfiguration>
+  <simpleConversionEnabled>false</simpleConversionEnabled>
+  <maxFeatures>0</maxFeatures>
+  <numDecimals>0</numDecimals>
+  <padWithZeros>false</padWithZeros>
+  <forcedDecimal>false</forcedDecimal>
+  <overridingServiceSRS>false</overridingServiceSRS>
+  <skipNumberMatched>false</skipNumberMatched>
+  <circularArcPresent>false</circularArcPresent>
+</featureType>

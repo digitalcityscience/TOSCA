@@ -1,0 +1,17 @@
+<layer>
+  <name>ltca_evacuation_routes</name>
+  <id>LayerInfoImpl-62541fb6:17582a8f9e8:-7fe7</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl-50f2cee3:1719bd49253:-7fff</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl-62541fb6:17582a8f9e8:-7fe8</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateCreated>2020-11-01 12:27:44.901 UTC</dateCreated>
+  <dateModified>2020-11-01 12:29:17.855 UTC</dateModified>
+</layer>

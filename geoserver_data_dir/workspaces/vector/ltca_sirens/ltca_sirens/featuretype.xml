@@ -1,0 +1,51 @@
+<featureType>
+  <id>FeatureTypeInfoImpl-62541fb6:17582a8f9e8:-7fe5</id>
+  <name>ltca_sirens</name>
+  <nativeName>Sirenas_volcan</nativeName>
+  <namespace>
+    <id>NamespaceInfoImpl-53a0964:16fc2624139:-7ffe</id>
+  </namespace>
+  <title>Latacunga: early warning sirens</title>
+  <keywords>
+    <string>features</string>
+    <string>Sirenas_volcan</string>
+  </keywords>
+  <nativeCRS>GEOGCS[&quot;WGS 84&quot;, 
+  DATUM[&quot;World Geodetic System 1984&quot;, 
+    SPHEROID[&quot;WGS 84&quot;, 6378137.0, 298.257223563, AUTHORITY[&quot;EPSG&quot;,&quot;7030&quot;]], 
+    AUTHORITY[&quot;EPSG&quot;,&quot;6326&quot;]], 
+  PRIMEM[&quot;Greenwich&quot;, 0.0, AUTHORITY[&quot;EPSG&quot;,&quot;8901&quot;]], 
+  UNIT[&quot;degree&quot;, 0.017453292519943295], 
+  AXIS[&quot;Geodetic longitude&quot;, EAST], 
+  AXIS[&quot;Geodetic latitude&quot;, NORTH], 
+  AUTHORITY[&quot;EPSG&quot;,&quot;4326&quot;]]</nativeCRS>
+  <srs>EPSG:4326</srs>
+  <nativeBoundingBox>
+    <minx>-78.63438999299996</minx>
+    <maxx>-78.56442041499997</maxx>
+    <miny>-0.9637983769999324</miny>
+    <maxy>-0.7296316519999663</maxy>
+    <crs>EPSG:4326</crs>
+  </nativeBoundingBox>
+  <latLonBoundingBox>
+    <minx>-78.63438999299996</minx>
+    <maxx>-78.56442041499997</maxx>
+    <miny>-0.9637983769999324</miny>
+    <maxy>-0.7296316519999663</maxy>
+    <crs>EPSG:4326</crs>
+  </latLonBoundingBox>
+  <projectionPolicy>FORCE_DECLARED</projectionPolicy>
+  <enabled>true</enabled>
+  <store class="dataStore">
+    <id>DataStoreInfoImpl-62541fb6:17582a8f9e8:-7fe6</id>
+  </store>
+  <serviceConfiguration>false</serviceConfiguration>
+  <simpleConversionEnabled>false</simpleConversionEnabled>
+  <maxFeatures>0</maxFeatures>
+  <numDecimals>0</numDecimals>
+  <padWithZeros>false</padWithZeros>
+  <forcedDecimal>false</forcedDecimal>
+  <overridingServiceSRS>false</overridingServiceSRS>
+  <skipNumberMatched>false</skipNumberMatched>
+  <circularArcPresent>false</circularArcPresent>
+</featureType>

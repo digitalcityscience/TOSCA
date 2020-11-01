@@ -227,6 +227,60 @@ const ltgaEruptMap = L.tileLayer.wms(vectorWMS, {
   minZoom: 3
 });
 
+const productiveInfrastructure = L.tileLayer.wms(vectorWMS, {
+  layers: 'ltca_productive_infrastructure',
+  format: 'image/png',
+  transparent: true,
+  legend: true,
+  maxZoom: 20,
+  minZoom: 3
+});
+
+const producerAssociations = L.tileLayer.wms(vectorWMS, {
+  layers: 'ltca_producer_associations',
+  format: 'image/png',
+  transparent: true,
+  legend: true,
+  maxZoom: 20,
+  minZoom: 3
+});
+
+const marketsSquares = L.tileLayer.wms(vectorWMS, {
+  layers: 'ltca_markets_squares',
+  format: 'image/png',
+  transparent: true,
+  legend: true,
+  maxZoom: 20,
+  minZoom: 3
+});
+
+const safePoints = L.tileLayer.wms(vectorWMS, {
+  layers: 'ltca_safe_points',
+  format: 'image/png',
+  transparent: true,
+  legend: true,
+  maxZoom: 20,
+  minZoom: 3
+});
+
+const evacuationRoutes = L.tileLayer.wms(vectorWMS, {
+  layers: 'ltca_evacuation_routes',
+  format: 'image/png',
+  transparent: true,
+  legend: true,
+  maxZoom: 20,
+  minZoom: 3
+});
+
+const sirens = L.tileLayer.wms(vectorWMS, {
+  layers: 'ltca_sirens',
+  format: 'image/png',
+  transparent: true,
+  legend: true,
+  maxZoom: 20,
+  minZoom: 3
+});
+
 // Drawings
 const drawnItems = L.featureGroup().addTo(map);
 
@@ -263,6 +317,12 @@ const groupedOverlays = {
     "AxisMap": ltgaAxisMap,
     "RoadMap": ltgaRoadMap,
     "CropMap": ltgaCropMap,
+    "Productive Infrastructure":productiveInfrastructure,
+    "Producer associations":producerAssociations,
+    "Markets and squares":marketsSquares,
+    "Safe points":safePoints,
+    "Evacuation routes":evacuationRoutes,
+    "Early warning sirens":sirens
   },
   "Latacunga: volcanic threats": {
     "Affected areas": ltgaEruptMap,
