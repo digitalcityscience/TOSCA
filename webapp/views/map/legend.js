@@ -56,7 +56,7 @@ function handleLegendClick(evt) {
 
     const p = L.DomUtil.create('p')
     p.className = 'leaflet-legend-layer-name'
-    p.innerHTML = this.options.name
+    p.innerHTML = this.options.layers
     div.appendChild(p)
 
     const img = L.DomUtil.create('img')
