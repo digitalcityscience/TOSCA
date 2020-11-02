@@ -78,8 +78,32 @@ module.exports = {
     return [EAST, NORTH]
   },
 
+  /**
+   * Get a layer's attribute columns
+   * @param {string} mapset mapset
+   * @param {string} layer layer name
+   */
+  getColumns(mapset, layer) {
+    return grass(mapset, `db.describe -c table=${layer}`).trim().split('\n')
+      .filter(line => line.match(/^Column/))
+      .map(line => {
+        const matches = line.match(/Column \d+: ([^:]+):([^:]+):(\d+)/)
+        return {
+          name: matches[1],
+          type: matches[2],
+          width: matches[3]
+        }
+      })
+      .filter(col => col.name !== 'cat')
+  },
+
+  /**
+   * Get a layer's numeric attribute columns
+   * @param {string} mapset mapset
+   * @param {string} layer layer name
+   */
   getNumericColumns(mapset, layer) {
-    return grass(mapset, `db.describe -c table=${layer}`).trim().split('\n').filter(col => col.match(/DOUBLE PRECISION|INTEGER/)).filter(col => !col.match(/cat/i))
+    return grass(mapset, `db.describe -c table=${layer}`).trim().split('\n').filter(col => col.match(/DOUBLE PRECISION|INTEGER/) && !col.match(/cat/i))
   },
 
   /**

@@ -1,0 +1,23 @@
+border
+	color grey
+	width 1
+	end
+
+mapinfo
+  where 1.5 0
+  font Courier
+  fontsize 12
+  color brown
+  end
+
+vareas cotopaxi_scenarios_query_zone
+  color red
+  fcolor none
+  width 1
+  end
+
+vareas cotopaxi_scenarios_query_result
+  color brown
+  fcolor 204:204:204
+  width 0.2
+  end

@@ -1,6 +1,8 @@
-const { addVector, checkWritableDir, initMapset, mapsetExists, listVector, grass } = require('./functions')
+const { addVector, checkWritableDir, initMapset, mapsetExists, listVector, getColumns, grass, psToPDF } = require('./functions')
 
 const GEOSERVER_DATA_DIR = process.env.GEOSERVER_DATA_DIR
+const GRASS_DIR = process.env.GRASS_DIR
+const OUTPUT_DIR = process.env.OUTPUT_DIR
 
 const messages = {
   0: {
@@ -35,7 +37,7 @@ const messages = {
   },
 }
 
-// Map names
+// Map names (must not contain whitespace)
 const queryZone = 'cotopaxi_scenarios_query_zone'
 const queryResult = 'cotopaxi_scenarios_query_result'
 
@@ -56,15 +58,19 @@ module.exports = class {
   }
 
   message2() {
-    const columns = grass(this.mapset, `db.describe -c table=${this.zonesLayer}`).trim().split('\n')
-    const zones = grass(this.mapset, `v.out.ascii input=${this.zonesLayer} columns="*"`).trim().split('\n')
-    return {
-      message_id: messages[2].message_id,
-      message: {
-        text: messages[2].message.text + '<br><br>' + columns.slice(2).join('<br>'),
-        list: zones.map(zone => zone.split('|').slice(2).join('|'))
+    const columns = getColumns(this.mapset, this.zonesLayer)
+    const list = columns.map(col => {
+      col.rows = []
+      // Extract a set of values appearing in the given dataset
+      const set = new Set(grass(this.mapset, `db.select sql="SELECT ${col.name} FROM ${this.zonesLayer}"`).trim().split('\n').slice(1))
+      for (const value of set.values()) {
+        col.rows.push(value)
       }
-    }
+      return col
+    })
+    const msg = messages[2]
+    msg.message.list = list
+    return msg
   }
 
   message3() {
@@ -90,9 +96,9 @@ module.exports = class {
         // … else request upload of dataset
         const msg = messages[1]
         msg.message.text = msg.message.text.replace(/\$1/, {
-          ash_fall: 'ash fall risk zones',
-          lahar_flow: 'lahar flow risk zones',
-          lava_flow: 'lava flow risk zones'
+          "ash_fall": 'ash fall risk zones',
+          "lahar_flow": 'lahar flow risk zones',
+          "lava_flow": 'lava flow risk zones'
         }[this.typeOfThreat])
         return msg
       }
@@ -110,10 +116,11 @@ module.exports = class {
       }
 
       case 'cotopaxi_scenarios.2': {
-        // message is a feature row
-        this.queryFeature = message.split('|')[0]
+        // message is the "where" expression
+        const [col, val] = message
 
-        grass(this.mapset, `v.extract input=${this.zonesLayer} where="cat = ${this.queryFeature}" output=${queryZone} --overwrite`)
+        // Extract matching features and store them in queryZone
+        grass(this.mapset, `v.extract input=${this.zonesLayer} where="${col} = ${val}" output=${queryZone} --overwrite`)
 
         return this.message3()
       }
@@ -125,8 +132,12 @@ module.exports = class {
         // Select features from the layer using the query zone
         grass(this.mapset, `v.select ainput=${this.selectLayer} binput=${queryZone} output=${queryResult} operator=overlap --overwrite`)
 
-        // Print results
-        console.log(grass(this.mapset, `v.out.ascii input=${queryResult}`))
+        const dateString = new Date().toISOString().replace(/([\d-]*)T(\d\d):(\d\d):[\d.]*Z/g, '$1_$2$3')
+
+        // Output results to PDF
+        grass(this.mapset, `g.region vector=${queryZone} --overwrite`)
+        grass(this.mapset, `ps.map input="${GRASS_DIR}/variables/defaults/cotopaxi_scenarios.ps_param" output=cotopaxi_scenarios.ps --overwrite`)
+        psToPDF('cotopaxi_scenarios.ps', `${OUTPUT_DIR}/cotopaxi_scenarios_${dateString}.pdf`)
 
         return messages[4]
       }
@@ -134,6 +145,6 @@ module.exports = class {
   }
 
   getQueryableDatasets() {
-    return this.datasets.filter(d => !d.match(/cotopaxi_scenarios.*|(ash_fall|lahar_flow|lava_flow)_zones|(lines|points|polygons|relations)_osm/))
+    return this.datasets.filter(d => !d.match(/cotopaxi_scenarios.*|(ash_fall|lahar_flow|lava_flow)_zones|(lines|points|polygons|relations)(_osm)?|selection|location_bbox/))
   }
 }

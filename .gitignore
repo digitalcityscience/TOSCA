@@ -6,7 +6,8 @@
 /geoserver_data_dir/logs/geoserver.log*
 /geoserver_data_dir/security
 /grass/global/*
-/grass/variables
+/grass/temp_*
+/grass/variables/*
 !/grass/variables/defaults
 /output/*
 

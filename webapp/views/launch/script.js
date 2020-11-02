@@ -306,7 +306,7 @@ function handleResponse(res) {
 
       case 'module_2.3': {
         const query = $(`<div class='query'></div>`)
-        query.append(conditionElement(list))
+        query.append(conditionElement(list, messageId))
         lists.append(query);
 
         buttons = [
@@ -314,7 +314,7 @@ function handleResponse(res) {
             getAttributes(res.message.map)
           }),
           buttonElement('＋').click(() => {
-            len = $('.query').length
+            const len = $('.query').length
             const query = $(`<div class='query'></div>`)
             if (len > 0) query.append(relationSelect())
             query.append(conditionElement(list))
@@ -384,17 +384,23 @@ function handleResponse(res) {
         ];
         break;
 
-      // Select scenario (i.e., feature of risk zones layer)
-      case 'cotopaxi_scenarios.2':
-        form = formElement(messageId);
-        lists.append($(`<select id="${messageId}-input" class='custom-select' size="10">` + list.map(col => `<option selected value="${col}">${col}</option>`) + `</select>`));
+      // Select scenario using a query on the risk zones layer
+      case 'cotopaxi_scenarios.2': {
+        const query = $(`<div class="query"></div>`);
+        query.append(queryElement(list, messageId));
+        lists.append(query);
+
         buttons = [
           buttonElement('Submit').click(() => {
-            const input = $(`#${messageId}-input`);
-            reply(res, input[0].value);
+            const query = $(`#${messageId}`);
+            const attr = query.find('.attr').val();
+            const value = query.find('.value').val();
+
+            reply(res, [attr, value]);
           })
         ];
         break;
+      }
 
       // Select dataset for analysis
       case 'cotopaxi_scenarios.3':
@@ -474,6 +480,32 @@ function conditionElement(data, id) {
     max.html('<= ' + bounds[1])
   })
   return container
+}
+
+function queryElement(columnDefinitions, id) {
+  const container = $(`<div id="${id}" class="card-body border-info m-0 p-10"></div>`);
+
+  const row1 = $(`<div class="d-flex mb-2"><small>attribute</small></div>`);
+  const options1 = columnDefinitions.map(col => `<option value="${col.name}">${col.name}</option>`);
+  const select1 = $(`<select class="attr custom-select mr-2 ml-2">${options1}</select>`);
+  row1.append(select1);
+
+  const row2 = $(`<div class="d-flex mb-2"><small>value</small></div>`);
+  const select2 = $(`<select class="value custom-select mr-2 ml-2"></select>`);
+  let options2 = columnDefinitions.length ? columnDefinitions[0].rows.map(row => `<option value="${row}">${row}</option>`) : null;
+  select2.append(options2);
+  row2.append(select2);
+
+  container.append(row1);
+  container.append(row2);
+
+  select1.on('change', evt => {
+    const column = columnDefinitions.find(col => col.name === $(evt.target)[0].value);
+    options2 = column.rows.map(row => `<option value="${row}">${row}</option>`);
+    select2.children().remove();
+    select2.append(options2);
+  })
+  return container;
 }
 
 /**
