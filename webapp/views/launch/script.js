@@ -314,7 +314,7 @@ function handleResponse(res) {
             getAttributes(res.message.map)
           }),
           buttonElement('＋').click(() => {
-            len = $('.query').length
+            const len = $('.query').length
             const query = $(`<div class='query'></div>`)
             if (len > 0) query.append(relationSelect())
             query.append(conditionElement(list))
