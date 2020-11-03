@@ -67,7 +67,6 @@ function handleLegendClick(evt) {
     // add LEGEND_OPTIONS for raster legends
     img.src += img.src.split('/')[4] === 'raster' ? RASTER_QUERY : ''
     div.appendChild(img)
-    console.log(img.src)
   } else {
     const img = document.getElementById(this.wmsParams.layers);
     if (img && content.contains(img)) {

@@ -1,4 +1,4 @@
-/* global L, lat, lon, geoserverUrl */
+/* global $, L, lat, lon, geoserverUrl */
 
 const map = new L.Map('map', {
   center: new L.LatLng(lat, lon),
