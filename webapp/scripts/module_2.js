@@ -23,13 +23,14 @@ class ModuleTwo {
 
     initMapset('module_2')
 
-    // update selection and set selection as the queryArea
+    // set selection as the query area
     grass('module_2', `g.copy vector=selection@PERMANENT,selection --overwrite`)
     this.queryArea = 'selection'
 
-    // Only maps of PERMANENT mapset can be queried. Default maps and "selection" map are not included in the list. Only maps with numeric column (except column "CAT") will be listed.
-    let maps = grass('PERMANENT', `g.list type=vector`).trim().split('\n')
-      .filter(map => !map.match(/^lines(_osm)?$|^points(_osm)?$|^polygons(_osm)?$|^relations(_osm)?$|^selection$|^location_bbox$/))
+    // Find queryable maps in any mapset, excluding default basemaps and selection.
+    // Only maps with at least one numeric column will be listed.
+    let maps = grass('PERMANENT', `g.list type=vector mapset=*`).trim().split('\n')
+      .filter(map => !map.match(/^((lines|points|polygons|relations)(_osm)?|selection|location_bbox)(@.+)?$/))
       .filter(map => getNumericColumns('PERMANENT', map).length > 0)
 
     const msg = messages["2"]
