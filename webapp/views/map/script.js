@@ -1,4 +1,4 @@
-/* global L, lat, lon, geoserverUrl */
+/* global $, L, lat, lon, geoserverUrl */
 
 const map = new L.Map('map', {
   center: new L.LatLng(lat, lon),
@@ -91,6 +91,7 @@ const timeMap = L.tileLayer.wms(rasterWMS, {
   layers: 'time_map_result',
   format: 'image/png',
   transparent: true,
+  legend: true,
   maxZoom: 20,
   minZoom: 1
 });
