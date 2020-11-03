@@ -90,6 +90,7 @@ const timeMap = L.tileLayer.wms(rasterWMS, {
   layers: 'time_map_result',
   format: 'image/png',
   transparent: true,
+  legend: true,
   maxZoom: 20,
   minZoom: 1
 });

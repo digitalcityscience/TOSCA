@@ -6,11 +6,13 @@
 
 // Hacking layer controlt, to create a 2nd checkboxot too.
 const layerAddOrigFunc = L.Control.GroupedLayers.prototype._addItem;
+const LEGEND_QUERY = '?SERVICE=WMS&REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER='
+const RASTER_QUERY = '&LEGEND_OPTIONS=forceRule:True;dx:0.2;dy:0.2;mx:0.2;my:0.2;fontStyle:bold;borderColor:0000ff;border:true;fontSize:10'
 L.Control.GroupedLayers.prototype._addItem = function (obj) {
   // The original functionality -- of course -- preserved and called :)
   const label = layerAddOrigFunc.call(this, obj);
   // Only for WMS -- otherwise it has no sense.
-  if (obj.layer instanceof L.TileLayer.WMS && obj.layer.options.legendYes) {
+  if (obj.layer instanceof L.TileLayer.WMS && obj.layer.options.legend) {
     label.children[0].addEventListener('click', handleLegendClick.bind(obj.layer));
   }
   return label;
@@ -61,8 +63,11 @@ function handleLegendClick(evt) {
 
     const img = L.DomUtil.create('img')
     img.style = 'display:block;'
-    img.src = this._url + '?SERVICE=WMS&REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=' + this.wmsParams.layers;
+    img.src = this._url + LEGEND_QUERY + this.wmsParams.layers
+    // add LEGEND_OPTIONS for raster legends
+    img.src += img.src.split('/')[4] === 'raster' ? RASTER_QUERY : ''
     div.appendChild(img)
+    console.log(img.src)
   } else {
     const img = document.getElementById(this.wmsParams.layers);
     if (img && content.contains(img)) {
