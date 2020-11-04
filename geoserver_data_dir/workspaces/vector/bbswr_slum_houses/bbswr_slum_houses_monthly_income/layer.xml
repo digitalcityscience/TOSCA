@@ -1,0 +1,16 @@
+<layer>
+  <name>bbswr_slum_houses_monthly_income</name>
+  <id>LayerInfoImpl-343c255e:17036557ae0:-7fb8</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl-37b6ddcf:16fcd74ff28:-7cee</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl-343c255e:17036557ae0:-7fb9</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateModified>2020-11-04 14:29:28.193 UTC</dateModified>
+</layer>

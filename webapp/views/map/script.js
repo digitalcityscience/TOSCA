@@ -95,11 +95,11 @@ const timeMap = L.tileLayer.wms(rasterWMS, {
   minZoom: 1
 });
 
-// Local layers (Bhubaneshwar)
+// Local layers (Bhubaneswar)
 
 const bbswrMetropolitanArea = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
-  layers: 'vector:bubaneshwar_metropolitan_area',
-  name: 'Bubaneshwar metropolitan area',
+  layers: 'bbswr_metropolitan_area',
+  name: 'Metropolitan area',
   format: 'image/png',
   transparent: true,
   legend: true,
@@ -108,8 +108,8 @@ const bbswrMetropolitanArea = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/w
 });
 
 const bbswrCityZone = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
-  layers: 'vector:bubaneshwar_city_zone',
-  name: 'Bubaneshwar city zone',
+  layers: 'bbswr_municipality',
+  name: 'BMC administrative units',
   format: 'image/png',
   transparent: true,
   legend: true,
@@ -118,56 +118,8 @@ const bbswrCityZone = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
 });
 
 const slumAreas = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
-  layers: 'vector:bbswr_slums',
-  name: 'Slums of Bubaneshwar',
-  format: 'image/png',
-  transparent: true,
-  legend: true,
-  maxZoom: 20,
-  minZoom: 1,
-});
-const slumTotalPopulation = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
-  layers: 'vector:bbswr_slum_total_population_households',
-  name: 'Total population by households',
-  format: 'image/png',
-  transparent: true,
-  legend: true,
-  maxZoom: 20,
-  minZoom: 1,
-});
-
-const femalePopulation = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
-  layers: 'vector:bbswr_slum_female_population_households',
-  name: 'Female habitanst by households',
-  format: 'image/png',
-  transparent: true,
-  legend: true,
-  maxZoom: 20,
-  minZoom: 1,
-});
-
-const malePopulation = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
-  layers: 'vector:bbswr_slum_male_population_households',
-  name: 'Male habitanst by households',
-  format: 'image/png',
-  transparent: true,
-  legend: true,
-  maxZoom: 20,
-  minZoom: 1,
-});
-const emptyPlaceTypes = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
-  layers: 'vector:bbswr_empty_place_types',
-  name: 'Open/Vacant empty places',
-  format: 'image/png',
-  transparent: true,
-  legend: true,
-  maxZoom: 20,
-  minZoom: 1,
-});
-
-const emptyPlaceCategory = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
-  layers: 'vector:bbswr_empty_places_category',
-  name: 'Dry/Green empty places',
+  layers: 'bbswr_slums',
+  name: 'Informal settlements',
   format: 'image/png',
   transparent: true,
   legend: true,
@@ -176,8 +128,8 @@ const emptyPlaceCategory = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms'
 });
 
 const landOwnership = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
-  layers: 'vector:bbswr_land_ownership',
-  name: 'Land ownership in Bubaneshwar',
+  layers: 'bbswr_land_ownership',
+  name: 'Informal settlements: ownership',
   format: 'image/png',
   transparent: true,
   legend: true,
@@ -185,9 +137,9 @@ const landOwnership = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
   minZoom: 1,
 });
 
-const slumsEmptyOwnership = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
-  layers: 'vector:empty_places_ownership',
-  name: 'Ownership of empty areas',
+const slumTotalPopulation = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
+  layers: 'bbswr_slum_houses_total_population',
+  name: 'Households by total population',
   format: 'image/png',
   transparent: true,
   legend: true,
@@ -195,9 +147,29 @@ const slumsEmptyOwnership = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms
   minZoom: 1,
 });
 
-const slumOwnerhip = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
-  layers: '	vector:bbswr_slum_ownership',
-  name: 'Ownerhips of slum houses',
+const femalePopulation = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
+  layers: 'bbswr_slum_houses_female_population',
+  name: 'Households by female population',
+  format: 'image/png',
+  transparent: true,
+  legend: true,
+  maxZoom: 20,
+  minZoom: 1,
+});
+
+const malePopulation = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
+  layers: 'bbswr_slum_houses_male_population',
+  name: 'Households by male population',
+  format: 'image/png',
+  transparent: true,
+  legend: true,
+  maxZoom: 20,
+  minZoom: 1,
+});
+
+const slumOwnership = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
+  layers: 'bbswr_slum_houses_ownership',
+  name: 'Households by type of ownership',
   format: 'image/png',
   transparent: true,
   legend: true,
@@ -206,8 +178,8 @@ const slumOwnerhip = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
 });
 
 const slumReligions = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
-  layers: 'vector:bbswr_slum_religions',
-  name: 'Religions by households',
+  layers: 'bbswr_slum_houses_religion',
+  name: 'Households by religion',
   format: 'image/png',
   transparent: true,
   legend: true,
@@ -216,8 +188,8 @@ const slumReligions = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
 });
 
 const monthlyIncomes = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
-  layers: 'vector:bbswr_slum_average_incomes',
-  name: 'Monthly average incomes per household',
+  layers: 'bbswr_slum_houses_monthly_income',
+  name: 'Households by average monthly income',
   format: 'image/png',
   transparent: true,
   legend: true,
@@ -226,8 +198,8 @@ const monthlyIncomes = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
 });
 
 const animals = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
-  layers: 'vector:bbswr_slum_animals',
-  name: 'Household with/without livestocks',
+  layers: 'bbswr_slum_houses_livestock',
+  name: 'Households by livestock',
   format: 'image/png',
   transparent: true,
   legend: true,
@@ -236,8 +208,8 @@ const animals = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
 });
 
 const slumsBathrooms = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
-  layers: 'vector:bbswr_slum_bathrooms',
-  name: 'Bathroom facilities in the slums',
+  layers: 'bbswr_slum_houses_bathrooms',
+  name: 'Households by availability of sanitation',
   format: 'image/png',
   transparent: true,
   legend: true,
@@ -245,9 +217,9 @@ const slumsBathrooms = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
   minZoom: 1,
 });
 
-const slumTapwater = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
-  layers: 'vector:bbswr_slum_tapwater',
-  name: 'Water accessibility in slums',
+const slumToilets = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
+  layers: 'bbswr_slum_houses_toilets',
+  name: 'Households by availability of latrines',
   format: 'image/png',
   transparent: true,
   legend: true,
@@ -255,9 +227,19 @@ const slumTapwater = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
   minZoom: 1,
 });
 
-const slumToilettes = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
-  layers: 'vector:bbswr_slum_toilettes',
-  name: 'Toilette facilities in the slums',
+const emptyPlaces = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
+  layers: 'bbswr_empty_places',
+  name: 'Open spaces/vacant land',
+  format: 'image/png',
+  transparent: true,
+  legend: true,
+  maxZoom: 20,
+  minZoom: 1,
+});
+
+const emptyPlacesOwnership = L.tileLayer.wms(geoserverUrl + 'geoserver/vector/wms', {
+  layers: 'bbswr_empty_places_ownership',
+  name: 'Open spaces/vacant land: ownership',
   format: 'image/png',
   transparent: true,
   legend: true,
@@ -292,24 +274,22 @@ const groupedOverlays = {
     "Affected area": strickenArea,
     "Road-level time map": timeMap
   },
-  "Bhubaneshwar thematic maps": {
+  "Bhubaneswar thematic maps": {
     [bbswrMetropolitanArea.options.name]: bbswrMetropolitanArea,
     [bbswrCityZone.options.name]: bbswrCityZone,
     [slumAreas.options.name]: slumAreas,
+    [landOwnership.options.name]: landOwnership,
     [slumTotalPopulation.options.name]: slumTotalPopulation,
     [femalePopulation.options.name]: femalePopulation,
     [malePopulation.options.name]: malePopulation,
-    [emptyPlaceTypes.options.name]: emptyPlaceTypes,
-    [emptyPlaceCategory.options.name]: emptyPlaceCategory,
-    [landOwnership.options.name]: landOwnership,
-    [slumsEmptyOwnership.options.name]: slumsEmptyOwnership,
-    [slumOwnerhip.options.name]: slumOwnerhip,
+    [slumOwnership.options.name]: slumOwnership,
     [slumReligions.options.name]: slumReligions,
     [monthlyIncomes.options.name]: monthlyIncomes,
     [animals.options.name]: animals,
     [slumsBathrooms.options.name]: slumsBathrooms,
-    [slumTapwater.options.name]: slumTapwater,
-    [slumToilettes.options.name]: slumToilettes,
+    [slumToilets.options.name]: slumToilets,
+    [emptyPlaces.options.name]: emptyPlaces,
+    [emptyPlacesOwnership.options.name]: emptyPlacesOwnership,
   }
 }
 

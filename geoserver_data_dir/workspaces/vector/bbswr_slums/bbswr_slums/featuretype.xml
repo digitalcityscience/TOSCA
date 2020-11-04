@@ -5,11 +5,7 @@
   <namespace>
     <id>NamespaceInfoImpl-53a0964:16fc2624139:-7ffe</id>
   </namespace>
-  <title>bbswr_slums</title>
-  <keywords>
-    <string>features</string>
-    <string>slum_areas</string>
-  </keywords>
+  <title>Bhubaneswar: slums</title>
   <nativeCRS class="projected">PROJCS[&quot;WGS 84 / UTM zone 45N&quot;, 
   GEOGCS[&quot;WGS 84&quot;, 
     DATUM[&quot;World Geodetic System 1984&quot;, 
@@ -20,7 +16,7 @@
     AXIS[&quot;Geodetic longitude&quot;, EAST], 
     AXIS[&quot;Geodetic latitude&quot;, NORTH], 
     AUTHORITY[&quot;EPSG&quot;,&quot;4326&quot;]], 
-  PROJECTION[&quot;Transverse_Mercator&quot;], 
+  PROJECTION[&quot;Transverse_Mercator&quot;, AUTHORITY[&quot;EPSG&quot;,&quot;9807&quot;]], 
   PARAMETER[&quot;central_meridian&quot;, 87.0], 
   PARAMETER[&quot;latitude_of_origin&quot;, 0.0], 
   PARAMETER[&quot;scale_factor&quot;, 0.9996], 
