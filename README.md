@@ -23,8 +23,8 @@ Before building the image, environment variables need to be set in `webapp/.env`
 
 It is also required to create these directories:
 ```
-mkdir geoserver_data_dir/data
-mkdir grass/global
+mkdir -p geoserver_data_dir/data
+mkdir -p grass/global
 mkdir output
 ```
 

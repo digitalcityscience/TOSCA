@@ -41,12 +41,8 @@ RUN apt-get clean
 WORKDIR /oct
 RUN mkdir -p data_from_browser
 COPY webapp/package*.json ./webapp/
-RUN cd webapp && npm i --only=production --ignore-scripts
-COPY webapp/public ./webapp/public
-COPY webapp/views ./webapp/views
-COPY webapp/scripts ./webapp/scripts
-COPY webapp/app.js ./webapp/
-COPY webapp/.env ./webapp/
+RUN cd webapp && npm ci
+COPY webapp webapp
 
 COPY run.sh ./
 

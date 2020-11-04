@@ -1,3 +1,6 @@
+/* global $ */
+
+// eslint-disable-next-line no-unused-vars
 function display() {
   const value = $('#results-select')[0].value;
   if (value != '') {
@@ -7,6 +10,7 @@ function display() {
   }
 }
 
+// eslint-disable-next-line no-unused-vars
 function hideResults() {
   $('#results-modal').hide();
 }

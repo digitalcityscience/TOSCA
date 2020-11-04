@@ -18,6 +18,10 @@
   font-size: 1rem;
 }
 
+.leaflet-control-container .leaflet-top.leaflet-right {
+  height: 100%;
+}
+
 /* Zoom + draw control */
 
 .leaflet-bar a,
@@ -70,7 +74,8 @@
 /* Layer control */
 
 .leaflet-control-layers {
-  max-height: 400px;
+  width: 280px;
+  max-height: calc(100% - 100px);
   overflow: auto;
 }
 

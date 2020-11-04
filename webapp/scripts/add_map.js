@@ -20,7 +20,7 @@ class AddMapModule {
 
   process(message, replyTo) {
     switch (replyTo) {
-      case 'add_map.2':
+      case 'add_map.2': {
         // uploaded file
         if (message.match(/\.geojson$|\.gpkg$|\.osm$/i)) {
           this.mapType = 'vector'
@@ -31,7 +31,11 @@ class AddMapModule {
         }
 
         this.mapFile = message
-        return messages["3"]
+
+        const msg = messages["3"]
+        msg.message.layerName = this.mapFile.slice(this.mapFile.lastIndexOf('/') + 1, this.mapFile.lastIndexOf('.'))
+        return msg
+      }
 
       case 'add_map.3':
         if (!message.match(/^[a-zA-Z]\w*$/)) {

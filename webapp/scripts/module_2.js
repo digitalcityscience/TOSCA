@@ -1,5 +1,5 @@
 const fs = require('fs')
-const { checkWritableDir, getNumericColumns, getTopology, gpkgOut, initMapset, grass, mergePDFs, psToPDF, textToPS, remove } = require('./functions')
+const { checkWritableDir, getNumericColumns, getTopology, gpkgOut, initMapset, grass, mapsetExists, mergePDFs, psToPDF, textToPS, remove, getUnivar, getUnivarBounds } = require('./functions')
 const { module_2: messages } = require('./messages.json')
 
 const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
@@ -16,15 +16,20 @@ class ModuleTwo {
   launch() {
     checkWritableDir(GEOSERVER)
     checkWritableDir(OUTPUT)
-    
+
+    if (!mapsetExists('PERMANENT')) {
+      return messages["7"]
+    }
+
     initMapset('module_2')
+
     // update selection and set selection as the queryArea
     grass('module_2', `g.copy vector=selection@PERMANENT,selection --overwrite`)
     this.queryArea = 'selection'
 
     // Only maps of PERMANENT mapset can be queried. Default maps and "selection" map are not included in the list. Only maps with numeric column (except column "CAT") will be listed.
     let maps = grass('PERMANENT', `g.list type=vector`).trim().split('\n')
-      .filter(map => !map.match(/^lines(_osm)?$|^points(_osm)?$|^polygons(_osm)?$|^relations(_osm)?$|^selection$/))
+      .filter(map => !map.match(/^lines(_osm)?$|^points(_osm)?$|^polygons(_osm)?$|^relations(_osm)?$|^selection$|^location_bbox$/))
       .filter(map => getNumericColumns('PERMANENT', map).length > 0)
 
     const msg = messages["2"]
@@ -52,8 +57,15 @@ class ModuleTwo {
         // query map topology
         getTopology('module_2', QUERY_MAP_NAME)
 
+        // get value bounds of all numeric columns
+        const columns = getNumericColumns('module_2', QUERY_MAP_NAME).map(line => line.split(':')[1].trim())
+        const list = []
+        columns.forEach(column => {
+          list.push({ 'column': column, 'bounds': getUnivarBounds('module_2', QUERY_MAP_NAME, column) })
+        })
         const msg = messages["3"]
-        msg.message.list = getNumericColumns('module_2', QUERY_MAP_NAME).map(item => item.split(':')[1].trim())
+        msg.message.list = list
+        msg.message.map = this.mapToQuery
         return msg
       }
 
@@ -81,9 +93,9 @@ class ModuleTwo {
     // Apply the query request
     grass('module_2', `v.extract input=clipped_1 where="${where}" output=${QUERY_RESULT_NAME} --overwrite`)
 
+    // TODO: handle output when query_result is empty
     // Query statistics
-    const stats = grass('module_2', `v.db.univar -e -g map=${QUERY_RESULT_NAME} column=${queryColumn}`).trim().split('\n').map(line => line.split('=')[1])
-
+    const stats = getUnivar('module_2', QUERY_RESULT_NAME, queryColumn)
     // Data output
     gpkgOut('module_2', QUERY_RESULT_NAME, QUERY_RESULT_NAME)
 
@@ -97,20 +109,20 @@ Date of creation: ${dateString}
 Queried column: ${queryColumn}
 Criteria: ${where}
 Results:
-Number of features:          ${stats[0]}
-Sum of values:               ${stats[9]}
-Minimum value:               ${stats[1]}
-Maximum value:               ${stats[2]}
-Range of values:             ${stats[3]}
-Mean:                        ${stats[4]}
-Mean of absolute values:     ${stats[5]}
-Median:                      ${stats[11]}
-Standard deviation:          ${stats[7]}
-Variance:                    ${stats[6]}
-Relative standard deviation: ${stats[8]}
-1st quartile:                ${stats[10]}
-3rd quartile:                ${stats[12]}
-90th percentile:             ${stats[13]}`
+Number of features:          ${stats.n}
+Sum of values:               ${stats.sum}
+Minimum value:               ${stats.min}
+Maximum value:               ${stats.max}
+Range of values:             ${stats.range}
+Mean:                        ${stats.mean}
+Mean of absolute values:     ${stats.mean_abs}
+Median:                      ${stats.median}
+Standard deviation:          ${stats.stddev}
+Variance:                    ${stats.variance}
+Relative standard deviation: ${stats.coeff_var}
+1st quartile:                ${stats.first_quartile}
+3rd quartile:                ${stats.third_quartile}
+90th percentile:             ${stats.percentile_90}`
 
     // Generate PDF
 
