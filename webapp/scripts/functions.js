@@ -79,14 +79,18 @@ module.exports = {
   },
 
   getNumericColumns(mapset, layer) {
-    return grass(mapset, `db.describe -c table=${layer}`).trim().split('\n').filter(col => col.match(/DOUBLE PRECISION|INTEGER/)).filter(col => !col.match(/cat/i))
+    try {
+      return grass(mapset, `db.describe -c table=${layer}`).trim().split('\n').filter(col => col.match(/DOUBLE PRECISION|INTEGER/) && !col.match(/cat/i))
+    } catch (err) {
+      return []
+    }
   },
 
   /**
    * Returns univariate statistics on selected table column for a GRASS vector map.
-   * @param {string} mapset 
-   * @param {string} map 
-   * @param {string} column 
+   * @param {string} mapset
+   * @param {string} map
+   * @param {string} column
    */
   getUnivar(mapset, map, column) {
     const rawArray = grass(mapset, `v.db.univar -e -g map=${map} column=${column}`).trim().split('\n')
@@ -99,9 +103,9 @@ module.exports = {
 
   /**
    * Returns min and max value of a univariate stat on selected table column for a GRASS vector map.
-   * @param {string} mapset 
-   * @param {string} map 
-   * @param {string} column 
+   * @param {string} mapset
+   * @param {string} map
+   * @param {string} column
    */
   getUnivarBounds(mapset, map, column) {
     const stats = module.exports.getUnivar(mapset, map, column)
@@ -277,7 +281,7 @@ function addBounds(desc, mapset, table) {
 
 /**
  * format array of description items into a table object
- * @param {Array} rawArray 
+ * @param {Array} rawArray
  */
 function formatDesc(rawArray) {
   const table = { headFields: [], rows: [] }
