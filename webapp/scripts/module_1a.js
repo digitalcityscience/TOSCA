@@ -81,24 +81,33 @@ class ModuleOneA {
           this.strickenArea = 'm1_stricken_area'
           return messages["4"]
         }
-        return messages["8"]
-
-      case 'module_1a.4':
-        this.reductionRatio = parseFloat(message) / 100
-        return messages["8"]
-
-      case 'module_1a.8':
-        if (message.toLowerCase() == 'yes') {
-          return messages["9"]
-        }
         this.averageSpeed = AVERAGE_SPEED
         this.calculate()
         return messages["6"]
 
-      case 'module_1a.9':
-        this.averageSpeed = message
+      case 'module_1a.4':
+        this.reductionRatio = parseFloat(message) / 100
+        this.averageSpeed = AVERAGE_SPEED
         this.calculate()
         return messages["6"]
+
+      // temporarilly skip message 8 & 9
+      // case 'module_1a.4':
+      //   this.reductionRatio = parseFloat(message) / 100
+      //   return messages["8"]
+
+      // case 'module_1a.8':
+      //   if (message.toLowerCase() == 'yes') {
+      //     return messages["9"]
+      //   }
+      //   this.averageSpeed = AVERAGE_SPEED
+      //   this.calculate()
+      //   return messages["6"]
+
+      // case 'module_1a.9':
+      //   this.averageSpeed = message
+      //   this.calculate()
+      //   return messages["6"]
     }
   }
 
