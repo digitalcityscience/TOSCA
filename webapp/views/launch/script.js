@@ -138,85 +138,10 @@ function handleResponse(res) {
         ];
         break;
 
-      // == module_1 ==
-      case 'module_1.1':
-        buttons = [
-          buttonElement('Yes').click(() => {
-            const saveButton = buttonElement('Save').click(() => {
-              saveDrawing(res);
-            })
-            buttonarea.append(saveButton);
-          }),
-          buttonElement('No').click(() => {
-            reply(res, 'no');
-          })
-        ];
-        drawnItems.clearLayers();
-        startDrawCirclemarker();
-        break;
-
-      case 'module_1.2':
-      case 'module_1.4':
-      case 'module_1.6':
-      case 'module_1.8':
-        form = formElement(messageId);
-        lists.append($(`<select id="${messageId}-input" size="10">` + list.map(map => `<option selected value="${map}">${map}</option>`) + `</select>`));
-        buttons = [
-          buttonElement('Submit').click(() => {
-            const input = $(`#${messageId}-input`);
-            reply(res, input[0].value);
-          })
-        ];
-        break;
-
-      case 'module_1.3':
-      case 'module_1.5':
-      case 'module_1.7':
-        buttons = [
-          buttonElement('Yes').click(() => {
-            const saveButton = buttonElement('Save').click(() => {
-              saveDrawing(res);
-            })
-            buttonarea.append(saveButton);
-          }),
-          buttonElement('No').click(() => {
-            reply(res, 'no');
-          }),
-          buttonElement('Cancel').click(() => {
-            reply(res, 'cancel');
-          })
-        ];
-        drawnItems.clearLayers();
-        startDrawPolygon();
-        break;
-
-      case 'module_1.9':
-        buttons = [
-          buttonElement('Yes').click(() => {
-            reply(res, 'yes');
-          }),
-          buttonElement('No').click(() => {
-            reply(res, 'no');
-          })
-        ];
-        break;
-
-      case 'module_1.12':
-      case 'module_1.10':
-        form = formElement(messageId);
-        form.append($(`<input id="${messageId}-input" type="number" />`));
-        buttons = [
-          buttonElement('Submit').click(() => {
-            const input = $(`#${messageId}-input`);
-            reply(res, input.val());
-          })
-        ];
-        break;
-
-      // == module_1a ==
+      // == time map module ==
       // Start points / via points
-      case 'module_1a.1':
-      case 'module_1a.2':
+      case 'time_map.1':
+      case 'time_map.2':
         buttons = [
           buttonElement('Save').click(() => {
             $(`#${messageId}-error`).remove();
@@ -234,7 +159,7 @@ function handleResponse(res) {
         break;
 
       // stricken area
-      case 'module_1a.3':
+      case 'time_map.3':
         buttons = [
           buttonElement('Save').click(() => {
             $(`#${messageId}-error`).remove();
@@ -251,8 +176,8 @@ function handleResponse(res) {
         break;
 
       // Speed reduction ratio
-      case 'module_1a.4':
-      case 'module_1a.9':
+      case 'time_map.4':
+      case 'time_map.9':
         form = formElement(messageId);
         form.append($(`<input id="${messageId}-input" type="number" />`));
         form.append($(`<span>&nbsp;%</span>`));
@@ -264,7 +189,7 @@ function handleResponse(res) {
         ];
         break;
 
-      case 'module_1a.8':
+      case 'time_map.8':
         buttons = [
           buttonElement('Yes').click(() => {
             reply(res, 'yes');

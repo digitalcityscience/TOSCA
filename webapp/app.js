@@ -53,8 +53,7 @@ const AddLocationModule = require('./scripts/add_location')
 const AddMapModule = require('./scripts/add_map')
 const SetSelectionModule = require('./scripts/set_selection')
 const SetResolutionModule = require('./scripts/set_resolution')
-const ModuleOne = require('./scripts/module_1')
-const ModuleOneA = require('./scripts/module_1a')
+const TimeMapModule = require('./scripts/time_map')
 const ModuleTwo = require('./scripts/module_2');
 const { describeTable, getResults } = require('./scripts/functions');
 
@@ -63,8 +62,7 @@ const modules = {
   "add_map": new AddMapModule(),
   "set_selection": new SetSelectionModule(),
   "set_resolution": new SetResolutionModule(),
-  "module_1": new ModuleOne(),
-  "module_1a": new ModuleOneA(),
+  "time_map": new TimeMapModule(),
   "module_2": new ModuleTwo()
 }
 
