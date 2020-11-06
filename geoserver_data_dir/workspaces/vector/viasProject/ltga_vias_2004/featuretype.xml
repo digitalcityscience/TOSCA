@@ -1,0 +1,65 @@
+<featureType>
+  <id>FeatureTypeInfoImpl-4b1e832d:17598afe760:-7fb5</id>
+  <name>ltga_vias_2004</name>
+  <nativeName>vias_2004_Project</nativeName>
+  <namespace>
+    <id>NamespaceInfoImpl-53a0964:16fc2624139:-7ffe</id>
+  </namespace>
+  <title>Latacunga: vias 2004 project</title>
+  <keywords>
+    <string>features</string>
+    <string>vias_2004_Project</string>
+  </keywords>
+  <nativeCRS class="projected">PROJCS[&quot;WGS 84 / UTM zone 17S&quot;, 
+  GEOGCS[&quot;WGS 84&quot;, 
+    DATUM[&quot;World Geodetic System 1984&quot;, 
+      SPHEROID[&quot;WGS 84&quot;, 6378137.0, 298.257223563, AUTHORITY[&quot;EPSG&quot;,&quot;7030&quot;]], 
+      AUTHORITY[&quot;EPSG&quot;,&quot;6326&quot;]], 
+    PRIMEM[&quot;Greenwich&quot;, 0.0, AUTHORITY[&quot;EPSG&quot;,&quot;8901&quot;]], 
+    UNIT[&quot;degree&quot;, 0.017453292519943295], 
+    AXIS[&quot;Geodetic longitude&quot;, EAST], 
+    AXIS[&quot;Geodetic latitude&quot;, NORTH], 
+    AUTHORITY[&quot;EPSG&quot;,&quot;4326&quot;]], 
+  PROJECTION[&quot;Transverse_Mercator&quot;, AUTHORITY[&quot;EPSG&quot;,&quot;9807&quot;]], 
+  PARAMETER[&quot;central_meridian&quot;, -81.0], 
+  PARAMETER[&quot;latitude_of_origin&quot;, 0.0], 
+  PARAMETER[&quot;scale_factor&quot;, 0.9996], 
+  PARAMETER[&quot;false_easting&quot;, 500000.0], 
+  PARAMETER[&quot;false_northing&quot;, 10000000.0], 
+  UNIT[&quot;m&quot;, 1.0], 
+  AXIS[&quot;Easting&quot;, EAST], 
+  AXIS[&quot;Northing&quot;, NORTH], 
+  AUTHORITY[&quot;EPSG&quot;,&quot;32717&quot;]]</nativeCRS>
+  <srs>EPSG:32717</srs>
+  <nativeBoundingBox>
+    <minx>679969.3831642183</minx>
+    <maxx>795485.6025639534</maxx>
+    <miny>9860102.402245253</miny>
+    <maxy>9968231.32128426</maxy>
+    <crs class="projected">EPSG:32717</crs>
+  </nativeBoundingBox>
+  <latLonBoundingBox>
+    <minx>-79.38285657896914</minx>
+    <maxx>-78.34485946701072</maxx>
+    <miny>-1.2651878140049229</miny>
+    <maxy>-0.2871106841329776</maxy>
+    <crs>EPSG:4326</crs>
+  </latLonBoundingBox>
+  <projectionPolicy>FORCE_DECLARED</projectionPolicy>
+  <enabled>true</enabled>
+  <metadata>
+    <entry key="cachingEnabled">false</entry>
+  </metadata>
+  <store class="dataStore">
+    <id>DataStoreInfoImpl-4b1e832d:17598afe760:-7fb6</id>
+  </store>
+  <serviceConfiguration>false</serviceConfiguration>
+  <simpleConversionEnabled>false</simpleConversionEnabled>
+  <maxFeatures>0</maxFeatures>
+  <numDecimals>0</numDecimals>
+  <padWithZeros>false</padWithZeros>
+  <forcedDecimal>false</forcedDecimal>
+  <overridingServiceSRS>false</overridingServiceSRS>
+  <skipNumberMatched>false</skipNumberMatched>
+  <circularArcPresent>false</circularArcPresent>
+</featureType>

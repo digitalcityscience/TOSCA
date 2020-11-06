@@ -1,0 +1,17 @@
+<layer>
+  <name>ltga_buildingfloors</name>
+  <id>LayerInfoImpl-4b1e832d:17598afe760:-7f8c</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl-4b1e832d:17598afe760:-7f89</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl-4b1e832d:17598afe760:-7f8d</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateCreated>2020-11-05 14:22:07.845 UTC</dateCreated>
+  <dateModified>2020-11-05 14:34:00.147 UTC</dateModified>
+</layer>

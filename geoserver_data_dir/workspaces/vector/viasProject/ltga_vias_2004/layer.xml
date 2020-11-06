@@ -1,16 +1,17 @@
 <layer>
   <name>ltga_vias_2004</name>
-  <id>LayerInfoImpl--55b2dee0:173fd156fd2:-7b5a</id>
+  <id>LayerInfoImpl-4b1e832d:17598afe760:-7fb4</id>
   <type>VECTOR</type>
   <defaultStyle>
     <id>StyleInfoImpl-50f2cee3:1719bd49253:-7fff</id>
   </defaultStyle>
   <resource class="featureType">
-    <id>FeatureTypeInfoImpl--55b2dee0:173fd156fd2:-7b5b</id>
+    <id>FeatureTypeInfoImpl-4b1e832d:17598afe760:-7fb5</id>
   </resource>
   <attribution>
     <logoWidth>0</logoWidth>
     <logoHeight>0</logoHeight>
   </attribution>
-  <dateModified>2020-10-29 20:23:05.733 UTC</dateModified>
+  <dateCreated>2020-11-05 14:09:15.288 UTC</dateCreated>
+  <dateModified>2020-11-05 14:11:04.302 UTC</dateModified>
 </layer>

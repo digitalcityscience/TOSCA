@@ -1,0 +1,17 @@
+<layer>
+  <name>ltga_interpolated_density</name>
+  <id>LayerInfoImpl-4b1e832d:17598afe760:-7f90</id>
+  <type>RASTER</type>
+  <defaultStyle>
+    <id>StyleInfoImpl-4b1e832d:17598afe760:-7f8f</id>
+  </defaultStyle>
+  <resource class="coverage">
+    <id>CoverageInfoImpl-4b1e832d:17598afe760:-7f91</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateCreated>2020-11-05 14:17:36.350 UTC</dateCreated>
+  <dateModified>2020-11-05 14:20:32.720 UTC</dateModified>
+</layer>

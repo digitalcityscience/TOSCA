@@ -1,7 +1,6 @@
 <dataStore>
-  <id>DataStoreInfoImpl-603fce8d:173ec88db00:-7a16</id>
-  <name>ltca_farms</name>
-  <description>ltca_farms</description>
+  <id>DataStoreInfoImpl-5b4070ab:17598fc72a5:-7feb</id>
+  <name>ltga_lahraRisk</name>
   <type>GeoPackage</type>
   <enabled>true</enabled>
   <workspace>
@@ -9,12 +8,12 @@
   </workspace>
   <connectionParameters>
     <entry key="Batch insert size">1</entry>
-    <entry key="database">/usr/share/geoserver/data_dir/data/latacunga/ltca_farms.gpkg</entry>
+    <entry key="database">file:data/latacunga/grado_amenaza.gpkg</entry>
     <entry key="fetch size">1000</entry>
     <entry key="Expose primary keys">false</entry>
     <entry key="dbtype">geopkg</entry>
     <entry key="namespace">vector</entry>
   </connectionParameters>
   <__default>false</__default>
-  <dateCreated>2020-08-17 10:56:09.959 UTC</dateCreated>
+  <dateCreated>2020-11-05 15:34:34.336 UTC</dateCreated>
 </dataStore>

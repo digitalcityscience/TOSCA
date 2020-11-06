@@ -115,8 +115,8 @@ const administrativeUnits = L.tileLayer.wms(vectorWMS, {
   minZoom: 3
 });
 
-const floodRiskMap = L.tileLayer.wms(vectorWMS, {
-  layers: 'ltca_flood_risk',
+const gradoAmenaza = L.tileLayer.wms(vectorWMS, {
+  layers: 'ltga_grado_amenaza',
   format: 'image/png',
   transparent: true,
   legend: true,
@@ -187,6 +187,15 @@ const ltgaPopdenMap = L.tileLayer.wms(vectorWMS, {
   minZoom: 3
 });
 
+const ltgaPopdenRaster = L.tileLayer.wms(rasterWMS, {
+  layers: 'ltga_interpolated_density',
+  format: 'image/png',
+  transparent: true,
+  legend: true,
+  maxZoom: 20,
+  minZoom: 3
+});
+
 const ltgaAxisMap = L.tileLayer.wms(vectorWMS, {
   layers: 'ltga_eje_vial',
   format: 'image/png',
@@ -205,8 +214,26 @@ const ltgaRoadMap = L.tileLayer.wms(vectorWMS, {
   minZoom: 3
 });
 
+const ltgaBuildings = L.tileLayer.wms(vectorWMS, {
+  layers: 'ltga_buildingfloors',
+  format: 'image/png',
+  transparent: true,
+  legend: true,
+  maxZoom: 20,
+  minZoom: 3
+});
+
 const ltgaCropMap = L.tileLayer.wms(vectorWMS, {
   layers: 'ltga_cultivo_principal',
+  format: 'image/png',
+  transparent: true,
+  legend: true,
+  maxZoom: 20,
+  minZoom: 3
+});
+
+const ltgaLulcMap = L.tileLayer.wms(vectorWMS, {
+  layers: 'ltga_uso_cobertura',
   format: 'image/png',
   transparent: true,
   legend: true,
@@ -286,6 +313,33 @@ const sirens = L.tileLayer.wms(vectorWMS, {
   minZoom: 3
 });
 
+const ltgaLumap = L.tileLayer.wms(vectorWMS, {
+  layers: 'ltga_luminaria',
+  format: 'image/png',
+  transparent: true,
+  legend: true,
+  maxZoom: 20,
+  minZoom: 3
+});
+
+const ltgaTramomap = L.tileLayer.wms(vectorWMS, {
+  layers: 'ltga_traDistAereo',
+  format: 'image/png',
+  transparent: true,
+  legend: true,
+  maxZoom: 20,
+  minZoom: 3
+});
+
+const ltgaTrSbmap = L.tileLayer.wms(vectorWMS, {
+  layers: 'ltga_traDistSub',
+  format: 'image/png',
+  transparent: true,
+  legend: true,
+  maxZoom: 20,
+  minZoom: 3
+});
+
 // Drawings
 const drawnItems = L.featureGroup().addTo(map);
 
@@ -315,14 +369,20 @@ const groupedOverlays = {
     "Elevation map": latacungaDEM,
     "Administrative units": administrativeUnits,
     "Population density": ltgaPopdenMap,
+    "Population density raster": ltgaPopdenRaster,
     "Greenhouses": greenhouses,
     "Farms and orchards": farms,
     "Schools": schools,
     "Doctors and dentists": doctors,
     "Hospitals and clinics": hospitals,
-    "AxisMap": ltgaAxisMap,
-    "RoadMap": ltgaRoadMap,
-    "CropMap": ltgaCropMap,
+    "Building Floors": ltgaBuildings,
+    "Vías Latacunga": ltgaAxisMap,
+    "Vías Cotopaxi": ltgaRoadMap,
+    'Luminaria': ltgaLumap,
+    'TramoDistribuciónAereo': ltgaTramomap,
+    'TramoDistriSubterraneo': ltgaTrSbmap,
+    "Cultivo principal": ltgaCropMap,
+    "Uso Cobertura": ltgaLulcMap,
     "Productive Infrastructure":productiveInfrastructure,
     "Producer associations":producerAssociations,
     "Markets and squares":marketsSquares,
@@ -331,10 +391,10 @@ const groupedOverlays = {
     "Early warning sirens":sirens
   },
   "Latacunga: volcanic threats": {
-    "Affected areas": ltgaEruptMap,
-    "Lahar risk": floodRiskMap,
-    "Ash fall risk": ltgaAshMap,
-    "Vulnerability": ltgaVulnerabilityMap,
+    "Amenanza Cotopaxi": ltgaEruptMap,
+    "Grado amenanza lahares": gradoAmenaza,
+    "Caída ceniza Cotopaxi": ltgaAshMap,
+    "Vulnerabilidad": ltgaVulnerabilityMap,
   },
 }
 

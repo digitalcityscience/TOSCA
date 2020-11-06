@@ -1,0 +1,49 @@
+<featureType>
+  <id>FeatureTypeInfoImpl-5b4070ab:17598fc72a5:-7fea</id>
+  <name>ltga_grado_amenaza</name>
+  <nativeName>grado_amenaza</nativeName>
+  <namespace>
+    <id>NamespaceInfoImpl-53a0964:16fc2624139:-7ffe</id>
+  </namespace>
+  <title>Latacunga: Lahar Flow</title>
+  <keywords>
+    <string>features</string>
+    <string>grado_amenaza</string>
+  </keywords>
+  <srs>EPSG:32717</srs>
+  <nativeBoundingBox>
+    <minx>763207.0</minx>
+    <maxx>782264.0</maxx>
+    <miny>9882510.0</miny>
+    <maxy>9922790.0</maxy>
+    <crs class="org.geotools.referencing.crs.DefaultEngineeringCRS">LOCAL_CS[&quot;Generic cartesian 2D&quot;, 
+  LOCAL_DATUM[&quot;Unknown&quot;, 0], 
+  UNIT[&quot;m&quot;, 1.0], 
+  AXIS[&quot;x&quot;, EAST], 
+  AXIS[&quot;y&quot;, NORTH]]</crs>
+  </nativeBoundingBox>
+  <latLonBoundingBox>
+    <minx>-78.63512689549927</minx>
+    <maxx>-78.46376555994723</maxx>
+    <miny>-1.0620562786463619</miny>
+    <maxy>-0.697854064452725</maxy>
+    <crs>EPSG:4326</crs>
+  </latLonBoundingBox>
+  <projectionPolicy>FORCE_DECLARED</projectionPolicy>
+  <enabled>true</enabled>
+  <metadata>
+    <entry key="cachingEnabled">false</entry>
+  </metadata>
+  <store class="dataStore">
+    <id>DataStoreInfoImpl-5b4070ab:17598fc72a5:-7feb</id>
+  </store>
+  <serviceConfiguration>false</serviceConfiguration>
+  <simpleConversionEnabled>false</simpleConversionEnabled>
+  <maxFeatures>0</maxFeatures>
+  <numDecimals>0</numDecimals>
+  <padWithZeros>false</padWithZeros>
+  <forcedDecimal>false</forcedDecimal>
+  <overridingServiceSRS>false</overridingServiceSRS>
+  <skipNumberMatched>false</skipNumberMatched>
+  <circularArcPresent>false</circularArcPresent>
+</featureType>

@@ -1,17 +1,17 @@
 <layer>
   <name>ltca_farms</name>
-  <id>LayerInfoImpl-603fce8d:173ec88db00:-7a14</id>
+  <id>LayerInfoImpl-4b1e832d:17598afe760:-7fe3</id>
   <type>VECTOR</type>
   <defaultStyle>
     <id>StyleInfoImpl-603fce8d:173ec88db00:-7a99</id>
   </defaultStyle>
   <resource class="featureType">
-    <id>FeatureTypeInfoImpl-603fce8d:173ec88db00:-7a15</id>
+    <id>FeatureTypeInfoImpl-4b1e832d:17598afe760:-7fe4</id>
   </resource>
   <attribution>
     <logoWidth>0</logoWidth>
     <logoHeight>0</logoHeight>
   </attribution>
-  <dateCreated>2020-08-17 10:56:21.818 UTC</dateCreated>
-  <dateModified>2020-10-29 19:11:22.120 UTC</dateModified>
+  <dateCreated>2020-11-05 13:58:32.506 UTC</dateCreated>
+  <dateModified>2020-11-05 13:59:04.350 UTC</dateModified>
 </layer>

@@ -1,0 +1,17 @@
+<layer>
+  <name>ltga_uso_cobertura</name>
+  <id>LayerInfoImpl-5b4070ab:17598fc72a5:-7ff3</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl-5b4070ab:17598fc72a5:-7ff0</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl-5b4070ab:17598fc72a5:-7ff4</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateCreated>2020-11-05 15:22:35.88 UTC</dateCreated>
+  <dateModified>2020-11-05 15:26:23.860 UTC</dateModified>
+</layer>

@@ -12,8 +12,8 @@
 		<UserStyle>
 		    <!-- they have names, titles and abstracts -->
 
-			<Title>simple blue line</Title>
-			<Abstract>A sample style that just prints out a blue line</Abstract>
+			<Title>simple grey line</Title>
+			<Abstract>A sample style that just prints out a grey line</Abstract>
 			<!-- FeatureTypeStyles describe how to render different features -->
 			<!-- a feature type for lines -->
 
@@ -21,13 +21,13 @@
 				<!--FeatureTypeName>Feature</FeatureTypeName-->
 				<Rule>
 					<Name>Rule 1</Name>
-					<Title>Blue Line</Title>
-					<Abstract>A blue line with a 1 pixel width</Abstract>
+					<Title>Road</Title>
+					<Abstract>A grey line with a 1 pixel width</Abstract>
 
 					<!-- like a polygonsymbolizer -->
 					<LineSymbolizer>
 						<Stroke>
-							<CssParameter name="stroke">#0000FF</CssParameter>
+							<CssParameter name="stroke">#666666</CssParameter>
 						</Stroke>
 					</LineSymbolizer>
 				</Rule>

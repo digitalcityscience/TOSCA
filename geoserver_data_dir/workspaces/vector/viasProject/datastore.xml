@@ -1,0 +1,23 @@
+<dataStore>
+  <id>DataStoreInfoImpl-4b1e832d:17598afe760:-7fb6</id>
+  <name>viasProject</name>
+  <type>Shapefile</type>
+  <enabled>true</enabled>
+  <workspace>
+    <id>WorkspaceInfoImpl-53a0964:16fc2624139:-7fff</id>
+  </workspace>
+  <connectionParameters>
+    <entry key="charset">ISO-8859-1</entry>
+    <entry key="filetype">shapefile</entry>
+    <entry key="create spatial index">true</entry>
+    <entry key="memory mapped buffer">false</entry>
+    <entry key="timezone">Etc/UTC</entry>
+    <entry key="enable spatial index">true</entry>
+    <entry key="namespace">vector</entry>
+    <entry key="cache and reuse memory maps">true</entry>
+    <entry key="url">file:data/latacunga/vias_2004_Project.shp</entry>
+    <entry key="fstype">shape</entry>
+  </connectionParameters>
+  <__default>false</__default>
+  <dateCreated>2020-11-05 14:07:43.813 UTC</dateCreated>
+</dataStore>

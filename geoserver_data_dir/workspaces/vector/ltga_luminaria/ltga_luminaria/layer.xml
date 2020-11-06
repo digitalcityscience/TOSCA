@@ -1,0 +1,17 @@
+<layer>
+  <name>ltga_luminaria</name>
+  <id>LayerInfoImpl-6c7651c7:17598e71f87:-7f91</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl-6c7651c7:17598e71f87:-7f8f</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl-6c7651c7:17598e71f87:-7f92</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateCreated>2020-11-05 15:04:50.37 UTC</dateCreated>
+  <dateModified>2020-11-05 15:06:56.575 UTC</dateModified>
+</layer>
