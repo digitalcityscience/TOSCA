@@ -1,4 +1,4 @@
-const { addVector, checkWritableDir, initMapset, mapsetExists, listVector, getColumns, grass, psToPDF } = require('./functions')
+const { addVector, checkWritableDir, initMapset, mapsetExists, listVector, getColumns, getUnivar, grass, psToPDF } = require('./functions')
 
 const GEOSERVER_DATA_DIR = process.env.GEOSERVER_DATA_DIR
 const GRASS_DIR = process.env.GRASS_DIR
@@ -33,6 +33,12 @@ const messages = {
     "message_id": "cotopaxi_scenarios.4",
     "message": {
       "text": "Done."
+    }
+  },
+  5: {
+    "message_id": "cotopaxi_scenarios.5",
+    "message": {
+      "text": "There are no features overlapping with the risk area. No output has been produced."
     }
   },
 }
@@ -129,14 +135,27 @@ module.exports = class {
         // message is a layer name
         this.selectLayer = message
 
+        // Remove result layer from previous run if it exists
+        grass(this.mapset, `g.remove -f type=vector name=${queryResult}`)
+
         // Select features from the layer using the query zone
         grass(this.mapset, `v.select ainput=${this.selectLayer} binput=${queryZone} output=${queryResult} operator=overlap --overwrite`)
 
-        const dateString = new Date().toISOString().replace(/([\d-]*)T(\d\d):(\d\d):[\d.]*Z/g, '$1_$2$3')
+        // Check if the query result is not empty
+        try {
+          getUnivar(this.mapset, queryResult, 'cat')
+        } catch (err) {
+          return messages[5]
+        }
 
-        // Output results to PDF
-        grass(this.mapset, `g.region vector=${queryZone} --overwrite`)
+        // Set the region for the output map, using the bounds of queryResult
+        grass(this.mapset, `g.region vector=${queryResult} --overwrite`)
+
+        // Create PS output
         grass(this.mapset, `ps.map input="${GRASS_DIR}/variables/defaults/cotopaxi_scenarios.ps_param" output=cotopaxi_scenarios.ps --overwrite`)
+
+        // Convert to PDF
+        const dateString = new Date().toISOString().replace(/([\d-]*)T(\d\d):(\d\d):[\d.]*Z/g, '$1_$2$3')
         psToPDF('cotopaxi_scenarios.ps', `${OUTPUT_DIR}/cotopaxi_scenarios_${dateString}.pdf`)
 
         return messages[4]
