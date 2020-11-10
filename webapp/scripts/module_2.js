@@ -1,8 +1,9 @@
 const fs = require('fs')
-const { checkWritableDir, getNumericColumns, getTopology, gpkgOut, initMapset, grass, mapsetExists, mergePDFs, psToPDF, textToPS, remove, getUnivar, getUnivarBounds } = require('./functions')
+const { checkWritableDir, getNumericColumns, getTopology, gpkgOut, initMapset, grass, mapsetExists, mergePDFs, psToPDF, textToPS, remove, getUnivar, getUnivarBounds, getAllFile, listUserVector, addVector } = require('./functions')
 const { module_2: messages } = require('./messages.json')
 
 const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
+const CONTAINER_GEOSERVER = '/usr/share/geoserver/data_dir/data'
 const GRASS = process.env.GRASS_DIR
 const OUTPUT = process.env.OUTPUT_DIR
 
@@ -27,10 +28,21 @@ class ModuleTwo {
     grass('module_2', `g.copy vector=selection@PERMANENT,selection --overwrite`)
     this.queryArea = 'selection'
 
+    const allVector = listUserVector()
+    // check and add all layers from layer switcher
+    getAllFile(CONTAINER_GEOSERVER, [], 'gpkg').forEach(mapFile => {
+      if (allVector.indexOf(mapFile.slice(mapFile.lastIndexOf('/') + 1, mapFile.lastIndexOf('.'))) < 0) {
+        try {
+          addVector('PERMANENT', mapFile, mapFile.slice(mapFile.lastIndexOf('/') + 1, mapFile.lastIndexOf('.')))
+        } catch (e) {
+          console.error(`failed to import ${mapFile} due to error: ${e}`)
+        }
+      }
+    })
+
     // Find queryable maps in any mapset, excluding default basemaps and selection.
     // Only maps with at least one numeric column will be listed.
-    let maps = grass('PERMANENT', `g.list type=vector mapset=*`).trim().split('\n')
-      .filter(map => !map.match(/^((lines|points|polygons|relations)(_osm)?|selection|location_bbox)(@.+)?$/))
+    let maps = listUserVector()
       .filter(map => getNumericColumns('PERMANENT', map).length > 0)
 
     const msg = messages["2"]

@@ -1,5 +1,6 @@
 const { execSync } = require('child_process') // Documentation: https://nodejs.org/api/child_process.html
 const fs = require('fs')
+const path = require("path")
 
 const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
 const GRASS = process.env.GRASS_DIR
@@ -164,6 +165,15 @@ module.exports = {
   },
 
   /**
+   * List all user uploaded vector maps
+   * @return {string[]} names of available maps
+   */
+  listUserVector() {
+    return grass('PERMANENT', 'g.list type=vector mapset=*').trim().split('\n')
+      .filter(map => !map.match(/^((lines|points|polygons|relations)(_osm)?|selection|location_bbox)(@.+)?$/))
+  },
+
+  /**
    * Check if a mapset exists
    * @param {string} mapset
    * @returns {boolean} true if mapset exists
@@ -236,6 +246,23 @@ module.exports = {
       list.push(file)
     })
     return list
+  },
+  
+  /**
+   * get all files of a file type in a directory 
+   * @param {string} dir directory to search in
+   * @param {array} files array of filenames 
+   * @returns {array} array of filenames
+   */
+  getAllFile(dir, files, extension) {
+    fs.readdirSync(dir).forEach(function (file) {
+      if (fs.statSync(dir + "/" + file).isDirectory()) {
+        files = module.exports.getAllFile(dir + "/" + file, files, extension)
+      } else if (file.slice(file.lastIndexOf('.') + 1) === extension) {
+        files.push(path.join(dir, "/", file))
+      }
+    })
+    return files
   },
 
   grass
