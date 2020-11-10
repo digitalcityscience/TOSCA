@@ -1,6 +1,7 @@
 const { execSync } = require('child_process') // Documentation: https://nodejs.org/api/child_process.html
 const fs = require('fs')
 const path = require("path")
+const columnDescription = require("../../grass/metadata/columnDescription.json")
 
 const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
 const GRASS = process.env.GRASS_DIR
@@ -94,12 +95,18 @@ module.exports = {
    * @param {string} column
    */
   getUnivar(mapset, map, column) {
-    const rawArray = grass(mapset, `v.db.univar -e -g map=${map} column=${column}`).trim().split('\n')
-    return rawArray.reduce((dict, line) => {
-      const a = line.split('=')
-      dict[a[0]] = a[1]
-      return dict
-    }, {})
+    // TODO: figure out why sometimes v.db.univar fails
+    try {
+      const rawArray = grass(mapset, `v.db.univar -e -g map=${map} column=${column}`).trim().split('\n')
+      return rawArray.reduce((dict, line) => {
+        const a = line.split('=')
+        dict[a[0]] = a[1]
+        return dict
+      }, {})
+    } catch (e) {
+      console.log('v.db.univar error: ', e)
+      return {}
+    }
   },
 
   /**
@@ -229,12 +236,20 @@ module.exports = {
    * Prints all attribute descriptions of a table
    * @param {string} table
    */
-  describeTable(mapset, table) {
-    const raw = grass(mapset, `db.describe table="${table}"`)
-    const desc = parseDescription(raw)
-    addBounds(desc, mapset, table)
-    return JSON.stringify(desc)
+  getMetadata(mapset, table) {
+    const columns = module.exports.getNumericColumns(mapset, table).map(col => col.split(':')[1].trim())
+    const data = {
+      tableObj: { headFields: ['table', 'description'], rows: [{ table: table, description: '' }] },
+      columnObj: {
+        headFields: ['column', 'description', 'min', 'max'],
+        rows: columns.map(c => { return { column: c, description: '', min: undefined, max: undefined } })
+      }
+    }
+    addBounds(data, mapset, table)
+    addDescription(data, table)
+    return JSON.stringify(data)
   },
+
 
   /**
    * Prints all the result files in the 'output' folder
@@ -247,7 +262,7 @@ module.exports = {
     })
     return list
   },
-  
+
   /**
    * get all files of a file type in a directory 
    * @param {string} dir directory to search in
@@ -298,14 +313,18 @@ function parseDescription(raw) {
  */
 function addBounds(desc, mapset, table) {
   desc.columnObj.rows.forEach(row => {
-    if (['DOUBLE PRECISION', 'INTEGER'].indexOf(row.type) > -1) {
-      const [min, max] = module.exports.getUnivarBounds(mapset, table, row.column)
-      row.min = min
-      row.max = max
-    }
+    const [min, max] = module.exports.getUnivarBounds(mapset, table, row.column)
+    row.min = min
+    row.max = max
   })
 }
-
+function addDescription(desc, table) {
+  const meta = columnDescription.filter(m => m.table === table)[0]
+  desc.columnObj.rows.forEach(row => {
+    const data = meta.columns.filter(c => c.column === row.column)[0]
+    if (data != undefined) row.description = data.description
+  })
+}
 /**
  * format array of description items into a table object
  * @param {Array} rawArray

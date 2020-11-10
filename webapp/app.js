@@ -56,7 +56,7 @@ const SetResolutionModule = require('./scripts/set_resolution')
 const ModuleOne = require('./scripts/module_1')
 const ModuleOneA = require('./scripts/module_1a')
 const ModuleTwo = require('./scripts/module_2');
-const { describeTable, getResults } = require('./scripts/functions');
+const { getMetadata, getResults } = require('./scripts/functions');
 
 const modules = {
   "add_location": new AddLocationModule(),
@@ -159,7 +159,7 @@ app.get('/output', jsonParser, (req, res, next) => {
 // return all attribute descriptions of a table
 app.get('/attributes', jsonParser, async (req, res, next) => {
   try {
-    const attributes = describeTable('PERMANENT', req.query.table)
+    const attributes = getMetadata('PERMANENT', req.query.table)
     res.json({ attributes })
   } catch (err) {
     next(err)

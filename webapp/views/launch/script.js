@@ -544,11 +544,9 @@ function getAttributes(table) {
       tObj.rows.push({ 'table': row.table, 'description': row.description })
     }
     for (const row of columnObj.rows) {
-      if (['DOUBLE PRECISION', 'INTEGER'].indexOf(row.type) > -1 &&
-        ['cat'].indexOf(row.column) == -1)
+      if (row.column !== 'cat')
         cObj.rows.push({ 'column': row.column, 'description': row.description, 'min': row.min, 'max': row.max })
     }
-
     $('#table-description').html(tableElement('table table-bordered', tObj))
     $('#column-description').html(tableElement('table table-bordered', cObj))
     $('#table-attributes-modal').show()
