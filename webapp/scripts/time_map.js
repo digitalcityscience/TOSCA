@@ -1,5 +1,5 @@
 const fs = require('fs')
-const { addVector, checkWritableDir, gpkgOut, initMapset, listVector, mapsetExists, grass, mergePDFs, psToPDF, textToPS } = require('./functions')
+const { addVector, checkWritableDir, gpkgOut, initMapset, mapsetExists, grass, mergePDFs, psToPDF, textToPS } = require('./functions')
 const { 'time_map': messages } = require('./messages.json')
 
 const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
@@ -12,7 +12,7 @@ const CONNECT_DISTANCE = 0.003
 const CONVERSION_RESOLUTION = 0.0001
 const METER_TO_PROJ = 111320 // length of a degree of latitude, or of a degree of longitude at the equator, in meters
 
-class ModuleOneA {
+module.exports = class {
   constructor() {
     this.mapset = 'time_map'
   }
@@ -22,7 +22,7 @@ class ModuleOneA {
     checkWritableDir(OUTPUT)
 
     if (!mapsetExists('PERMANENT')) {
-      return messages["7"]
+      return messages[7]
     }
 
     initMapset(this.mapset)
@@ -31,8 +31,6 @@ class ModuleOneA {
     // Results will be stored in the "time_map" mapset
     grass(this.mapset, `g.copy vector=selection@PERMANENT,selection --overwrite`)
     grass(this.mapset, `g.copy vector=lines@PERMANENT,lines --overwrite`)
-
-    this.vectorMaps = listVector(this.mapset)
 
     this.resolution = parseFloat(fs.readFileSync(`${GRASS}/variables/resolution`).toString().trim().split('\n')[1])
 
@@ -43,6 +41,15 @@ class ModuleOneA {
     this.highwayTypes = fs.readFileSync(`${GRASS}/variables/defaults/highway_types`).toString().trim().split('\n')
     this.roadSpeedValues = new Map(this.highwayTypes.map((t, i) => [t, parseInt(this.roadsSpeed[i].split(':')[1])]))
 
+    // Delete files from previous run, if any
+    for (const filename of ['m1_from_points.gpkg', 'm1_via_points.gpkg', 'm1_stricken_area.gpkg', 'm1_time_map.gpkg', 'm1_time_map.tif']) {
+      try {
+        fs.unlinkSync(`${GEOSERVER}/${filename}`)
+      } catch (err) {
+        // nothing to unlink
+      }
+    }
+
     // Creating empty maps for ps output, if no related maps are created/selected by user:
     // m1_via_points m1_to_points, m1_stricken_area
     // If user would create a such map, empty maps will automatically overwritten
@@ -51,7 +58,7 @@ class ModuleOneA {
     grass(this.mapset, `v.edit map=m1_stricken_area tool=create --overwrite`)
     grass(this.mapset, `v.edit map=m1_stricken_area_line tool=create --overwrite`)
 
-    return messages["1"]
+    return messages[1]
   }
 
   process(message, replyTo) {
@@ -61,61 +68,59 @@ class ModuleOneA {
           addVector(this.mapset, message, 'm1_from_points')
           gpkgOut(this.mapset, 'm1_from_points', 'm1_from_points')
           this.fromPoints = 'm1_from_points'
-          return messages["2"]
+          return messages[2]
         }
-        return messages["5"]
+        return messages[5]
 
       case 'time_map.2':
         if (message.match(/drawing\.geojson/)) {
           addVector(this.mapset, message, 'm1_via_points')
           gpkgOut(this.mapset, 'm1_via_points', 'm1_via_points')
           this.viaPoints = 'm1_via_points'
-          return messages["3"]
+          return messages[3]
         } else {
           this.viaPoints = null
         }
-        return messages["3"]
+        return messages[3]
 
       case 'time_map.3':
         if (message.match(/drawing\.geojson/)) {
           addVector(this.mapset, message, 'm1_stricken_area')
           gpkgOut(this.mapset, 'm1_stricken_area', 'm1_stricken_area')
           this.strickenArea = 'm1_stricken_area'
-          return messages["4"]
+          return messages[4]
         }
         this.averageSpeed = AVERAGE_SPEED
         this.calculate()
-        return messages["6"]
+        return messages[6]
 
       case 'time_map.4':
         this.reductionRatio = parseFloat(message) / 100
         this.averageSpeed = AVERAGE_SPEED
         this.calculate()
-        return messages["6"]
+        return messages[6]
 
       // temporarilly skip message 8 & 9
       // case 'time_map.4':
       //   this.reductionRatio = parseFloat(message) / 100
-      //   return messages["8"]
+      //   return messages[8]
 
       // case 'time_map.8':
       //   if (message.toLowerCase() == 'yes') {
-      //     return messages["9"]
+      //     return messages[9]
       //   }
       //   this.averageSpeed = AVERAGE_SPEED
       //   this.calculate()
-      //   return messages["6"]
+      //   return messages[6]
 
       // case 'time_map.9':
       //   this.averageSpeed = message
       //   this.calculate()
-      //   return messages["6"]
+      //   return messages[6]
     }
   }
 
   calculate() {
-    console.log("Calculating time map …")
-
     // Setting region to fit the "selection" map (taken by location_selector) and resolution
     grass(this.mapset, `g.region vector=selection@PERMANENT res=${this.resolution} --overwrite`)
 
@@ -269,5 +274,3 @@ Speed reduction coefficient for stricken area: ${this.reductionRatio}`)
     fs.rmdirSync('tmp', { recursive: true })
   }
 }
-
-module.exports = ModuleOneA

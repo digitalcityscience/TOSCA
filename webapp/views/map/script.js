@@ -159,3 +159,9 @@ map.on(L.Draw.Event.CREATED, (event) => {
 
 /* scale bar */
 L.control.scale({ maxWidth: 300, position: 'bottomright' }).addTo(map);
+
+// eslint-disable-next-line no-unused-vars
+function refreshLayer(layer) {
+  // Force reloading of the layer
+  layer.setParams({ ts: Date.now() });
+}

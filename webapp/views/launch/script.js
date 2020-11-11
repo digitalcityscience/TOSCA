@@ -1,4 +1,4 @@
-/* global $, L, map, drawnItems, selection */
+/* global $, L, map, drawnItems, refreshLayer, selection, fromPoints, viaPoints, strickenArea, timeMap */
 
 /* Handle incoming messages from backend */
 
@@ -72,8 +72,7 @@ function handleResponse(res) {
         break;
 
       case 'set_selection.3':
-        // Force reloading of the selection layer
-        selection.setParams({ ts: Date.now() });
+        refreshLayer(selection);
         map.addLayer(selection);
         drawnItems.clearLayers();
         break;
@@ -139,9 +138,13 @@ function handleResponse(res) {
         break;
 
       // == time map module ==
-      // Start points / via points
+      // Start points
       case 'time_map.1':
-      case 'time_map.2':
+        map.addLayer(selection);
+
+        drawnItems.clearLayers();
+        startDrawCirclemarker();
+
         buttons = [
           buttonElement('Save').click(() => {
             $(`#${messageId}-error`).remove();
@@ -153,13 +156,37 @@ function handleResponse(res) {
             reply(res, 'cancel');
           })
         ];
-        map.addLayer(selection);
+        break;
+
+      // Via points
+      case 'time_map.2':
+        refreshLayer(fromPoints);
+        map.addLayer(fromPoints);
+
         drawnItems.clearLayers();
         startDrawCirclemarker();
+
+        buttons = [
+          buttonElement('Save').click(() => {
+            $(`#${messageId}-error`).remove();
+            if (!saveDrawing(res)) {
+              textarea.append($(`<span id="${messageId}-error" class="validation-error">Please draw a point using the circlemarker drawing tool.</span>`));
+            }
+          }),
+          buttonElement('Cancel').click(() => {
+            reply(res, 'cancel');
+          })
+        ];
         break;
 
       // stricken area
       case 'time_map.3':
+        refreshLayer(viaPoints);
+        map.addLayer(viaPoints);
+
+        drawnItems.clearLayers();
+        startDrawPolygon();
+
         buttons = [
           buttonElement('Save').click(() => {
             $(`#${messageId}-error`).remove();
@@ -171,13 +198,16 @@ function handleResponse(res) {
             reply(res, 'cancel');
           })
         ];
-        drawnItems.clearLayers();
-        startDrawPolygon();
         break;
 
       // Speed reduction ratio
       case 'time_map.4':
-      case 'time_map.9':
+        refreshLayer(strickenArea);
+        map.addLayer(strickenArea);
+
+        cancelDrawing();
+        drawnItems.clearLayers();
+
         form = formElement(messageId);
         form.append($(`<input id="${messageId}-input" type="number" />`));
         form.append($(`<span>&nbsp;%</span>`));
@@ -189,15 +219,13 @@ function handleResponse(res) {
         ];
         break;
 
-      case 'time_map.8':
-        buttons = [
-          buttonElement('Yes').click(() => {
-            reply(res, 'yes');
-          }),
-          buttonElement('No').click(() => {
-            reply(res, 'no');
-          })
-        ];
+      // Done
+      case 'time_map.6':
+        refreshLayer(timeMap);
+        map.addLayer(timeMap);
+
+        cancelDrawing();
+        drawnItems.clearLayers();
         break;
 
       // == module_2 ==
@@ -415,6 +443,11 @@ function startDrawPolygon() {
 
 function startDrawCirclemarker() {
   const btn = $('.leaflet-draw-draw-circlemarker')[0];
+  btn && btn.dispatchEvent(new Event('click'));
+}
+
+function cancelDrawing() {
+  const btn = $('.leaflet-draw-actions li:contains("Cancel") a')[0];
   btn && btn.dispatchEvent(new Event('click'));
 }
 
