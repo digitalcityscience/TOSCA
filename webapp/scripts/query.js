@@ -1,6 +1,6 @@
 const fs = require('fs')
 const { checkWritableDir, getNumericColumns, getTopology, gpkgOut, initMapset, grass, mapsetExists, mergePDFs, psToPDF, textToPS, remove, getUnivar, getUnivarBounds, getAllFile, listUserVector, addVector } = require('./functions')
-const { module_2: messages } = require('./messages.json')
+const { query: messages } = require('./messages.json')
 
 const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
 const CONTAINER_GEOSERVER = '/usr/share/geoserver/data_dir/data'
@@ -11,8 +11,10 @@ const QUERY_RESOLUTION = 0.00002
 const QUERY_MAP_NAME = 'query_map'
 const QUERY_RESULT_NAME = 'query_result'
 
-class ModuleTwo {
-  constructor() { }
+module.exports = class {
+  constructor() {
+    this.mapset = 'query'
+  }
 
   launch() {
     checkWritableDir(GEOSERVER)
@@ -22,10 +24,10 @@ class ModuleTwo {
       return messages["7"]
     }
 
-    initMapset('module_2')
+    initMapset(this.mapset)
 
     // set selection as the query area
-    grass('module_2', `g.copy vector=selection@PERMANENT,selection --overwrite`)
+    grass(this.mapset, `g.copy vector=selection@PERMANENT,selection --overwrite`)
     this.queryArea = 'selection'
 
     const allVector = listUserVector()
@@ -52,29 +54,29 @@ class ModuleTwo {
 
   process(message, replyTo) {
     switch (replyTo) {
-      case 'module_2.2': {
+      case 'query.2': {
         this.mapToQuery = message
 
         // remove old query_map
-        remove('module_2', QUERY_MAP_NAME)
+        remove(this.mapset, QUERY_MAP_NAME)
 
-        // Now it is possible to check if the map to query is in the default mapset 'module_2' or not. If not, the map has to be copied into the module_2 mapset.
-        if (grass('PERMANENT', `g.list type=vector mapset=module_2`).split('\n').indexOf(this.mapToQuery) == -1) {
-          grass('module_2', `g.copy vector=${this.mapToQuery}@PERMANENT,${QUERY_MAP_NAME}`)
+        // Now it is possible to check if the map to query is in the default mapset 'query' or not. If not, the map has to be copied into the query mapset.
+        if (grass('PERMANENT', `g.list type=vector mapset=${this.mapset}`).split('\n').indexOf(this.mapToQuery) == -1) {
+          grass(this.mapset, `g.copy vector=${this.mapToQuery}@PERMANENT,${QUERY_MAP_NAME}`)
         } else {
-          grass('module_2', `g.copy vector=${this.mapToQuery}@module_2,${QUERY_MAP_NAME}`)
+          grass(this.mapset, `g.copy vector=${this.mapToQuery}@${this.mapset},${QUERY_MAP_NAME}`)
         }
 
-        gpkgOut('module_2', QUERY_MAP_NAME, QUERY_MAP_NAME)
+        gpkgOut(this.mapset, QUERY_MAP_NAME, QUERY_MAP_NAME)
 
         // query map topology
-        getTopology('module_2', QUERY_MAP_NAME)
+        getTopology(this.mapset, QUERY_MAP_NAME)
 
         // get value bounds of all numeric columns
-        const columns = getNumericColumns('module_2', QUERY_MAP_NAME).map(line => line.split(':')[1].trim())
+        const columns = getNumericColumns(this.mapset, QUERY_MAP_NAME).map(line => line.split(':')[1].trim())
         const list = []
         columns.forEach(column => {
-          list.push({ 'column': column, 'bounds': getUnivarBounds('module_2', QUERY_MAP_NAME, column) })
+          list.push({ 'column': column, 'bounds': getUnivarBounds(this.mapset, QUERY_MAP_NAME, column) })
         })
         const msg = messages["3"]
         msg.message.list = list
@@ -82,7 +84,7 @@ class ModuleTwo {
         return msg
       }
 
-      case 'module_2.3': {
+      case 'query.3': {
         const where = message.reduce((sum, el) => sum + el + ' ', '').trim()
         this.calculate(message[0], where)
         return messages["24"]
@@ -92,25 +94,25 @@ class ModuleTwo {
 
   calculate(queryColumn, where) {
     // remove old query_result
-    remove('module_2', QUERY_RESULT_NAME)
+    remove(this.mapset, QUERY_RESULT_NAME)
 
     // Set region to query area, set resolution
-    grass('module_2', `g.region vector=${QUERY_MAP_NAME} res=${QUERY_RESOLUTION} --overwrite`)
+    grass(this.mapset, `g.region vector=${QUERY_MAP_NAME} res=${QUERY_RESOLUTION} --overwrite`)
 
     // Set mask to query area
-    grass('module_2', `r.mask vector=${this.queryArea} --overwrite`)
+    grass(this.mapset, `r.mask vector=${this.queryArea} --overwrite`)
 
     // Clip the basemep map by query area
-    grass('module_2', `v.select ainput=${QUERY_MAP_NAME} atype=point,line,boundary,centroid,area binput=${this.queryArea} btype=area output=clipped_1 operator=overlap --overwrite`)
+    grass(this.mapset, `v.select ainput=${QUERY_MAP_NAME} atype=point,line,boundary,centroid,area binput=${this.queryArea} btype=area output=clipped_1 operator=overlap --overwrite`)
 
     // Apply the query request
-    grass('module_2', `v.extract input=clipped_1 where="${where}" output=${QUERY_RESULT_NAME} --overwrite`)
+    grass(this.mapset, `v.extract input=clipped_1 where="${where}" output=${QUERY_RESULT_NAME} --overwrite`)
 
     // TODO: handle output when query_result is empty
     // Query statistics
-    const stats = getUnivar('module_2', QUERY_RESULT_NAME, queryColumn)
+    const stats = getUnivar(this.mapset, QUERY_RESULT_NAME, queryColumn)
     // Data output
-    gpkgOut('module_2', QUERY_RESULT_NAME, QUERY_RESULT_NAME)
+    gpkgOut(this.mapset, QUERY_RESULT_NAME, QUERY_RESULT_NAME)
 
     const date = new Date()
     const dateString = date.toString()
@@ -145,7 +147,7 @@ Relative standard deviation: ${stats.coeff_var}
     textToPS('tmp/statistics_output', 'tmp/statistics.ps')
     psToPDF('tmp/statistics.ps', 'tmp/statistics.pdf')
 
-    grass('module_2', `ps.map input="${GRASS}/variables/defaults/module_2.ps_param_1" output=tmp/query_map.ps --overwrite`)
+    grass(this.mapset, `ps.map input="${GRASS}/variables/defaults/query.ps_param" output=tmp/query_map.ps --overwrite`)
     psToPDF('tmp/query_map.ps', 'tmp/query_map.pdf')
 
     mergePDFs(`${OUTPUT}/query_results_${safeDateString}.pdf`, 'tmp/statistics.pdf', 'tmp/query_map.pdf')
@@ -156,5 +158,3 @@ Relative standard deviation: ${stats.coeff_var}
   }
 
 }
-
-module.exports = ModuleTwo

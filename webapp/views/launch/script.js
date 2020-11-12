@@ -275,8 +275,8 @@ function handleResponse(res) {
         ];
         break;
 
-      // == module_2 ==
-      case 'module_2.1':
+      // == query module ==
+      case 'query.1':
         buttons = [
           buttonElement('Save').click(() => {
             $(`#${messageId}-error`).remove();
@@ -289,7 +289,7 @@ function handleResponse(res) {
         startDrawPolygon();
         break;
 
-      case 'module_2.2':
+      case 'query.2':
         form = formElement(messageId);
         lists.append($(`<select id="${messageId}-input" class='custom-select' size="10">` + list.map(col => `<option selected value="${col}">${col}</option>`) + `</select>`));
         buttons = [
@@ -304,7 +304,7 @@ function handleResponse(res) {
         ];
         break;
 
-      case 'module_2.3': {
+      case 'query.3': {
         const query = $(`<div class='query'></div>`)
         query.append(conditionElement(list))
         lists.append(query);

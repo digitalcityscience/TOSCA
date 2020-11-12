@@ -153,33 +153,33 @@
             }
         }
     },
-    "module_2": {
+    "query": {
         "1": {
-            "message_id": "module_2.1",
+            "message_id": "query.1",
             "message": {
                 "text": "Draw an area in which the query will operate on.<br><small>Please use the <a class=\"text-primary\" onclick=\"blink('.leaflet-draw-draw-polygon')\">polygon tool</a> to draw the area. The polygon has to be within the selection area. Activate the ‘current selection’ layer in the <a class=\"text-primary\" onclick=\"blink('.leaflet-control-layers')\">layer switcher</a> to view the selection area."
             }
         },
         "2": {
-            "message_id": "module_2.2",
+            "message_id": "query.2",
             "message": {
                 "text": "Choose a map layer to query from."
             }
         },
         "3": {
-            "message_id": "module_2.3",
+            "message_id": "query.3",
             "message": {
                 "text": "Fill the form and press ‘ok’."
             }
         },
         "7": {
-            "message_id": "module_2.7",
+            "message_id": "query.7",
             "message": {
                 "text": "No valid basemap found. Please set the basemap in the <a class=\"text-primary\" onclick=\"blink('#settings-menu')\">settings menu</a>."
             }
         },
         "24": {
-            "message_id": "module_2.24",
+            "message_id": "query.24",
             "message": {
                 "text": "Statistics output is ready."
             }

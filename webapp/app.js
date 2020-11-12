@@ -55,7 +55,7 @@ const SetSelectionModule = require('./scripts/set_selection')
 const SetResolutionModule = require('./scripts/set_resolution')
 const ModuleOne = require('./scripts/module_1')
 const ModuleOneA = require('./scripts/module_1a')
-const ModuleTwo = require('./scripts/module_2');
+const QueryModule = require('./scripts/query');
 const { getMetadata, getResults } = require('./scripts/functions');
 
 const modules = {
@@ -65,7 +65,7 @@ const modules = {
   "set_resolution": new SetResolutionModule(),
   "module_1": new ModuleOne(),
   "module_1a": new ModuleOneA(),
-  "module_2": new ModuleTwo()
+  "query": new QueryModule()
 }
 
 // launch a module
