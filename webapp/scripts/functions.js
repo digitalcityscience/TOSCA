@@ -1,7 +1,12 @@
 const { execSync } = require('child_process') // Documentation: https://nodejs.org/api/child_process.html
 const fs = require('fs')
 const path = require("path")
-const columnDescription = require("../../grass/metadata/columnDescription.json")
+let metadata = []
+try {
+  metadata = require("../../grass/metadata/metadata.json")
+} catch (err) {
+  console.error(err);
+}
 
 const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
 const GRASS = process.env.GRASS_DIR
@@ -95,7 +100,6 @@ module.exports = {
    * @param {string} column
    */
   getUnivar(mapset, map, column) {
-    // TODO: figure out why sometimes v.db.univar fails
     try {
       const rawArray = grass(mapset, `v.db.univar -e -g map=${map} column=${column}`).trim().split('\n')
       return rawArray.reduce((dict, line) => {
@@ -105,7 +109,6 @@ module.exports = {
       }, {})
     } catch (e) {
       console.log('v.db.univar error: ', e)
-      return {}
     }
   },
 
@@ -117,7 +120,7 @@ module.exports = {
    */
   getUnivarBounds(mapset, map, column) {
     const stats = module.exports.getUnivar(mapset, map, column)
-    return [round(stats.min, 2), round(stats.max, 2)]
+    return stats != undefined ? [round(stats.min, 2), round(stats.max, 2)] : []
   },
 
   /**
@@ -245,7 +248,7 @@ module.exports = {
         rows: columns.map(c => { return { column: c, description: '', min: undefined, max: undefined } })
       }
     }
-    addBounds(data, mapset, table)
+    setBounds(data, mapset, table)
     addDescription(data, table)
     return JSON.stringify(data)
   },
@@ -311,19 +314,30 @@ function parseDescription(raw) {
  * @param {*} mapset mapset name
  * @param {*} table table name
  */
-function addBounds(desc, mapset, table) {
-  desc.columnObj.rows.forEach(row => {
-    const [min, max] = module.exports.getUnivarBounds(mapset, table, row.column)
-    row.min = min
-    row.max = max
-  })
+function setBounds(desc, mapset, table) {
+  let i = 0
+  while (i < desc.columnObj.rows.length) {
+    const bounds = module.exports.getUnivarBounds(mapset, table, desc.columnObj.rows[i].column)
+    // add bounds when they exist, remove element when they don't
+    if (bounds.length) {
+      desc.columnObj.rows[i].min = bounds[0]
+      desc.columnObj.rows[i].max = bounds[1]
+      i++
+    } else {
+      desc.columnObj.rows.splice(i, 1)
+    }
+  }
 }
 function addDescription(desc, table) {
-  const meta = columnDescription.filter(m => m.table === table)[0]
-  desc.columnObj.rows.forEach(row => {
-    const data = meta.columns.filter(c => c.column === row.column)[0]
-    if (data != undefined) row.description = data.description
-  })
+  if (metadata.length) {
+    const meta = metadata.filter(m => m.table === table)[0]
+    if (meta != undefined) {
+      desc.columnObj.rows.forEach(row => {
+        const data = meta.columns.filter(c => c.column === row.column)[0]
+        if (data != undefined) row.description = data.description
+      })
+    }
+  }
 }
 /**
  * format array of description items into a table object

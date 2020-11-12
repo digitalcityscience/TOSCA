@@ -76,7 +76,8 @@ module.exports = class {
         const columns = getNumericColumns(this.mapset, QUERY_MAP_NAME).map(line => line.split(':')[1].trim())
         const list = []
         columns.forEach(column => {
-          list.push({ 'column': column, 'bounds': getUnivarBounds(this.mapset, QUERY_MAP_NAME, column) })
+          const bounds = getUnivarBounds('module_2', QUERY_MAP_NAME, column)
+          if (bounds.length) list.push({ 'column': column, 'bounds':  bounds})
         })
         const msg = messages["3"]
         msg.message.list = list
