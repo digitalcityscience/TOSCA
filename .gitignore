@@ -7,7 +7,7 @@
 /geoserver_data_dir/security
 /grass/global/*
 /grass/metadata/*
-/grass/variables
+/grass/variables/*
 !/grass/variables/defaults
 /output/*
 

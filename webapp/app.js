@@ -53,18 +53,16 @@ const AddLocationModule = require('./scripts/add_location')
 const AddMapModule = require('./scripts/add_map')
 const SetSelectionModule = require('./scripts/set_selection')
 const SetResolutionModule = require('./scripts/set_resolution')
-const ModuleOne = require('./scripts/module_1')
-const ModuleOneA = require('./scripts/module_1a')
-const QueryModule = require('./scripts/query');
-const { getMetadata, getResults } = require('./scripts/functions');
+const TimeMapModule = require('./scripts/time_map')
+const QueryModule = require('./scripts/query')
+const { getMetadata, getResults } = require('./scripts/functions')
 
 const modules = {
   "add_location": new AddLocationModule(),
   "add_map": new AddMapModule(),
   "set_selection": new SetSelectionModule(),
   "set_resolution": new SetResolutionModule(),
-  "module_1": new ModuleOne(),
-  "module_1a": new ModuleOneA(),
+  "time_map": new TimeMapModule(),
   "query": new QueryModule()
 }
 

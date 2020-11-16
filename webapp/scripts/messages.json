@@ -97,57 +97,57 @@
             }
         }
     },
-    "module_1a": {
+    "time_map": {
         "1": {
-            "message_id": "module_1a.1",
+            "message_id": "time_map.1",
             "message": {
                 "text": "A start point is required. Use the <a class=\"text-primary\" onclick=\"blink('.leaflet-draw-draw-circlemarker')\">circlemarker tool</a> to draw a start point.<br><small>The start point has to be within the selection area. Activate the ‘current selection’ layer in the  <a class=\"text-primary\" onclick=\"blink('.leaflet-control-layers')\">layer switcher</a> to view the selection area.</small>"
             }
         },
         "2": {
-            "message_id": "module_1a.2",
+            "message_id": "time_map.2",
             "message": {
                 "text": "Optionally one via point can be added. If you want to add a via point, draw a point using the <a class=\"text-primary\" onclick=\"blink('.leaflet-draw-draw-circlemarker')\">circlemarker tool</a> and click ‘Save’. If you do not want to add a via point, click Cancel.<br><small>The via point has to be within the selection area. Activate the ‘current selection’ layer in the <a class=\"text-primary\" onclick=\"blink('.leaflet-control-layers')\">layer switcher</a> to view the selection area.</small>"
             }
         },
         "3": {
-            "message_id": "module_1a.3",
+            "message_id": "time_map.3",
             "message": {
                 "text": "Defining an affected area is optional. An affected area is an area where the speed is limited by something, e.g. natural disaster, flooding, mass event, or revolt. If you want to add an affected area, draw one or more areas using the <a class=\"text-primary\" onclick=\"blink('.leaflet-draw-draw-polygon')\">polygon tool</a> and click ‘Save’. If you do not want to add an affected area, click Cancel.<br><small>The affected areas have to be within the selection area. Activate the ‘current selection’ layer in the <a class=\"text-primary\" onclick=\"blink('.leaflet-control-layers')\">layer switcher</a> to view the selection area.</small>"
             }
         },
         "4": {
-            "message_id": "module_1a.4",
+            "message_id": "time_map.4",
             "message": {
                 "text": "Set the speed reduction ratio (in percent) for roads in the affected area.<br><small>E.g. a value of 40 will set the reduced speed to 40&nbsp;% of the normal speed.</small>"
             }
         },
         "5": {
-            "message_id": "module_1a.5",
+            "message_id": "time_map.5",
             "message": {
                 "text": "Process cancelled."
             }
         },
         "6": {
-            "message_id": "module_1a.6",
+            "message_id": "time_map.6",
             "message": {
                 "text": "Calculations are ready.<br><small>To display the results, you can activate the layer ‘road-level time map’ in the <a class=\"text-primary\" onclick=\"blink('.leaflet-control-layers')\">layer switcher</a> and/or use the <a class=\"text-primary\" onclick=\"blink('#result-btn')\">results button</a> in the top bar to display a PDF version of the result.</small>"
             }
         },
         "7": {
-            "message_id": "module_1a.7",
+            "message_id": "time_map.7",
             "message": {
                 "text": "No valid basemap found. Please set the basemap in the <a class=\"text-primary\" onclick=\"blink('#settings-menu')\">settings menu</a>."
             }
         },
         "8": {
-            "message_id": "module_1a.8",
+            "message_id": "time_map.8",
             "message": {
                 "text": "Average speed values are used for the different road types of the area. Do you want to change them?<br>In case you want to calculate the time map for walking or cycling, you can set the average speed value to:<ul><li>Walking: 5 km/h</li><li>Cycling: 12 km/h</li></ul>"
             }
         },
         "9": {
-            "message_id": "module_1a.9",
+            "message_id": "time_map.9",
             "message": {
                 "text": "Set the average speed for different road types in km/h."
             }
