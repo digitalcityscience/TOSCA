@@ -1,5 +1,5 @@
 const fs = require('fs')
-const { checkWritableDir, getNumericColumns, getTopology, gpkgOut, initMapset, grass, mapsetExists, mergePDFs, psToPDF, textToPS, remove, getUnivar, getUnivarBounds, getAllFile, listUserVector, addVector } = require('./functions')
+const { checkWritableDir, getNumericColumns, getTopology, gpkgOut, initMapset, grass, mapsetExists, mergePDFs, psToPDF, textToPS, remove, getUnivar, getUnivarBounds, getFilesOfType, listUserVector, addVector } = require('./functions')
 const { query: messages } = require('./messages.json')
 
 const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
@@ -32,7 +32,7 @@ module.exports = class {
 
     const allVector = listUserVector()
     // check and add all layers from layer switcher
-    getAllFile(CONTAINER_GEOSERVER, [], 'gpkg').forEach(mapFile => {
+    getFilesOfType('gpkg', CONTAINER_GEOSERVER).forEach(mapFile => {
       if (allVector.indexOf(mapFile.slice(mapFile.lastIndexOf('/') + 1, mapFile.lastIndexOf('.'))) < 0) {
         try {
           addVector('PERMANENT', mapFile, mapFile.slice(mapFile.lastIndexOf('/') + 1, mapFile.lastIndexOf('.')))
@@ -77,7 +77,7 @@ module.exports = class {
         const list = []
         columns.forEach(column => {
           const bounds = getUnivarBounds('module_2', QUERY_MAP_NAME, column)
-          if (bounds.length) list.push({ 'column': column, 'bounds':  bounds})
+          if (bounds.length) list.push({ 'column': column, 'bounds': bounds })
         })
         const msg = messages["3"]
         msg.message.list = list

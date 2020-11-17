@@ -1,12 +1,6 @@
 const { execSync } = require('child_process') // Documentation: https://nodejs.org/api/child_process.html
 const fs = require('fs')
 const path = require("path")
-let metadata = []
-try {
-  metadata = require("../../grass/metadata/metadata.json")
-} catch (err) {
-  console.error(err);
-}
 
 const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
 const GRASS = process.env.GRASS_DIR
@@ -120,7 +114,7 @@ module.exports = {
    */
   getUnivarBounds(mapset, map, column) {
     const stats = module.exports.getUnivar(mapset, map, column)
-    return stats != undefined ? [round(stats.min, 2), round(stats.max, 2)] : []
+    return stats !== undefined ? [round(stats.min, 2), round(stats.max, 2)] : []
   },
 
   /**
@@ -268,19 +262,22 @@ module.exports = {
 
   /**
    * get all files of a file type in a directory 
-   * @param {string} dir directory to search in
-   * @param {array} files array of filenames 
+   * @param {string} directory directory to search in
+   * @param {string} extension file extension
    * @returns {array} array of filenames
    */
-  getAllFile(dir, files, extension) {
-    fs.readdirSync(dir).forEach(function (file) {
-      if (fs.statSync(dir + "/" + file).isDirectory()) {
-        files = module.exports.getAllFile(dir + "/" + file, files, extension)
-      } else if (file.slice(file.lastIndexOf('.') + 1) === extension) {
-        files.push(path.join(dir, "/", file))
-      }
-    })
-    return files
+  getFilesOfType(extension, directory) {
+    function helper(dir, ext, files) {
+      fs.readdirSync(dir).forEach(function (file) {
+        if (fs.statSync(dir + "/" + file).isDirectory()) {
+          files = helper(dir + "/" + file, ext, files)
+        } else if (file.slice(file.lastIndexOf('.') + 1) === ext) {
+          files.push(path.join(dir, "/", file))
+        }
+      })
+      return files
+    }
+    return helper(directory, extension, [])
   },
 
   grass
@@ -293,19 +290,6 @@ module.exports = {
  */
 function grass(mapset, args) {
   return execSync(`grass "${GRASS}/global/${mapset}" --exec ${args}`, { shell: '/bin/bash', encoding: 'utf-8' })
-}
-
-/**
- * Parse raw stream from db.describe
- * @param {string} raw
- */
-function parseDescription(raw) {
-  const rawArray = raw.split('\n\n')
-  const desc = {
-    tableObj: formatDesc(rawArray.slice(0, 1)),
-    columnObj: formatDesc(rawArray.slice(1))
-  }
-  return desc
 }
 
 /**
@@ -328,7 +312,19 @@ function setBounds(desc, mapset, table) {
     }
   }
 }
+
+/**
+ * add description from metadata.json to 
+ * @param {object} desc description object of a table
+ * @param {string} table table name to search for
+ */
 function addDescription(desc, table) {
+  let metadata = []
+  try {
+    metadata = require(`${GRASS}/metadata/metadata.json`)
+  } catch (err) {
+    console.error(err);
+  }
   if (metadata.length) {
     const meta = metadata.filter(m => m.table === table)[0]
     if (meta != undefined) {
@@ -339,25 +335,12 @@ function addDescription(desc, table) {
     }
   }
 }
-/**
- * format array of description items into a table object
- * @param {Array} rawArray
- */
-function formatDesc(rawArray) {
-  const table = { headFields: [], rows: [] }
-  table.headFields = rawArray[0].split('\n').map(line => line.split(':')[0])
-  table.headFields.push('min', 'max')
-  for (const column of rawArray) {
-    const row = column.split('\n').reduce((obj, line) => {
-      const [key, value] = line.split(':')
-      obj[key] = value
-      return obj
-    }, {})
-    table.rows.push(row)
-  }
-  return table
-}
 
+/**
+ * round a string number to n digits after zero
+ * @param {string} val 
+ * @param {number} n 
+ */
 function round(val, n) {
   let i = 0
   let dot = false
