@@ -102,7 +102,7 @@ module.exports = {
         return dict
       }, {})
     } catch (e) {
-      console.log('v.db.univar error: ', e)
+      throw new Error(e)
     }
   },
 
@@ -323,7 +323,7 @@ function addDescription(desc, table) {
   try {
     metadata = require(`${GRASS}/metadata/metadata.json`)
   } catch (err) {
-    console.error(err);
+    throw new Error('metadata.json not found.')
   }
   if (metadata.length) {
     const meta = metadata.filter(m => m.table === table)[0]

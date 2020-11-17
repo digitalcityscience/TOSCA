@@ -33,11 +33,12 @@ module.exports = class {
     const allVector = listUserVector()
     // check and add all layers from layer switcher
     getFilesOfType('gpkg', CONTAINER_GEOSERVER).forEach(mapFile => {
-      if (allVector.indexOf(mapFile.slice(mapFile.lastIndexOf('/') + 1, mapFile.lastIndexOf('.'))) < 0) {
+      const vector = mapFile.slice(mapFile.lastIndexOf('/') + 1, mapFile.lastIndexOf('.'))
+      if (allVector.indexOf(vector) < 0) {
         try {
-          addVector('PERMANENT', mapFile, mapFile.slice(mapFile.lastIndexOf('/') + 1, mapFile.lastIndexOf('.')))
+          addVector('PERMANENT', mapFile, vector)
         } catch (e) {
-          console.error(`failed to import ${mapFile} due to error: ${e}`)
+          throw new Error(`failed to import ${mapFile} due to ${e}`)
         }
       }
     })
