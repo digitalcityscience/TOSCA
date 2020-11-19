@@ -104,6 +104,24 @@ module.exports = {
   },
 
   /**
+   * returns all columns and their type of a table
+   * @param {string} mapset 
+   * @param {string} layer 
+   * @return {object} [{'column':'','type':''},{},{},...]
+   */
+  getAllColumns(mapset, layer) {
+    try {
+      return grass(mapset, `db.describe -c table=${layer}`)
+        .trim()
+        .split('\n')
+        .filter(col => col.match(/Column/) && !col.match(/cat/i))
+        .map(line => { return { 'column': line.split(':')[1].trim(), 'type': line.split(':')[2].trim() } })
+    } catch (err) {
+      return []
+    }
+  },
+
+  /**
    * Returns univariate statistics on selected table column for a GRASS vector map.
    * @param {string} mapset
    * @param {string} map
@@ -131,6 +149,27 @@ module.exports = {
   getUnivarBounds(mapset, map, column) {
     const stats = module.exports.getUnivar(mapset, map, column)
     return stats !== undefined ? [round(stats.min, 2), round(stats.max, 2)] : []
+  },
+
+  /**
+   * select all entries in a table
+   * @param {string} mapset 
+   * @param {string} table
+   * @returns array of all entires
+   */
+  dbSelectAll(mapset, table) {
+    const raw = grass(mapset, `db.select -v sql="select * from ${table}" vertical_separator=space`)
+    return raw.split(' \n')
+      .map(item => {
+        return item
+          .split('\n')
+          .filter(row => row.length)
+          .reduce((obj, row) => {
+            const [key, val] = row.split('|').map(i => i.trim())
+            obj[key] = val
+            return obj
+          }, {})
+      })
   },
 
   /**
