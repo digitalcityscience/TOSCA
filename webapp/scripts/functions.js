@@ -377,17 +377,18 @@ function addDescription(desc, table) {
   let metadata = []
   try {
     metadata = require(`${GRASS}/metadata/metadata.json`)
-  } catch (err) {
-    throw new Error('metadata.json not found.')
-  }
-  if (metadata.length) {
-    const meta = metadata.filter(m => m.table === table)[0]
-    if (meta != undefined) {
-      desc.columnObj.rows.forEach(row => {
-        const data = meta.columns.filter(c => c.column === row.column)[0]
-        if (data != undefined) row.description = data.description
-      })
+    if (metadata.length) {
+      const meta = metadata.filter(m => m.table === table)[0]
+      if (meta != undefined) {
+        desc.columnObj.rows.forEach(row => {
+          const data = meta.columns.filter(c => c.column === row.column)[0]
+          if (data != undefined) row.description = data.description
+        })
+      }
     }
+  } catch (err) {
+    // TODO: in later version this will be shown as a warning
+    console.error('metadata.json not found.')
   }
 }
 

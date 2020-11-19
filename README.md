@@ -25,6 +25,8 @@ It is also required to create these directories:
 ```
 mkdir -p geoserver_data_dir/data
 mkdir -p grass/global
+mkdir grass/metadata
+touch grass/metadata/metadata.json
 mkdir output
 ```
 
