@@ -31,21 +31,37 @@ module.exports = class {
     this.queryArea = 'selection'
 
     const allVector = listUserVector()
-    // check and add all layers from layer switcher
-    getFilesOfType('gpkg', CONTAINER_GEOSERVER).forEach(mapFile => {
+    const allGpkg = getFilesOfType('gpkg', CONTAINER_GEOSERVER)
+      .filter(map => !map.match(/((lines|points|polygons|relations)(_osm)?|selection|location_bbox)(@.+)?/))
+
+    /**
+     * check and add all layers from layer switcher
+     * FIXME: mapFile name and layer name differs, which makes it hard to check if file has already been imported 
+     * ideal solution: 1. make sure all map files contains only one layer; 2. make sure all mapFile names align with its layer's name
+     */
+    for (const mapFile of allGpkg) {
+      const fileName = mapFile.slice(mapFile.lastIndexOf('/') + 1, mapFile.lastIndexOf('.'))
+      if (allVector.indexOf(fileName) > -1) continue
+
       const inLayers = getLayers('PERMANENT', mapFile)
       // GRASS doesn't allow space in layernames
       const grassLayers = inLayers.map(layer => layer.replace(' ', '_'))
-      if (inLayers.length === 1 && allVector.indexOf(grassLayers[0]) < 0) {
+      // single-layered mapFiles
+      if (inLayers.length === 1) {
         try {
-          addVector('PERMANENT', mapFile, grassLayers[0])
+          // using mapFile name as GRASS layer name for single-layered mapFiles
+          addVector('PERMANENT', mapFile, fileName)
         } catch (e) {
           throw new Error(`failed to import ${mapFile} due to ${e}`)
         }
-      } else if (inLayers.length > 1) {
+      }
+      // multi-layered mapFiles 
+      else if (inLayers.length > 1) {
         grassLayers.forEach((gLayer, i) => {
+          // check if this layer has already been imported
           if (allVector.indexOf(gLayer) < 0) {
             try {
+              // using layer name in original mapFile as GRASS layer name
               addVector('PERMANENT', mapFile, gLayer, inLayers[i])
             } catch (e) {
               throw new Error(`failed to import ${mapFile} due to ${e}`)
@@ -53,15 +69,10 @@ module.exports = class {
           }
         })
       }
-    })
-
-    // Find queryable maps in any mapset, excluding default basemaps and selection.
-    // Only maps with at least one numeric column will be listed.
-    let maps = listUserVector()
-      .filter(map => getNumericColumns('PERMANENT', map).length > 0)
+    }
 
     const msg = messages["2"]
-    msg.message.list = maps
+    msg.message.list = listUserVector()
     return msg
   }
 
