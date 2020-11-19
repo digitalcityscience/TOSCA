@@ -1,5 +1,5 @@
 const fs = require('fs')
-const { checkWritableDir, getNumericColumns, getTopology, gpkgOut, initMapset, grass, mapsetExists, mergePDFs, psToPDF, textToPS, remove, getUnivar, getUnivarBounds, getFilesOfType, listUserVector, addVector } = require('./functions')
+const { checkWritableDir, getNumericColumns, getTopology, gpkgOut, initMapset, grass, mapsetExists, mergePDFs, psToPDF, textToPS, remove, getUnivar, getUnivarBounds, getFilesOfType, listUserVector, addVector, getLayers } = require('./functions')
 const { query: messages } = require('./messages.json')
 
 const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
@@ -33,13 +33,25 @@ module.exports = class {
     const allVector = listUserVector()
     // check and add all layers from layer switcher
     getFilesOfType('gpkg', CONTAINER_GEOSERVER).forEach(mapFile => {
-      const vector = mapFile.slice(mapFile.lastIndexOf('/') + 1, mapFile.lastIndexOf('.'))
-      if (allVector.indexOf(vector) < 0) {
+      const inLayers = getLayers('PERMANENT', mapFile)
+      // GRASS doesn't allow space in layernames
+      const grassLayers = inLayers.map(layer => layer.replace(' ', '_'))
+      if (inLayers.length === 1 && allVector.indexOf(grassLayers[0]) < 0) {
         try {
-          addVector('PERMANENT', mapFile, vector)
+          addVector('PERMANENT', mapFile, grassLayers[0])
         } catch (e) {
           throw new Error(`failed to import ${mapFile} due to ${e}`)
         }
+      } else if (inLayers.length > 1) {
+        grassLayers.forEach((gLayer, i) => {
+          if (allVector.indexOf(gLayer) < 0) {
+            try {
+              addVector('PERMANENT', mapFile, gLayer, inLayers[i])
+            } catch (e) {
+              throw new Error(`failed to import ${mapFile} due to ${e}`)
+            }
+          }
+        })
       }
     })
 

@@ -33,9 +33,25 @@ module.exports = {
    * @param {string} mapset
    * @param {string} infile file to import
    * @param {string} outfile output filename
+   * @param {string} layer map layer to be imported - only for mult-layer infiles
    */
-  addVector(mapset, infile, outfile) {
-    grass(mapset, `v.import input="${infile}" output="${outfile}" --overwrite`)
+  addVector(mapset, infile, outfile, layer) {
+    if (layer !== undefined) {
+      grass(mapset, `v.import input="${infile}" layer="${layer}" output="${outfile}" --overwrite`)
+    } else {
+      grass(mapset, `v.import input="${infile}" output="${outfile}" --overwrite`)
+    }
+  },
+
+  /**
+   * Get all layers contained in map file
+   * @param {string} mapset
+   * @param {string} mapFile map file name
+   */
+  getLayers(mapset, mapFile) {
+    const raw = grass(mapset, `v.import -l input=${mapFile}`)
+    const index = raw.lastIndexOf(':')
+    return raw.substring(index + 1).split('\n').filter(row => row.length)
   },
 
   checkWritableDir(path) {
