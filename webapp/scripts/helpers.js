@@ -1,6 +1,6 @@
-const { execSync } = require('child_process') // Documentation: https://nodejs.org/api/child_process.html
 const fs = require('fs')
-const path = require("path")
+const path = require('path')
+const { execSync } = require('child_process') // Documentation: https://nodejs.org/api/child_process.html
 
 const OUTPUT_DIR = process.env.OUTPUT_DIR
 
@@ -21,6 +21,13 @@ function checkWritableDir(path) {
  */
 function filterDefaultLayers(map) {
   return !map.match(/^((lines|points|polygons|relations)(_osm)?|selection|location_bbox)(@.+)?$/)
+}
+
+/**
+ * Function to filter filenames default layers (basemap, selection, etc.)
+ */
+function filterDefaultLayerFilenames(map) {
+  return !map.match(/^(.*\/)?((lines|points|polygons|relations)(_osm)?|selection|location_bbox).gpkg$/)
 }
 
 /**
@@ -84,6 +91,7 @@ function getFilesOfType(extension, dir, files = []) {
 module.exports = {
   checkWritableDir,
   filterDefaultLayers,
+  filterDefaultLayerFilenames,
   getFilesOfType,
   getResults,
   mergePDFs,

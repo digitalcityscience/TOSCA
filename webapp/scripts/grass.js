@@ -1,5 +1,6 @@
-const { execSync } = require('child_process') // Documentation: https://nodejs.org/api/child_process.html
 const fs = require('fs')
+const path = require('path')
+const { execSync } = require('child_process') // Documentation: https://nodejs.org/api/child_process.html
 const { filterDefaultLayers } = require('./helpers')
 
 const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
@@ -288,26 +289,27 @@ function getMetadata(mapset, table) {
   }
 
   // add description
+  let metadata
   try {
-    const metadata = require(`${GRASS}/metadata/metadata.json`)
-
-    if (!metadata || metadata.length === 0) {
-      return
-    }
-    const meta = metadata.filter(m => m.table === table)[0]
-    if (!meta) {
-      return
-    }
-    data.columnObj.rows.forEach(row => {
-      const data = meta.columns.filter(c => c.column === row.column)[0]
-      if (data) {
-        row.description = data.description
-      }
-    })
+    metadata = require(path.resolve(process.cwd(), `${GRASS}/metadata/metadata.json`))
   } catch (err) {
     // TODO: in later version this will be shown as a warning
     console.error('metadata.json not found.')
   }
+
+  if (!metadata || metadata.length === 0) {
+    return
+  }
+  const meta = metadata.filter(m => m.table === table)[0]
+  if (!meta) {
+    return
+  }
+  data.columnObj.rows.forEach(row => {
+    const data = meta.columns.filter(c => c.column === row.column)[0]
+    if (data) {
+      row.description = data.description
+    }
+  })
 
   return JSON.stringify(data)
 }

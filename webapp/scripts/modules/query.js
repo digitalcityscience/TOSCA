@@ -1,6 +1,6 @@
 const fs = require('fs')
 const { addVector, dbSelectAll, getAllColumns, getLayers, getUnivarBounds, gpkgOut, grass, initMapset, listUserVector, mapsetExists, remove } = require('../grass')
-const { checkWritableDir, filterDefaultLayers, getFilesOfType, mergePDFs, psToPDF, textToPS } = require('../helpers')
+const { checkWritableDir, filterDefaultLayerFilenames, getFilesOfType, mergePDFs, psToPDF, textToPS } = require('../helpers')
 const { query: messages } = require('../messages.json')
 
 const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
@@ -31,7 +31,7 @@ module.exports = class {
     this.queryArea = 'selection'
 
     const allVector = listUserVector()
-    const allGpkg = getFilesOfType('gpkg', GEOSERVER).filter(filterDefaultLayers)
+    const allGpkg = getFilesOfType('gpkg', GEOSERVER).filter(filterDefaultLayerFilenames)
 
     /**
      * check and add all layers from layer switcher
@@ -40,7 +40,9 @@ module.exports = class {
      */
     for (const mapFile of allGpkg) {
       const fileName = mapFile.slice(mapFile.lastIndexOf('/') + 1, mapFile.lastIndexOf('.'))
-      if (allVector.indexOf(fileName) > -1) continue
+      if (allVector.indexOf(fileName) > -1) {
+        continue
+      }
 
       const inLayers = getLayers('PERMANENT', mapFile)
       // GRASS doesn't allow space in layernames
