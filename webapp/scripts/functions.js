@@ -36,7 +36,7 @@ module.exports = {
    * @param {string} layer map layer to be imported - only for multi-layer files
    */
   addVector(mapset, infile, outfile, layer) {
-    if (layer !== undefined) {
+    if (layer) {
       grass(mapset, `v.import input="${infile}" layer="${layer}" output="${outfile}" --overwrite`)
     } else {
       grass(mapset, `v.import input="${infile}" output="${outfile}" --overwrite`)
@@ -83,7 +83,6 @@ module.exports = {
    * @returns {[number, number]} center coordinates (east, north)
    */
   getCoordinates(mapset) {
-    let EAST, NORTH
     let list = grass(mapset, `g.list type=vector`).trim()
     let region
 
@@ -93,10 +92,10 @@ module.exports = {
       region = grass(mapset, `g.region -cg vector=polygons_osm`).trim()
     }
 
-    EAST = region.split('\n')[0].split('=')[1]
-    NORTH = region.split('\n')[1].split('=')[1]
-
-    return [EAST, NORTH]
+    return [
+      region.split('\n')[0].split('=')[1],
+      region.split('\n')[1].split('=')[1]
+    ]
   },
 
   /**
@@ -124,7 +123,10 @@ module.exports = {
         .trim()
         .split('\n')
         .filter(col => col.match(/Column/) && !col.match(/cat/i))
-        .map(line => { return { 'column': line.split(':')[1].trim(), 'type': line.split(':')[2].trim() } })
+        .map(line => ({
+          column: line.split(':')[1].trim(),
+          type: line.split(':')[2].trim()
+        }))
     } catch (err) {
       return []
     }
@@ -137,16 +139,12 @@ module.exports = {
    * @param {string} column column
    */
   getUnivar(mapset, map, column) {
-    try {
-      const rawArray = grass(mapset, `v.db.univar -e -g map=${map} column=${column}`).trim().split('\n')
-      return rawArray.reduce((dict, line) => {
+    return grass(mapset, `v.db.univar -e -g map=${map} column=${column}`).trim().split('\n')
+      .reduce((dict, line) => {
         const a = line.split('=')
         dict[a[0]] = a[1]
         return dict
       }, {})
-    } catch (e) {
-      throw new Error(e)
-    }
   },
 
   /**
@@ -157,7 +155,7 @@ module.exports = {
    */
   getUnivarBounds(mapset, map, column) {
     const stats = module.exports.getUnivar(mapset, map, column)
-    return stats !== undefined ? [round(stats.min, 2), round(stats.max, 2)] : []
+    return stats ? [round(stats.min, 2), round(stats.max, 2)] : []
   },
 
   /**
@@ -167,18 +165,17 @@ module.exports = {
    * @returns {object[]} array of all entries
    */
   dbSelectAll(mapset, table) {
-    const raw = grass(mapset, `db.select -v sql="select * from ${table}" vertical_separator=space`)
-    return raw.split(' \n')
-      .map(item => {
-        return item
-          .split('\n')
-          .filter(row => row.length)
-          .reduce((obj, row) => {
-            const [key, val] = row.split('|').map(i => i.trim())
-            obj[key] = val
-            return obj
-          }, {})
-      })
+    return grass(mapset, `db.select -v sql="select * from ${table}" vertical_separator=space`)
+      .split(' \n')
+      .map(item => item
+        .split('\n')
+        .filter(row => row.length)
+        .reduce((obj, row) => {
+          const [key, val] = row.split('|').map(i => i.trim())
+          obj[key] = val
+          return obj
+        }, {})
+      )
   },
 
   /**
@@ -194,8 +191,7 @@ module.exports = {
       return dict
     }, {})
 
-    const topology = info.points ? (info.lines || info.centroids ? 'mixed' : 'point') : info.lines ? (info.centroids ? 'mixed' : 'line') : info.centroids ? 'area' : 'empty'
-    return topology
+    return info.points ? (info.lines || info.centroids ? 'mixed' : 'point') : info.lines ? (info.centroids ? 'mixed' : 'line') : info.centroids ? 'area' : 'empty'
   },
 
   /**
@@ -311,7 +307,6 @@ module.exports = {
     return JSON.stringify(data)
   },
 
-
   /**
    * Prints all the result files in the 'output' folder
    * @returns {string[]} list of result filenames
@@ -325,23 +320,21 @@ module.exports = {
   },
 
   /**
-   * Get all files of a file type in a directory
-   * @param {string} directory directory to search in
+   * Get all files of a given file type in a directory (recursive)
    * @param {string} extension file extension
+   * @param {string} dir directory to search in
    * @returns {string[]} array of filenames
    */
-  getFilesOfType(extension, directory) {
-    function helper(dir, ext, files) {
-      fs.readdirSync(dir).forEach(function (file) {
-        if (fs.statSync(dir + "/" + file).isDirectory()) {
-          files = helper(dir + "/" + file, ext, files)
-        } else if (file.slice(file.lastIndexOf('.') + 1) === ext) {
-          files.push(path.join(dir, "/", file))
-        }
-      })
-      return files
-    }
-    return helper(directory, extension, [])
+  getFilesOfType(extension, dir, files = []) {
+    fs.readdirSync(dir).forEach(file => {
+      const filePath = path.join(dir, file)
+      if (fs.statSync(filePath).isDirectory()) {
+        files = module.exports.getFilesOfType(extension, filePath, files)
+      } else if (file.slice(file.lastIndexOf('.') + 1) === extension) {
+        files.push(path.join(filePath))
+      }
+    })
+    return files
   },
 
   grass
@@ -371,7 +364,6 @@ function setBounds(data, mapset, table) {
       } catch (e) {
         // TODO: push to warnings
         bounds = []
-        console.error(e)
       }
     }
     row.min = bounds[0]
@@ -385,18 +377,22 @@ function setBounds(data, mapset, table) {
  * @param {string} table table name to search for
  */
 function addDescription(desc, table) {
-  let metadata = []
   try {
-    metadata = require(`${GRASS}/metadata/metadata.json`)
-    if (metadata.length) {
-      const meta = metadata.filter(m => m.table === table)[0]
-      if (meta != undefined) {
-        desc.columnObj.rows.forEach(row => {
-          const data = meta.columns.filter(c => c.column === row.column)[0]
-          if (data != undefined) row.description = data.description
-        })
-      }
+    const metadata = require(`${GRASS}/metadata/metadata.json`)
+
+    if (!metadata || metadata.length === 0) {
+      return
     }
+    const meta = metadata.filter(m => m.table === table)[0]
+    if (!meta) {
+      return
+    }
+    desc.columnObj.rows.forEach(row => {
+      const data = meta.columns.filter(c => c.column === row.column)[0]
+      if (data) {
+        row.description = data.description
+      }
+    })
   } catch (err) {
     // TODO: in later version this will be shown as a warning
     console.error('metadata.json not found.')
