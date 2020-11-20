@@ -289,12 +289,11 @@ module.exports = {
    * @param {string} table
    */
   getMetadata(mapset, table) {
-    const columns = module.exports.getNumericColumns(mapset, table).map(col => col.split(':')[1].trim())
     const data = {
       tableObj: { headFields: ['table', 'description'], rows: [{ table: table, description: '' }] },
       columnObj: {
-        headFields: ['column', 'description', 'min', 'max'],
-        rows: columns.map(c => { return { column: c, description: '', min: undefined, max: undefined } })
+        headFields: ['column', 'type', 'description', 'min', 'max'],
+        rows: module.exports.getAllColumns(mapset, table)
       }
     }
     setBounds(data, mapset, table)
@@ -349,22 +348,24 @@ function grass(mapset, args) {
 
 /**
  * add max and min attributes to each element of desc.columnObj.rows
- * @param {*} desc table description object
+ * @param {*} data table description object
  * @param {*} mapset mapset name
  * @param {*} table table name
  */
-function setBounds(desc, mapset, table) {
-  let i = 0
-  while (i < desc.columnObj.rows.length) {
-    const bounds = module.exports.getUnivarBounds(mapset, table, desc.columnObj.rows[i].column)
-    // add bounds when they exist, remove element when they don't
-    if (bounds.length) {
-      desc.columnObj.rows[i].min = bounds[0]
-      desc.columnObj.rows[i].max = bounds[1]
-      i++
-    } else {
-      desc.columnObj.rows.splice(i, 1)
+function setBounds(data, mapset, table) {
+  for (const row of data.columnObj.rows) {
+    let bounds = ['-', '-']
+    if (['DOUBLE PRECISION', 'INTEGER'].indexOf(row.type) > -1) {
+      try {
+        bounds = module.exports.getUnivarBounds(mapset, table, row.column)
+      } catch (e) {
+        // TODO: push to warnings
+        bounds = []
+        console.error(e)
+      }
     }
+    row.min = bounds[0]
+    row.max = bounds[1]
   }
 }
 
