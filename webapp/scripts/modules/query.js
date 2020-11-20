@@ -1,6 +1,7 @@
 const fs = require('fs')
-const { checkWritableDir, getAllColumns, gpkgOut, initMapset, grass, mapsetExists, mergePDFs, psToPDF, textToPS, remove, getUnivarBounds, getFilesOfType, listUserVector, addVector, getLayers, dbSelectAll } = require('./functions')
-const { query: messages } = require('./messages.json')
+const { addVector, dbSelectAll, getAllColumns, getLayers, getUnivarBounds, gpkgOut, grass, initMapset, listUserVector, mapsetExists, remove } = require('../grass')
+const { checkWritableDir, filterDefaultLayers, getFilesOfType, mergePDFs, psToPDF, textToPS } = require('../helpers')
+const { query: messages } = require('../messages.json')
 
 const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
 const GRASS = process.env.GRASS_DIR
@@ -30,8 +31,7 @@ module.exports = class {
     this.queryArea = 'selection'
 
     const allVector = listUserVector()
-    const allGpkg = getFilesOfType('gpkg', GEOSERVER)
-      .filter(map => !map.match(/((lines|points|polygons|relations)(_osm)?|selection|location_bbox)(@.+)?/))
+    const allGpkg = getFilesOfType('gpkg', GEOSERVER).filter(filterDefaultLayers)
 
     /**
      * check and add all layers from layer switcher

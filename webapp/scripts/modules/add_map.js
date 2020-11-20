@@ -1,9 +1,10 @@
-const { addRaster, addVector, checkWritableDir, mapsetExists, gpkgOut } = require('./functions.js')
-const { add_map: messages } = require('./messages.json')
+const { addRaster, addVector, gpkgOut, mapsetExists } = require('../grass.js')
+const { checkWritableDir } = require('../helpers.js')
+const { add_map: messages } = require('../messages.json')
 
 const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
 
-class AddMapModule {
+module.exports = class {
   constructor() {
     this.mapType = '' // 'vector' or 'raster'
     this.mapFile = '' // filename of uploaded file
@@ -56,5 +57,3 @@ class AddMapModule {
     }
   }
 }
-
-module.exports = AddMapModule

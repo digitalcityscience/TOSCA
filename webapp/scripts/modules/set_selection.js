@@ -1,9 +1,10 @@
-const { addVector, checkWritableDir, clip, getCoordinates, gpkgOut, mapsetExists, remove, grass } = require('./functions')
-const { set_selection: messages } = require('./messages.json')
+const { addVector, clip, getCoordinates, gpkgOut, grass, mapsetExists, remove } = require('../grass')
+const { checkWritableDir } = require('../helpers')
+const { set_selection: messages } = require('../messages.json')
 
 const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
 
-class SetSelectionModule {
+module.exports = class {
   constructor() { }
 
   launch() {
@@ -46,5 +47,3 @@ class SetSelectionModule {
     }
   }
 }
-
-module.exports = SetSelectionModule

@@ -48,14 +48,17 @@ app.get('/', (req, res) => {
   res.render('launch', options)
 })
 
+// functions
+const { getMetadata } = require('./scripts/grass')
+const { getResults } = require('./scripts/helpers')
+
 // modules
-const AddLocationModule = require('./scripts/add_location')
-const AddMapModule = require('./scripts/add_map')
-const SetSelectionModule = require('./scripts/set_selection')
-const SetResolutionModule = require('./scripts/set_resolution')
-const TimeMapModule = require('./scripts/time_map')
-const QueryModule = require('./scripts/query')
-const { getMetadata, getResults } = require('./scripts/functions')
+const AddLocationModule = require('./scripts/modules/add_location')
+const AddMapModule = require('./scripts/modules/add_map')
+const SetSelectionModule = require('./scripts/modules/set_selection')
+const SetResolutionModule = require('./scripts/modules/set_resolution')
+const TimeMapModule = require('./scripts/modules/time_map')
+const QueryModule = require('./scripts/modules/query')
 
 const modules = {
   "add_location": new AddLocationModule(),

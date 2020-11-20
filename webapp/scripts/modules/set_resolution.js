@@ -1,11 +1,12 @@
 const fs = require('fs')
-const { checkWritableDir, grass, mapsetExists } = require('./functions')
-const { set_resolution: messages } = require('./messages.json')
+const { grass, mapsetExists } = require('../grass')
+const { checkWritableDir } = require('../helpers')
+const { set_resolution: messages } = require('../messages.json')
 
 const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
 const GRASS = process.env.GRASS_DIR
 
-class SetResolutionModule {
+module.exports = class {
   constructor() { }
 
   launch() {
@@ -46,5 +47,3 @@ class SetResolutionModule {
     }
   }
 }
-
-module.exports = SetResolutionModule

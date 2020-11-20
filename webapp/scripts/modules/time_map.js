@@ -1,6 +1,7 @@
 const fs = require('fs')
-const { addVector, checkWritableDir, gpkgOut, initMapset, mapsetExists, grass, mergePDFs, psToPDF, textToPS } = require('./functions')
-const { 'time_map': messages } = require('./messages.json')
+const { addVector, gpkgOut, grass, initMapset, mapsetExists } = require('../grass')
+const { checkWritableDir, mergePDFs, psToPDF, textToPS } = require('../helpers')
+const { 'time_map': messages } = require('../messages.json')
 
 const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
 const GRASS = process.env.GRASS_DIR
