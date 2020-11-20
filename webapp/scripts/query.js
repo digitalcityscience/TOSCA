@@ -1,9 +1,8 @@
 const fs = require('fs')
-const { checkWritableDir, getAllColumns, getTopology, gpkgOut, initMapset, grass, mapsetExists, mergePDFs, psToPDF, textToPS, remove, getUnivar, getUnivarBounds, getFilesOfType, listUserVector, addVector, getLayers, dbSelectAll } = require('./functions')
+const { checkWritableDir, getAllColumns, gpkgOut, initMapset, grass, mapsetExists, mergePDFs, psToPDF, textToPS, remove, getUnivarBounds, getFilesOfType, listUserVector, addVector, getLayers, dbSelectAll } = require('./functions')
 const { query: messages } = require('./messages.json')
 
 const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
-const CONTAINER_GEOSERVER = '/usr/share/geoserver/data_dir/data'
 const GRASS = process.env.GRASS_DIR
 const OUTPUT = process.env.OUTPUT_DIR
 
@@ -21,7 +20,7 @@ module.exports = class {
     checkWritableDir(OUTPUT)
 
     if (!mapsetExists('PERMANENT')) {
-      return messages["7"]
+      return messages[7]
     }
 
     initMapset(this.mapset)
@@ -31,12 +30,12 @@ module.exports = class {
     this.queryArea = 'selection'
 
     const allVector = listUserVector()
-    const allGpkg = getFilesOfType('gpkg', CONTAINER_GEOSERVER)
+    const allGpkg = getFilesOfType('gpkg', GEOSERVER)
       .filter(map => !map.match(/((lines|points|polygons|relations)(_osm)?|selection|location_bbox)(@.+)?/))
 
     /**
      * check and add all layers from layer switcher
-     * FIXME: mapFile name and layer name differs, which makes it hard to check if file has already been imported 
+     * FIXME: mapFile name and layer name differs, which makes it hard to check if file has already been imported
      * ideal solution: 1. make sure all map files contains only one layer; 2. make sure all mapFile names align with its layer's name
      */
     for (const mapFile of allGpkg) {
@@ -51,7 +50,7 @@ module.exports = class {
         // using mapFile name as GRASS layer name for single-layered mapFiles
         addVector('PERMANENT', mapFile, fileName)
       }
-      // multi-layered mapFiles 
+      // multi-layered mapFiles
       else if (inLayers.length > 1) {
         grassLayers.forEach((gLayer, i) => {
           // check if this layer has already been imported
@@ -63,7 +62,7 @@ module.exports = class {
       }
     }
 
-    const msg = messages["2"]
+    const msg = messages[2]
     msg.message.list = listUserVector()
     return msg
   }
@@ -85,23 +84,22 @@ module.exports = class {
 
         gpkgOut(this.mapset, QUERY_MAP_NAME, QUERY_MAP_NAME)
 
-        // query map topology
-        getTopology(this.mapset, QUERY_MAP_NAME)
-
         const cols = getAllColumns(this.mapset, QUERY_MAP_NAME)
         const vals = dbSelectAll(this.mapset, QUERY_MAP_NAME)
         cols.forEach(column => {
           // if column is numeric, get bounds
           if (['DOUBLE PRECISION', 'INTEGER'].indexOf(column.type) > -1) {
-            const bds = getUnivarBounds(this.mapset, QUERY_MAP_NAME, column.column)
-            if (bds.length) column['bounds'] = bds
+            const bounds = getUnivarBounds(this.mapset, QUERY_MAP_NAME, column.column)
+            if (bounds.length) {
+              column['bounds'] = bounds
+            }
           }
           // if column is text, get values
           else {
             column.vals = [...new Set(vals.map(c => c[column.column]))]
           }
         })
-        const msg = messages["3"]
+        const msg = messages[3]
         msg.message.list = cols
         msg.message.map = this.mapToQuery
         return msg
@@ -110,7 +108,7 @@ module.exports = class {
       case 'query.3': {
         const where = message.reduce((sum, msg) => sum + msg.where + ' ', '').trim()
         this.calculate(message, where)
-        return messages["24"]
+        return messages[24]
       }
     }
   }
@@ -142,7 +140,7 @@ module.exports = class {
     const dateString = date.toString()
     const safeDateString = date.toISOString().replace(/([\d-]*)T(\d\d):(\d\d):[\d.]*Z/g, '$1_$2$3')
 
-    let output = `Statistics and map results
+    const output = `Statistics and map results
 
 Date of creation: ${dateString}
 Queried columns: ${message.map(msg => msg.column).toString()}
