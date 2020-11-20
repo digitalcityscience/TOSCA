@@ -8,8 +8,8 @@ const outputDir = process.env.OUTPUT_DIR
 
 module.exports = {
   /**
-   * Import an OSM map file into a GRASS mapset.
-   * @param {string} mapset
+   * Import an OSM map file into a GRASS mapset
+   * @param {string} mapset mapset
    * @param {string} infile file to import
    * @param {string} layer layer name
    * @param {string} outfile output filename
@@ -19,8 +19,8 @@ module.exports = {
   },
 
   /**
-   * Import a raster map file into a GRASS mapset.
-   * @param {string} mapset
+   * Import a raster map file into a GRASS mapset
+   * @param {string} mapset mapset
    * @param {string} infile file to import
    * @param {string} outfile output filename
    */
@@ -29,11 +29,11 @@ module.exports = {
   },
 
   /**
-   * Import a vector map file into a GRASS mapset.
-   * @param {string} mapset
+   * Import a vector map file into a GRASS mapset
+   * @param {string} mapset mapset
    * @param {string} infile file to import
    * @param {string} outfile output filename
-   * @param {string} layer map layer to be imported - only for mult-layer infiles
+   * @param {string} layer map layer to be imported - only for multi-layer files
    */
   addVector(mapset, infile, outfile, layer) {
     if (layer !== undefined) {
@@ -45,7 +45,7 @@ module.exports = {
 
   /**
    * Get all layers contained in map file
-   * @param {string} mapset
+   * @param {string} mapset mapset
    * @param {string} mapFile map file name
    */
   getLayers(mapset, mapFile) {
@@ -54,6 +54,10 @@ module.exports = {
     return raw.substring(index + 1).split('\n').filter(row => row.length)
   },
 
+  /**
+   * Check if directory is writable
+   * @param {string} path path to the directory
+   */
   checkWritableDir(path) {
     try {
       fs.accessSync(path, fs.constants.W_OK)
@@ -64,7 +68,7 @@ module.exports = {
 
   /**
    * Clip a map layer using the bounds of another layer
-   * @param {string} mapset
+   * @param {string} mapset mapset
    * @param {string} layer the layer to clip
    * @param {string} clipLayer the layer whose bounds are used for clipping
    * @param {string} outfile output filename
@@ -74,8 +78,8 @@ module.exports = {
   },
 
   /**
-   * Get the center coordinates of the current selection.
-   * @param {string} mapset
+   * Get the center coordinates of the current selection
+   * @param {string} mapset mapset
    * @returns {[number, number]} center coordinates (east, north)
    */
   getCoordinates(mapset) {
@@ -95,6 +99,11 @@ module.exports = {
     return [EAST, NORTH]
   },
 
+  /**
+   * Get a layer's columns with INTEGER or DOUBLE PRECISION type
+   * @param {string} mapset mapset
+   * @param {string} layer layer to analyze
+   */
   getNumericColumns(mapset, layer) {
     try {
       return grass(mapset, `db.describe -c table=${layer}`).trim().split('\n').filter(col => col.match(/DOUBLE PRECISION|INTEGER/) && !col.match(/cat/i))
@@ -104,9 +113,9 @@ module.exports = {
   },
 
   /**
-   * returns all columns and their type of a table
-   * @param {string} mapset 
-   * @param {string} layer 
+   * Returns all columns and their type of a table
+   * @param {string} mapset mapset
+   * @param {string} layer layer to analyze
    * @return {object} [{'column':'','type':''},{},{},...]
    */
   getAllColumns(mapset, layer) {
@@ -122,10 +131,10 @@ module.exports = {
   },
 
   /**
-   * Returns univariate statistics on selected table column for a GRASS vector map.
-   * @param {string} mapset
-   * @param {string} map
-   * @param {string} column
+   * Returns univariate statistics on selected table column for a GRASS vector map
+   * @param {string} mapset mapset
+   * @param {string} map map
+   * @param {string} column column
    */
   getUnivar(mapset, map, column) {
     try {
@@ -141,10 +150,10 @@ module.exports = {
   },
 
   /**
-   * Returns min and max value of a univariate stat on selected table column for a GRASS vector map.
-   * @param {string} mapset
-   * @param {string} map
-   * @param {string} column
+   * Returns min and max value of a univariate stat on selected table column for a GRASS vector map
+   * @param {string} mapset mapset
+   * @param {string} map map
+   * @param {string} column column
    */
   getUnivarBounds(mapset, map, column) {
     const stats = module.exports.getUnivar(mapset, map, column)
@@ -153,9 +162,9 @@ module.exports = {
 
   /**
    * select all entries in a table
-   * @param {string} mapset 
-   * @param {string} table
-   * @returns array of all entires
+   * @param {string} mapset mapset
+   * @param {string} table table to select from
+   * @returns {object[]} array of all entries
    */
   dbSelectAll(mapset, table) {
     const raw = grass(mapset, `db.select -v sql="select * from ${table}" vertical_separator=space`)
@@ -174,7 +183,7 @@ module.exports = {
 
   /**
    * Identify the topology of a vector map
-   * @param {string} mapset
+   * @param {string} mapset mapset
    * @param {string} layer layer name
    * @returns {string} topology type (possible values are: point, line, area, mixed, empty)
    */
@@ -190,8 +199,8 @@ module.exports = {
   },
 
   /**
-   * Export a vector map as a GeoPackage file in the GeoServer data directory.
-   * @param {string} mapset
+   * Export a vector map as a GeoPackage file in the GeoServer data directory
+   * @param {string} mapset mapset
    * @param {string} infile file to import
    * @param {string} outfile output filename
    */
@@ -201,7 +210,7 @@ module.exports = {
 
   /**
    * Overwrite the region of the given mapset. If no such mapset exists, create it
-   * @param {string} mapset
+   * @param {string} mapset mapset
    */
   initMapset(mapset) {
     if (!fs.existsSync(`${GRASS}/global/${mapset}`)) {
@@ -216,7 +225,7 @@ module.exports = {
 
   /**
    * List available vector maps
-   * @param {string} mapset
+   * @param {string} mapset mapset
    * @return {string[]} names of available maps
    */
   listVector(mapset) {
@@ -234,7 +243,7 @@ module.exports = {
 
   /**
    * Check if a mapset exists
-   * @param {string} mapset
+   * @param {string} mapset mapset
    * @returns {boolean} true if mapset exists
    */
   mapsetExists(mapset) {
@@ -249,8 +258,8 @@ module.exports = {
 
   /**
    * Merge multiple PDF files into one
-   * @param {string} outfile
-   * @param  {...string} infiles
+   * @param {string} outfile output file
+   * @param {...string} infiles input files
    */
   mergePDFs(outfile, ...infiles) {
     infiles = infiles.map(file => `"${file}"`).join(" ")
@@ -259,7 +268,7 @@ module.exports = {
 
   /**
    * Remove a map layer
-   * @param {string} mapset
+   * @param {string} mapset mapset
    * @param {string} layer layer name
    */
   remove(mapset, layer) {
@@ -268,8 +277,8 @@ module.exports = {
 
   /**
    * Convert PS to PDF
-   * @param {string} infile
-   * @param {string} outfile
+   * @param {string} infile input file
+   * @param {string} outfile output file
    */
   psToPDF(infile, outfile) {
     execSync(`ps2pdf ${infile} ${outfile}`)
@@ -277,8 +286,8 @@ module.exports = {
 
   /**
    * Convert text to PS
-   * @param {string} infile
-   * @param {string} outfile
+   * @param {string} infile input file
+   * @param {string} outfile output file
    */
   textToPS(infile, outfile) {
     execSync(`enscript -p ${outfile} ${infile}`)
@@ -286,7 +295,8 @@ module.exports = {
 
   /**
    * Prints all attribute descriptions of a table
-   * @param {string} table
+   * @param {string} mapset mapset
+   * @param {string} table table
    */
   getMetadata(mapset, table) {
     const data = {
@@ -304,7 +314,7 @@ module.exports = {
 
   /**
    * Prints all the result files in the 'output' folder
-   * @returns {array} list of result filenames
+   * @returns {string[]} list of result filenames
    */
   getResults() {
     const list = []
@@ -315,10 +325,10 @@ module.exports = {
   },
 
   /**
-   * get all files of a file type in a directory 
+   * Get all files of a file type in a directory
    * @param {string} directory directory to search in
    * @param {string} extension file extension
-   * @returns {array} array of filenames
+   * @returns {string[]} array of filenames
    */
   getFilesOfType(extension, directory) {
     function helper(dir, ext, files) {
@@ -339,7 +349,7 @@ module.exports = {
 
 /**
  * Run any GRASS command on a given mapset
- * @param {string} mapset
+ * @param {string} mapset mapset
  * @param {string} args arguments to the command line
  */
 function grass(mapset, args) {
@@ -347,10 +357,10 @@ function grass(mapset, args) {
 }
 
 /**
- * add max and min attributes to each element of desc.columnObj.rows
- * @param {*} data table description object
- * @param {*} mapset mapset name
- * @param {*} table table name
+ * Add max and min attributes to each element of desc.columnObj.rows
+ * @param {object} data table description object
+ * @param {string} mapset mapset
+ * @param {string} table table
  */
 function setBounds(data, mapset, table) {
   for (const row of data.columnObj.rows) {
@@ -370,7 +380,7 @@ function setBounds(data, mapset, table) {
 }
 
 /**
- * add description from metadata.json to 
+ * Add description from metadata.json to description object
  * @param {object} desc description object of a table
  * @param {string} table table name to search for
  */
@@ -394,9 +404,9 @@ function addDescription(desc, table) {
 }
 
 /**
- * round a string number to n digits after zero
- * @param {string} val 
- * @param {number} n 
+ * Round a string number to n decimal places
+ * @param {string} val number to round
+ * @param {number} n number of decimal places
  */
 function round(val, n) {
   let i = 0
