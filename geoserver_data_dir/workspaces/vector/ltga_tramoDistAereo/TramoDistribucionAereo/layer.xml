@@ -1,0 +1,17 @@
+<layer>
+  <name>TramoDistribucionAereo</name>
+  <id>LayerInfoImpl-6c7651c7:17598e71f87:-7f8a</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl-6c7651c7:17598e71f87:-7f85</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl-6c7651c7:17598e71f87:-7f8b</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateCreated>2020-11-05 15:10:34.699 UTC</dateCreated>
+  <dateModified>2020-11-20 08:52:49.745 UTC</dateModified>
+</layer>

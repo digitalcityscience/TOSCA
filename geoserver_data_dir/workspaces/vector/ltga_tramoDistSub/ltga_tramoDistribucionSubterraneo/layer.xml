@@ -1,0 +1,17 @@
+<layer>
+  <name>ltga_tramoDistribucionSubterraneo</name>
+  <id>LayerInfoImpl-6c7651c7:17598e71f87:-7f87</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl-6c7651c7:17598e71f87:-7f83</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl-6c7651c7:17598e71f87:-7f88</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateCreated>2020-11-05 15:12:04.758 UTC</dateCreated>
+  <dateModified>2020-11-20 08:52:00.422 UTC</dateModified>
+</layer>

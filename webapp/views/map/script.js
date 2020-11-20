@@ -87,8 +87,8 @@ const strickenArea = L.tileLayer.wms(vectorWMS, {
   minZoom: 3
 });
 
-const timeMap = L.tileLayer.wms(rasterWMS, {
-  layers: 'time_map_result',
+const timeMap = L.tileLayer.wms(vectorWMS, {
+  layers: 'time_map_vector',
   format: 'image/png',
   transparent: true,
   legend: true,
@@ -313,8 +313,8 @@ const sirens = L.tileLayer.wms(vectorWMS, {
   minZoom: 3
 });
 
-const ltgaLumap = L.tileLayer.wms(vectorWMS, {
-  layers: 'ltga_luminaria',
+const ltga_lu_map = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
+  layers: 'vector:Luminaria',
   format: 'image/png',
   transparent: true,
   legend: true,
@@ -322,8 +322,8 @@ const ltgaLumap = L.tileLayer.wms(vectorWMS, {
   minZoom: 3
 });
 
-const ltgaTramomap = L.tileLayer.wms(vectorWMS, {
-  layers: 'ltga_traDistAereo',
+const ltga_Tramo_map = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
+  layers: 'vector:TramoDistribucionAereo',
   format: 'image/png',
   transparent: true,
   legend: true,
@@ -331,8 +331,8 @@ const ltgaTramomap = L.tileLayer.wms(vectorWMS, {
   minZoom: 3
 });
 
-const ltgaTrSbmap = L.tileLayer.wms(vectorWMS, {
-  layers: 'ltga_traDistSub',
+const ltga_TrSb_map = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
+  layers: 'vector:ltga_tramoDistribucionSubterraneo',
   format: 'image/png',
   transparent: true,
   legend: true,
@@ -376,13 +376,13 @@ const groupedOverlays = {
     "Doctors and dentists": doctors,
     "Hospitals and clinics": hospitals,
     "Building Floors": ltgaBuildings,
-    "Vías Latacunga": ltgaAxisMap,
-    "Vías Cotopaxi": ltgaRoadMap,
-    'Luminaria': ltgaLumap,
-    'TramoDistribuciónAereo': ltgaTramomap,
-    'TramoDistriSubterraneo': ltgaTrSbmap,
-    "Cultivo principal": ltgaCropMap,
-    "Uso Cobertura": ltgaLulcMap,
+    "Urban Road Axis": ltgaAxisMap,
+    "Latacunga Road": ltgaRoadMap,
+    'Luminaire': ltga_lu_map,
+    'Air dist section': ltga_Tramo_map,
+    'Underground dist section': ltga_TrSb_map,
+    "Main Crop": ltgaCropMap,
+    "Landuse Landcover": ltgaLulcMap,
     "Productive Infrastructure":productiveInfrastructure,
     "Producer associations":producerAssociations,
     "Markets and squares":marketsSquares,
@@ -391,10 +391,10 @@ const groupedOverlays = {
     "Early warning sirens":sirens
   },
   "Latacunga: volcanic threats": {
-    "Amenanza Cotopaxi": ltgaEruptMap,
-    "Grado amenanza lahares": gradoAmenaza,
-    "Caída ceniza Cotopaxi": ltgaAshMap,
-    "Vulnerabilidad": ltgaVulnerabilityMap,
+    "Affected areas": ltgaEruptMap,
+    "Volcano lahars flow": gradoAmenaza,
+    "Ash fall risk": ltgaAshMap,
+    "Vulnerability": ltgaVulnerabilityMap,
   },
 }
 
