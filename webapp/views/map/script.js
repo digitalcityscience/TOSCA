@@ -19,82 +19,6 @@ const hot = L.tileLayer('https://tile-{s}.openstreetmap.fr/hot/{z}/{x}/{y}.png',
   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors; Humanitarian map style by <a href="https://www.hotosm.org/">HOT</a>'
 });
 
-// Basemap
-const waterways = L.tileLayer.wms(vectorWMS, {
-  layers: 'osm_waterways',
-  format: 'image/png',
-  transparent: true,
-  maxZoom: 20,
-  minZoom: 1
-});
-
-const roads = L.tileLayer.wms(vectorWMS, {
-  layers: 'osm_roads',
-  format: 'image/png',
-  transparent: true,
-  maxZoom: 20,
-  minZoom: 1
-});
-
-const buildings = L.tileLayer.wms(vectorWMS, {
-  layers: 'osm_buildings',
-  format: 'image/png',
-  transparent: true,
-  maxZoom: 20,
-  minZoom: 1
-});
-
-const basemapBbox = L.tileLayer.wms(vectorWMS, {
-  layers: 'basemap_bbox',
-  format: 'image/png',
-  transparent: true,
-  maxZoom: 20,
-  minZoom: 1
-});
-
-// Selection
-const selection = L.tileLayer.wms(vectorWMS, {
-  layers: 'selection',
-  format: 'image/png',
-  transparent: true,
-  maxZoom: 20,
-  minZoom: 1
-});
-
-// Time map module
-const fromPoints = L.tileLayer.wms(vectorWMS, {
-  layers: 'time_map_from_points',
-  format: 'image/png',
-  transparent: true,
-  maxZoom: 20,
-  minZoom: 3
-});
-
-const viaPoints = L.tileLayer.wms(vectorWMS, {
-  layers: 'time_map_via_points',
-  format: 'image/png',
-  transparent: true,
-  maxZoom: 20,
-  minZoom: 3
-});
-
-const strickenArea = L.tileLayer.wms(vectorWMS, {
-  layers: 'time_map_stricken_area',
-  format: 'image/png',
-  transparent: true,
-  maxZoom: 20,
-  minZoom: 3
-});
-
-const timeMap = L.tileLayer.wms(rasterWMS, {
-  layers: 'time_map_result',
-  format: 'image/png',
-  transparent: true,
-  legend: true,
-  maxZoom: 20,
-  minZoom: 1
-});
-
 // Drawings
 const drawnItems = L.featureGroup().addTo(map);
 
@@ -108,19 +32,20 @@ const baseLayers = {
   "OSM Standard style": osm,
   "OSM Humanitarian style": hot
 }
+
 const groupedOverlays = {
   "Basemap": {
-    "Waterways": waterways,
-    "Roads": roads,
-    "Buildings": buildings,
-    "Basemap boundary": basemapBbox,
-    "Current selection": selection
+    [services.waterways.displayName]: createWms(services.waterways),
+    [services.roads.displayName]: createWms(services.roads),
+    [services.buildings.displayName]: createWms(services.buildings),
+    [services.basemapBbox.displayName]: createWms(services.basemapBbox),
+    [services.selection.displayName]: createWms(services.selection)
   },
   "Time map": {
-    "Start point": fromPoints,
-    "Via point": viaPoints,
-    "Affected area": strickenArea,
-    "Road-level time map": timeMap
+    [services.fromPoints.displayName]: createWms(services.fromPoints),
+    [services.viaPoints.displayName]: createWms(services.viaPoints),
+    [services.strickenArea.displayName]: createWms(services.strickenArea),
+    [services.timeMap.displayName]: createWms(services.timeMap)
   }
 };
 
@@ -164,4 +89,12 @@ L.control.scale({ maxWidth: 300, position: 'bottomright' }).addTo(map);
 function refreshLayer(layer) {
   // Force reloading of the layer
   layer.setParams({ ts: Date.now() });
+}
+
+/**
+ * create wms service based on serviceConf
+ * @param {object} service config object from config.js
+ */
+function createWms(service) {
+  return service.type === 'vector' ? L.tileLayer.wms(vectorWMS, service) : L.tileLayer.wms(rasterWMS, service)
 }
