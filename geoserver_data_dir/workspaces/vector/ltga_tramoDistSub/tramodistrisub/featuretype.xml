@@ -1,14 +1,14 @@
 <featureType>
-  <id>FeatureTypeInfoImpl-6c7651c7:17598e71f87:-7f8b</id>
-  <name>TramoDistribucionAereo</name>
-  <nativeName>tramoDistribucionAereo</nativeName>
+  <id>FeatureTypeInfoImpl-6c7651c7:17598e71f87:-7f88</id>
+  <name>tramodistrisub</name>
+  <nativeName>tramoDistribucionSubterraneo</nativeName>
   <namespace>
     <id>NamespaceInfoImpl-53a0964:16fc2624139:-7ffe</id>
   </namespace>
-  <title>Latacunga: TramoDistribucionAereo</title>
+  <title>Latacunga: TramoDistribucionSubterraneo</title>
   <keywords>
     <string>features</string>
-    <string>tramoDistribucionAereo</string>
+    <string>tramoDistribucionSubterraneo</string>
   </keywords>
   <nativeCRS class="projected">PROJCS[&quot;WGS 84 / UTM zone 17S&quot;, 
   GEOGCS[&quot;WGS 84&quot;, 
@@ -32,17 +32,17 @@
   AUTHORITY[&quot;EPSG&quot;,&quot;32717&quot;]]</nativeCRS>
   <srs>EPSG:32717</srs>
   <nativeBoundingBox>
-    <minx>684565.50825</minx>
-    <maxx>785633.4725000001</maxx>
-    <miny>9865884.633124998</miny>
-    <maxy>9952007.458</maxy>
+    <minx>692061.0297499998</minx>
+    <maxx>776055.5374999996</maxx>
+    <miny>9873473.923625</miny>
+    <maxy>9922987.0</maxy>
     <crs class="projected">EPSG:32717</crs>
   </nativeBoundingBox>
   <latLonBoundingBox>
-    <minx>-79.34154227389723</minx>
-    <maxx>-78.43337722941153</maxx>
-    <miny>-1.212870226394269</miny>
-    <maxy>-0.4337651673743001</maxy>
+    <minx>-79.27413208425433</minx>
+    <maxx>-78.51944748014976</maxx>
+    <miny>-1.1441967984433643</miny>
+    <maxy>-0.6961033659196357</maxy>
     <crs>EPSG:4326</crs>
   </latLonBoundingBox>
   <projectionPolicy>FORCE_DECLARED</projectionPolicy>
@@ -51,7 +51,7 @@
     <entry key="cachingEnabled">false</entry>
   </metadata>
   <store class="dataStore">
-    <id>DataStoreInfoImpl-6c7651c7:17598e71f87:-7f8c</id>
+    <id>DataStoreInfoImpl-6c7651c7:17598e71f87:-7f89</id>
   </store>
   <serviceConfiguration>false</serviceConfiguration>
   <simpleConversionEnabled>false</simpleConversionEnabled>

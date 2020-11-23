@@ -169,7 +169,7 @@ const hospitals = L.tileLayer.wms(vectorWMS, {
   minZoom: 3
 });
 
-const ltgaVulnerabilityMap = L.tileLayer.wms(vectorWMS, {
+const vulnerability = L.tileLayer.wms(vectorWMS, {
   layers: 'ltga_vulnerabilidad',
   format: 'image/png',
   transparent: true,
@@ -178,7 +178,7 @@ const ltgaVulnerabilityMap = L.tileLayer.wms(vectorWMS, {
   minZoom: 3
 });
 
-const ltgaPopdenMap = L.tileLayer.wms(vectorWMS, {
+const popdenvector = L.tileLayer.wms(vectorWMS, {
   layers: 'ltga_densidad_poblacion',
   format: 'image/png',
   transparent: true,
@@ -187,7 +187,7 @@ const ltgaPopdenMap = L.tileLayer.wms(vectorWMS, {
   minZoom: 3
 });
 
-const ltgaPopdenRaster = L.tileLayer.wms(rasterWMS, {
+const popdenraster = L.tileLayer.wms(rasterWMS, {
   layers: 'ltga_interpolated_density',
   format: 'image/png',
   transparent: true,
@@ -196,7 +196,7 @@ const ltgaPopdenRaster = L.tileLayer.wms(rasterWMS, {
   minZoom: 3
 });
 
-const ltgaAxisMap = L.tileLayer.wms(vectorWMS, {
+const axismap = L.tileLayer.wms(vectorWMS, {
   layers: 'ltga_eje_vial',
   format: 'image/png',
   transparent: true,
@@ -205,7 +205,7 @@ const ltgaAxisMap = L.tileLayer.wms(vectorWMS, {
   minZoom: 3
 });
 
-const ltgaRoadMap = L.tileLayer.wms(vectorWMS, {
+const roadmap = L.tileLayer.wms(vectorWMS, {
   layers: 'ltga_vias_2004',
   format: 'image/png',
   transparent: true,
@@ -214,7 +214,7 @@ const ltgaRoadMap = L.tileLayer.wms(vectorWMS, {
   minZoom: 3
 });
 
-const ltgaBuildings = L.tileLayer.wms(vectorWMS, {
+const buildingfloors = L.tileLayer.wms(vectorWMS, {
   layers: 'ltga_buildingfloors',
   format: 'image/png',
   transparent: true,
@@ -223,7 +223,7 @@ const ltgaBuildings = L.tileLayer.wms(vectorWMS, {
   minZoom: 3
 });
 
-const ltgaCropMap = L.tileLayer.wms(vectorWMS, {
+const cropmap = L.tileLayer.wms(vectorWMS, {
   layers: 'ltga_cultivo_principal',
   format: 'image/png',
   transparent: true,
@@ -232,7 +232,7 @@ const ltgaCropMap = L.tileLayer.wms(vectorWMS, {
   minZoom: 3
 });
 
-const ltgaLulcMap = L.tileLayer.wms(vectorWMS, {
+const lulcmap = L.tileLayer.wms(vectorWMS, {
   layers: 'ltga_uso_cobertura',
   format: 'image/png',
   transparent: true,
@@ -241,7 +241,7 @@ const ltgaLulcMap = L.tileLayer.wms(vectorWMS, {
   minZoom: 3
 });
 
-const ltgaAshMap = L.tileLayer.wms(vectorWMS, {
+const ashfall = L.tileLayer.wms(vectorWMS, {
   layers: 'ltga_isopacas',
   format: 'image/png',
   transparent: true,
@@ -250,7 +250,7 @@ const ltgaAshMap = L.tileLayer.wms(vectorWMS, {
   minZoom: 3
 });
 
-const ltgaEruptMap = L.tileLayer.wms(vectorWMS, {
+const eruptmap = L.tileLayer.wms(vectorWMS, {
   layers: 'ltga_amenaza_coto',
   format: 'image/png',
   transparent: true,
@@ -313,8 +313,8 @@ const sirens = L.tileLayer.wms(vectorWMS, {
   minZoom: 3
 });
 
-const ltga_lu_map = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
-  layers: 'vector:Luminaria',
+const ltga_lu_map = L.tileLayer.wms(vectorWMS, {
+  layers: 'ltga_luminaria',
   format: 'image/png',
   transparent: true,
   legend: true,
@@ -322,8 +322,8 @@ const ltga_lu_map = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
   minZoom: 3
 });
 
-const ltga_Tramo_map = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
-  layers: 'vector:TramoDistribucionAereo',
+const ltga_tramo_map = L.tileLayer.wms(vectorWMS, {
+  layers: 'tramodistriaereo',
   format: 'image/png',
   transparent: true,
   legend: true,
@@ -331,8 +331,8 @@ const ltga_Tramo_map = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
   minZoom: 3
 });
 
-const ltga_TrSb_map = L.tileLayer.wms(geoserverUrl + "geoserver/vector/wms/", {
-  layers: 'vector:ltga_tramoDistribucionSubterraneo',
+const ltga_trsb_map = L.tileLayer.wms(vectorWMS, {
+  layers: 'tramodistrisub',
   format: 'image/png',
   transparent: true,
   legend: true,
@@ -368,21 +368,21 @@ const groupedOverlays = {
   "Latacunga: thematic maps": {
     "Elevation map": latacungaDEM,
     "Administrative units": administrativeUnits,
-    "Population density": ltgaPopdenMap,
-    "Population density raster": ltgaPopdenRaster,
+    "Population density": popdenvector,
+    "Population density raster": popdenraster,
     "Greenhouses": greenhouses,
     "Farms and orchards": farms,
     "Schools": schools,
     "Doctors and dentists": doctors,
     "Hospitals and clinics": hospitals,
-    "Building Floors": ltgaBuildings,
-    "Urban Road Axis": ltgaAxisMap,
-    "Latacunga Road": ltgaRoadMap,
+    "Building Floors": buildingfloors,
+    "Urban Road Axis": axismap,
+    "Latacunga Road": roadmap,
     'Luminaire': ltga_lu_map,
-    'Air dist section': ltga_Tramo_map,
-    'Underground dist section': ltga_TrSb_map,
-    "Main Crop": ltgaCropMap,
-    "Landuse Landcover": ltgaLulcMap,
+    'Air dist section': ltga_tramo_map,
+    'Underground dist section': ltga_trsb_map,
+    "Main Crop": cropmap,
+    "Landuse Landcover": lulcmap,
     "Productive Infrastructure":productiveInfrastructure,
     "Producer associations":producerAssociations,
     "Markets and squares":marketsSquares,
@@ -391,10 +391,10 @@ const groupedOverlays = {
     "Early warning sirens":sirens
   },
   "Latacunga: volcanic threats": {
-    "Affected areas": ltgaEruptMap,
+    "Affected areas": eruptmap,
     "Volcano lahars flow": gradoAmenaza,
-    "Ash fall risk": ltgaAshMap,
-    "Vulnerability": ltgaVulnerabilityMap,
+    "Ash fall risk": ashfall,
+    "Vulnerability": vulnerability,
   },
 }
 
