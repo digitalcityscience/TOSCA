@@ -30,7 +30,7 @@ module.exports = class {
     grass(this.mapset, `g.copy vector=selection@PERMANENT,selection --overwrite`)
     this.queryArea = 'selection'
 
-    const allVector = listUserVector()
+    const allVector = listUserVector().map(file => file.split('@')[0])
     const allGpkg = getFilesOfType('gpkg', GEOSERVER).filter(filterDefaultLayerFilenames)
 
     /**
@@ -39,7 +39,7 @@ module.exports = class {
      * ideal solution: 1. make sure all map files contains only one layer; 2. make sure all mapFile names align with its layer's name
      */
     for (const mapFile of allGpkg) {
-      const fileName = mapFile.slice(mapFile.lastIndexOf('/') + 1, mapFile.lastIndexOf('.'))
+      const fileName = mapFile.slice(mapFile.lastIndexOf('/') + 1, mapFile.lastIndexOf('.')).replace(' ', '_')
       if (allVector.indexOf(fileName) > -1) {
         continue
       }
@@ -147,22 +147,22 @@ module.exports = class {
 Date of creation: ${dateString}
 Queried columns: ${message.map(msg => msg.column).toString()}
 Criteria: ${where}`
-// FIXME: this part below does not really make sense to the user. my suggestion is to delete it...
-// Results:
-// Number of features:          ${stats.n}
-// Sum of values:               ${stats.sum}
-// Minimum value:               ${stats.min}
-// Maximum value:               ${stats.max}
-// Range of values:             ${stats.range}
-// Mean:                        ${stats.mean}
-// Mean of absolute values:     ${stats.mean_abs}
-// Median:                      ${stats.median}
-// Standard deviation:          ${stats.stddev}
-// Variance:                    ${stats.variance}
-// Relative standard deviation: ${stats.coeff_var}
-// 1st quartile:                ${stats.first_quartile}
-// 3rd quartile:                ${stats.third_quartile}
-// 90th percentile:             ${stats.percentile_90}`
+    // FIXME: this part below does not really make sense to the user. my suggestion is to delete it...
+    // Results:
+    // Number of features:          ${stats.n}
+    // Sum of values:               ${stats.sum}
+    // Minimum value:               ${stats.min}
+    // Maximum value:               ${stats.max}
+    // Range of values:             ${stats.range}
+    // Mean:                        ${stats.mean}
+    // Mean of absolute values:     ${stats.mean_abs}
+    // Median:                      ${stats.median}
+    // Standard deviation:          ${stats.stddev}
+    // Variance:                    ${stats.variance}
+    // Relative standard deviation: ${stats.coeff_var}
+    // 1st quartile:                ${stats.first_quartile}
+    // 3rd quartile:                ${stats.third_quartile}
+    // 90th percentile:             ${stats.percentile_90}`
 
     // Generate PDF
 

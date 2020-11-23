@@ -26,7 +26,6 @@ It is also required to create these directories:
 mkdir -p geoserver_data_dir/data
 mkdir -p grass/global
 mkdir grass/metadata
-touch grass/metadata/metadata.json
 mkdir output
 ```
 
@@ -161,4 +160,40 @@ npm install -g pm2
 To start a process for OCT:
 ```
 pm2 start /home/oct_user/oct/webapp/app.js
+```
+
+## Add metadata for map layers
+
+For better user experience, the OCT allows the user to add metadata to map layers. 
+Once added correctly, the metadata will be queried in various places within in the app, e.g. in the attribute table shown after the user clicks 'show attribute' in the query module.
+The metadata should be added in a `metadata.json` file under the `grass/metadata` folder.
+The metadata should conform to the following format:
+
+```json
+[
+  {
+    "table": "<map layer name - find out the layer names under the grass/global folder>",
+    "description": "<description of the layer>",
+    "columns": [
+      {
+        "column": "<column name - find out the column names by running db.columns command in GRASS>",
+        "description": "<description of the column>"
+      },
+      {
+        "column": "",
+        "description": ""
+      },
+    ]
+  },
+  {
+    "table": "",
+    "description": "",
+    "columns": [
+      {
+        "column": "",
+        "description": ""
+      }
+    ]
+  }
+]
 ```
