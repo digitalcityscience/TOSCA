@@ -1,6 +1,6 @@
 const fs = require('fs')
 const { addOsm, checkWritableDir, getCoordinates, gpkgOut, mapsetExists, grass } = require('./functions')
-const { add_location: messages } = require('./messages.json')
+const translations = require(`../i18n/messages.${process.env.USE_LANG || 'en'}.json`)
 
 const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
 const GRASS = process.env.GRASS_DIR
@@ -12,23 +12,23 @@ class AddLocationModule {
     checkWritableDir(GEOSERVER)
 
     if (mapsetExists('PERMANENT')) {
-      return messages["1"]
+      return { id: 'add_location.1', message: translations['add_location.message.1'] }
     }
-    return messages["4"]
+    return { id: 'add_location.4', message: translations['add_location.message.4'] }
   }
 
   process(message, replyTo) {
     switch (replyTo) {
       case 'add_location.1':
         if (message.toLowerCase() == 'yes') {
-          return messages["4"]
+          return { id: 'add_location.4', message: translations['add_location.message.4'] }
         }
-        return messages["3"]
+        return { id: 'add_location.3', message: translations['add_location.message.3'] }
 
       case 'add_location.4': {
         // uploaded file
         if (!message.match(/\.osm$/i)) {
-          throw new Error("Wrong file format - must be 'osm'")
+          throw new Error(translations['add_location.errors.1'])
         }
 
         // Clear previous mapset
@@ -54,10 +54,12 @@ class AddLocationModule {
 
         let [east, north] = getCoordinates('PERMANENT')
 
-        let msg = messages["5"]
-        msg.message.lat = north
-        msg.message.lon = east
-        return msg
+        return {
+          id: 'add_location.5',
+          message: translations['add_location.message.5'],
+          lat: north,
+          lon: east
+        }
       }
     }
   }

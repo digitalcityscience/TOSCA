@@ -1,6 +1,6 @@
 const fs = require('fs')
 const { addVector, checkWritableDir, gpkgOut, initMapset, mapsetExists, grass, mergePDFs, psToPDF, textToPS } = require('./functions')
-const { 'time_map': messages } = require('./messages.json')
+const translations = require(`../i18n/messages.${process.env.USE_LANG || 'en'}.json`)
 
 const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
 const GRASS = process.env.GRASS_DIR
@@ -22,7 +22,7 @@ module.exports = class {
     checkWritableDir(OUTPUT)
 
     if (!mapsetExists('PERMANENT')) {
-      return messages[7]
+      return { id: 'time_map.7', message: translations['time_map.message.7'] }
     }
 
     initMapset(this.mapset)
@@ -58,7 +58,7 @@ module.exports = class {
     grass(this.mapset, `v.edit map=m1_stricken_area tool=create --overwrite`)
     grass(this.mapset, `v.edit map=m1_stricken_area_line tool=create --overwrite`)
 
-    return messages[1]
+    return { id: 'time_map.1', message: translations['time_map.message.1'] }
   }
 
   process(message, replyTo) {
@@ -68,37 +68,37 @@ module.exports = class {
           addVector(this.mapset, message, 'm1_from_points')
           gpkgOut(this.mapset, 'm1_from_points', 'm1_from_points')
           this.fromPoints = 'm1_from_points'
-          return messages[2]
+          return { id: 'time_map.2', message: translations['time_map.message.2'] }
         }
-        return messages[5]
+        return { id: 'time_map.5', message: translations['time_map.message.5'] }
 
       case 'time_map.2':
         if (message.match(/drawing\.geojson/)) {
           addVector(this.mapset, message, 'm1_via_points')
           gpkgOut(this.mapset, 'm1_via_points', 'm1_via_points')
           this.viaPoints = 'm1_via_points'
-          return messages[3]
+          return { id: 'time_map.3', message: translations['time_map.message.3'] }
         } else {
           this.viaPoints = null
         }
-        return messages[3]
+        return { id: 'time_map.3', message: translations['time_map.message.3'] }
 
       case 'time_map.3':
         if (message.match(/drawing\.geojson/)) {
           addVector(this.mapset, message, 'm1_stricken_area')
           gpkgOut(this.mapset, 'm1_stricken_area', 'm1_stricken_area')
           this.strickenArea = 'm1_stricken_area'
-          return messages[4]
+          return { id: 'time_map.4', message: translations['time_map.message.4'] }
         }
         this.averageSpeed = AVERAGE_SPEED
         this.calculate()
-        return messages[6]
+        return { id: 'time_map.6', message: translations['time_map.message.6'] }
 
       case 'time_map.4':
         this.reductionRatio = parseFloat(message) / 100
         this.averageSpeed = AVERAGE_SPEED
         this.calculate()
-        return messages[6]
+        return { id: 'time_map.6', message: translations['time_map.message.6'] }
 
       // temporarilly skip message 8 & 9
       // case 'time_map.4':
@@ -244,21 +244,21 @@ end
 
     fs.mkdirSync('tmp', { recursive: true })
     fs.writeFileSync('tmp/time_map_info_text', `
-Map output for time map calculations
+${translations['time_map.output.1']}
 
-Date of map creation: ${dateString}
+${translations['time_map.output.2']}: ${dateString}
 
-Colors on map represents time in minutes
-Numbers of legend are time in minutes
+${translations['time_map.output.3']}
+${translations['time_map.output.4']}
 
-Start point: yellow cross
-Via point: purple cross
-Stricken area: black line
+${translations['time_map.output.5']}
+${translations['time_map.output.6']}
+${translations['time_map.output.7']}
 
-Considered speed on roads:
+${translations['time_map.output.8']}:
 ${this.roadsSpeed.join('\n')}
 
-Speed reduction coefficient for stricken area: ${this.reductionRatio}`)
+${translations['time_map.output.9']}: ${this.reductionRatio}`)
 
     textToPS('tmp/time_map_info_text', 'tmp/time_map_info_text.ps')
     psToPDF('tmp/time_map_info_text.ps', 'tmp/time_map_info_text.pdf')

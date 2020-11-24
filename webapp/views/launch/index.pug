@@ -22,28 +22,28 @@ html
     div(class="d-flex flex-column h-100")
       div(class="card box-shadow")
         nav(class="navbar navbar-expand navbar-light")
-          a(class="navbar-brand font-weight-bold") Open City Toolkit
+          a(class="navbar-brand font-weight-bold") #{t['Open City Toolkit']}
           ul(class="navbar-nav flex-grow-1 justify-content-space-evenly")
             li(class="nav-item d-flex align-items-center")
-              span(class="d-inline-block align-middle m-2") Modules:
+              span(class="d-inline-block align-middle m-2") #{t['Modules']}:
               select(id='launch-module-menu' class='custom-select custom-select-lg mr-2')
-                option(selected value='time_map') Calculate time map
-                option(value='module_2') Query area
-              button(class='btn btn-success btn-lg mr-2' onclick='launchModule()') ▷&nbsp;Run
-              button(class='btn btn-light btn-lg' id="result-btn" onclick='showResults()') Results
+                option(selected value='time_map') #{t['Calculate time map']}
+                option(value='query') #{t['Query area']}
+              button(class='btn btn-success btn-lg mr-2' onclick='launchModule()') ▷&nbsp;#{t['Run']}
+              button(class='btn btn-light btn-lg' id="result-btn" onclick='showResults()') #{t['Results']}
             li(class="nav-item flex-grow-1")
             li(class="nav-item dropdown")
-              a(class="btn btn-lg nav-link dropdown-toggle" id="settings-menu" data-toggle="dropdown") Settings
+              a(class="btn btn-lg nav-link dropdown-toggle" id="settings-menu" data-toggle="dropdown") #{t['Settings']}
               div(class="dropdown-menu dropdown-menu-right")
-                a(class="btn dropdown-item" onclick="launchSettings('add_location')") Set basemap
+                a(class="btn dropdown-item" onclick="launchSettings('add_location')") #{t['Set basemap']}
                 div(class="dropdown-divider")
-                a(class="btn dropdown-item" onclick="launchSettings('set_selection')") Set selection
+                a(class="btn dropdown-item" onclick="launchSettings('set_selection')") #{t['Set selection']}
                 div(class="dropdown-divider")
-                a(class="btn dropdown-item" onclick="launchSettings('set_resolution')") Set resolution
+                a(class="btn dropdown-item" onclick="launchSettings('set_resolution')") #{t['Set resolution']}
                 div(class="dropdown-divider")
-                a(class="btn dropdown-item" onclick="launchSettings('add_map')") Add layer
+                a(class="btn dropdown-item" onclick="launchSettings('add_map')") #{t['Add layer']}
             li(class="nav-item")
-              button(class='btn btn-secondary btn-lg' onclick='showHelp()') Help
+              button(class='btn btn-secondary btn-lg' onclick='showHelp()') #{t['Help']}
 
       div(class="d-flex flex-grow-1 main")
         div(class='d-flex flex-column w-25 sidebar')
@@ -63,7 +63,7 @@ html
         div(id='alert-anchor')
 
         div(id='loading')
-          div(class='loading-text') Processing …
+          div(class='loading-text') #{t['Processing']} …
           div(class='spinner spinner-border')
 
     div(id='results-modal' class='modal-background')
@@ -82,8 +82,8 @@ html
           placement: 'bottom',
           title: function () {
             switch ($(this).val()) {
-              case 'time_map': return 'The ‘Calculate time map’ module creates a map showing the time it takes to reach any part of the selected area from a given start point. Optionally, via points and/or affected areas with reduced speed can be defined.';
-              case 'module_2': return 'The ‘Query area’ module lets you filter map features based on a given set of constraints. For example, if a housing map layer is queried based on the household population and monthly income, only the houses within the given range will be returned.';
+              case 'time_map': return "#{t['tooltip:time map']}";
+              case 'query': return "#{t['tooltip:query']}";
             }
           },
           trigger: 'manual'
@@ -96,6 +96,7 @@ html
       //- environment variables
       const geoserverUrl = '#{geoserverUrl}';
       const [lat, lon] = [#{lat}, #{lon}];
+      const t = !{JSON.stringify(t)};
     script
       include script.js
       include ../map/legend.js

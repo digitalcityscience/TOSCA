@@ -1,4 +1,4 @@
-/* global $, L, map, drawnItems, refreshLayer, selection, fromPoints, viaPoints, strickenArea, timeMap */
+/* global $, L, t, map, drawnItems, refreshLayer, selection, fromPoints, viaPoints, strickenArea, timeMap */
 
 /* Handle incoming messages from backend */
 
@@ -9,33 +9,33 @@ function handleResponse(res) {
 
   clearDialog();
 
-  const messageId = res.message_id.replace(/\./g, '_');
+  const messageId = res.id.replace(/\./g, '_');
 
   const textarea = $('#textarea');
   const buttonarea = $('#buttonarea');
   const lists = $('#lists');
 
-  if (res.message.lat && res.message.lon) {
-    map.panTo(new L.LatLng(res.message.lat, res.message.lon));
+  if (res.lat && res.lon) {
+    map.panTo(new L.LatLng(res.lat, res.lon));
   }
 
-  const list = (res.message.list || []).sort();
+  const list = (res.list || []).sort();
 
   $('#loading').hide();
 
-  if (res.message.text) {
-    let text = textElement(res.message.text), form, buttons;
+  if (res.message) {
+    let text = textElement(res.message), form, buttons;
 
-    switch (res.message_id) {
+    switch (res.id) {
       // The various actions required in response to server messages are defined here.
 
       // == add_location ==
       case 'add_location.1':
         buttons = [
-          buttonElement('Yes').click(() => {
+          buttonElement(t['Yes']).click(() => {
             reply(res, 'yes');
           }),
-          buttonElement('No').click(() => {
+          buttonElement(t['No']).click(() => {
             reply(res, 'no');
           })
         ];
@@ -45,13 +45,13 @@ function handleResponse(res) {
         form = formElement(messageId);
         form.append($(`<input id="${messageId}-input" type="file" name="file" />`));
         buttons = [
-          buttonElement('Submit').click(() => {
+          buttonElement(t['Submit']).click(() => {
             $(`#${messageId}-error`).remove();
             const input = $(`#${messageId}-input`);
             if (input[0].files.length) {
-              upload(form[0], { messageId: res.message_id }, handleResponse);
+              upload(form[0], { messageId: res.id }, handleResponse);
             } else {
-              textarea.append($(`<span id="${messageId}-error" class="validation-error">Please choose a file for upload.</span>`));
+              textarea.append($(`<span id="${messageId}-error" class="validation-error">${t['error:file upload']}</span>`));
             }
           })
         ];
@@ -60,10 +60,10 @@ function handleResponse(res) {
       // == set_selection ==
       case 'set_selection.2':
         buttons = [
-          buttonElement('Save').click(() => {
+          buttonElement(t['Save']).click(() => {
             $(`#${messageId}-error`).remove();
             if (!saveDrawing(res)) {
-              textarea.append($(`<span id="${messageId}-error" class="validation-error">Please draw a polygon using the map’s drawing tool.</span>`));
+              textarea.append($(`<span id="${messageId}-error" class="validation-error">${t['error:draw polygon']}</span>`));
             }
           })
         ];
@@ -84,13 +84,13 @@ function handleResponse(res) {
         form.append($(`<input id="${messageId}-input" type="number" />`));
         form.append($(`<span>&nbsp;m</span>`));
         buttons = [
-          buttonElement('Submit').click(() => {
+          buttonElement(t['Submit']).click(() => {
             $(`#${messageId}-error`).remove();
             const input = $(`#${messageId}-input`);
             if (!isNaN(parseInt(input.val()))) {
               reply(res, input.val());
             } else {
-              textarea.append($(`<span id="${messageId}-error" class="validation-error">Please enter a numeric value.</span>`));
+              textarea.append($(`<span id="${messageId}-error" class="validation-error">${t['error:number']}</span>`));
             }
           })
         ];
@@ -99,7 +99,7 @@ function handleResponse(res) {
       // == add_map ==
       case 'add_map.1':
         buttons = [
-          buttonElement('OK').click(() => {
+          buttonElement(t['OK']).click(() => {
             reply(res, 'ok');
           })
         ];
@@ -109,13 +109,13 @@ function handleResponse(res) {
         form = formElement(messageId);
         form.append($(`<input id="${messageId}-input" type="file" name="file" />`));
         buttons = [
-          buttonElement('Submit').click(() => {
+          buttonElement(t['Submit']).click(() => {
             $(`#${messageId}-error`).remove();
             const input = $(`#${messageId}-input`);
             if (input[0].files.length) {
-              upload(form[0], { messageId: res.message_id }, handleResponse);
+              upload(form[0], { messageId: res.id }, handleResponse);
             } else {
-              textarea.append($(`<span id="${messageId}-error" class="validation-error">Please choose a file for upload.</span>`));
+              textarea.append($(`<span id="${messageId}-error" class="validation-error">${t['error:file upload']}</span>`));
             }
           })
         ];
@@ -123,15 +123,15 @@ function handleResponse(res) {
 
       case 'add_map.3':
         form = formElement(messageId);
-        form.append($(`<input id="${messageId}-input" type="text" value="${res.message.layerName}" />`));
+        form.append($(`<input id="${messageId}-input" type="text" value="${res.layerName}" />`));
         buttons = [
-          buttonElement('Submit').click(() => {
+          buttonElement(t['Submit']).click(() => {
             $(`#${messageId}-error`).remove();
             const input = $(`#${messageId}-input`);
             if (input.val()) {
               reply(res, input.val());
             } else {
-              textarea.append($(`<span id="${messageId}-error" class="validation-error">Please enter a name.</span>`));
+              textarea.append($(`<span id="${messageId}-error" class="validation-error">${t['error:name']}</span>`));
             }
           })
         ];
@@ -146,13 +146,13 @@ function handleResponse(res) {
         startDrawCirclemarker();
 
         buttons = [
-          buttonElement('Save').click(() => {
+          buttonElement(t['Save']).click(() => {
             $(`#${messageId}-error`).remove();
             if (!saveDrawing(res)) {
-              textarea.append($(`<span id="${messageId}-error" class="validation-error">Please draw a point using the circlemarker drawing tool.</span>`));
+              textarea.append($(`<span id="${messageId}-error" class="validation-error">${t['error:draw point']}</span>`));
             }
           }),
-          buttonElement('Cancel').click(() => {
+          buttonElement(t['Cancel']).click(() => {
             reply(res, 'cancel');
           })
         ];
@@ -167,13 +167,13 @@ function handleResponse(res) {
         startDrawCirclemarker();
 
         buttons = [
-          buttonElement('Save').click(() => {
+          buttonElement(t['Save']).click(() => {
             $(`#${messageId}-error`).remove();
             if (!saveDrawing(res)) {
-              textarea.append($(`<span id="${messageId}-error" class="validation-error">Please draw a point using the circlemarker drawing tool.</span>`));
+              textarea.append($(`<span id="${messageId}-error" class="validation-error">${t['error:draw point']}</span>`));
             }
           }),
-          buttonElement('Cancel').click(() => {
+          buttonElement(t['Cancel']).click(() => {
             reply(res, 'cancel');
           })
         ];
@@ -188,13 +188,13 @@ function handleResponse(res) {
         startDrawPolygon();
 
         buttons = [
-          buttonElement('Save').click(() => {
+          buttonElement(t['Save']).click(() => {
             $(`#${messageId}-error`).remove();
             if (!saveDrawing(res)) {
-              textarea.append($(`<span id="${messageId}-error" class="validation-error">Please draw a polygon using the polygon drawing tool.</span>`));
+              textarea.append($(`<span id="${messageId}-error" class="validation-error">${t['error:draw polygon']}</span>`));
             }
           }),
-          buttonElement('Cancel').click(() => {
+          buttonElement(t['Cancel']).click(() => {
             reply(res, 'cancel');
           })
         ];
@@ -212,7 +212,7 @@ function handleResponse(res) {
         form.append($(`<input id="${messageId}-input" type="number" />`));
         form.append($(`<span>&nbsp;%</span>`));
         buttons = [
-          buttonElement('Submit').click(() => {
+          buttonElement(t['Submit']).click(() => {
             const input = $(`#${messageId}-input`);
             reply(res, input.val());
           })
@@ -228,13 +228,13 @@ function handleResponse(res) {
         drawnItems.clearLayers();
         break;
 
-      // == module_2 ==
-      case 'module_2.1':
+      // == query module ==
+      case 'query.1':
         buttons = [
-          buttonElement('Save').click(() => {
+          buttonElement(t['Save']).click(() => {
             $(`#${messageId}-error`).remove();
             if (!saveDrawing(res)) {
-              textarea.append($(`<span id="${messageId}-error" class="validation-error">Please draw a polygon using the map’s drawing tool.</span>`));
+              textarea.append($(`<span id="${messageId}-error" class="validation-error">${t['error:draw polygon']}</span>`));
             }
           })
         ];
@@ -242,29 +242,29 @@ function handleResponse(res) {
         startDrawPolygon();
         break;
 
-      case 'module_2.2':
+      case 'query.2':
         form = formElement(messageId);
         lists.append($(`<select id="${messageId}-input" class='custom-select' size="10">` + list.map(col => `<option selected value="${col}">${col}</option>`) + `</select>`));
         buttons = [
-          buttonElement('Show attributes').click(() => {
+          buttonElement(t['Show attributes']).click(() => {
             const input = $(`#${messageId}-input`);
             getAttributes(input[0].value)
           }),
-          buttonElement('Submit').click(() => {
+          buttonElement(t['Submit']).click(() => {
             const input = $(`#${messageId}-input`);
             reply(res, input[0].value);
           })
         ];
         break;
 
-      case 'module_2.3': {
+      case 'query.3': {
         const query = $(`<div class='query'></div>`)
         query.append(conditionElement(list))
         lists.append(query);
 
         buttons = [
-          buttonElement('Show attributes').click(() => {
-            getAttributes(res.message.map)
+          buttonElement(t['Show attributes']).click(() => {
+            getAttributes(res.map)
           }),
           buttonElement('＋').click(() => {
             const len = $('.query').length
@@ -273,7 +273,7 @@ function handleResponse(res) {
             query.append(conditionElement(list))
             lists.append(query);
           }),
-          buttonElement('OK').click(() => {
+          buttonElement(t['OK']).click(() => {
             $(`#${messageId}-error`).remove();
             let msg = []
             const querys = $('.query')
@@ -291,7 +291,7 @@ function handleResponse(res) {
                 msg.push(sel, '>=', min, 'AND', sel, '<=', max)
               } else {
                 msg = []
-                textarea.append($(`<span id="${messageId}-error" class="validation-error">Please enter valid numbers in the fields.</span>`));
+                textarea.append($(`<span id="${messageId}-error" class="validation-error">${t['error:form numbers']}</span>`));
                 break
               }
             }
@@ -335,17 +335,17 @@ function relationSelect() {
 
 function conditionElement(data, id) {
   const container = $(`<div class='card-body border-info m-0 p-10'></div>`)
-  const row1 = $(`<div class='d-flex mb-2' id='${id}'><small>query attribute</small></div>`)
+  const row1 = $(`<div class='d-flex mb-2' id='${id}'><small>${t['query attribute']}</small></div>`)
   const columns = data.map(item => `<option value="${item.column}">${item.column}</option>`)
   const select = $(`<select class='custom-select mr-2 ml-2 sel'>${columns}</select>`)
   const remove = $('<button type="button" class="btn btn-secondary ml-2">&times;</button>')
   const row2 = $(`
   <div class='d-flex justify-content-between mb-2'>
-    <small>min <span class='min-badge badge badge-secondary'> >= ${data[0].bounds[0]}</span></small>
+    <small>${t['min']} <span class='min-badge badge badge-secondary'> >= ${data[0].bounds[0]}</span></small>
     <input id='${id}-input-min' type='number' class='form-control ml-2 mr-2 min'>
   </div>
   <div class='d-flex justify-content-between mb-2'>
-    <small>max <span class='max-badge badge badge-secondary'> <= ${data[0].bounds[1]}</span></small>
+    <small>${t['max']} <span class='max-badge badge badge-secondary'> <= ${data[0].bounds[1]}</span></small>
     <input id='${id}-input-max' type='number' class='form-control ml-2 mr-2 max'>
   </div>
   `)
@@ -470,7 +470,7 @@ function launchSettings(value) {
 }
 
 function reply(res, message) {
-  sendMessage('/reply', { msg: message }, { messageId: res.message_id }, handleResponse);
+  sendMessage('/reply', { msg: message }, { messageId: res.id }, handleResponse);
 }
 
 function saveDrawing(res) {
@@ -478,7 +478,7 @@ function saveDrawing(res) {
   if (geojson.features.length === 0) {
     return false;
   }
-  sendMessage('/drawing', { data: geojson }, { messageId: res.message_id }, handleResponse);
+  sendMessage('/drawing', { data: geojson }, { messageId: res.id }, handleResponse);
   return true;
 }
 
@@ -559,9 +559,9 @@ function upload(form, params, callback) {
 }
 
 function onServerError(xhr, textStatus) {
-  const text = $('<span>').text(xhr.responseJSON && xhr.responseJSON.message || textStatus || 'Unknown error');
+  const text = $('<span>').text(xhr.responseJSON && xhr.responseJSON.message || textStatus || t['Unknown error']);
   const alert = $('<div class="alert alert-danger" role="alert"></div>');
-  alert.append($('<b>Server error: </b>')).append(text).append($('<button class="close" data-dismiss="alert">×</button>'));
+  alert.append($(`<b>${t['Server error']}: </b>`)).append(text).append($('<button class="close" data-dismiss="alert">×</button>'));
   $('#alert-anchor').append(alert);
   $('#loading').hide();
 }

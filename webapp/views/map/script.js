@@ -1,4 +1,4 @@
-/* global $, L, lat, lon, geoserverUrl */
+/* global $, L, t, lat, lon, geoserverUrl */
 
 const map = new L.Map('map', {
   center: new L.LatLng(lat, lon),
@@ -103,26 +103,34 @@ L.control.legend(
   { position: 'bottomleft' }
 ).addTo(map);
 
+// Helper function to translate keys in layer control definitions
+function translate(layerObject) {
+  return Object.entries(layerObject).reduce((translated, [key, value]) => {
+    translated[t[key]] = value;
+    return translated;
+  }, {});
+}
+
 // Grouped layer control
-const baseLayers = {
+const baseLayers = translate({
   "OSM Standard style": osm,
   "OSM Humanitarian style": hot
-}
-const groupedOverlays = {
-  "Basemap": {
+});
+const groupedOverlays = translate({
+  "Basemap": translate({
     "Waterways": waterways,
     "Roads": roads,
     "Buildings": buildings,
     "Basemap boundary": basemapBbox,
     "Current selection": selection
-  },
-  "Time map": {
+  }),
+  "Time map": translate({
     "Start point": fromPoints,
     "Via point": viaPoints,
     "Affected area": strickenArea,
     "Road-level time map": timeMap
-  }
-};
+  })
+});
 
 // Use the custom grouped layer control, not "L.control.layers"
 L.control.groupedLayers(baseLayers, groupedOverlays, { position: 'topright', collapsed: false }).addTo(map);
