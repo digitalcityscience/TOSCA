@@ -1,4 +1,5 @@
-/* global $, L, lat, lon, geoserverUrl, services */
+/* global $, L, t, lat, lon, geoserverUrl, services */
+
 
 const map = new L.Map('map', {
   center: new L.LatLng(lat, lon),
@@ -27,21 +28,30 @@ L.control.legend(
   { position: 'bottomleft' }
 ).addTo(map);
 
-// Grouped layer control
-const baseLayers = {
-  "OSM Standard style": osm,
-  "OSM Humanitarian style": hot
+// Helper function to translate keys in layer control definitions
+function translate(layerObject) {
+  return Object.entries(layerObject).reduce((translated, [key, value]) => {
+    translated[t[key]] = value;
+    return translated;
+  }, {});
 }
 
+// Grouped layer control
+const baseLayers = translate({
+  "OSM Standard style": osm,
+  "OSM Humanitarian style": hot
+})
+
 // Configure the layer switcher
-const groupedOverlays = {}
+let groupedOverlays = {}
 const groups = [...new Set(services.map(ser=>ser.group))]
 for(const group of groups){
   groupedOverlays[group] = {}
 }
 for(const service of services){
-  groupedOverlays[service.group][service.displayName] = createWms(service)
+  groupedOverlays[service.group][t[service.displayName]] = createWms(service)
 }
+groupedOverlays = translate(groupedOverlays)
 
 // Use the custom grouped layer control, not "L.control.layers"
 L.control.groupedLayers(baseLayers, groupedOverlays, { position: 'topright', collapsed: false }).addTo(map);

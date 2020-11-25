@@ -1,4 +1,4 @@
-/* global L, services */
+/* global L, t, services */
 
 // Author: FARKAS Gábor,
 // University of Pécs, Hungary
@@ -28,7 +28,7 @@ L.Control.Legend = L.Control.extend({
       title = L.DomUtil.create('span')
 
     title.id = 'leaflet-legend-title'
-    title.innerHTML = 'Map legend'
+    title.innerHTML = t['Map legend']
     container.id = 'leaflet-legend-container'
     content.id = 'leaflet-legend-content'
     container.className = 'leaflet-legend'

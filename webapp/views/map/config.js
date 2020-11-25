@@ -48,7 +48,7 @@ const services = [
     minZoom: 1,
     displayName: 'Current selection',
     type: 'vector',
-    group: 'Selection'
+    group: 'Basemap'
   }, 
   {
     layers: 'time_map_from_points',
@@ -58,7 +58,7 @@ const services = [
     minZoom: 3,
     displayName: 'Start point',
     type: 'vector',
-    group: 'Time map module'
+    group: 'Time map'
   }, 
   {
     layers: 'time_map_via_points',
@@ -68,7 +68,7 @@ const services = [
     minZoom: 3,
     displayName: 'Via point',
     type: 'vector',
-    group: 'Time map module'
+    group: 'Time map'
   }, 
   {
     layers: 'time_map_stricken_area',
@@ -78,7 +78,7 @@ const services = [
     minZoom: 3,
     displayName: 'Affected area',
     type: 'vector',
-    group: 'Time map module'
+    group: 'Time map'
   }, 
   {
     layers: 'time_map_result',
@@ -89,6 +89,6 @@ const services = [
     minZoom: 1,
     displayName: 'Road-level time map',
     type: 'raster',
-    group: 'Time map module'
+    group: 'Time map'
   }
 ]
