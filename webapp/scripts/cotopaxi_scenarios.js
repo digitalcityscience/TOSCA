@@ -70,9 +70,9 @@ module.exports = class {
         return {
           id: 'cotopaxi_scenarios.1',
           message: translations['cotopaxi_scenarios.message.1'].replace(/\$1/, {
-            'ash_fall': 'ash fall risk zones',
-            'lahar_flow': 'lahar flow risk zones',
-            'lava_flow': 'lava flow risk zones'
+            'ash_fall': translations['cotopaxi_scenarios.message.1.1'],
+            'lahar_flow': translations['cotopaxi_scenarios.message.1.2'],
+            'lava_flow': translations['cotopaxi_scenarios.message.1.3']
           }[this.typeOfThreat])
         }
       }
