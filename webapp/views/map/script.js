@@ -313,7 +313,7 @@ const sirens = L.tileLayer.wms(vectorWMS, {
   minZoom: 3
 });
 
-const ltga_lu_map = L.tileLayer.wms(vectorWMS, {
+const ltgaLuMap = L.tileLayer.wms(vectorWMS, {
   layers: 'ltga_luminaria',
   format: 'image/png',
   transparent: true,
@@ -322,7 +322,7 @@ const ltga_lu_map = L.tileLayer.wms(vectorWMS, {
   minZoom: 3
 });
 
-const ltga_tramo_map = L.tileLayer.wms(vectorWMS, {
+const ltgaTramoMap = L.tileLayer.wms(vectorWMS, {
   layers: 'tramodistriaereo',
   format: 'image/png',
   transparent: true,
@@ -331,7 +331,7 @@ const ltga_tramo_map = L.tileLayer.wms(vectorWMS, {
   minZoom: 3
 });
 
-const ltga_trsb_map = L.tileLayer.wms(vectorWMS, {
+const ltgaTrsbMap = L.tileLayer.wms(vectorWMS, {
   layers: 'tramodistrisub',
   format: 'image/png',
   transparent: true,
@@ -378,9 +378,9 @@ const groupedOverlays = {
     "Building Floors": buildingfloors,
     "Urban Road Axis": axismap,
     "Latacunga Road": roadmap,
-    'Luminaire': ltga_lu_map,
-    'Air dist section': ltga_tramo_map,
-    'Underground dist section': ltga_trsb_map,
+    'Luminaire': ltgaLuMap,
+    'Air dist section': ltgaTramoMap,
+    'Underground dist section': ltgaTrsbMap,
     "Main Crop": cropmap,
     "Landuse Landcover": lulcmap,
     "Productive Infrastructure":productiveInfrastructure,
