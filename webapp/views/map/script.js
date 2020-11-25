@@ -1,4 +1,4 @@
-/* global $, L, lat, lon, geoserverUrl */
+/* global $, L, lat, lon, geoserverUrl, services */
 
 const map = new L.Map('map', {
   center: new L.LatLng(lat, lon),
@@ -33,21 +33,15 @@ const baseLayers = {
   "OSM Humanitarian style": hot
 }
 
-const groupedOverlays = {
-  "Basemap": {
-    [services.waterways.displayName]: createWms(services.waterways),
-    [services.roads.displayName]: createWms(services.roads),
-    [services.buildings.displayName]: createWms(services.buildings),
-    [services.basemapBbox.displayName]: createWms(services.basemapBbox),
-    [services.selection.displayName]: createWms(services.selection)
-  },
-  "Time map": {
-    [services.fromPoints.displayName]: createWms(services.fromPoints),
-    [services.viaPoints.displayName]: createWms(services.viaPoints),
-    [services.strickenArea.displayName]: createWms(services.strickenArea),
-    [services.timeMap.displayName]: createWms(services.timeMap)
-  }
-};
+// Configure the layer switcher
+const groupedOverlays = {}
+const groups = [...new Set(services.map(ser=>ser.group))]
+for(const group of groups){
+  groupedOverlays[group] = {}
+}
+for(const service of services){
+  groupedOverlays[service.group][service.displayName] = createWms(service)
+}
 
 // Use the custom grouped layer control, not "L.control.layers"
 L.control.groupedLayers(baseLayers, groupedOverlays, { position: 'topright', collapsed: false }).addTo(map);

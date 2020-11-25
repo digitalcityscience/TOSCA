@@ -1,4 +1,4 @@
-/* global L */
+/* global L, services */
 
 // Author: FARKAS Gábor,
 // University of Pécs, Hungary
@@ -58,7 +58,7 @@ function handleLegendClick(evt) {
 
     const p = L.DomUtil.create('p')
     p.className = 'leaflet-legend-layer-name'
-    p.innerHTML = Object.values(services).filter(val => val.layers === this.options.layers)[0].displayName
+    p.innerHTML = services.filter(ser => ser.layers === this.options.layers)[0].displayName
     div.appendChild(p)
 
     const img = L.DomUtil.create('img')
