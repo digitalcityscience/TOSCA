@@ -127,7 +127,8 @@ function getAllColumns(mapset, layer) {
       .filter(col => col.match(/Column/) && !col.match(/cat/i))
       .map(line => ({
         column: line.split(':')[1].trim(),
-        type: line.split(':')[2].trim()
+        type: line.split(':')[2].trim(),
+        description: ''
       }))
   } catch (err) {
     return []
@@ -236,6 +237,23 @@ function listUserVector() {
 }
 
 /**
+ * Checks if the name contains only allowed characters for GRASS mapsets and columns
+ * @param {string} name mapset name
+ * @return {boolean} true or false 
+ */
+function isLegalName(name) {
+  if (!name.length || name[0] === '.') {
+    throw new Error(`Illegal filename ${name}. Cannot be 'NULL' or start with '.'.`)
+  }
+  for (let i = 0; i < name.length; i++) {
+    if (['/', '"', '\\', '\'', '@', ',', '=', '*', '~'].indexOf(name[i]) > -1 || name.charCodeAt(i) >= 127 || name[i] < ' ') {
+      throw new Error(`Illegal filename ${name}. Cannot contain symbol '${name[i]}'.`)
+    }
+  }
+  return true
+}
+
+/**
  * Check if a mapset exists
  * @param {string} mapset mapset
  * @returns {boolean} true if mapset exists
@@ -266,7 +284,7 @@ function remove(mapset, layer) {
  */
 function getMetadata(mapset, table) {
   const data = {
-    tableObj: { headFields: ['table', 'description'], rows: [{ table: table, description: '' }] },
+    tableObj: { table: table, description: '' },
     columnObj: {
       headFields: ['column', 'type', 'description', 'min', 'max'],
       rows: getAllColumns(mapset, table)
@@ -288,7 +306,7 @@ function getMetadata(mapset, table) {
     row.max = bounds[1]
   }
 
-  // add description
+  // add descriptions from metadata.json
   let metadata
   try {
     metadata = require(path.resolve(process.cwd(), `${GRASS}/metadata/metadata.json`))
@@ -298,12 +316,13 @@ function getMetadata(mapset, table) {
   }
 
   if (!metadata || metadata.length === 0) {
-    return
+    return JSON.stringify(data)
   }
   const meta = metadata.filter(m => m.table === table)[0]
   if (!meta) {
-    return
+    return JSON.stringify(data)
   }
+  data.tableObj.description = meta.description ? meta.description : ''
   data.columnObj.rows.forEach(row => {
     const data = meta.columns.filter(c => c.column === row.column)[0]
     if (data) {
@@ -341,6 +360,7 @@ module.exports = {
   grass,
   initMapset,
   listUserVector,
+  isLegalName,
   listVector,
   mapsetExists,
   remove

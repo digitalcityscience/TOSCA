@@ -540,19 +540,15 @@ function getOutput() {
 function getAttributes(table) {
   get('/attributes', { table }, function (res) {
     const { tableObj, columnObj } = JSON.parse(res.attributes)
-
     // the headFields are GRASS GIS attribute names (except 'min' and 'max')
-    const tObj = { headFields: ['table', 'description'], rows: [] }
     const cObj = { headFields: ['column', 'type', 'description', 'min', 'max'], rows: [] }
     // filter unwanted fields
-    for (const row of tableObj.rows) {
-      tObj.rows.push({ 'table': row.table, 'description': row.description })
-    }
     for (const row of columnObj.rows) {
       if (row.column !== 'cat')
         cObj.rows.push({ 'column': row.column, 'type': row.type, 'description': row.description, 'min': row.min, 'max': row.max })
     }
-    $('#table-description').html(tableElement('table table-bordered', tObj))
+    $('#table-header').text(`Table description for ${tableObj.table}`)
+    $('#table-description').text(tableObj.description)
     $('#column-description').html(tableElement('table table-bordered', cObj))
     $('#table-attributes-modal').show()
   })

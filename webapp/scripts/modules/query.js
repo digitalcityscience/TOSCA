@@ -1,5 +1,5 @@
 const fs = require('fs')
-const { addVector, dbSelectAll, getAllColumns, getLayers, getUnivarBounds, gpkgOut, grass, initMapset, listUserVector, mapsetExists, remove } = require('../grass')
+const { addVector, dbSelectAll, getAllColumns, getUnivarBounds, gpkgOut, grass, initMapset, listUserVector, mapsetExists, remove, isLegalName } = require('../grass')
 const { checkWritableDir, filterDefaultLayerFilenames, getFilesOfType, mergePDFs, psToPDF, textToPS } = require('../helpers')
 const { query: messages } = require('../messages.json')
 
@@ -43,25 +43,28 @@ module.exports = class {
       if (allVector.indexOf(fileName) > -1) {
         continue
       }
-
-      const inLayers = getLayers('PERMANENT', mapFile)
-      // GRASS doesn't allow space in layernames
-      const grassLayers = inLayers.map(layer => layer.replace(' ', '_'))
-      // single-layered mapFiles
-      if (inLayers.length === 1) {
-        // using mapFile name as GRASS layer name for single-layered mapFiles
+      if (isLegalName(fileName)) {
         addVector('PERMANENT', mapFile, fileName)
       }
-      // multi-layered mapFiles
-      else if (inLayers.length > 1) {
-        grassLayers.forEach((gLayer, i) => {
-          // check if this layer has already been imported
-          if (allVector.indexOf(gLayer) < 0) {
-            // using layer name in original mapFile as GRASS layer name
-            addVector('PERMANENT', mapFile, gLayer, inLayers[i])
-          }
-        })
-      }
+      // PENDING: handle single-layer AND multi-layer import
+      // const inLayers = getLayers('PERMANENT', mapFile)
+      // // GRASS doesn't allow space in layernames
+      // const grassLayers = inLayers.map(layer => layer.replace(' ', '_'))
+      // // single-layered mapFiles
+      // if (inLayers.length === 1) {
+      //   // using mapFile name as GRASS layer name for single-layered mapFiles
+      //   addVector('PERMANENT', mapFile, fileName)
+      // }
+      // // multi-layered mapFiles
+      // else if (inLayers.length > 1) {
+      //   grassLayers.forEach((gLayer, i) => {
+      //     // check if this layer has already been imported
+      //     if (allVector.indexOf(gLayer) < 0) {
+      //       // using layer name in original mapFile as GRASS layer name
+      //       addVector('PERMANENT', mapFile, gLayer, inLayers[i])
+      //     }
+      //   })
+      // }
     }
 
     const msg = messages[2]
