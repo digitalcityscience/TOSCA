@@ -1,5 +1,5 @@
 const fs = require('fs')
-const { addVector, dbSelectAll, getAllColumns, getUnivarBounds, gpkgOut, grass, initMapset, listUserVector, mapsetExists, remove, isLegalName } = require('../grass')
+const { addVector, dbSelectAllRaw, dbSelectAllObj, getAllColumns, getUnivarBounds, gpkgOut, grass, initMapset, listUserVector, mapsetExists, remove, isLegalName } = require('../grass')
 const { checkWritableDir, filterDefaultLayerFilenames, getFilesOfType, mergePDFs, psToPDF, textToPS } = require('../helpers')
 const { query: messages } = require('../messages.json')
 
@@ -90,7 +90,7 @@ module.exports = class {
         gpkgOut(this.mapset, QUERY_MAP_NAME, QUERY_MAP_NAME)
 
         const cols = getAllColumns(this.mapset, QUERY_MAP_NAME)
-        const vals = dbSelectAll(this.mapset, QUERY_MAP_NAME)
+        const vals = dbSelectAllObj(this.mapset, QUERY_MAP_NAME)
         cols.forEach(column => {
           // if column is numeric, get bounds
           if (['DOUBLE PRECISION', 'INTEGER'].indexOf(column.type) > -1) {
@@ -141,15 +141,19 @@ module.exports = class {
     // Data output
     gpkgOut(this.mapset, QUERY_RESULT_NAME, QUERY_RESULT_NAME)
 
+
     const date = new Date()
     const dateString = date.toString()
     const safeDateString = date.toISOString().replace(/([\d-]*)T(\d\d):(\d\d):[\d.]*Z/g, '$1_$2$3')
-
-    const output = `Statistics and map results
+    const entries = dbSelectAllRaw(this.mapset, QUERY_RESULT_NAME).split(' \n')
+    console.log(entries)
+    let output = `Statistics and map results
 
 Date of creation: ${dateString}
 Queried columns: ${message.map(msg => msg.column).toString()}
-Criteria: ${where}`
+Criteria: ${where}
+Number of features: ${entries.length - 1}
+List of features (only shows the first 30 features): \n`
     // FIXME: this part below does not really make sense to the user. my suggestion is to delete it...
     // Results:
     // Number of features:          ${stats.n}
@@ -168,6 +172,11 @@ Criteria: ${where}`
     // 90th percentile:             ${stats.percentile_90}`
 
     // Generate PDF
+    if (entries.length <= 30) {
+      output += entries.join('\n')
+    } else {
+      output += (entries.slice(0, 30).join('\n') + '\n')
+    }
 
     fs.mkdirSync('tmp', { recursive: true })
     fs.writeFileSync('tmp/statistics_output', output)

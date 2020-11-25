@@ -174,12 +174,22 @@ function getUnivarBounds(mapset, map, column) {
 }
 
 /**
- * select all entries in a table
+ * select all entries in a table and return the raw bash string
+ * @param {string} mapset mapset
+ * @param {string} table table to select from
+ * @returns {string} all entries
+ */
+function dbSelectAllRaw(mapset, table) {
+  return grass(mapset, `db.select -v sql="select * from ${table}" vertical_separator=space`)
+}
+
+/**
+ * select all entries in a table and return an object
  * @param {string} mapset mapset
  * @param {string} table table to select from
  * @returns {object[]} array of all entries
  */
-function dbSelectAll(mapset, table) {
+function dbSelectAllObj(mapset, table) {
   return grass(mapset, `db.select -v sql="select * from ${table}" vertical_separator=space`)
     .split(' \n')
     .map(item => item
@@ -347,7 +357,8 @@ module.exports = {
   addRaster,
   addVector,
   clip,
-  dbSelectAll,
+  dbSelectAllRaw,
+  dbSelectAllObj,
   getAllColumns,
   getCoordinates,
   getLayers,
