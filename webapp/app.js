@@ -7,6 +7,8 @@ const geoserverUrl = process.env.GEOSERVER_URL
 const lat = process.env.INITIAL_LAT || 0
 const lon = process.env.INITIAL_LON || 0
 
+const translations = require(`./i18n/messages.${process.env.USE_LANG || 'en'}.json`)
+
 // File system
 const fs = require('fs')
 
@@ -43,7 +45,8 @@ app.get('/', (req, res) => {
   let options = {
     geoserverUrl,
     lat,
-    lon
+    lon,
+    t: translations
   }
   res.render('launch', options)
 })

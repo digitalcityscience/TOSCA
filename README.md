@@ -20,6 +20,7 @@ You can quickly set up a running system via [Docker](https://docs.docker.com/).
 Before building the image, environment variables need to be set in `webapp/.env`:
 - `GEOSERVER_URL`: The base URL of the local GeoServer instance. This should normally be the public IP or domain of the server, port 8080.
 - `INITIAL_LAT`, `INITIAL_LON`: Initial center coordinates for the map view.
+- `USE_LANG`: Language of the user interface (default: English). A matching translations file must exist in `webapp/i18n`.
 
 It is also required to create these directories:
 ```
