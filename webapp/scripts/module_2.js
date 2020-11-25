@@ -1,6 +1,6 @@
 const fs = require('fs')
 const { checkWritableDir, getNumericColumns, getTopology, gpkgOut, initMapset, grass, mapsetExists, mergePDFs, psToPDF, textToPS, remove, getUnivar, getUnivarBounds } = require('./functions')
-const { module_2: messages } = require('./messages.json')
+const translations = require(`../i18n/messages.${process.env.USE_LANG || 'en'}.json`)
 
 const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
 const GRASS = process.env.GRASS_DIR
@@ -18,7 +18,7 @@ class ModuleTwo {
     checkWritableDir(OUTPUT)
 
     if (!mapsetExists('PERMANENT')) {
-      return messages["7"]
+      return { id: 'query.7', message: translations['query.message.7'] }
     }
 
     initMapset('module_2')
@@ -33,14 +33,16 @@ class ModuleTwo {
       .filter(map => !map.match(/^((lines|points|polygons|relations)(_osm)?|selection|location_bbox)(@.+)?$/))
       .filter(map => getNumericColumns('PERMANENT', map).length > 0)
 
-    const msg = messages["2"]
-    msg.message.list = maps
-    return msg
+    return {
+      id: 'query.2',
+      message: translations['query.message.2'],
+      list: maps
+    }
   }
 
   process(message, replyTo) {
     switch (replyTo) {
-      case 'module_2.2': {
+      case 'query.2': {
         this.mapToQuery = message
 
         // remove old query_map
@@ -64,16 +66,19 @@ class ModuleTwo {
         columns.forEach(column => {
           list.push({ 'column': column, 'bounds': getUnivarBounds('module_2', QUERY_MAP_NAME, column) })
         })
-        const msg = messages["3"]
-        msg.message.list = list
-        msg.message.map = this.mapToQuery
-        return msg
+
+        return {
+          id: 'query.3',
+          message: translations['query.message.3'],
+          list: list,
+          map: this.mapToQuery
+        }
       }
 
-      case 'module_2.3': {
+      case 'query.3': {
         const where = message.reduce((sum, el) => sum + el + ' ', '').trim()
         this.calculate(message[0], where)
-        return messages["24"]
+        return { id: 'query.24', message: translations['query.message.24'] }
       }
     }
   }
@@ -104,26 +109,26 @@ class ModuleTwo {
     const dateString = date.toString()
     const safeDateString = date.toISOString().replace(/([\d-]*)T(\d\d):(\d\d):[\d.]*Z/g, '$1_$2$3')
 
-    let output = `Statistics and map results
+    let output = `${translations['query.output.1']}
 
-Date of creation: ${dateString}
-Queried column: ${queryColumn}
-Criteria: ${where}
-Results:
-Number of features:          ${stats.n}
-Sum of values:               ${stats.sum}
-Minimum value:               ${stats.min}
-Maximum value:               ${stats.max}
-Range of values:             ${stats.range}
-Mean:                        ${stats.mean}
-Mean of absolute values:     ${stats.mean_abs}
-Median:                      ${stats.median}
-Standard deviation:          ${stats.stddev}
-Variance:                    ${stats.variance}
-Relative standard deviation: ${stats.coeff_var}
-1st quartile:                ${stats.first_quartile}
-3rd quartile:                ${stats.third_quartile}
-90th percentile:             ${stats.percentile_90}`
+${translations['query.output.2']}: ${dateString}
+${translations['query.output.3']}: ${queryColumn}
+${translations['query.output.4']}: ${where}
+${translations['query.output.5']}:
+${translations['query.output.6']}: ${stats.n}
+${translations['query.output.7']}: ${stats.sum}
+${translations['query.output.8']}: ${stats.min}
+${translations['query.output.9']}: ${stats.max}
+${translations['query.output.10']}: ${stats.range}
+${translations['query.output.11']}: ${stats.mean}
+${translations['query.output.12']}: ${stats.mean_abs}
+${translations['query.output.13']}: ${stats.median}
+${translations['query.output.14']}: ${stats.stddev}
+${translations['query.output.15']}: ${stats.variance}
+${translations['query.output.16']}: ${stats.coeff_var}
+${translations['query.output.17']}: ${stats.first_quartile}
+${translations['query.output.18']}: ${stats.third_quartile}
+${translations['query.output.19']}: ${stats.percentile_90}`
 
     // Generate PDF
 

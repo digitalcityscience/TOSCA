@@ -1,47 +1,9 @@
 const { addVector, checkWritableDir, initMapset, mapsetExists, listVector, getColumns, getUnivar, grass, psToPDF } = require('./functions')
+const translations = require(`../i18n/messages.${process.env.USE_LANG || 'en'}.json`)
 
 const GEOSERVER_DATA_DIR = process.env.GEOSERVER_DATA_DIR
 const GRASS_DIR = process.env.GRASS_DIR
 const OUTPUT_DIR = process.env.OUTPUT_DIR
-
-const messages = {
-  0: {
-    "message_id": "cotopaxi_scenarios.0",
-    "message": {
-      "text": "Please choose a type of volcanic threat whose potential impact you want to analyze."
-    }
-  },
-  1: {
-    "message_id": "cotopaxi_scenarios.1",
-    "message": {
-      "text": "Before you can run the analysis, you need to add a dataset containing $1. Please select a file (.gpkg) to upload."
-    }
-  },
-  2: {
-    "message_id": "cotopaxi_scenarios.2",
-    "message": {
-      "text": "Select the affected area to consider for your analysis."
-    }
-  },
-  3: {
-    "message_id": "cotopaxi_scenarios.3",
-    "message": {
-      "text": "Now choose the map layer the effects on which you want to analyze."
-    }
-  },
-  4: {
-    "message_id": "cotopaxi_scenarios.4",
-    "message": {
-      "text": "Done."
-    }
-  },
-  5: {
-    "message_id": "cotopaxi_scenarios.5",
-    "message": {
-      "text": "There are no features overlapping with the risk area. No output has been produced."
-    }
-  },
-}
 
 // Map names (must not contain whitespace)
 const queryZone = 'cotopaxi_scenarios_query_zone'
@@ -60,7 +22,7 @@ module.exports = class {
       initMapset(this.mapset)
     }
 
-    return messages[0]
+    return { id: 'cotopaxi_scenarios.0', message: translations['cotopaxi_scenarios.message.0'] }
   }
 
   message2() {
@@ -74,15 +36,20 @@ module.exports = class {
       }
       return col
     })
-    const msg = messages[2]
-    msg.message.list = list
-    return msg
+
+    return {
+      id: 'cotopaxi_scenarios.2',
+      message: translations['cotopaxi_scenarios.message.2'],
+      list: list
+    }
   }
 
   message3() {
-    const msg = messages[3]
-    msg.message.list = this.getQueryableDatasets()
-    return msg
+    return {
+      id: 'cotopaxi_scenarios.3',
+      message: translations['cotopaxi_scenarios.message.3'],
+      list: this.getQueryableDatasets()
+    }
   }
 
   process(message, replyTo) {
@@ -100,13 +67,14 @@ module.exports = class {
         }
 
         // … else request upload of dataset
-        const msg = messages[1]
-        msg.message.text = msg.message.text.replace(/\$1/, {
-          "ash_fall": 'ash fall risk zones',
-          "lahar_flow": 'lahar flow risk zones',
-          "lava_flow": 'lava flow risk zones'
-        }[this.typeOfThreat])
-        return msg
+        return {
+          id: 'cotopaxi_scenarios.1',
+          message: translations['cotopaxi_scenarios.message.1'].replace(/\$1/, {
+            'ash_fall': 'ash fall risk zones',
+            'lahar_flow': 'lahar flow risk zones',
+            'lava_flow': 'lava flow risk zones'
+          }[this.typeOfThreat])
+        }
       }
 
       case 'cotopaxi_scenarios.1': {
@@ -145,7 +113,7 @@ module.exports = class {
         try {
           getUnivar(this.mapset, queryResult, 'cat')
         } catch (err) {
-          return messages[5]
+          return { id: 'cotopaxi_scenarios.5', message: translations['cotopaxi_scenarios.message.5'] }
         }
 
         // Set the region for the output map, using the bounds of queryResult
@@ -158,7 +126,7 @@ module.exports = class {
         const dateString = new Date().toISOString().replace(/([\d-]*)T(\d\d):(\d\d):[\d.]*Z/g, '$1_$2$3')
         psToPDF('cotopaxi_scenarios.ps', `${OUTPUT_DIR}/cotopaxi_scenarios_${dateString}.pdf`)
 
-        return messages[4]
+        return { id: 'cotopaxi_scenarios.4', message: translations['cotopaxi_scenarios.message.4'] }
       }
     }
   }

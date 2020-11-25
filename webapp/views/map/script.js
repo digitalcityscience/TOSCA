@@ -1,4 +1,4 @@
-/* global $, L, lat, lon, geoserverUrl */
+/* global $, L, t, lat, lon, geoserverUrl */
 
 const map = new L.Map('map', {
   center: new L.LatLng(lat, lon),
@@ -346,26 +346,34 @@ const drawnItems = L.featureGroup().addTo(map);
 // Control for map legends. For those item, where the linked map has a "legend: true," property, a second checkbox will displayed.
 L.control.legend({ position: 'bottomleft' }).addTo(map);
 
+// Helper function to translate keys in layer control definitions
+function translate(layerObject) {
+  return Object.entries(layerObject).reduce((translated, [key, value]) => {
+    translated[t[key]] = value;
+    return translated;
+  }, {});
+}
+
 // Grouped layer control
-const baseLayers = {
+const baseLayers = translate({
   "OSM Standard style": osm,
   "OSM Humanitarian style": hot
-}
-const groupedOverlays = {
-  "Basemap": {
+});
+const groupedOverlays = translate({
+  "Basemap": translate({
     "Waterways": waterways,
     "Roads": roads,
     "Buildings": buildings,
     "Basemap boundary": basemapBbox,
     "Current selection": selection
-  },
-  "Time map": {
+  }),
+  "Time map": translate({
     "Start point": fromPoints,
     "Via point": viaPoints,
     "Affected area": strickenArea,
     "Road-level time map": timeMap
-  },
-  "Latacunga: thematic maps": {
+  }),
+  "Latacunga thematic maps": translate({
     "Elevation map": latacungaDEM,
     "Administrative units": administrativeUnits,
     "Population density": popdenvector,
@@ -375,28 +383,28 @@ const groupedOverlays = {
     "Schools": schools,
     "Doctors and dentists": doctors,
     "Hospitals and clinics": hospitals,
-    "Building Floors": buildingfloors,
-    "Urban Road Axis": axismap,
-    "Latacunga Road": roadmap,
-    'Luminaire': ltgaLuMap,
-    'Air dist section': ltgaTramoMap,
-    'Underground dist section': ltgaTrsbMap,
-    "Main Crop": cropmap,
-    "Landuse Landcover": lulcmap,
-    "Productive Infrastructure":productiveInfrastructure,
+    "Building floors": buildingfloors,
+    "Latacunga roads": axismap,
+    "Cotopaxi roads": roadmap,
+    'Lighting': ltgaLuMap,
+    'Air distribution section': ltgaTramoMap,
+    'Underground distribution section': ltgaTrsbMap,
+    "Agriculture main crops": cropmap,
+    "Land use and land cover": lulcmap,
+    "Productive infrastructure":productiveInfrastructure,
     "Producer associations":producerAssociations,
     "Markets and squares":marketsSquares,
     "Safe points":safePoints,
     "Evacuation routes":evacuationRoutes,
     "Early warning sirens":sirens
-  },
-  "Latacunga: volcanic threats": {
+  }),
+  "Latacunga volcanic threats": translate({
     "Affected areas": eruptmap,
-    "Volcano lahars flow": gradoAmenaza,
-    "Ash fall risk": ashfall,
+    "Volcano lahar flow": gradoAmenaza,
+    "Cotopaxi ash fall": ashfall,
     "Vulnerability": vulnerability,
-  },
-}
+  }),
+});
 
 // Use the custom grouped layer control, not "L.control.layers"
 L.control.groupedLayers(baseLayers, groupedOverlays, { position: 'topright', collapsed: false }).addTo(map);
@@ -435,3 +443,9 @@ map.on(L.Draw.Event.CREATED, (event) => {
 
 /* scale bar */
 L.control.scale({ maxWidth: 300, position: 'bottomright' }).addTo(map);
+
+// eslint-disable-next-line no-unused-vars
+function refreshLayer(layer) {
+  // Force reloading of the layer
+  layer.setParams({ ts: Date.now() });
+}

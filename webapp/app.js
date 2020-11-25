@@ -7,6 +7,8 @@ const geoserverUrl = process.env.GEOSERVER_URL
 const lat = process.env.INITIAL_LAT || 0
 const lon = process.env.INITIAL_LON || 0
 
+const translations = require(`./i18n/messages.${process.env.USE_LANG || 'en'}.json`)
+
 // File system
 const fs = require('fs')
 
@@ -43,7 +45,8 @@ app.get('/', (req, res) => {
   let options = {
     geoserverUrl,
     lat,
-    lon
+    lon,
+    t: translations
   }
   res.render('launch', options)
 })
@@ -53,8 +56,7 @@ const AddLocationModule = require('./scripts/add_location')
 const AddMapModule = require('./scripts/add_map')
 const SetSelectionModule = require('./scripts/set_selection')
 const SetResolutionModule = require('./scripts/set_resolution')
-const ModuleOne = require('./scripts/module_1')
-const ModuleOneA = require('./scripts/module_1a')
+const TimeMapModule = require('./scripts/time_map')
 const ModuleTwo = require('./scripts/module_2')
 const LatacungaModule = require('./scripts/cotopaxi_scenarios')
 const { describeTable, getResults } = require('./scripts/functions')
@@ -64,9 +66,8 @@ const modules = {
   "add_map": new AddMapModule(),
   "set_selection": new SetSelectionModule(),
   "set_resolution": new SetResolutionModule(),
-  "module_1": new ModuleOne(),
-  "module_1a": new ModuleOneA(),
-  "module_2": new ModuleTwo(),
+  "time_map": new TimeMapModule(),
+  "query": new ModuleTwo(),
   "cotopaxi_scenarios": new LatacungaModule()
 }
 
