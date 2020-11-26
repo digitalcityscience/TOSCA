@@ -1,5 +1,6 @@
-const { addVector, checkWritableDir, initMapset, mapsetExists, listVector, getColumns, getUnivar, grass, psToPDF } = require('./functions')
-const translations = require(`../i18n/messages.${process.env.USE_LANG || 'en'}.json`)
+const { addVector, getUnivar, grass, initMapset, listVector, mapsetExists } = require('../grass')
+const { checkWritableDir, psToPDF } = require('../helpers')
+const translations = require(`../../i18n/messages.${process.env.USE_LANG || 'en'}.json`)
 
 const GEOSERVER_DATA_DIR = process.env.GEOSERVER_DATA_DIR
 const GRASS_DIR = process.env.GRASS_DIR

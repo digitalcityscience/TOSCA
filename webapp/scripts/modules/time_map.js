@@ -1,6 +1,7 @@
 const fs = require('fs')
-const { addVector, checkWritableDir, gpkgOut, initMapset, mapsetExists, grass, mergePDFs, psToPDF, textToPS } = require('./functions')
-const translations = require(`../i18n/messages.${process.env.USE_LANG || 'en'}.json`)
+const { addVector, gpkgOut, grass, initMapset, mapsetExists } = require('../grass')
+const { checkWritableDir, mergePDFs, psToPDF, textToPS } = require('../helpers')
+const translations = require(`../../i18n/messages.${process.env.USE_LANG || 'en'}.json`)
 
 const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
 const GRASS = process.env.GRASS_DIR

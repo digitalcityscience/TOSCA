@@ -51,15 +51,18 @@ app.get('/', (req, res) => {
   res.render('launch', options)
 })
 
+// functions
+const { getMetadata } = require('./scripts/grass')
+const { getResults } = require('./scripts/helpers')
+
 // modules
-const AddLocationModule = require('./scripts/add_location')
-const AddMapModule = require('./scripts/add_map')
-const SetSelectionModule = require('./scripts/set_selection')
-const SetResolutionModule = require('./scripts/set_resolution')
-const TimeMapModule = require('./scripts/time_map')
-const ModuleTwo = require('./scripts/module_2')
-const LatacungaModule = require('./scripts/cotopaxi_scenarios')
-const { describeTable, getResults } = require('./scripts/functions')
+const AddLocationModule = require('./scripts/modules/add_location')
+const AddMapModule = require('./scripts/modules/add_map')
+const SetSelectionModule = require('./scripts/modules/set_selection')
+const SetResolutionModule = require('./scripts/modules/set_resolution')
+const TimeMapModule = require('./scripts/modules/time_map')
+const QueryModule = require('./scripts/modules/query')
+const LatacungaModule = require('./scripts/modules/cotopaxi_scenarios')
 
 const modules = {
   "add_location": new AddLocationModule(),
@@ -67,7 +70,7 @@ const modules = {
   "set_selection": new SetSelectionModule(),
   "set_resolution": new SetResolutionModule(),
   "time_map": new TimeMapModule(),
-  "query": new ModuleTwo(),
+  "query": new QueryModule(),
   "cotopaxi_scenarios": new LatacungaModule()
 }
 
@@ -162,7 +165,7 @@ app.get('/output', jsonParser, (req, res, next) => {
 // return all attribute descriptions of a table
 app.get('/attributes', jsonParser, async (req, res, next) => {
   try {
-    const attributes = describeTable('PERMANENT', req.query.table)
+    const attributes = getMetadata('PERMANENT', req.query.table)
     res.json({ attributes })
   } catch (err) {
     next(err)

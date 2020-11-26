@@ -1,9 +1,10 @@
-const { addRaster, addVector, checkWritableDir, mapsetExists, gpkgOut } = require('./functions.js')
-const translations = require(`../i18n/messages.${process.env.USE_LANG || 'en'}.json`)
+const { addRaster, addVector, gpkgOut, mapsetExists, isLegalName } = require('../grass.js')
+const { checkWritableDir } = require('../helpers.js')
+const translations = require(`../../i18n/messages.${process.env.USE_LANG || 'en'}.json`)
 
 const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
 
-class AddMapModule {
+module.exports = class {
   constructor() {
     this.mapType = '' // 'vector' or 'raster'
     this.mapFile = '' // filename of uploaded file
@@ -32,18 +33,22 @@ class AddMapModule {
 
         this.mapFile = message
 
+        const layerName = this.mapFile.slice(this.mapFile.lastIndexOf('/') + 1, this.mapFile.lastIndexOf('.'))
+
+        try {
+          isLegalName(layerName)
+        } catch (err) {
+          throw new Error(translations['add_map.errors.2'])
+        }
+
         return {
           id: 'add_map.3',
           message: translations['add_map.message.3'],
-          layerName: this.mapFile.slice(this.mapFile.lastIndexOf('/') + 1, this.mapFile.lastIndexOf('.'))
+          layerName: layerName
         }
       }
 
       case 'add_map.3':
-        if (!message.match(/^[a-zA-Z]\w*$/)) {
-          throw new Error(translations['add_map.errors.2'])
-        }
-
         if (!this.mapFile) {
           throw new Error(translations['add_map.errors.3'])
         }
@@ -58,5 +63,3 @@ class AddMapModule {
     }
   }
 }
-
-module.exports = AddMapModule
