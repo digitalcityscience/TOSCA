@@ -123,7 +123,7 @@ module.exports = class {
     remove(this.mapset, QUERY_RESULT_NAME)
 
     // Set region to query area, set resolution
-    grass(this.mapset, `g.region vector=${QUERY_MAP_NAME} res=${QUERY_RESOLUTION} --overwrite`)
+    grass(this.mapset, `g.region vector=${this.queryArea} res=${QUERY_RESOLUTION} --overwrite`)
 
     // Set mask to query area
     grass(this.mapset, `r.mask vector=${this.queryArea} --overwrite`)
