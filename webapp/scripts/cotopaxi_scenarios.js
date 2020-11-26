@@ -18,9 +18,10 @@ module.exports = class {
   launch() {
     checkWritableDir(`${GEOSERVER_DATA_DIR}/data`)
 
-    if (!mapsetExists(this.mapset)) {
-      initMapset(this.mapset)
+    if (!mapsetExists('PERMANENT')) {
+      return { id: 'query.7', message: translations['query.message.7'] }
     }
+    initMapset(this.mapset)
 
     return { id: 'cotopaxi_scenarios.0', message: translations['cotopaxi_scenarios.message.0'] }
   }
