@@ -288,7 +288,7 @@ function handleResponse(res) {
                   $(query).find('.sel').val(),
                   $(query).find('.val').val()
                 ]
-                msg.push({ 'column': sel, 'isNumeric': isNumeric, 'where': `${sel} = \'${val}\'` })
+                msg.push({ 'column': sel, 'isNumeric': isNumeric, 'where': `${sel} = '${val}'` })
                 if (rel !== undefined) msg[msg.length - 1].where = rel + ' ' + msg[msg.length - 1].where
               }
               // numeric-type column
