@@ -1,11 +1,12 @@
 const fs = require('fs')
-const { addOsm, checkWritableDir, getCoordinates, gpkgOut, mapsetExists, grass } = require('./functions')
-const translations = require(`../i18n/messages.${process.env.USE_LANG || 'en'}.json`)
+const { addOsm, getCoordinates, gpkgOut, grass, mapsetExists } = require('../grass')
+const { checkWritableDir } = require('../helpers')
+const translations = require(`../../i18n/messages.${process.env.USE_LANG || 'en'}.json`)
 
 const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
 const GRASS = process.env.GRASS_DIR
 
-class AddLocationModule {
+module.exports = class {
   constructor() { }
 
   launch() {
@@ -64,5 +65,3 @@ class AddLocationModule {
     }
   }
 }
-
-module.exports = AddLocationModule

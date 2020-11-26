@@ -1,9 +1,10 @@
-const { addVector, checkWritableDir, clip, getCoordinates, gpkgOut, mapsetExists, remove, grass } = require('./functions')
-const translations = require(`../i18n/messages.${process.env.USE_LANG || 'en'}.json`)
+const { addVector, clip, getCoordinates, gpkgOut, grass, mapsetExists, remove } = require('../grass')
+const { checkWritableDir } = require('../helpers')
+const translations = require(`../../i18n/messages.${process.env.USE_LANG || 'en'}.json`)
 
 const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
 
-class SetSelectionModule {
+module.exports = class {
   constructor() { }
 
   launch() {
@@ -48,5 +49,3 @@ class SetSelectionModule {
     }
   }
 }
-
-module.exports = SetSelectionModule

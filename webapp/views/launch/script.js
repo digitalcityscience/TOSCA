@@ -280,19 +280,33 @@ function handleResponse(res) {
 
             // inputs.map is problematic because jquery objs behave differently
             for (const query of querys) {
-              const [rel, sel, min, max] = [
-                $(query).find('.rel').val(),
-                $(query).find('.sel').val(),
-                $(query).find('.min').val(),
-                $(query).find('.max').val()
-              ]
-              if (rel != undefined) msg.push(rel)
-              if (validateNum(min) && validateNum(max)) {
-                msg.push(sel, '>=', min, 'AND', sel, '<=', max)
-              } else {
-                msg = []
-                textarea.append($(`<span id="${messageId}-error" class="validation-error">${t['error:form numbers']}</span>`));
-                break
+              const isNumeric = $(query).find('.val').length
+              // character-type column
+              if (isNumeric) {
+                const [rel, sel, val] = [
+                  $(query).find('.rel').val(),
+                  $(query).find('.sel').val(),
+                  $(query).find('.val').val()
+                ]
+                msg.push({ 'column': sel, 'isNumeric': isNumeric, 'where': `${sel} = '${val}'` })
+                if (rel !== undefined) msg[msg.length - 1].where = rel + ' ' + msg[msg.length - 1].where
+              }
+              // numeric-type column
+              else {
+                const [rel, sel, min, max] = [
+                  $(query).find('.rel').val(),
+                  $(query).find('.sel').val(),
+                  $(query).find('.min').val(),
+                  $(query).find('.max').val()
+                ]
+                if (validateNum(min) && validateNum(max)) {
+                  msg.push({ 'column': sel, 'isNumeric': isNumeric, 'where': `${sel} >= ${min} AND ${sel} <= ${max}` })
+                  if (rel !== undefined) msg[msg.length - 1].where = rel + ' ' + msg[msg.length - 1].where
+                } else {
+                  msg = []
+                  textarea.append($(`<span id="${messageId}-error" class="validation-error">${t['error:form numbers']}</span>`));
+                  break
+                }
               }
             }
             if (msg.length) reply(res, msg)
@@ -334,39 +348,72 @@ function relationSelect() {
 }
 
 function conditionElement(data, id) {
+  const firstData = data[0]
   const container = $(`<div class='card-body border-info m-0 p-10'></div>`)
   const row1 = $(`<div class='d-flex mb-2' id='${id}'><small>${t['query attribute']}</small></div>`)
   const columns = data.map(item => `<option value="${item.column}">${item.column}</option>`)
   const select = $(`<select class='custom-select mr-2 ml-2 sel'>${columns}</select>`)
   const remove = $('<button type="button" class="btn btn-secondary ml-2">&times;</button>')
-  const row2 = $(`
-  <div class='d-flex justify-content-between mb-2'>
-    <small>${t['min']} <span class='min-badge badge badge-secondary'> >= ${data[0].bounds[0]}</span></small>
-    <input id='${id}-input-min' type='number' class='form-control ml-2 mr-2 min'>
-  </div>
-  <div class='d-flex justify-content-between mb-2'>
-    <small>${t['max']} <span class='max-badge badge badge-secondary'> <= ${data[0].bounds[1]}</span></small>
-    <input id='${id}-input-max' type='number' class='form-control ml-2 mr-2 max'>
-  </div>
-  `)
 
   row1.append(select)
   row1.append(remove)
   container.append(row1)
-  container.append(row2)
+  if (['DOUBLE PRECISION', 'INTEGER'].indexOf(firstData.type) > -1) {
+    container.append(boundSetter(firstData.bounds))
+  } else {
+    container.append(charSelector(firstData.vals))
+  }
 
   remove.click((e) => {
     $(e.target).parent().parent().parent().remove();
   })
 
   select.change((e) => {
-    const bounds = data.filter(d => d.column === e.target.value)[0].bounds
-    const min = $(e.target).parent().parent().find('.min-badge')
-    const max = $(e.target).parent().parent().find('.max-badge')
-    min.html('>= ' + bounds[0])
-    max.html('<= ' + bounds[1])
+    const selected = data.filter(d => d.column === e.target.value)[0]
+    if (['DOUBLE PRECISION', 'INTEGER'].indexOf(selected.type) > -1) {
+      row1.next().remove()
+      container.append(boundSetter(selected.bounds))
+      const bounds = selected.bounds
+      const min = $(e.target).parent().parent().find('.min-badge')
+      const max = $(e.target).parent().parent().find('.max-badge')
+      min.html('>= ' + bounds[0])
+      max.html('<= ' + bounds[1])
+    } else {
+      row1.next().remove()
+      container.append(charSelector(selected.vals))
+      const sel = $(e.target).parent().parent().find('select')
+      sel.html(selected.values)
+    }
+
   })
   return container
+}
+
+/**
+ * create bound setters for numeric-type columns
+ * @param {array} bounds [min, max]
+ */
+function boundSetter(bounds) {
+  return $(`
+<div class='row justify-content-between mb-2'>
+  <small class='col-md-2'>${t['min']} <span class='min-badge badge badge-secondary'> >= ${bounds[0]}</span></small>
+  <input type='number' class='col-md-10 form-control min'>
+  <small class='col-md-2'>${t['max']} <span class='max-badge badge badge-secondary'> <= ${bounds[1]}</span></small>
+  <input type='number' class='col-md-10 form-control max'>
+</div>`)
+}
+
+/**
+ * create value selectors for character-type columns
+ * @param {array} values
+ */
+function charSelector(values) {
+  const options = values.map(value => `<option value="${value}">${value}</option>`)
+  return $(`
+<div class='row mb-2'>
+  <small class='col-md-2'>value</small>
+  <select class='col-md-10 custom-select mr-2 val'>${options}</select>
+</div>`)
 }
 
 /**
@@ -493,21 +540,15 @@ function getOutput() {
 function getAttributes(table) {
   get('/attributes', { table }, function (res) {
     const { tableObj, columnObj } = JSON.parse(res.attributes)
-
     // the headFields are GRASS GIS attribute names (except 'min' and 'max')
-    const tObj = { headFields: ['table', 'description'], rows: [] }
-    const cObj = { headFields: ['column', 'description', 'min', 'max'], rows: [] }
+    const cObj = { headFields: ['column', 'type', 'description', 'min', 'max'], rows: [] }
     // filter unwanted fields
-    for (const row of tableObj.rows) {
-      tObj.rows.push({ 'table': row.table, 'description': row.description })
-    }
     for (const row of columnObj.rows) {
-      if (['DOUBLE PRECISION', 'INTEGER'].indexOf(row.type) > -1 &&
-        ['cat'].indexOf(row.column) == -1)
-        cObj.rows.push({ 'column': row.column, 'description': row.description, 'min': row.min, 'max': row.max })
+      if (row.column !== 'cat')
+        cObj.rows.push({ 'column': row.column, 'type': row.type, 'description': row.description, 'min': row.min, 'max': row.max })
     }
-
-    $('#table-description').html(tableElement('table table-bordered', tObj))
+    $('#table-header').text(`Table description for ${tableObj.table}`)
+    $('#table-description').text(tableObj.description)
     $('#column-description').html(tableElement('table table-bordered', cObj))
     $('#table-attributes-modal').show()
   })

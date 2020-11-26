@@ -1,11 +1,12 @@
 const fs = require('fs')
-const { checkWritableDir, grass, mapsetExists } = require('./functions')
-const translations = require(`../i18n/messages.${process.env.USE_LANG || 'en'}.json`)
+const { grass, mapsetExists } = require('../grass')
+const { checkWritableDir } = require('../helpers')
+const translations = require(`../../i18n/messages.${process.env.USE_LANG || 'en'}.json`)
 
 const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
 const GRASS = process.env.GRASS_DIR
 
-class SetResolutionModule {
+module.exports = class {
   constructor() { }
 
   launch() {
@@ -46,5 +47,3 @@ class SetResolutionModule {
     }
   }
 }
-
-module.exports = SetResolutionModule
