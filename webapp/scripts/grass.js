@@ -190,7 +190,7 @@ function dbSelectAllRaw(mapset, table) {
  * @returns {object[]} array of all entries
  */
 function dbSelectAllObj(mapset, table) {
-  return grass(mapset, `db.select -v sql="select * from ${table}" vertical_separator=space`)
+  return dbSelectAllRaw(mapset, table)
     .split(' \n')
     .map(item => item
       .split('\n')
