@@ -256,7 +256,7 @@ function isLegalName(name) {
     throw new Error(`Illegal filename ${name}. Cannot be 'NULL' or start with '.'.`)
   }
   for (let i = 0; i < name.length; i++) {
-    if (['/', '"', '\\', '\'', '@', ',', '=', '*', '~'].indexOf(name[i]) > -1 || name.charCodeAt(i) >= 127 || name[i] < ' ') {
+    if (['/', '"', '\\', '\'', '@', ',', '=', '*', '~'].indexOf(name[i]) > -1 || name.charCodeAt(i) >= 127 || name[i] <= ' ') {
       throw new Error(`Illegal filename ${name}. Cannot contain symbol '${name[i]}'.`)
     }
   }

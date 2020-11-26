@@ -1,4 +1,4 @@
-const { addRaster, addVector, gpkgOut, mapsetExists } = require('../grass.js')
+const { addRaster, addVector, gpkgOut, mapsetExists, isLegalName } = require('../grass.js')
 const { checkWritableDir } = require('../helpers.js')
 const { add_map: messages } = require('../messages.json')
 
@@ -35,14 +35,12 @@ module.exports = class {
 
         const msg = messages["3"]
         msg.message.layerName = this.mapFile.slice(this.mapFile.lastIndexOf('/') + 1, this.mapFile.lastIndexOf('.'))
+
+        isLegalName(msg.message.layerName)
         return msg
       }
 
       case 'add_map.3':
-        if (!message.match(/^[a-zA-Z]\w*$/)) {
-          throw new Error("Invalid map name. Use alphanumeric characters only")
-        }
-
         if (!this.mapFile) {
           throw new Error("File not found")
         }
