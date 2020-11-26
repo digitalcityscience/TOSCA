@@ -7,27 +7,40 @@ maploc 0 2
 
 vareas cotopaxi_scenarios_query_zone
   pat $GISBASE/etc/paint/patterns/diag_down.eps
-  color red
-  fcolor red
-  width 1
+  color brown
+  fcolor brown
+  width 0.2
   end
 
 vareas cotopaxi_scenarios_query_result
-  color brown
-  fcolor #cccccc
+  color red
+  fcolor yellow
   width 0.2
+  end
+
+vpoints cotopaxi_scenarios_query_result
+  color red
+  fcolor yellow
+  symbol basic/triangle
+  size 5
+  end
+
+vlines cotopaxi_scenarios_query_result
+  color red
+  width 0.2
+  masked y
   end
 
 vlines lines_osm
   where waterway = 'river'
-  color #8080ff
+  color blue
   width 2
   masked y
   end
 
 vlines lines_osm
   where highway is not null
-  color gray
+  color black
   width 0.2
   masked y
   end
