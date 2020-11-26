@@ -101,6 +101,25 @@ function getCoordinates(mapset) {
 }
 
 /**
+ * Get a layer's attribute columns
+ * @param {string} mapset mapset
+ * @param {string} layer layer name
+ */
+function getColumns(mapset, layer) {
+  return grass(mapset, `db.describe -c table=${layer}`).trim().split('\n')
+    .filter(line => line.match(/^Column/))
+    .map(line => {
+      const matches = line.match(/Column \d+: ([^:]+):([^:]+):(\d+)/)
+      return {
+        name: matches[1],
+        type: matches[2],
+        width: matches[3]
+      }
+    })
+    .filter(col => col.name !== 'cat')
+}
+
+/**
  * Get a layer's columns with INTEGER or DOUBLE PRECISION type
  * @param {string} mapset mapset
  * @param {string} layer layer to analyze
@@ -249,7 +268,7 @@ function listUserVector() {
 /**
  * Checks if the name contains only allowed characters for GRASS mapsets and columns
  * @param {string} name mapset name
- * @return {boolean} true or false 
+ * @return {boolean} true or false
  */
 function isLegalName(name) {
   if (!name.length || name[0] === '.') {
@@ -360,6 +379,7 @@ module.exports = {
   dbSelectAllRaw,
   dbSelectAllObj,
   getAllColumns,
+  getColumns,
   getCoordinates,
   getLayers,
   getMetadata,

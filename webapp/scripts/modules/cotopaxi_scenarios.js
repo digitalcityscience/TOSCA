@@ -1,4 +1,4 @@
-const { addVector, getUnivar, grass, initMapset, listVector, mapsetExists } = require('../grass')
+const { addVector, getColumns, getUnivar, grass, initMapset, listVector, mapsetExists } = require('../grass')
 const { checkWritableDir, psToPDF } = require('../helpers')
 const translations = require(`../../i18n/messages.${process.env.USE_LANG || 'en'}.json`)
 
