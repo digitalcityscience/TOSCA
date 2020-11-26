@@ -309,7 +309,7 @@ function getMetadata(mapset, table) {
         bounds = getUnivarBounds(mapset, table, row.column)
       } catch (err) {
         // TODO: push to warnings
-        bounds = []
+        bounds = ['not provided','not provided']
       }
     }
     row.min = bounds[0]
