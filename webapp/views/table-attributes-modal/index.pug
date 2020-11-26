@@ -1,11 +1,11 @@
 div(class='modal-content')
-  div(class='modal-close-container') 
+  div(class='modal-close-container')
     span(class='modal-close' onclick='hideAttributes()') &times;
   div(id='attributes-content')
     h1(style='font-size: 1.5rem;' id='table-header')
     p(id='table-description')
-    h1(style='font-size: 1.5rem;') Column description
+    h1(style='font-size: 1.5rem;') #{t['Column description']}
     p(id='column-description')
   p
-    small 
-      em &#9888;non-numeric columns are filtered out
+    small
+      em &#9888; #{t['Non-numeric columns are filtered out']}

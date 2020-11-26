@@ -1,6 +1,6 @@
 const { addRaster, addVector, gpkgOut, mapsetExists, isLegalName } = require('../grass.js')
 const { checkWritableDir } = require('../helpers.js')
-const { add_map: messages } = require('../messages.json')
+const translations = require(`../../i18n/messages.${process.env.USE_LANG || 'en'}.json`)
 
 const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
 
@@ -14,9 +14,9 @@ module.exports = class {
     checkWritableDir(GEOSERVER)
 
     if (mapsetExists('PERMANENT')) {
-      return messages["2"]
+      return { id: 'add_map.2', message: translations['add_map.message.2'] }
     }
-    return messages["1"]
+    return { id: 'add_map.1', message: translations['add_map.message.1'] }
   }
 
   process(message, replyTo) {
@@ -28,21 +28,29 @@ module.exports = class {
         } else if (message.match(/\.tiff?$|\.gtif$/i)) {
           this.mapType = 'raster'
         } else {
-          throw new Error("Wrong file format - must be one of 'geojson', 'gpkg', 'osm', 'tif', 'tiff', 'gtif'")
+          throw new Error(translations['add_map.errors.1'])
         }
 
         this.mapFile = message
 
-        const msg = messages["3"]
-        msg.message.layerName = this.mapFile.slice(this.mapFile.lastIndexOf('/') + 1, this.mapFile.lastIndexOf('.'))
+        const layerName = this.mapFile.slice(this.mapFile.lastIndexOf('/') + 1, this.mapFile.lastIndexOf('.'))
 
-        isLegalName(msg.message.layerName)
-        return msg
+        try {
+          isLegalName(layerName)
+        } catch (err) {
+          throw new Error(translations['add_map.errors.2'])
+        }
+
+        return {
+          id: 'add_map.3',
+          message: translations['add_map.message.3'],
+          layerName: layerName
+        }
       }
 
       case 'add_map.3':
         if (!this.mapFile) {
-          throw new Error("File not found")
+          throw new Error(translations['add_map.errors.3'])
         }
 
         if (this.mapType === 'vector') {
@@ -51,7 +59,7 @@ module.exports = class {
         } else if (this.mapType === 'raster') {
           addRaster('PERMANENT', this.mapFile, message)
         }
-        return messages["4"]
+        return { id: 'add_map.4', message: translations['add_map.message.4'] }
     }
   }
 }

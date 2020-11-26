@@ -1,7 +1,7 @@
 const fs = require('fs')
 const { addVector, dbSelectAllRaw, dbSelectAllObj, getAllColumns, getUnivarBounds, gpkgOut, grass, initMapset, listUserVector, mapsetExists, remove, isLegalName } = require('../grass')
 const { checkWritableDir, filterDefaultLayerFilenames, getFilesOfType, mergePDFs, psToPDF, textToPS } = require('../helpers')
-const { query: messages } = require('../messages.json')
+const translations = require(`../../i18n/messages.${process.env.USE_LANG || 'en'}.json`)
 
 const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
 const GRASS = process.env.GRASS_DIR
@@ -21,7 +21,7 @@ module.exports = class {
     checkWritableDir(OUTPUT)
 
     if (!mapsetExists('PERMANENT')) {
-      return messages[7]
+      return { id: 'query.7', message: translations['query.message.7'] }
     }
 
     initMapset(this.mapset)
@@ -67,9 +67,11 @@ module.exports = class {
       // }
     }
 
-    const msg = messages[2]
-    msg.message.list = listUserVector()
-    return msg
+    return {
+      id: 'query.2',
+      message: translations['query.message.2'],
+      list: listUserVector()
+    }
   }
 
   process(message, replyTo) {
@@ -104,16 +106,20 @@ module.exports = class {
             column.vals = [...new Set(vals.map(c => c[column.column]))]
           }
         })
-        const msg = messages[3]
-        msg.message.list = cols
-        msg.message.map = this.mapToQuery
-        return msg
+
+        return {
+          id: 'query.3',
+          message: translations['query.message.3'],
+          list: cols,
+          map: this.mapToQuery
+        }
       }
 
       case 'query.3': {
         const where = message.reduce((sum, msg) => sum + msg.where + ' ', '').trim()
         this.calculate(message, where)
-        return messages[24]
+
+        return { id: 'query.24', message: translations['query.message.24'] }
       }
     }
   }
@@ -149,28 +155,12 @@ module.exports = class {
     console.log(entries)
     let output = `Statistics and map results
 
-Date of creation: ${dateString}
-Queried columns: ${message.map(msg => msg.column).toString()}
-Criteria: ${where}
-Number of features: ${entries.length - 1}
-List of features (only shows the first 30 features): \n`
-    // FIXME: this part below does not really make sense to the user. my suggestion is to delete it...
-    // Results:
-    // Number of features:          ${stats.n}
-    // Sum of values:               ${stats.sum}
-    // Minimum value:               ${stats.min}
-    // Maximum value:               ${stats.max}
-    // Range of values:             ${stats.range}
-    // Mean:                        ${stats.mean}
-    // Mean of absolute values:     ${stats.mean_abs}
-    // Median:                      ${stats.median}
-    // Standard deviation:          ${stats.stddev}
-    // Variance:                    ${stats.variance}
-    // Relative standard deviation: ${stats.coeff_var}
-    // 1st quartile:                ${stats.first_quartile}
-    // 3rd quartile:                ${stats.third_quartile}
-    // 90th percentile:             ${stats.percentile_90}`
-
+${translations['query.output.2']}: ${dateString}
+${translations['query.output.3']}: ${message.map(msg => msg.column).toString()}
+${translations['query.output.4']}: ${where}
+${translations['query.output.6']}: ${entries.length - 1}
+List of features (only shows the first 30 features):
+`
     // Generate PDF
     if (entries.length <= 30) {
       output += entries.join('\n')

@@ -1,6 +1,6 @@
 const { addVector, clip, getCoordinates, gpkgOut, grass, mapsetExists, remove } = require('../grass')
 const { checkWritableDir } = require('../helpers')
-const { set_selection: messages } = require('../messages.json')
+const translations = require(`../../i18n/messages.${process.env.USE_LANG || 'en'}.json`)
 
 const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
 
@@ -11,9 +11,9 @@ module.exports = class {
     checkWritableDir(GEOSERVER)
 
     if (mapsetExists('PERMANENT')) {
-      return messages["2"]
+      return { id: 'set_selection.2', message: translations['set_selection.message.2'] }
     }
-    return messages["1"]
+    return { id: 'set_selection.1', message: translations['set_selection.message.1'] }
   }
 
   process(message, replyTo) {
@@ -21,7 +21,7 @@ module.exports = class {
       case 'set_selection.2': {
         // uploaded file
         if (!message.match(/\.geojson$/i)) {
-          throw new Error("Wrong file format - must be 'geojson'")
+          throw new Error(translations['set_selection.errors.1'])
         }
 
         remove('PERMANENT', 'selection')
@@ -39,10 +39,12 @@ module.exports = class {
 
         let [east, north] = getCoordinates('PERMANENT')
 
-        let msg = messages["3"]
-        msg.message.lat = north
-        msg.message.lon = east
-        return msg
+        return {
+          id: 'set_selection.3',
+          message: translations['set_selection.message.3'],
+          lat: north,
+          lon: east
+        }
       }
     }
   }
