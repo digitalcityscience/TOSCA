@@ -105,11 +105,11 @@ module.exports = class {
         // message is a layer name
         this.selectLayer = message
 
-        // Remove result layer from previous run if it exists
-        grass(this.mapset, `g.remove -f type=vector name=${queryResult}`)
-
         // Select features from the layer using the query zone
         grass(this.mapset, `v.select ainput=${this.selectLayer} binput=${queryZone} output=${queryResult} operator=overlap --overwrite`)
+        
+        // Copy result into PERMANENT to be used by query module
+        grass('PERMANENT', `g.copy vector=${queryResult}@${this.mapset},${queryResult} --overwrite`)
 
         // Check if the query result is not empty
         try {
