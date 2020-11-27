@@ -1,17 +1,17 @@
 <layer>
   <name>ltga_grado_amenaza</name>
-  <id>LayerInfoImpl-5b4070ab:17598fc72a5:-7fe9</id>
+  <id>LayerInfoImpl-589c3c2c:17607c3ad19:-7ff7</id>
   <type>VECTOR</type>
   <defaultStyle>
     <id>StyleInfoImpl-5b4070ab:17598fc72a5:-7fe4</id>
   </defaultStyle>
   <resource class="featureType">
-    <id>FeatureTypeInfoImpl-5b4070ab:17598fc72a5:-7fea</id>
+    <id>FeatureTypeInfoImpl-589c3c2c:17607c3ad19:-7ff8</id>
   </resource>
   <attribution>
     <logoWidth>0</logoWidth>
     <logoHeight>0</logoHeight>
   </attribution>
-  <dateCreated>2020-11-05 15:39:54.570 UTC</dateCreated>
-  <dateModified>2020-11-05 15:49:57.693 UTC</dateModified>
+  <dateCreated>2020-11-27 03:38:11.40 UTC</dateCreated>
+  <dateModified>2020-11-27 03:39:14.3 UTC</dateModified>
 </layer>
