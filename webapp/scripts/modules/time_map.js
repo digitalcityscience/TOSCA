@@ -28,12 +28,16 @@ module.exports = class {
 
     initMapset(this.mapset)
 
+    try {
+      this.resolution = parseFloat(fs.readFileSync(`${GRASS}/variables/resolution`).toString().trim().split('\n')[1])
+    } catch (err) {
+      return { id: 'time_map.0', message: translations['time_map.message.0'] }
+    }
+
     // Clip lines and polygons@PERMANENT mapset with the area_of_interest, defined by the user
     // Results will be stored in the "time_map" mapset
     grass(this.mapset, `g.copy vector=selection@PERMANENT,selection --overwrite`)
     grass(this.mapset, `g.copy vector=lines@PERMANENT,lines --overwrite`)
-
-    this.resolution = parseFloat(fs.readFileSync(`${GRASS}/variables/resolution`).toString().trim().split('\n')[1])
 
     if (!fs.existsSync(`${GRASS}/variables/roads_speed`)) {
       fs.copyFileSync(`${GRASS}/variables/defaults/roads_speed_defaults`, `${GRASS}/variables/roads_speed`)
