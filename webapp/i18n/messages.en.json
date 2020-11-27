@@ -105,6 +105,7 @@
   "error:number": "Please enter a numeric value.",
   "error:name": "Please enter a name.",
   "error:form numbers": "Please enter valid numbers in the fields.",
+  "Client error": "Client error",
   "Server error": "Server error",
   "Unknown error": "Unknown error",
   "User manual": "User manual",
