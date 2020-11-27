@@ -70,7 +70,7 @@ module.exports = class {
     return {
       id: 'query.2',
       message: translations['query.message.2'],
-      list: listUserVector()
+      list: listUserVector().map(file => file.split('@')[0])
     }
   }
 
