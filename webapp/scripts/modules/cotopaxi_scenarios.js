@@ -1,5 +1,6 @@
-const { addVector, getColumns, getUnivar, grass, initMapset, listVector, mapsetExists } = require('../grass')
-const { checkWritableDir, psToPDF } = require('../helpers')
+const fs = require('fs')
+const { addVector, getColumns, grass, initMapset, listVector, mapsetExists, dbSelectAllRaw, remove,dbTables } = require('../grass')
+const { checkWritableDir, psToPDF, textToPS, mergePDFs } = require('../helpers')
 const translations = require(`../../i18n/messages.${process.env.USE_LANG || 'en'}.json`)
 
 const GEOSERVER_DATA_DIR = process.env.GEOSERVER_DATA_DIR
@@ -102,32 +103,69 @@ module.exports = class {
       }
 
       case 'cotopaxi_scenarios.3': {
+        // remove old queryResult
+        remove(this.mapset, queryResult)
+
         // message is a layer name
         this.selectLayer = message
-
+        
         // Select features from the layer using the query zone
         grass(this.mapset, `v.select ainput=${this.selectLayer} binput=${queryZone} output=${queryResult} operator=overlap --overwrite`)
         
-        // Copy result into PERMANENT to be used by query module
-        grass('PERMANENT', `g.copy vector=${queryResult}@${this.mapset},${queryResult} --overwrite`)
+        // // Check if the query result is not empty
+        // // BUG: sometimes getUnivar fails but does not throw an error. e.g. 'Lahar flow' aginst 'asociaciones_productoras'
+        // try {
+        //   getUnivar(this.mapset, queryResult, 'cat')
+        // } catch (err) {
+        //   return { id: 'cotopaxi_scenarios.5', message: translations['cotopaxi_scenarios.message.5'] }
+        // }
 
-        // Check if the query result is not empty
-        try {
-          getUnivar(this.mapset, queryResult, 'cat')
-        } catch (err) {
+        // A more stable way of checking if the query result is empty
+        if(dbTables(this.mapset).indexOf(queryResult) === -1){
           return { id: 'cotopaxi_scenarios.5', message: translations['cotopaxi_scenarios.message.5'] }
         }
+
+        // Copy result into PERMANENT to be used by query module
+        grass('PERMANENT', `g.copy vector=${queryResult}@${this.mapset},${queryResult} --overwrite`)
+        
+        const date = new Date()
+        const dateString = date.toString()
+        const safeDateString = date.toISOString().replace(/([\d-]*)T(\d\d):(\d\d):[\d.]*Z/g, '$1_$2$3')
+        const  entries = dbSelectAllRaw(this.mapset, queryResult).split(' \n')
+        let output = `Statistics and map results
+
+${translations['cotopaxi_scenarios.output.1']}: ${dateString}
+${translations['cotopaxi_scenarios.output.2']}: ${this.typeOfThreat}
+${translations['cotopaxi_scenarios.output.3']}: ${this.selectLayer}
+${translations['cotopaxi_scenarios.output.4']}: ${entries.length - 1}
+${translations['cotopaxi_scenarios.output.5']}:
+    `
+
+        if (entries.length <= 30) {
+          output += entries.join('\n')
+        } else {
+          output += (entries.slice(0, 30).join('\n') + '\n')
+        }
+
+        fs.mkdirSync('tmp', { recursive: true })
+        fs.writeFileSync('tmp/statistics_output', output)
+    
+        textToPS('tmp/statistics_output', 'tmp/statistics.ps')
+        psToPDF('tmp/statistics.ps', 'tmp/statistics.pdf')
 
         // Set the region for the output map, using the bounds of queryResult
         grass(this.mapset, `g.region vector=${queryResult} --overwrite`)
 
         // Create PS output
-        grass(this.mapset, `ps.map input="${GRASS_DIR}/variables/defaults/cotopaxi_scenarios.ps_param" output=cotopaxi_scenarios.ps --overwrite`)
+        grass(this.mapset, `ps.map input="${GRASS_DIR}/variables/defaults/cotopaxi_scenarios.ps_param" output=tmp/cotopaxi_scenarios.ps --overwrite`)
 
         // Convert to PDF
-        const dateString = new Date().toISOString().replace(/([\d-]*)T(\d\d):(\d\d):[\d.]*Z/g, '$1_$2$3')
-        psToPDF('cotopaxi_scenarios.ps', `${OUTPUT_DIR}/cotopaxi_scenarios_${dateString}.pdf`)
+        psToPDF('tmp/cotopaxi_scenarios.ps', 'tmp/cotopaxi_scenarios.pdf')
+        
+        mergePDFs(`${OUTPUT_DIR}/cotopaxi_scenarios_${safeDateString}.pdf`, 'tmp/cotopaxi_scenarios.pdf','tmp/statistics.pdf')
 
+        fs.rmdirSync('tmp', { recursive: true })
+        
         return { id: 'cotopaxi_scenarios.4', message: translations['cotopaxi_scenarios.message.4'] }
       }
     }

@@ -203,6 +203,16 @@ function dbSelectAllRaw(mapset, table) {
 }
 
 /**
+ * get all tables in the mapset
+ * @param {string} mapset mapset
+ * @returns {array} all tables
+ */
+function dbTables(mapset) {
+  const tables = grass(mapset, 'db.tables -p').split('\n')
+  tables.pop()
+  return tables
+}
+/**
  * select all entries in a table and return an object
  * @param {string} mapset mapset
  * @param {string} table table to select from
@@ -376,6 +386,7 @@ module.exports = {
   addRaster,
   addVector,
   clip,
+  dbTables,
   dbSelectAllRaw,
   dbSelectAllObj,
   getAllColumns,
