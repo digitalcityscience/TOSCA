@@ -12,8 +12,21 @@ mapinfo
 
 vareas query_result
   color red
-  width 1
-  masked n
+  fcolor yellow
+  width 0.2
+  end
+
+vpoints query_result
+  color red
+  fcolor yellow
+  symbol basic/triangle
+  size 5
+  end
+
+vlines query_result
+  color red
+  width 0.2
+  masked y
   end
 
 vlines lines

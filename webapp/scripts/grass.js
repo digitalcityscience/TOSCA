@@ -262,7 +262,7 @@ function listVector(mapset) {
  * @return {string[]} names of available maps
  */
 function listUserVector() {
-  return grass('PERMANENT', 'g.list type=vector mapset=*').trim().split('\n').filter(filterDefaultLayers)
+  return grass('PERMANENT', 'g.list -m type=vector').trim().split('\n').filter(filterDefaultLayers)
 }
 
 /**
