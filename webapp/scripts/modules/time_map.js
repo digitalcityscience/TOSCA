@@ -1,5 +1,5 @@
 const fs = require('fs')
-const { addVector, gpkgOut, grass, initMapset, mapsetExists } = require('../grass')
+const { addVector, gpkgOut, grass, initMapset, listVector, mapsetExists } = require('../grass')
 const { checkWritableDir, mergePDFs, psToPDF, textToPS } = require('../helpers')
 const translations = require(`../../i18n/messages.${process.env.USE_LANG || 'en'}.json`)
 
@@ -28,13 +28,22 @@ module.exports = class {
 
     initMapset(this.mapset)
 
-    // Clip lines and polygons@PERMANENT mapset with the area_of_interest, defined by the user
-    // Results will be stored in the "time_map" mapset
+    if (listVector('PERMANENT').indexOf('selection@PERMANENT') < 0) {
+      return { id: 'time_map.11', message: translations['time_map.message.11'] }
+    }
+
+    // Read resolution from file if it exists
+    try {
+      this.resolution = parseFloat(fs.readFileSync(`${GRASS}/variables/resolution`).toString().trim().split('\n')[1])
+    } catch (err) {
+      return { id: 'time_map.10', message: translations['time_map.message.10'] }
+    }
+
+    // Copy selection and (basemap) lines from PERMANENT mapset
     grass(this.mapset, `g.copy vector=selection@PERMANENT,selection --overwrite`)
     grass(this.mapset, `g.copy vector=lines@PERMANENT,lines --overwrite`)
 
-    this.resolution = parseFloat(fs.readFileSync(`${GRASS}/variables/resolution`).toString().trim().split('\n')[1])
-
+    // Read road speed values from file if it exists - otherwise use defaults
     if (!fs.existsSync(`${GRASS}/variables/roads_speed`)) {
       fs.copyFileSync(`${GRASS}/variables/defaults/roads_speed_defaults`, `${GRASS}/variables/roads_speed`)
     }
