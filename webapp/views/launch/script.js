@@ -1,4 +1,9 @@
-/* global $, L, t, map, drawnItems, refreshLayer, selection, fromPoints, viaPoints, strickenArea, timeMap */
+/* global $, L, t, map, drawnItems, refreshLayer */
+const selection = window['selection']
+const fromPoints = window['time_map_from_points']
+const viaPoints = window['time_map_via_points']
+const strickenArea = window['time_map_stricken_area']
+const timeMap = window['time_map_result']
 
 /**
  * Handle incoming messages from backend
