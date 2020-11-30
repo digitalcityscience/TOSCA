@@ -1,366 +1,341 @@
-/* global $, L, map, drawnItems, selection */
+/* global $, L, t, map, drawnItems, refreshLayer */
+const selection = window['selection']
+const fromPoints = window['time_map_from_points']
+const viaPoints = window['time_map_via_points']
+const strickenArea = window['time_map_stricken_area']
+const timeMap = window['time_map_result']
 
-/* Handle incoming messages from backend */
-
+/**
+ * Handle incoming messages from backend
+ * @param {object} res backend response
+ * @return Promise resolving if the message is processed successfully
+ */
 function handleResponse(res) {
-  if (!res.message) {
-    return;
-  }
+  return new Promise((resolve) => {
+    clearDialog();
 
-  clearDialog();
+    const messageId = res.id.replace(/\./g, '_');
 
-  const messageId = res.message_id.replace(/\./g, '_');
+    const textarea = $('#textarea');
+    const buttonarea = $('#buttonarea');
+    const lists = $('#lists');
 
-  const textarea = $('#textarea');
-  const buttonarea = $('#buttonarea');
-  const lists = $('#lists');
+    if (res.lat && res.lon) {
+      map.panTo(new L.LatLng(res.lat, res.lon));
+    }
 
-  if (res.message.lat && res.message.lon) {
-    map.panTo(new L.LatLng(res.message.lat, res.message.lon));
-  }
+    const list = (res.list || []).sort();
 
-  const list = (res.message.list || []).sort();
+    $('#loading').hide();
 
-  $('#loading').hide();
+    if (res.message) {
+      let text = textElement(res.message), form, buttons;
 
-  if (res.message.text) {
-    let text = textElement(res.message.text), form, buttons;
+      switch (res.id) {
+        // The various actions required in response to server messages are defined here.
 
-    switch (res.message_id) {
-      // The various actions required in response to server messages are defined here.
-
-      // == add_location ==
-      case 'add_location.1':
-        buttons = [
-          buttonElement('Yes').click(() => {
-            reply(res, 'yes');
-          }),
-          buttonElement('No').click(() => {
-            reply(res, 'no');
-          })
-        ];
-        break;
-
-      case 'add_location.4':
-        form = formElement(messageId);
-        form.append($(`<input id="${messageId}-input" type="file" name="file" />`));
-        buttons = [
-          buttonElement('Submit').click(() => {
-            $(`#${messageId}-error`).remove();
-            const input = $(`#${messageId}-input`);
-            if (input[0].files.length) {
-              upload(form[0], { messageId: res.message_id }, handleResponse);
-            } else {
-              textarea.append($(`<span id="${messageId}-error" class="validation-error">Please choose a file for upload.</span>`));
-            }
-          })
-        ];
-        break;
-
-      // == set_selection ==
-      case 'set_selection.2':
-        buttons = [
-          buttonElement('Save').click(() => {
-            $(`#${messageId}-error`).remove();
-            if (!saveDrawing(res)) {
-              textarea.append($(`<span id="${messageId}-error" class="validation-error">Please draw a polygon using the map’s drawing tool.</span>`));
-            }
-          })
-        ];
-        drawnItems.clearLayers();
-        startDrawPolygon();
-        break;
-
-      case 'set_selection.3':
-        // Force reloading of the selection layer
-        selection.setParams({ ts: Date.now() });
-        map.addLayer(selection);
-        drawnItems.clearLayers();
-        break;
-
-      // == set_resolution ==
-      case 'set_resolution.1':
-      case 'set_resolution.2':
-        form = formElement(messageId);
-        form.append($(`<input id="${messageId}-input" type="number" />`));
-        form.append($(`<span>&nbsp;m</span>`));
-        buttons = [
-          buttonElement('Submit').click(() => {
-            $(`#${messageId}-error`).remove();
-            const input = $(`#${messageId}-input`);
-            if (!isNaN(parseInt(input.val()))) {
-              reply(res, input.val());
-            } else {
-              textarea.append($(`<span id="${messageId}-error" class="validation-error">Please enter a numeric value.</span>`));
-            }
-          })
-        ];
-        break;
-
-      // == add_map ==
-      case 'add_map.1':
-        buttons = [
-          buttonElement('OK').click(() => {
-            reply(res, 'ok');
-          })
-        ];
-        break;
-
-      case 'add_map.2':
-        form = formElement(messageId);
-        form.append($(`<input id="${messageId}-input" type="file" name="file" />`));
-        buttons = [
-          buttonElement('Submit').click(() => {
-            $(`#${messageId}-error`).remove();
-            const input = $(`#${messageId}-input`);
-            if (input[0].files.length) {
-              upload(form[0], { messageId: res.message_id }, handleResponse);
-            } else {
-              textarea.append($(`<span id="${messageId}-error" class="validation-error">Please choose a file for upload.</span>`));
-            }
-          })
-        ];
-        break;
-
-      case 'add_map.3':
-        form = formElement(messageId);
-        form.append($(`<input id="${messageId}-input" type="text" value="${res.message.layerName}" />`));
-        buttons = [
-          buttonElement('Submit').click(() => {
-            $(`#${messageId}-error`).remove();
-            const input = $(`#${messageId}-input`);
-            if (input.val()) {
-              reply(res, input.val());
-            } else {
-              textarea.append($(`<span id="${messageId}-error" class="validation-error">Please enter a name.</span>`));
-            }
-          })
-        ];
-        break;
-
-      // == module_1 ==
-      case 'module_1.1':
-        buttons = [
-          buttonElement('Yes').click(() => {
-            const saveButton = buttonElement('Save').click(() => {
-              saveDrawing(res);
+        // == add_location ==
+        case 'add_location.1':
+          buttons = [
+            buttonElement(t['Yes']).click(() => {
+              reply(res, 'yes');
+            }),
+            buttonElement(t['No']).click(() => {
+              reply(res, 'no');
             })
-            buttonarea.append(saveButton);
-          }),
-          buttonElement('No').click(() => {
-            reply(res, 'no');
-          })
-        ];
-        drawnItems.clearLayers();
-        startDrawCirclemarker();
-        break;
+          ];
+          break;
 
-      case 'module_1.2':
-      case 'module_1.4':
-      case 'module_1.6':
-      case 'module_1.8':
-        form = formElement(messageId);
-        lists.append($(`<select id="${messageId}-input" size="10">` + list.map(map => `<option selected value="${map}">${map}</option>`) + `</select>`));
-        buttons = [
-          buttonElement('Submit').click(() => {
-            const input = $(`#${messageId}-input`);
-            reply(res, input[0].value);
-          })
-        ];
-        break;
-
-      case 'module_1.3':
-      case 'module_1.5':
-      case 'module_1.7':
-        buttons = [
-          buttonElement('Yes').click(() => {
-            const saveButton = buttonElement('Save').click(() => {
-              saveDrawing(res);
-            })
-            buttonarea.append(saveButton);
-          }),
-          buttonElement('No').click(() => {
-            reply(res, 'no');
-          }),
-          buttonElement('Cancel').click(() => {
-            reply(res, 'cancel');
-          })
-        ];
-        drawnItems.clearLayers();
-        startDrawPolygon();
-        break;
-
-      case 'module_1.9':
-        buttons = [
-          buttonElement('Yes').click(() => {
-            reply(res, 'yes');
-          }),
-          buttonElement('No').click(() => {
-            reply(res, 'no');
-          })
-        ];
-        break;
-
-      case 'module_1.12':
-      case 'module_1.10':
-        form = formElement(messageId);
-        form.append($(`<input id="${messageId}-input" type="number" />`));
-        buttons = [
-          buttonElement('Submit').click(() => {
-            const input = $(`#${messageId}-input`);
-            reply(res, input.val());
-          })
-        ];
-        break;
-
-      // == module_1a ==
-      // Start points / via points
-      case 'module_1a.1':
-      case 'module_1a.2':
-        buttons = [
-          buttonElement('Save').click(() => {
-            $(`#${messageId}-error`).remove();
-            if (!saveDrawing(res)) {
-              textarea.append($(`<span id="${messageId}-error" class="validation-error">Please draw a point using the circlemarker drawing tool.</span>`));
-            }
-          }),
-          buttonElement('Cancel').click(() => {
-            reply(res, 'cancel');
-          })
-        ];
-        map.addLayer(selection);
-        drawnItems.clearLayers();
-        startDrawCirclemarker();
-        break;
-
-      // stricken area
-      case 'module_1a.3':
-        buttons = [
-          buttonElement('Save').click(() => {
-            $(`#${messageId}-error`).remove();
-            if (!saveDrawing(res)) {
-              textarea.append($(`<span id="${messageId}-error" class="validation-error">Please draw a polygon using the polygon drawing tool.</span>`));
-            }
-          }),
-          buttonElement('Cancel').click(() => {
-            reply(res, 'cancel');
-          })
-        ];
-        drawnItems.clearLayers();
-        startDrawPolygon();
-        break;
-
-      // Speed reduction ratio
-      case 'module_1a.4':
-      case 'module_1a.9':
-        form = formElement(messageId);
-        form.append($(`<input id="${messageId}-input" type="number" />`));
-        form.append($(`<span>&nbsp;%</span>`));
-        buttons = [
-          buttonElement('Submit').click(() => {
-            const input = $(`#${messageId}-input`);
-            reply(res, input.val());
-          })
-        ];
-        break;
-
-      case 'module_1a.8':
-        buttons = [
-          buttonElement('Yes').click(() => {
-            reply(res, 'yes');
-          }),
-          buttonElement('No').click(() => {
-            reply(res, 'no');
-          })
-        ];
-        break;
-
-      // == module_2 ==
-      case 'module_2.1':
-        buttons = [
-          buttonElement('Save').click(() => {
-            $(`#${messageId}-error`).remove();
-            if (!saveDrawing(res)) {
-              textarea.append($(`<span id="${messageId}-error" class="validation-error">Please draw a polygon using the map’s drawing tool.</span>`));
-            }
-          })
-        ];
-        drawnItems.clearLayers();
-        startDrawPolygon();
-        break;
-
-      case 'module_2.2':
-        form = formElement(messageId);
-        lists.append($(`<select id="${messageId}-input" class='custom-select' size="10">` + list.map(col => `<option selected value="${col}">${col}</option>`) + `</select>`));
-        buttons = [
-          buttonElement('Show attributes').click(() => {
-            const input = $(`#${messageId}-input`);
-            getAttributes(input[0].value)
-          }),
-          buttonElement('Submit').click(() => {
-            const input = $(`#${messageId}-input`);
-            reply(res, input[0].value);
-          })
-        ];
-        break;
-
-      case 'module_2.3': {
-        const query = $(`<div class='query'></div>`)
-        query.append(conditionElement(list))
-        lists.append(query);
-
-        buttons = [
-          buttonElement('Show attributes').click(() => {
-            getAttributes(res.message.map)
-          }),
-          buttonElement('＋').click(() => {
-            const len = $('.query').length
-            const query = $(`<div class='query'></div>`)
-            if (len > 0) query.append(relationSelect())
-            query.append(conditionElement(list))
-            lists.append(query);
-          }),
-          buttonElement('OK').click(() => {
-            $(`#${messageId}-error`).remove();
-            let msg = []
-            const querys = $('.query')
-
-            // inputs.map is problematic because jquery objs behave differently
-            for (const query of querys) {
-              const [rel, sel, min, max] = [
-                $(query).find('.rel').val(),
-                $(query).find('.sel').val(),
-                $(query).find('.min').val(),
-                $(query).find('.max').val()
-              ]
-              if (rel != undefined) msg.push(rel)
-              if (validateNum(min) && validateNum(max)) {
-                msg.push(sel, '>=', min, 'AND', sel, '<=', max)
+        case 'add_location.4':
+          form = formElement(messageId);
+          form.append($(`<input id="${messageId}-input" type="file" name="file" />`));
+          buttons = [
+            buttonElement(t['Submit']).click(() => {
+              $(`#${messageId}-error`).remove();
+              const input = $(`#${messageId}-input`);
+              if (input[0].files.length) {
+                upload(form[0], { messageId: res.id }, handleResponse);
               } else {
-                msg = []
-                textarea.append($(`<span id="${messageId}-error" class="validation-error">Please enter valid numbers in the fields.</span>`));
-                break
+                textarea.append($(`<span id="${messageId}-error" class="validation-error">${t['error:file upload']}</span>`));
               }
-            }
-            if (msg.length) reply(res, msg)
-          })
-        ];
-        break;
+            })
+          ];
+          break;
+
+        // == set_selection ==
+        case 'set_selection.2':
+          buttons = [
+            buttonElement(t['Save']).click(() => {
+              $(`#${messageId}-error`).remove();
+              if (!saveDrawing(res)) {
+                textarea.append($(`<span id="${messageId}-error" class="validation-error">${t['error:draw polygon']}</span>`));
+              }
+            })
+          ];
+          drawnItems.clearLayers();
+          startDrawPolygon();
+          break;
+
+        case 'set_selection.3':
+          refreshLayer(selection);
+          map.addLayer(selection);
+          drawnItems.clearLayers();
+          break;
+
+        // == set_resolution ==
+        case 'set_resolution.1':
+        case 'set_resolution.2':
+          form = formElement(messageId);
+          form.append($(`<input id="${messageId}-input" type="number" />`));
+          form.append($(`<span>&nbsp;m</span>`));
+          buttons = [
+            buttonElement(t['Submit']).click(() => {
+              $(`#${messageId}-error`).remove();
+              const input = $(`#${messageId}-input`);
+              if (!isNaN(parseInt(input.val()))) {
+                reply(res, input.val());
+              } else {
+                textarea.append($(`<span id="${messageId}-error" class="validation-error">${t['error:number']}</span>`));
+              }
+            })
+          ];
+          break;
+
+        // == add_map ==
+        case 'add_map.1':
+          buttons = [
+            buttonElement(t['OK']).click(() => {
+              reply(res, 'ok');
+            })
+          ];
+          break;
+
+        case 'add_map.2':
+          form = formElement(messageId);
+          form.append($(`<input id="${messageId}-input" type="file" name="file" />`));
+          buttons = [
+            buttonElement(t['Submit']).click(() => {
+              $(`#${messageId}-error`).remove();
+              const input = $(`#${messageId}-input`);
+              if (input[0].files.length) {
+                upload(form[0], { messageId: res.id }, handleResponse);
+              } else {
+                textarea.append($(`<span id="${messageId}-error" class="validation-error">${t['error:file upload']}</span>`));
+              }
+            })
+          ];
+          break;
+
+        case 'add_map.3':
+          form = formElement(messageId);
+          form.append($(`<input id="${messageId}-input" type="text" value="${res.layerName}" />`));
+          buttons = [
+            buttonElement(t['Submit']).click(() => {
+              $(`#${messageId}-error`).remove();
+              const input = $(`#${messageId}-input`);
+              if (input.val()) {
+                reply(res, input.val());
+              } else {
+                textarea.append($(`<span id="${messageId}-error" class="validation-error">${t['error:name']}</span>`));
+              }
+            })
+          ];
+          break;
+
+        // == time map module ==
+        // Start points
+        case 'time_map.1':
+          map.addLayer(selection);
+
+          drawnItems.clearLayers();
+          startDrawCirclemarker();
+
+          buttons = [
+            buttonElement(t['Save']).click(() => {
+              $(`#${messageId}-error`).remove();
+              if (!saveDrawing(res)) {
+                textarea.append($(`<span id="${messageId}-error" class="validation-error">${t['error:draw point']}</span>`));
+              }
+            }),
+            buttonElement(t['Cancel']).click(() => {
+              reply(res, 'cancel');
+            })
+          ];
+          break;
+
+        // Via points
+        case 'time_map.2':
+          refreshLayer(fromPoints);
+          map.addLayer(fromPoints);
+
+          drawnItems.clearLayers();
+          startDrawCirclemarker();
+
+          buttons = [
+            buttonElement(t['Save']).click(() => {
+              $(`#${messageId}-error`).remove();
+              if (!saveDrawing(res)) {
+                textarea.append($(`<span id="${messageId}-error" class="validation-error">${t['error:draw point']}</span>`));
+              }
+            }),
+            buttonElement(t['Cancel']).click(() => {
+              reply(res, 'cancel');
+            })
+          ];
+          break;
+
+        // stricken area
+        case 'time_map.3':
+          refreshLayer(viaPoints);
+          map.addLayer(viaPoints);
+
+          drawnItems.clearLayers();
+          startDrawPolygon();
+
+          buttons = [
+            buttonElement(t['Save']).click(() => {
+              $(`#${messageId}-error`).remove();
+              if (!saveDrawing(res)) {
+                textarea.append($(`<span id="${messageId}-error" class="validation-error">${t['error:draw polygon']}</span>`));
+              }
+            }),
+            buttonElement(t['Cancel']).click(() => {
+              reply(res, 'cancel');
+            })
+          ];
+          break;
+
+        // Speed reduction ratio
+        case 'time_map.4':
+          refreshLayer(strickenArea);
+          map.addLayer(strickenArea);
+
+          cancelDrawing();
+          drawnItems.clearLayers();
+
+          form = formElement(messageId);
+          form.append($(`<input id="${messageId}-input" type="number" />`));
+          form.append($(`<span>&nbsp;%</span>`));
+          buttons = [
+            buttonElement(t['Submit']).click(() => {
+              const input = $(`#${messageId}-input`);
+              reply(res, input.val());
+            })
+          ];
+          break;
+
+        // Done
+        case 'time_map.6':
+          refreshLayer(timeMap);
+          map.addLayer(timeMap);
+
+          cancelDrawing();
+          drawnItems.clearLayers();
+          break;
+
+        // == query module ==
+        case 'query.1':
+          buttons = [
+            buttonElement(t['Save']).click(() => {
+              $(`#${messageId}-error`).remove();
+              if (!saveDrawing(res)) {
+                textarea.append($(`<span id="${messageId}-error" class="validation-error">${t['error:draw polygon']}</span>`));
+              }
+            })
+          ];
+          drawnItems.clearLayers();
+          startDrawPolygon();
+          break;
+
+        case 'query.2':
+          form = formElement(messageId);
+          lists.append($(`<select id="${messageId}-input" class='custom-select' size="10">` + list.map(col => `<option selected value="${col}">${col}</option>`) + `</select>`));
+          buttons = [
+            buttonElement(t['Show attributes']).click(() => {
+              const input = $(`#${messageId}-input`);
+              getAttributes(input[0].value)
+            }),
+            buttonElement(t['Submit']).click(() => {
+              const input = $(`#${messageId}-input`);
+              reply(res, input[0].value);
+            })
+          ];
+          break;
+
+        case 'query.3': {
+          const query = $(`<div class='query'></div>`)
+          query.append(conditionElement(list))
+          lists.append(query);
+
+          buttons = [
+            buttonElement(t['Show attributes']).click(() => {
+              getAttributes(res.map)
+            }),
+            buttonElement('＋').click(() => {
+              const len = $('.query').length
+              const query = $(`<div class='query'></div>`)
+              if (len > 0) query.append(relationSelect())
+              query.append(conditionElement(list))
+              lists.append(query);
+            }),
+            buttonElement(t['OK']).click(() => {
+              $(`#${messageId}-error`).remove();
+              let msg = []
+              const querys = $('.query')
+
+              // inputs.map is problematic because jquery objs behave differently
+              for (const query of querys) {
+                const isNumeric = $(query).find('.val').length
+                // character-type column
+                if (isNumeric) {
+                  const [rel, sel, val] = [
+                    $(query).find('.rel').val(),
+                    $(query).find('.sel').val(),
+                    $(query).find('.val').val()
+                  ]
+                  msg.push({ 'column': sel, 'isNumeric': isNumeric, 'where': `${sel} = '${val}'` })
+                  if (rel !== undefined) msg[msg.length - 1].where = rel + ' ' + msg[msg.length - 1].where
+                }
+                // numeric-type column
+                else {
+                  const [rel, sel, min, max] = [
+                    $(query).find('.rel').val(),
+                    $(query).find('.sel').val(),
+                    $(query).find('.min').val(),
+                    $(query).find('.max').val()
+                  ]
+                  if (validateNum(min) && validateNum(max)) {
+                    msg.push({ 'column': sel, 'isNumeric': isNumeric, 'where': `${sel} >= ${min} AND ${sel} <= ${max}` })
+                    if (rel !== undefined) msg[msg.length - 1].where = rel + ' ' + msg[msg.length - 1].where
+                  } else {
+                    msg = []
+                    textarea.append($(`<span id="${messageId}-error" class="validation-error">${t['error:form numbers']}</span>`));
+                    break
+                  }
+                }
+              }
+              if (msg.length) reply(res, msg)
+            })
+          ];
+          break;
+        }
+      }
+
+      textarea.append(text);
+
+      if (form) {
+        textarea.append(form);
+      }
+
+      if (buttons) {
+        buttons.forEach((button) => {
+          buttonarea.append(button);
+        });
       }
     }
 
-    textarea.append(text);
-
-    if (form) {
-      textarea.append(form);
-    }
-
-    if (buttons) {
-      buttons.forEach((button) => {
-        buttonarea.append(button);
-      });
-    }
-  }
+    resolve();
+  });
 }
 
 function textElement(text) {
@@ -381,39 +356,72 @@ function relationSelect() {
 }
 
 function conditionElement(data, id) {
+  const firstData = data[0]
   const container = $(`<div class='card-body border-info m-0 p-10'></div>`)
-  const row1 = $(`<div class='d-flex mb-2' id='${id}'><small>query attribute</small></div>`)
+  const row1 = $(`<div class='d-flex mb-2' id='${id}'><small>${t['query attribute']}</small></div>`)
   const columns = data.map(item => `<option value="${item.column}">${item.column}</option>`)
   const select = $(`<select class='custom-select mr-2 ml-2 sel'>${columns}</select>`)
   const remove = $('<button type="button" class="btn btn-secondary ml-2">&times;</button>')
-  const row2 = $(`
-  <div class='d-flex justify-content-between mb-2'>
-    <small>min <span class='min-badge badge badge-secondary'> >= ${data[0].bounds[0]}</span></small>
-    <input id='${id}-input-min' type='number' class='form-control ml-2 mr-2 min'>
-  </div>
-  <div class='d-flex justify-content-between mb-2'>
-    <small>max <span class='max-badge badge badge-secondary'> <= ${data[0].bounds[1]}</span></small>
-    <input id='${id}-input-max' type='number' class='form-control ml-2 mr-2 max'>
-  </div>
-  `)
 
   row1.append(select)
   row1.append(remove)
   container.append(row1)
-  container.append(row2)
+  if (['DOUBLE PRECISION', 'INTEGER'].indexOf(firstData.type) > -1) {
+    container.append(boundSetter(firstData.bounds))
+  } else {
+    container.append(charSelector(firstData.vals))
+  }
 
   remove.click((e) => {
     $(e.target).parent().parent().parent().remove();
   })
 
   select.change((e) => {
-    const bounds = data.filter(d => d.column === e.target.value)[0].bounds
-    const min = $(e.target).parent().parent().find('.min-badge')
-    const max = $(e.target).parent().parent().find('.max-badge')
-    min.html('>= ' + bounds[0])
-    max.html('<= ' + bounds[1])
+    const selected = data.filter(d => d.column === e.target.value)[0]
+    if (['DOUBLE PRECISION', 'INTEGER'].indexOf(selected.type) > -1) {
+      row1.next().remove()
+      container.append(boundSetter(selected.bounds))
+      const bounds = selected.bounds
+      const min = $(e.target).parent().parent().find('.min-badge')
+      const max = $(e.target).parent().parent().find('.max-badge')
+      min.html('>= ' + bounds[0])
+      max.html('<= ' + bounds[1])
+    } else {
+      row1.next().remove()
+      container.append(charSelector(selected.vals))
+      const sel = $(e.target).parent().parent().find('select')
+      sel.html(selected.values)
+    }
+
   })
   return container
+}
+
+/**
+ * create bound setters for numeric-type columns
+ * @param {array} bounds [min, max]
+ */
+function boundSetter(bounds) {
+  return $(`
+<div class='row justify-content-between mb-2'>
+  <small class='col-md-2'>${t['min']} <span class='min-badge badge badge-secondary'> >= ${bounds[0]}</span></small>
+  <input type='number' class='col-md-10 form-control min'>
+  <small class='col-md-2'>${t['max']} <span class='max-badge badge badge-secondary'> <= ${bounds[1]}</span></small>
+  <input type='number' class='col-md-10 form-control max'>
+</div>`)
+}
+
+/**
+ * create value selectors for character-type columns
+ * @param {array} values
+ */
+function charSelector(values) {
+  const options = values.map(value => `<option value="${value}">${value}</option>`)
+  return $(`
+<div class='row mb-2'>
+  <small class='col-md-2'>value</small>
+  <select class='col-md-10 custom-select mr-2 val'>${options}</select>
+</div>`)
 }
 
 /**
@@ -493,6 +501,11 @@ function startDrawCirclemarker() {
   btn && btn.dispatchEvent(new Event('click'));
 }
 
+function cancelDrawing() {
+  const btn = $('.leaflet-draw-actions li:contains("Cancel") a')[0];
+  btn && btn.dispatchEvent(new Event('click'));
+}
+
 /* Send messages to the backend */
 
 // eslint-disable-next-line no-unused-vars
@@ -512,7 +525,7 @@ function launchSettings(value) {
 }
 
 function reply(res, message) {
-  sendMessage('/reply', { msg: message }, { messageId: res.message_id }, handleResponse);
+  sendMessage('/reply', { msg: message }, { messageId: res.id }, handleResponse);
 }
 
 function saveDrawing(res) {
@@ -520,39 +533,36 @@ function saveDrawing(res) {
   if (geojson.features.length === 0) {
     return false;
   }
-  sendMessage('/drawing', { data: geojson }, { messageId: res.message_id }, handleResponse);
+  sendMessage('/drawing', { data: geojson }, { messageId: res.id }, handleResponse);
   return true;
 }
 
 function getOutput() {
-  get('/output', {}, function (res) {
-    const baseOption = "<option selected value=''> - </option>"
-    const options = res.list.reduce((str, file) => str + `<option value="${file}">${file}</option>`, '')
-    $('#results-select').html(baseOption + options)
-  })
+  get('/output', {}, (res) => new Promise((resolve) => {
+    const baseOption = "<option selected value=''> - </option>";
+    const options = res.list.reduce((str, file) => str + `<option value="${file}">${file}</option>`, '');
+    $('#results-select').html(baseOption + options);
+    resolve();
+  }));
 }
 
 function getAttributes(table) {
-  get('/attributes', { table }, function (res) {
-    const { tableObj, columnObj } = JSON.parse(res.attributes)
-
+  get('/attributes', { table }, (res) => new Promise((resolve) => {
+    const { tableObj, columnObj } = JSON.parse(res.attributes);
     // the headFields are GRASS GIS attribute names (except 'min' and 'max')
-    const tObj = { headFields: ['table', 'description'], rows: [] }
-    const cObj = { headFields: ['column', 'description', 'min', 'max'], rows: [] }
+    const cObj = { headFields: ['column', 'type', 'description', 'min', 'max'], rows: [] };
     // filter unwanted fields
-    for (const row of tableObj.rows) {
-      tObj.rows.push({ 'table': row.table, 'description': row.description })
-    }
     for (const row of columnObj.rows) {
-      if (['DOUBLE PRECISION', 'INTEGER'].indexOf(row.type) > -1 &&
-        ['cat'].indexOf(row.column) == -1)
-        cObj.rows.push({ 'column': row.column, 'description': row.description, 'min': row.min, 'max': row.max })
+      if (row.column !== 'cat') {
+        cObj.rows.push({ 'column': row.column, 'type': row.type, 'description': row.description, 'min': row.min, 'max': row.max });
+      }
     }
-
-    $('#table-description').html(tableElement('table table-bordered', tObj))
-    $('#column-description').html(tableElement('table table-bordered', cObj))
-    $('#table-attributes-modal').show()
-  })
+    $('#table-header').text(`Table description for ${tableObj.table}`);
+    $('#table-description').text(tableObj.description);
+    $('#column-description').html(tableElement('table table-bordered', cObj));
+    $('#table-attributes-modal').show();
+    resolve();
+  }));
 }
 
 function sendMessage(target, message, params, callback) {
@@ -566,7 +576,7 @@ function sendMessage(target, message, params, callback) {
     contentType: 'application/json; encoding=utf-8',
     error: onServerError
   })
-    .done(callback)
+    .done(res => callback(res).catch(onClientError))
     .always(() => $('#loading').hide())
 }
 
@@ -579,7 +589,7 @@ function get(target, params, callback) {
     contentType: 'application/json; encoding=utf-8',
     error: onServerError
   })
-    .done(callback)
+    .done(res => callback(res).catch(onClientError))
     .always(() => $('#loading').hide())
 }
 
@@ -596,14 +606,21 @@ function upload(form, params, callback) {
     processData: false,
     error: onServerError
   })
-    .done(callback)
+    .done(res => callback(res).catch(onClientError))
     .always(() => $('#loading').hide());
 }
 
-function onServerError(xhr, textStatus) {
-  const text = $('<span>').text(xhr.responseJSON && xhr.responseJSON.message || textStatus || 'Unknown error');
+function onClientError(error) {
+  console.error(error);
+  const text = $('<span>').text(error.message);
   const alert = $('<div class="alert alert-danger" role="alert"></div>');
-  alert.append($('<b>Server error: </b>')).append(text).append($('<button class="close" data-dismiss="alert">×</button>'));
+  alert.append($(`<b>${t['Client error']}: </b>`)).append(text).append($('<button class="close" data-dismiss="alert">×</button>'));
   $('#alert-anchor').append(alert);
-  $('#loading').hide();
+}
+
+function onServerError(xhr, textStatus) {
+  const text = $('<span>').text(xhr.responseJSON && xhr.responseJSON.message || textStatus || t['Unknown error']);
+  const alert = $('<div class="alert alert-danger" role="alert"></div>');
+  alert.append($(`<b>${t['Server error']}: </b>`)).append(text).append($('<button class="close" data-dismiss="alert">×</button>'));
+  $('#alert-anchor').append(alert);
 }

@@ -1,8 +1,8 @@
 div(class='modal-content')
-  div(class='modal-close-container') 
+  div(class='modal-close-container')
     span(class='modal-close' onclick='hideResults()') &times;
   div(id='results-header')
-    span(class='span-center') select results to be displayed&nbsp;&nbsp;
+    span(class='span-center') #{t['Select result to be displayed']}&nbsp;&nbsp;
     select(id='results-select' class='custom-select custom-select-lg' onchange='display()')
-  
+
   iframe(id='results-iframe' src="" width="100%" height="75%")
