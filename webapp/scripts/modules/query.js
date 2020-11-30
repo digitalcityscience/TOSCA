@@ -1,5 +1,5 @@
 const fs = require('fs')
-const { addVector, dbSelectAllRaw, dbSelectAllObj, getAllColumns, getUnivarBounds, gpkgOut, grass, initMapset, listUserVector, mapsetExists, remove, isLegalName } = require('../grass')
+const { addVector, dbSelectAllRaw, dbSelectAllObj, getAllColumns, getUnivarBounds, gpkgOut, grass, initMapset, listUserVector, listVector, mapsetExists, remove, isLegalName } = require('../grass')
 const { checkWritableDir, filterDefaultLayerFilenames, getFilesOfType, mergePDFs, psToPDF, textToPS } = require('../helpers')
 const translations = require(`../../i18n/messages.${process.env.USE_LANG || 'en'}.json`)
 
@@ -25,6 +25,10 @@ module.exports = class {
     }
 
     initMapset(this.mapset)
+
+    if (listVector('PERMANENT').indexOf('selection@PERMANENT') < 0) {
+      return { id: 'query.1', message: translations['query.message.1'] }
+    }
 
     // set selection as the query area
     grass(this.mapset, `g.copy vector=selection@PERMANENT,selection --overwrite`)

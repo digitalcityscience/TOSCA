@@ -234,19 +234,6 @@ function handleResponse(res) {
           break;
 
         // == query module ==
-        case 'query.1':
-          buttons = [
-            buttonElement(t['Save']).click(() => {
-              $(`#${messageId}-error`).remove();
-              if (!saveDrawing(res)) {
-                textarea.append($(`<span id="${messageId}-error" class="validation-error">${t['error:draw polygon']}</span>`));
-              }
-            })
-          ];
-          drawnItems.clearLayers();
-          startDrawPolygon();
-          break;
-
         case 'query.2':
           form = formElement(messageId);
           lists.append($(`<select id="${messageId}-input" class='custom-select' size="10">` + list.map(col => `<option selected value="${col}">${col}</option>`) + `</select>`));
