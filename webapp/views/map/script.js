@@ -47,7 +47,9 @@ for(const group of groups){
   groupedOverlays[group] = {}
 }
 for(const service of services){
-  groupedOverlays[service.group][t[service.displayName]] = createWms(service)
+  // make layers available in the global scope
+  window[service.layers] = createWms(service)
+  groupedOverlays[service.group][t[service.displayName]] = window[service.layers]
 }
 groupedOverlays = translate(groupedOverlays)
 

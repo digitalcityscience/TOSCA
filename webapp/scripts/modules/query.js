@@ -147,12 +147,11 @@ module.exports = class {
     // Data output
     gpkgOut(this.mapset, QUERY_RESULT_NAME, QUERY_RESULT_NAME)
 
-
+    // Generate PDF
     const date = new Date()
     const dateString = date.toString()
     const safeDateString = date.toISOString().replace(/([\d-]*)T(\d\d):(\d\d):[\d.]*Z/g, '$1_$2$3')
     const entries = dbSelectAllRaw(this.mapset, QUERY_RESULT_NAME).split(' \n')
-    console.log(entries)
     let output = `Statistics and map results
 
 ${translations['query.output.2']}: ${dateString}
@@ -161,7 +160,6 @@ ${translations['query.output.4']}: ${where}
 ${translations['query.output.6']}: ${entries.length - 1}
 List of features (only shows the first 30 features):
 `
-    // Generate PDF
     if (entries.length <= 30) {
       output += entries.join('\n')
     } else {
@@ -177,7 +175,7 @@ List of features (only shows the first 30 features):
     grass(this.mapset, `ps.map input="${GRASS}/variables/defaults/query.ps_param" output=tmp/query_map.ps --overwrite`)
     psToPDF('tmp/query_map.ps', 'tmp/query_map.pdf')
 
-    mergePDFs(`${OUTPUT}/query_results_${safeDateString}.pdf`, 'tmp/statistics.pdf', 'tmp/query_map.pdf')
+    mergePDFs(`${OUTPUT}/query_results_${safeDateString}.pdf`,'tmp/query_map.pdf', 'tmp/statistics.pdf' )
 
     fs.rmdirSync('tmp', { recursive: true })
 

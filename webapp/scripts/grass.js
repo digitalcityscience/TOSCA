@@ -272,6 +272,8 @@ function listVector(mapset) {
  * @return {string[]} names of available maps
  */
 function listUserVector() {
+  // '-m' guarantees to return fully-qualified map names
+  // without '-m', only a part of the names are fully-qualified
   return grass('PERMANENT', 'g.list -m type=vector').trim().split('\n').filter(filterDefaultLayers)
 }
 
