@@ -533,15 +533,16 @@ function saveDrawing(res) {
 }
 
 function getOutput() {
-  get('/output', {}, (res) => new Promise(() => {
+  get('/output', {}, (res) => new Promise((resolve) => {
     const baseOption = "<option selected value=''> - </option>";
     const options = res.list.reduce((str, file) => str + `<option value="${file}">${file}</option>`, '');
     $('#results-select').html(baseOption + options);
+    resolve();
   }));
 }
 
 function getAttributes(table) {
-  get('/attributes', { table }, (res) => new Promise(() => {
+  get('/attributes', { table }, (res) => new Promise((resolve) => {
     const { tableObj, columnObj } = JSON.parse(res.attributes);
     // the headFields are GRASS GIS attribute names (except 'min' and 'max')
     const cObj = { headFields: ['column', 'type', 'description', 'min', 'max'], rows: [] };
@@ -555,6 +556,7 @@ function getAttributes(table) {
     $('#table-description').text(tableObj.description);
     $('#column-description').html(tableElement('table table-bordered', cObj));
     $('#table-attributes-modal').show();
+    resolve();
   }));
 }
 
