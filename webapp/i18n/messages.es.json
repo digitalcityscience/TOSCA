@@ -39,6 +39,7 @@
 	"time_map.output.7": "Área afectada:  línea negra",
 	"time_map.output.8": "Velocidad considerada en vías",
 	"time_map.output.9": "Coeficiente de reducción de velocidad para el área afectada",
+  "query.message.1": "Please set a selection first (in the <a class=\"text-primary\" onclick=\"blink('#settings-menu')\">settings menu</a>).",
 	"query.message.2": "Elija la capa de mapa que desea consultar.",
 	"query.message.3": "Defina la consulta mediante el formulario y presione ‘OK‘.",
 	"query.message.7": "No se encontró ningún mapa base válido. Configure el mapa base en el <a class=\"text-primary\" onclick=\"blink('#settings-menu')\">menú de configuración</a>.",
