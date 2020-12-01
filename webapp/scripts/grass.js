@@ -208,10 +208,10 @@ function dbSelectAllRaw(mapset, table) {
  * @returns {array} all tables
  */
 function dbTables(mapset) {
-  const tables = grass(mapset, 'db.tables -p').split('\n')
-  tables.pop()
+  const tables = grass(mapset, 'db.tables -p').trim().split('\n')
   return tables
 }
+
 /**
  * select all entries in a table and return an object
  * @param {string} mapset mapset
@@ -380,7 +380,11 @@ function getMetadata(mapset, table) {
  * @param {string} args arguments to the command line
  */
 function grass(mapset, args) {
-  return execSync(`grass "${GRASS}/global/${mapset}" --exec ${args}`, { shell: '/bin/bash', encoding: 'utf-8' })
+  return execSync(`grass "${GRASS}/global/${mapset}" --exec ${args}`, {
+    shell: '/bin/bash',
+    maxBuffer: 64 * 1024 * 1024,
+    encoding: 'utf-8'
+  })
 }
 
 module.exports = {
@@ -388,9 +392,9 @@ module.exports = {
   addRaster,
   addVector,
   clip,
-  dbTables,
-  dbSelectAllRaw,
   dbSelectAllObj,
+  dbSelectAllRaw,
+  dbTables,
   getAllColumns,
   getColumns,
   getCoordinates,
