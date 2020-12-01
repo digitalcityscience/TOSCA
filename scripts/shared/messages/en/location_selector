@@ -1,7 +1,0 @@
-No valid location found. First have to add a location to the dataset. Without such location, CityApp will not work. Adding a new location may take a long time, depending on the file size. If you want to continue, click Yes.
-Select a map to add to CityApp. Map has to be in Open Street Map format -- osm is the only accepted format.
-There is an already defined area. To reshape the existing selection, select Yes. If do not want reshape the selection, beceause you want to replace the entire location, select No.
-No lines map found in PERMANET mapset, or lines map is damaged. To resolve this error, add again your location (map) to CityApp. Modul is now exiting.
-Now zoom to area of your interest, then use drawing tool to define your location. Next, save your selection.
-Process finished. Now CityApp Location selector exit
-Location selector is now exiting.
