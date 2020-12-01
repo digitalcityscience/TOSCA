@@ -35,7 +35,9 @@ module.exports = class {
     this.queryArea = 'selection'
 
     const allVector = listUserVector().map(file => file.split('@')[0])
-    const allGpkg = getFilesOfType('gpkg', GEOSERVER).filter(filterDefaultLayerFilenames)
+    const allGpkg = getFilesOfType('gpkg', GEOSERVER)
+      .filter(filterDefaultLayerFilenames)
+      .filter(name => !name.match(/\/m1_[a-z_]*\.gpkg/))
 
     /**
      * check and add all layers from layer switcher
