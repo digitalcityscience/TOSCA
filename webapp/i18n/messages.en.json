@@ -39,6 +39,7 @@
   "time_map.output.7": "Stricken area: black line",
   "time_map.output.8": "Considered speed on roads",
   "time_map.output.9": "Speed reduction coefficient for stricken area",
+  "query.message.1": "Please set a selection first (in the <a class=\"text-primary\" onclick=\"blink('#settings-menu')\">settings menu</a>).",
   "query.message.2": "Choose the map layer you want to query.",
   "query.message.3": "Define the query using the form and press ‘OK’.",
   "query.message.7": "No valid basemap found. Please set the basemap in the <a class=\"text-primary\" onclick=\"blink('#settings-menu')\">settings menu</a>.",
