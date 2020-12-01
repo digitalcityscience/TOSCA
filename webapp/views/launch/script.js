@@ -157,7 +157,7 @@ function handleResponse(res) {
                 textarea.append($(`<span id="${messageId}-error" class="validation-error">${t['error:draw point']}</span>`));
               }
             }),
-            buttonElement(t['Cancel']).click(() => {
+            buttonElement(t['Skip']).click(() => {
               reply(res, 'cancel');
             })
           ];
@@ -178,7 +178,7 @@ function handleResponse(res) {
                 textarea.append($(`<span id="${messageId}-error" class="validation-error">${t['error:draw point']}</span>`));
               }
             }),
-            buttonElement(t['Cancel']).click(() => {
+            buttonElement(t['Skip']).click(() => {
               reply(res, 'cancel');
             })
           ];
@@ -199,7 +199,7 @@ function handleResponse(res) {
                 textarea.append($(`<span id="${messageId}-error" class="validation-error">${t['error:draw polygon']}</span>`));
               }
             }),
-            buttonElement(t['Cancel']).click(() => {
+            buttonElement(t['Skip']).click(() => {
               reply(res, 'cancel');
             })
           ];
