@@ -1,7 +1,0 @@
-aerialway:aerialway>0
-aeroway: aeroway>0
-barrier:barrier>0
-highway:highway>0
-power:power='line' OR power='minor_line'
-railway:railway>0 OR service='crossover' OR service='siding' OR service='spur' OR service='yard'
-water:waterway='river' OR waterway='stream' waterway='canal' OR waterway='drain' OR waterway='ditch'
