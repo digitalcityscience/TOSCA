@@ -22,14 +22,6 @@ Before building the image, environment variables need to be set in `webapp/.env`
 - `INITIAL_LAT`, `INITIAL_LON`: Initial center coordinates for the map view.
 - `USE_LANG`: Language of the user interface (default: English). A matching translations file must exist in `webapp/i18n`.
 
-It is also required to create these directories:
-```
-mkdir -p geoserver_data_dir/data
-mkdir -p grass/global
-mkdir grass/metadata
-mkdir output
-```
-
 Build the Docker image:
 ```
 docker build -t oct .
@@ -165,7 +157,7 @@ pm2 start /home/oct_user/oct/webapp/app.js
 
 ## Add metadata for map layers
 
-For better user experience, the OCT allows the user to add metadata to map layers. 
+For better user experience, the OCT allows the user to add metadata to map layers.
 Once added correctly, the metadata will be queried in various places within in the app, e.g. in the attribute table shown after the user clicks 'show attribute' in the query module.
 The metadata should be added in a `metadata.json` file under the `grass/metadata` folder.
 The metadata should conform to the following format:
