@@ -88,7 +88,7 @@ const services = [
     maxZoom: 20,
     minZoom: 1,
     displayName: 'Road-level time map',
-    type: 'raster',
+    type: 'vector',
     group: 'Time map'
   },
   {
