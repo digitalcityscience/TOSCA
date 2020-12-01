@@ -380,7 +380,11 @@ function getMetadata(mapset, table) {
  * @param {string} args arguments to the command line
  */
 function grass(mapset, args) {
-  return execSync(`grass "${GRASS}/global/${mapset}" --exec ${args}`, { shell: '/bin/bash', encoding: 'utf-8' })
+  return execSync(`grass "${GRASS}/global/${mapset}" --exec ${args}`, {
+    shell: '/bin/bash',
+    maxBuffer: 64 * 1024 * 1024,
+    encoding: 'utf-8'
+  })
 }
 
 module.exports = {
