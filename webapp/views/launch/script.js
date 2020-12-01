@@ -157,7 +157,7 @@ function handleResponse(res) {
                 textarea.append($(`<span id="${messageId}-error" class="validation-error">${t['error:draw point']}</span>`));
               }
             }),
-            buttonElement(t['Skip']).click(() => {
+            buttonElement(t['Cancel']).click(() => {
               reply(res, 'cancel');
             })
           ];
