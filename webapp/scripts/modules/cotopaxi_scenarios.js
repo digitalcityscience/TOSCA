@@ -1,6 +1,6 @@
 const fs = require('fs')
 const { addVector, getColumns, grass, initMapset, listVector, mapsetExists, dbSelectAllRaw, remove,dbTables } = require('../grass')
-const { checkWritableDir, psToPDF, textToPS, mergePDFs } = require('../helpers')
+const { checkWritableDir, filterDefaultLayers, psToPDF, textToPS, mergePDFs } = require('../helpers')
 const translations = require(`../../i18n/messages.${process.env.USE_LANG || 'en'}.json`)
 
 const GEOSERVER_DATA_DIR = process.env.GEOSERVER_DATA_DIR
@@ -65,7 +65,7 @@ module.exports = class {
         this.datasets = listVector(this.mapset)
 
         // If zones layer exists, jump to the next step …
-        if (this.datasets.indexOf(this.zonesLayer) > -1) {
+        if (this.datasets.indexOf(`${this.zonesLayer}@${this.mapset}`) > -1) {
           return this.message2()
         }
 
@@ -108,26 +108,18 @@ module.exports = class {
 
         // message is a layer name
         this.selectLayer = message
-        
+
         // Select features from the layer using the query zone
         grass(this.mapset, `v.select ainput=${this.selectLayer} binput=${queryZone} output=${queryResult} operator=overlap --overwrite`)
-        
-        // // Check if the query result is not empty
-        // // BUG: sometimes getUnivar fails but does not throw an error. e.g. 'Lahar flow' aginst 'asociaciones_productoras'
-        // try {
-        //   getUnivar(this.mapset, queryResult, 'cat')
-        // } catch (err) {
-        //   return { id: 'cotopaxi_scenarios.5', message: translations['cotopaxi_scenarios.message.5'] }
-        // }
 
-        // A more stable way of checking if the query result is empty
-        if(dbTables(this.mapset).indexOf(queryResult) === -1){
+        // Check if the query result is not empty
+        if (dbTables(this.mapset).indexOf(queryResult) === -1) {
           return { id: 'cotopaxi_scenarios.5', message: translations['cotopaxi_scenarios.message.5'] }
         }
 
         // Copy result into PERMANENT to be used by query module
         grass('PERMANENT', `g.copy vector=${queryResult}@${this.mapset},${queryResult} --overwrite`)
-        
+
         const date = new Date()
         const dateString = date.toString()
         const safeDateString = date.toISOString().replace(/([\d-]*)T(\d\d):(\d\d):[\d.]*Z/g, '$1_$2$3')
@@ -149,7 +141,7 @@ ${translations['cotopaxi_scenarios.output.5']}:
 
         fs.mkdirSync('tmp', { recursive: true })
         fs.writeFileSync('tmp/statistics_output', output)
-    
+
         textToPS('tmp/statistics_output', 'tmp/statistics.ps')
         psToPDF('tmp/statistics.ps', 'tmp/statistics.pdf')
 
@@ -161,17 +153,20 @@ ${translations['cotopaxi_scenarios.output.5']}:
 
         // Convert to PDF
         psToPDF('tmp/cotopaxi_scenarios.ps', 'tmp/cotopaxi_scenarios.pdf')
-        
+
         mergePDFs(`${OUTPUT_DIR}/cotopaxi_scenarios_${safeDateString}.pdf`, 'tmp/cotopaxi_scenarios.pdf','tmp/statistics.pdf')
 
         fs.rmdirSync('tmp', { recursive: true })
-        
+
         return { id: 'cotopaxi_scenarios.4', message: translations['cotopaxi_scenarios.message.4'] }
       }
     }
   }
 
   getQueryableDatasets() {
-    return this.datasets.filter(d => !d.match(/cotopaxi_scenarios.*|(ash_fall|lahar_flow|lava_flow)_zones|(lines|points|polygons|relations)(_osm)?|selection|location_bbox/))
+    return this.datasets
+      .filter(filterDefaultLayers)
+      .filter(d => !d.match(/cotopaxi_scenarios.*|(ash_fall|lahar_flow|lava_flow)_zones/))
+      .map(name => name.split('@')[0])
   }
 }
