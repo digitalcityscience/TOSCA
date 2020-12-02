@@ -65,7 +65,9 @@ function textToPS(infile, outfile) {
 function getResults() {
   const list = []
   fs.readdirSync(OUTPUT_DIR).forEach(file => {
-    list.push(file)
+    if(file!=='.gitkeep'){
+      list.push(file)
+    }
   })
   return list
 }
