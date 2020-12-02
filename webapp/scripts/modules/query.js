@@ -97,21 +97,24 @@ module.exports = class {
 
         gpkgOut(this.mapset, QUERY_MAP_NAME, QUERY_MAP_NAME)
 
-        const cols = getAllColumns(this.mapset, QUERY_MAP_NAME)
         const vals = dbSelectAllObj(this.mapset, QUERY_MAP_NAME)
-        cols.forEach(column => {
+        const cols = getAllColumns(this.mapset, QUERY_MAP_NAME).reduce((arr, column) => {
           // if column is numeric, get bounds
           if (['DOUBLE PRECISION', 'INTEGER'].indexOf(column.type) > -1) {
             const bounds = getUnivarBounds(this.mapset, QUERY_MAP_NAME, column.column)
-            if (bounds.length) {
+            // only add column with valid value entries
+            if (bounds.indexOf('not provided') < 0) {
               column['bounds'] = bounds
+              arr.push(column)
             }
           }
           // if column is text, get values
           else {
             column.vals = [...new Set(vals.map(c => c[column.column]))]
+            arr.push(column)
           }
-        })
+          return arr
+        }, [])
 
         return {
           id: 'query.3',
@@ -181,7 +184,7 @@ List of features (only shows the first 30 features):
     grass(this.mapset, `ps.map input="${GRASS}/variables/defaults/query.ps_param" output=tmp/query_map.ps --overwrite`)
     psToPDF('tmp/query_map.ps', 'tmp/query_map.pdf')
 
-    mergePDFs(`${OUTPUT}/query_results_${safeDateString}.pdf`,'tmp/query_map.pdf', 'tmp/statistics.pdf' )
+    mergePDFs(`${OUTPUT}/query_results_${safeDateString}.pdf`, 'tmp/query_map.pdf', 'tmp/statistics.pdf')
 
     fs.rmdirSync('tmp', { recursive: true })
 

@@ -161,7 +161,8 @@ function getAllColumns(mapset, layer) {
  * @param {string} column column
  */
 function getUnivar(mapset, map, column) {
-  return grass(mapset, `v.db.univar -e -g map=${map} column=${column}`).trim().split('\n')
+  // when all values are null, v.univar returns some info, but v.db.univar throws error
+  return grass(mapset, `v.univar -e -g map=${map} column=${column}`).trim().split('\n')
     .reduce((dict, line) => {
       const a = line.split('=')
       dict[a[0]] = a[1]
@@ -189,7 +190,8 @@ function getUnivarBounds(mapset, map, column) {
     return val.substring(0, i + n + 1)
   }
   const stats = getUnivar(mapset, map, column)
-  return stats ? [round(stats.min, 2), round(stats.max, 2)] : []
+  // stats.n is the number of valid(not NULL) values 
+  return stats.n > 0 ? [round(stats.min, 2), round(stats.max, 2)] : ['not provided', 'not provided']
 }
 
 /**
@@ -336,12 +338,7 @@ function getMetadata(mapset, table) {
   for (const row of data.columnObj.rows) {
     let bounds = ['-', '-']
     if (['DOUBLE PRECISION', 'INTEGER'].indexOf(row.type) > -1) {
-      try {
-        bounds = getUnivarBounds(mapset, table, row.column)
-      } catch (err) {
-        // TODO: push to warnings
-        bounds = ['not provided','not provided']
-      }
+      bounds = getUnivarBounds(mapset, table, row.column)
     }
     row.min = bounds[0]
     row.max = bounds[1]
