@@ -63,13 +63,7 @@ function textToPS(infile, outfile) {
  * @returns {string[]} list of result filenames
  */
 function getResults() {
-  const list = []
-  fs.readdirSync(OUTPUT_DIR).forEach(file => {
-    if(file!=='.gitkeep'){
-      list.push(file)
-    }
-  })
-  return list
+  return fs.readdirSync(OUTPUT_DIR).filter(file => file.match(/\.pdf$/i))
 }
 
 /**
