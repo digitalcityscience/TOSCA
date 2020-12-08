@@ -1,0 +1,56 @@
+version: "3.7"
+services:
+  webapp:
+    image: webapp
+    build: ./webapp
+    ports:
+      - 3000:3000
+    container_name: webapp
+    volumes:
+      - type: volume
+        source: grass
+        target: /oct/grass
+      - type: volume
+        source: output
+        target: /oct/output
+      - type: volume
+        source: geoserver_data
+        target: /usr/share/geoserver/data_dir
+      - type: volume
+        source: webapp
+        target: /oct/webapp
+  geoserver:
+    image: geoserver
+    build: ./geoserver_data_dir
+    ports:
+      - 8080:8080
+    container_name: geoserver
+    volumes:
+      - type: volume
+        source: geoserver_data
+        target: /usr/share/geoserver/data_dir
+volumes:
+  geoserver_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: $PWD/geoserver_data_dir
+  grass:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: $PWD/grass
+  output:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: $PWD/output
+  webapp:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: $PWD/webapp
