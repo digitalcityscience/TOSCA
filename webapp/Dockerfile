@@ -37,4 +37,4 @@ COPY . webapp
 COPY run.sh ./
 
 # Start scripts
-CMD [ "bash", "run.sh" ]
+CMD cd webapp || exit; node app.js
