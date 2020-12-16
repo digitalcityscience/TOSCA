@@ -1,0 +1,16 @@
+<layer>
+  <name>bbswr_metropolitan_area</name>
+  <id>LayerInfoImpl-343c255e:17036557ae0:-7f1c</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl-343c255e:17036557ae0:-7f1a</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl-343c255e:17036557ae0:-7f1d</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateModified>2020-11-04 13:23:30.272 UTC</dateModified>
+</layer>

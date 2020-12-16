@@ -1,6 +1,5 @@
 /* global $, L, t, lat, lon, geoserverUrl, services */
 
-
 const map = new L.Map('map', {
   center: new L.LatLng(lat, lon),
   zoom: 13,
@@ -23,7 +22,7 @@ const hot = L.tileLayer('https://tile-{s}.openstreetmap.fr/hot/{z}/{x}/{y}.png',
 // Drawings
 const drawnItems = L.featureGroup().addTo(map);
 
-// Control for map legends. For those item, where the linked map has a "legendYes: true," property, a second checkbox will displayed.
+// Control for map legends
 L.control.legend(
   { position: 'bottomleft' }
 ).addTo(map);
@@ -102,5 +101,5 @@ function refreshLayer(layer) {
  * @param {object} service config object from config.js
  */
 function createWms(service) {
-  return service.type === 'vector' ? L.tileLayer.wms(vectorWMS, service) : L.tileLayer.wms(rasterWMS, service)
+  return service.type === 'vector' ? L.tileLayer.betterWms(vectorWMS, service) : L.tileLayer.betterWms(rasterWMS, service)
 }

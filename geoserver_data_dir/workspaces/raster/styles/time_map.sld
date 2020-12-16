@@ -8,7 +8,8 @@
           <sld:RasterSymbolizer>
             <sld:Opacity>0.5</sld:Opacity>
             <sld:ColorMap>
-              <sld:ColorMapEntry color="#007722" opacity="1.0" quantity="0"/>
+              <sld:ColorMapEntry color="#ffffff" opacity="0" quantity="0"/>
+              <sld:ColorMapEntry color="#007722" opacity="1.0" quantity="0.0001"/>
               <sld:ColorMapEntry color="#33ee00" opacity="1.0" quantity="5"/>
               <sld:ColorMapEntry color="#aaee00" opacity="1.0" quantity="10"/>
               <sld:ColorMapEntry color="#eeee00" opacity="1.0" quantity="15"/>

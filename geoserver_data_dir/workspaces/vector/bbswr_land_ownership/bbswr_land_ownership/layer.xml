@@ -1,0 +1,16 @@
+<layer>
+  <name>bbswr_land_ownership</name>
+  <id>LayerInfoImpl-343c255e:17036557ae0:-7ed5</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl-343c255e:17036557ae0:-7eda</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl-343c255e:17036557ae0:-7ed6</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateModified>2020-11-04 13:14:32.814 UTC</dateModified>
+</layer>

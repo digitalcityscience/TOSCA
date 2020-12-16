@@ -1,0 +1,16 @@
+<layer>
+  <name>bbswr_slum_houses_male_population</name>
+  <id>LayerInfoImpl-343c255e:17036557ae0:-7f30</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl--43b89d1f:17593973e13:-7fe6</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl-343c255e:17036557ae0:-7f31</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateModified>2020-11-04 14:30:52.997 UTC</dateModified>
+</layer>

@@ -7,6 +7,7 @@
   z-index: 1, 2;
 }    
 
+/* @title  motorway_link*/
 [@scale < 10000000][highway ='motorway_link'] {
   stroke: #cb3900, #ffffcc;
   stroke-width: 8, 4;
@@ -14,6 +15,7 @@
   z-index: 1, 2;
 }    
 
+/* @title trunk*/
 [@scale < 10000000][highway ='trunk'] 
 {
   stroke: #cb3900, #ffffcc;
@@ -22,6 +24,7 @@
   z-index: 1, 2;
 }    
 
+/* @title trunk_link*/
 [@scale < 10000000][highway ='trunk_link'] {
   stroke: #cb3900, #ffffcc;
   stroke-width: 8, 4;
@@ -29,6 +32,7 @@
   z-index: 1, 2;
 }    
 
+/* @title primary*/
 [@scale < 1000000][highway='primary'] {
   stroke: #cb3900, #ffffcc;
   stroke-width: 4, 1.5;
@@ -36,6 +40,7 @@
   z-index: 1, 2;
 }
 
+/* @title primary_link*/
 [@scale < 1000000][highway='primary_link'] {
   stroke: #cb3900, #ffffcc;
   stroke-width: 4, 1.5;
@@ -43,6 +48,7 @@
   z-index: 1, 2;
 }
 
+/* @title secondary*/
 [@scale < 600000][highway='secondary']{
   stroke: #cb3900, #ffffcc;
   stroke-width: 4, 1.5;
@@ -50,6 +56,7 @@
   z-index: 1, 2;
 }
 
+/* @title secondary_link*/
 [@scale < 600000][highway='secondary_link']{
   stroke: #cb3900, #ffffcc;
   stroke-width: 4, 1.5;
@@ -57,6 +64,7 @@
   z-index: 1, 2;
 }
 
+/* @title tertiary*/
 [@scale < 250000][highway='tertiary']{
   stroke: #1e1f26, #ffffff;
   stroke-width: 4, 1.5;
@@ -64,6 +72,7 @@
   z-index: 1, 2;
 }
 
+/* @title tertiary_link*/
 [@scale < 250000][highway='tertiary_link']{
   stroke: #1e1f26, #ffffff;
   stroke-width: 4, 1.5;
@@ -71,18 +80,23 @@
   z-index: 1, 2;
 }
 
+/* @title track*/
 [@scale < 100000][highway='track']{
   stroke: #1e1f26, #ffffff;
   stroke-width: 2.5, 1;
   stroke-linecap: round;
   z-index: 1, 2;
 }
+
+/* @title unclassified*/
 [@scale < 100000][highway='unclassified']{
   stroke: #1e1f26, #ffffff;
   stroke-width: 2.5, 1;
   stroke-linecap: round;
   z-index: 1, 2;
-}                        
+}
+
+/* @title residential*/
 [@scale < 20000][highway='residential']{
   stroke: #1e1f26, #ffffff;
   stroke-width: 2.5, 1;
@@ -90,6 +104,7 @@
   z-index: 1, 2;
 }
 
+/* @title service*/
 [@scale < 15000][highway='service']{
   stroke: #1e1f26, #ffffff;
   stroke-width: 2.5, 1;
@@ -97,6 +112,7 @@
   z-index: 1, 2;
 }
 
+/* @title pedestrian*/
 [@scale < 8000][highway='pedestrian']{
   stroke: #1e1f26;
   stroke-width: 1;
@@ -104,6 +120,7 @@
   z-index: 1;
 }
 
+/* @title footway*/
 [@scale < 8000][highway='footway']{
   stroke: #1e1f26;
   stroke-width: 1;
@@ -111,6 +128,7 @@
   z-index: 1;
 }
 
+/* @title path*/
 [@scale < 8000][highway='path']{
   stroke: #1e1f26;
   stroke-width: 1;
