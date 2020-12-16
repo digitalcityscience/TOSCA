@@ -55,7 +55,7 @@ function psToPDF(infile, outfile) {
  * @param {string} outfile output file
  */
 function textToPS(infile, outfile) {
-  execSync(`enscript -p ${outfile} ${infile}`)
+  execSync(`cat ${infile} | iconv -c -f utf-8 -t ISO-8859-1 | enscript -p ${outfile}`)
 }
 
 /**

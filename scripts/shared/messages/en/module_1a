@@ -1,8 +1,0 @@
-Start point is required. If you want to add a start point now, click Yes, then draw one or more point and click Save button. To exit, click Cancel.
-Via point is optional. If you want to add a via points, click Yes, then draw one or more point and click Save button. Only one via point can be added! If you do not want to add via point, click Cancel.
-Stricken area is optional. If you want to add stricken area, click Yes, then draw one or more area and click Save button. If you do not want to add an area, click Cancel.
-Set speed reduction ratio (in percentage, without the % character) for roads of stricken area. Value has to be greater than 0 and less or equale to 100.
-Average speed values on road types of the area. Do you want to change them?
-To exit, click OK.
-Calculations are ready, display output time maps
-No valid location found. Run "Set new location" to create a valid location. Module  is now exiting.

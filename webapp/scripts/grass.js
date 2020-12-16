@@ -101,6 +101,25 @@ function getCoordinates(mapset) {
 }
 
 /**
+ * Get a layer's attribute columns
+ * @param {string} mapset mapset
+ * @param {string} layer layer name
+ */
+function getColumns(mapset, layer) {
+  return grass(mapset, `db.describe -c table=${layer}`).trim().split('\n')
+    .filter(line => line.match(/^Column/))
+    .map(line => {
+      const matches = line.match(/Column \d+: ([^:]+):([^:]+):(\d+)/)
+      return {
+        name: matches[1],
+        type: matches[2],
+        width: matches[3]
+      }
+    })
+    .filter(col => col.name !== 'cat')
+}
+
+/**
  * Get a layer's columns with INTEGER or DOUBLE PRECISION type
  * @param {string} mapset mapset
  * @param {string} layer layer to analyze
@@ -184,6 +203,16 @@ function dbSelectAllRaw(mapset, table) {
 }
 
 /**
+ * get all tables in the mapset
+ * @param {string} mapset mapset
+ * @returns {array} all tables
+ */
+function dbTables(mapset) {
+  const tables = grass(mapset, 'db.tables -p').trim().split('\n')
+  return tables
+}
+
+/**
  * select all entries in a table and return an object
  * @param {string} mapset mapset
  * @param {string} table table to select from
@@ -251,7 +280,7 @@ function listUserVector() {
 /**
  * Checks if the name contains only allowed characters for GRASS mapsets and columns
  * @param {string} name mapset name
- * @return {boolean} true or false 
+ * @return {boolean} true or false
  */
 function isLegalName(name) {
   if (!name.length || name[0] === '.') {
@@ -351,7 +380,11 @@ function getMetadata(mapset, table) {
  * @param {string} args arguments to the command line
  */
 function grass(mapset, args) {
-  return execSync(`grass "${GRASS}/global/${mapset}" --exec ${args}`, { shell: '/bin/bash', encoding: 'utf-8' })
+  return execSync(`grass "${GRASS}/global/${mapset}" --exec ${args}`, {
+    shell: '/bin/bash',
+    maxBuffer: 64 * 1024 * 1024,
+    encoding: 'utf-8'
+  })
 }
 
 module.exports = {
@@ -359,9 +392,11 @@ module.exports = {
   addRaster,
   addVector,
   clip,
-  dbSelectAllRaw,
   dbSelectAllObj,
+  dbSelectAllRaw,
+  dbTables,
   getAllColumns,
+  getColumns,
   getCoordinates,
   getLayers,
   getMetadata,

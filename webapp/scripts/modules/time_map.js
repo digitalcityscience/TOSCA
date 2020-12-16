@@ -60,14 +60,6 @@ module.exports = class {
       }
     }
 
-    // Creating empty maps for ps output, if no related maps are created/selected by user:
-    // m1_via_points m1_to_points, m1_stricken_area
-    // If user would create a such map, empty maps will automatically overwritten
-    grass(this.mapset, `v.edit map=m1_via_points tool=create --overwrite`)
-    grass(this.mapset, `v.edit map=m1_to_points tool=create --overwrite`)
-    grass(this.mapset, `v.edit map=m1_stricken_area tool=create --overwrite`)
-    grass(this.mapset, `v.edit map=m1_stricken_area_line tool=create --overwrite`)
-
     return { id: 'time_map.1', message: translations['time_map.message.1'] }
   }
 
