@@ -4,7 +4,8 @@ const map = new L.Map('map', {
   center: new L.LatLng(lat, lon),
   zoom: 13,
   minZoom: 4,
-  touchZoom: true
+  touchZoom: true,
+  measureControl: true
 });
 
 const rasterWMS = geoserverUrl + 'geoserver/raster/wms';
@@ -81,6 +82,15 @@ map.addControl(new L.Control.Draw({
     circlemarker: true
   }
 }));
+
+//Measure tool
+const options = {
+  position: 'topleft',
+  activeColor: '#080A06 !important',
+  completedColor: '#000000'
+}
+var measureControl = new L.Control.Measure(options);
+measureControl.addTo(map)
 
 // Save drawed items in feature group
 map.on(L.Draw.Event.CREATED, (event) => {
