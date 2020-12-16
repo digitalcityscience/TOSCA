@@ -5,7 +5,6 @@ const map = new L.Map('map', {
   zoom: 13,
   minZoom: 4,
   touchZoom: true,
-  measureControl: true
 });
 
 const rasterWMS = geoserverUrl + 'geoserver/raster/wms';
