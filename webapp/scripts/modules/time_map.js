@@ -1,5 +1,5 @@
 const fs = require('fs')
-const { addVector, gpkgOut, grass, initMapset, listVector, mapsetExists } = require('../grass')
+const { addVector, gpkgOut, grass, initMapset, listVector, mapsetExists, remove } = require('../grass')
 const { checkWritableDir, mergePDFs, psToPDF, textToPS } = require('../helpers')
 const translations = require(`../../i18n/messages.${process.env.USE_LANG || 'en'}.json`)
 
@@ -58,6 +58,15 @@ module.exports = class {
       } catch (err) {
         // nothing to unlink
       }
+    }
+
+    // remove GRASS layers from previous run, if any
+    try {
+      remove(this.mapset, 'm1_from_points')
+      remove(this.mapset, 'm1_via_points')
+      remove(this.mapset, 'm1_stricken_area')
+    } catch (err) {
+      // nothing to unlink
     }
 
     return { id: 'time_map.1', message: translations['time_map.message.1'] }
