@@ -34,7 +34,5 @@ COPY package*.json ./webapp/
 RUN cd webapp && npm ci
 COPY . webapp
 
-COPY run.sh ./
-
 # Start scripts
 CMD cd webapp || exit; node app.js

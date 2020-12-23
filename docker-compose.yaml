@@ -1,8 +1,8 @@
 version: "3.7"
 services:
   webapp:
-    image: webapp
     build: ./webapp
+    image: webapp
     ports:
       - 3000:3000
     container_name: webapp
@@ -16,12 +16,9 @@ services:
       - type: volume
         source: geoserver_data
         target: /usr/share/geoserver/data_dir
-      - type: volume
-        source: webapp
-        target: /oct/webapp
   geoserver:
+    build: ./geoserver
     image: geoserver
-    build: ./geoserver_data_dir
     ports:
       - 8080:8080
     container_name: geoserver
@@ -48,9 +45,3 @@ volumes:
       type: none
       o: bind
       device: $PWD/output
-  webapp:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: $PWD/webapp

@@ -25,8 +25,5 @@ RUN sed -i '170d;191d;222d;227d' web.xml
 # Clean up
 RUN apt-get clean
 
-COPY run.sh ./
-
 # Start scripts
-CMD /usr/share/geoserver/bin/startup.sh 2>&1 | while read -r line; do echo -e "\033[0;36m[GeoServer] $line\033[0m"; done 
-
+CMD /usr/share/geoserver/bin/startup.sh 2>&1
