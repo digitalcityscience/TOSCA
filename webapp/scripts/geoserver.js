@@ -61,7 +61,7 @@ class FeatureType {
         "name": this.featureTypeName,
         "namespace": {
           "name": this.workspaceName,
-          "href": `${GEOSERVER_URL}/rest/namespaces/${this.workspaceName}.json`
+          "href": `${GEOSERVER_URL}geoserver/rest/namespaces/${this.workspaceName}.json`
         },
         "title": this.featureTypeName,
         "keywords": {
@@ -97,7 +97,7 @@ class FeatureType {
         "store": {
           "@class": "dataStore",
           "name": `${this.workspaceName}:${this.storeName}`,
-          "href": `${GEOSERVER_URL}/rest/workspaces/${this.workspaceName}/datastores/${this.storeName}.json`
+          "href": `${GEOSERVER_URL}geoserver/rest/workspaces/${this.workspaceName}/datastores/${this.storeName}.json`
         },
         "serviceConfiguration": false,
         "maxFeatures": 0,

@@ -1,510 +1,328 @@
-/* Handle incoming messages from backend */
+/* global $, L, t, map, drawnItems, refreshLayer */
+const selection = window['selection']
+const fromPoints = window['time_map_from_points']
+const viaPoints = window['time_map_via_points']
+const strickenArea = window['time_map_stricken_area']
+const timeMap = window['time_map_result']
 
+/**
+ * Handle incoming messages from backend
+ * @param {object} res backend response
+ * @return Promise resolving if the message is processed successfully
+ */
 function handleResponse(res) {
-  if (!res.message) {
-    return;
-  }
+  return new Promise((resolve) => {
+    clearDialog();
 
-  clearDialog();
+    const messageId = res.id.replace(/\./g, '_');
 
-  const messageId = res.message_id.replace(/\./g, '_');
+    const textarea = $('#textarea');
+    const buttonarea = $('#buttonarea');
+    const lists = $('#lists');
 
-  const textarea = $('#textarea');
-  const buttonarea = $('#buttonarea');
-  const lists = $('#lists');
-
-  if (res.message.success !== undefined) {
-    if (res.message.success) {
-      textarea.append(textElement('Success!'));
-    } else {
-      textarea.append(textElement('Failed!'));
+    if (res.lat && res.lon) {
+      map.panTo(new L.LatLng(res.lat, res.lon));
     }
-  }
 
-  if (res.message.lat && res.message.lon) {
-    map.panTo(new L.LatLng(res.message.lat, res.message.lon));
-  }
+    const list = (res.list || []).sort();
 
-  const list = (res.message.list || []).sort();
+    $('#loading').hide();
 
-  $('#loading').hide();
+    if (res.message) {
+      let text = textElement(res.message), form, buttons;
 
-  if (res.message.text) {
-    let text = textElement(res.message.text), form, buttons;
+      switch (res.id) {
+        // The various actions required in response to server messages are defined here.
 
-    switch (res.message_id) {
-      // The various actions required in response to server messages are defined here.
-
-      // == add_location ==
-
-      // • message id: add_location.1
-      // • text: There is an already added location, and it is not allowed to add further locations. If you want to add a new location, the already existing location will automatically removed. If you want to store the already existing location, save manually (refer to the manual, please). Do you want to add a new location? If yes, click OK.
-      // • expectation: A request file with yes or no text.
-      // • consequence:
-      //   - If answer is NO, then add_location send a message and when the message is acknowledged, exit: => add_location.3
-      //   - If answer is YES: => add_location.4
-      case 'add_location.1':
-        buttons = [
-          buttonElement('Yes').click(() => {
-            reply(res, 'yes');
-          }),
-          buttonElement('No').click(() => {
-            reply(res, 'no');
-          })
-        ];
-        break;
-
-      // • message id: add_location.4
-      // • text: Select a map to add to CityApp. Map has to be in Open Street Map format -- osm is the only accepted format.
-      // • expectation: Finding an uploaded osm file in data_from_browser directory. Request file is not expected, and therefore it is not neccessary to create.
-      // • consequence: No specific consequences
-      case 'add_location.4':
-        form = formElement(messageId);
-        form.append($(`<input id="${messageId}-input" type="file" name="file" />`));
-        buttons = [
-          buttonElement('Submit').click(() => {
-            $(`#${messageId}-error`).remove();
-            const input = $(`#${messageId}-input`);
-            if (input[0].files.length) {
-              upload(form[0], { message_id: res.message_id }, handleResponse);
-            } else {
-              textarea.append($(`<span id="${messageId}-error" class="validation-error">Please choose a file for upload.</span>`));
-            }
-          })
-        ];
-        break;
-
-      // == set_selection ==
-
-      // • message id: set_selection.2
-      // • text: Now zoom to area of your interest, then use drawing tool to define your location. Next, save your selection.
-      // • expectation: Finding an uploaded goejson file in data_from_browser directory. This file is created by the browser, when the user define interactively the selection area. Request file is not expected, and therefore it is not neccessary to create.
-      // • consequence: No specific consequences
-      case 'set_selection.2':
-        drawnItems.clearLayers();
-        buttons = [
-          buttonElement('Save').click(() => {
-            $(`#${messageId}-error`).remove();
-            if (!saveDrawing(res)) {
-              textarea.append($(`<span id="${messageId}-error" class="validation-error">Please draw a polygon using the map’s drawing tool.</span>`));
-            }
-          })
-        ];
-        break;
-
-      // == set_resolution ==
-
-      // • message id: set_resolution.1
-      // • text: Type the resolution in meters, you want to use. For further details see manual.
-      // • expectation: A request file with a positive number.
-      // • consequence: If user gives a negative number, then UNTIL number is greater than zero: => set_resolution.2
-      // ----
-      // • message id: set_resolution.2
-      // • text: Resolution has to be an integer number, greater than 0. Please, define the resolution for calculations in meters.
-      // • expectation: A request file with a positive number.
-      // • consequence: No specific consequences
-      case 'set_resolution.1':
-      case 'set_resolution.2':
-        form = formElement(messageId);
-        form.append($(`<input id="${messageId}-input" type="number" />`));
-        form.append($(`<span>&nbsp;m</span>`));
-        buttons = [
-          buttonElement('Submit').click(() => {
-            $(`#${messageId}-error`).remove();
-            const input = $(`#${messageId}-input`);
-            if (!isNaN(parseInt(input.val()))) {
-              reply(res, input.val());
-            } else {
-              textarea.append($(`<span id="${messageId}-error" class="validation-error">Please enter a numeric value.</span>`));
-            }
-          })
-        ];
-        break;
-
-      // == add_map ==
-
-      // • message id: add_map.1
-      // • text: "Selection" map not found. Before adding a new layer, first you have to define a location and a selection. For this end please, use Location Selector tool of CityApp. Add_Map modul now quit.
-      // • expectation: A request file with text OK
-      // • consequence: Since no valid selection, the module exit after the user acknowledge the message.
-      case 'add_map.1':
-        buttons = [
-          buttonElement('OK').click(() => {
-            reply(res, 'ok');
-          })
-        ];
-        break;
-
-      // • message id: add_map.2
-      // • text: Select a map to add CityApp. Only gpkg (geopackage), geojson and openstreetmap vector files and geotiff (gtif or tif) raster files are accepted.
-      // • expectation: An uploaded file with a supported filename extension in data_from_browser directory. Request file is not expected, the question is only to draw the user's focus to the next step (select a file). Therefore in this case the trigger for the back-end is the presence of the uploaded file (and not a request file)
-      // • consequence: When the selected file is uploaded succesfully, there is a new message: => add_map.3
-      case 'add_map.2':
-        form = formElement(messageId);
-        form.append($(`<input id="${messageId}-input" type="file" name="file" />`));
-        buttons = [
-          buttonElement('Submit').click(() => {
-            $(`#${messageId}-error`).remove();
-            const input = $(`#${messageId}-input`);
-            if (input[0].files.length) {
-              upload(form[0], { message_id: res.message_id }, handleResponse);
-            } else {
-              textarea.append($(`<span id="${messageId}-error" class="validation-error">Please choose a file for upload.</span>`));
-            }
-          })
-        ];
-        break;
-
-      // • message id: add_map.3
-      // • text: Please, define an output map name. Name can contain only english characters, numbers, or underline character. Space and other specific characters are not allowed. For first character a letter only accepted.
-      // • expectation: a request file with a single word as output name, defined by the user
-      case 'add_map.3':
-        form = formElement(messageId);
-        form.append($(`<input id="${messageId}-input" type="text" />`));
-        buttons = [
-          buttonElement('Submit').click(() => {
-            $(`#${messageId}-error`).remove();
-            const input = $(`#${messageId}-input`);
-            if (input.val()) {
-              reply(res, input.val());
-            } else {
-              textarea.append($(`<span id="${messageId}-error" class="validation-error">Please enter a name.</span>`));
-            }
-          })
-        ];
-        break;
-
-      // == module_1 ==
-
-      // • message id: module_1.1
-      // • text: Start points are required. Do you want to draw start points on the basemap now? If yes, click Yes, then draw one or more point and click Save button. If you want to use an already existing map, select No.
-      // • expectation: request file with text Yes or No
-      // • consequence:
-      //   - If answer is "yes", the module is waiting for a geojson file in data_from_browser. Module only goes to the next step, when geojson file is created.
-      //   - If answer is "no", module send a new message: => module_1.2
-      case 'module_1.1':
-        buttons = [
-          buttonElement('Yes').click(() => {
-            const saveButton = buttonElement('Save').click(() => {
-              saveDrawing(res);
+        // == add_location ==
+        case 'add_location.1':
+          buttons = [
+            buttonElement(t['Yes']).click(() => {
+              reply(res, 'yes');
+            }),
+            buttonElement(t['No']).click(() => {
+              reply(res, 'no');
             })
-            buttonarea.append(saveButton);
-          }),
-          buttonElement('No').click(() => {
-            reply(res, 'no');
-          })
-        ];
-        break;
+          ];
+          break;
 
-      // • message id: module_1.2
-      // • text: Select a map (only point maps are supported). Avilable maps are:
-      // • expectation: request file with the select item only.
-      //   Since „message.module_1.2” containes a list in json format (list items are the availabe maps), user has to select one of them. The modal type is select, therefore the answer (new request file) conatains only the selected item (in this case: a map name). It is not expected to create a separate request file containig "yes".
-      // ----
-      // • message id: module_1.4
-      // • text: Select a map (only point maps are supported). Avilable maps are:
-      // • expectation: request file with the select item only.
-      //   Since „message.module_1.4” containes a list in json format (list items are the availabe maps), user has to select one of them. The modal type is select, therefore the answer (new request file) conatains only the selected item (in this case: a map name). It is not expected to create a separate request file containig "yes".
-      // ----
-      // • message id: module_1.6
-      // • text: Select a map (only point maps are supported). Avilable maps are:
-      // • expectation: request file with the select item only
-      //   Since „message.module_1.6” containes a list in json format (list items are the availabe maps), user has to select one of them. The modal type is select, therefore the answer (new request file) conatains only the selected item (in this case: a map name). It is not expected to create a separate request file containig "yes".
-      // ----
-      // • message id: module_1.8
-      // • text: Select a map (only area maps are supported). Avilable maps are:
-      // • expectation: request file with the select item only
-      //   Since „message.module_1.8” containes a list in json format (list items are the availabe maps), user has to select one of them. The modal type is select, therefore the answer (new request file) conatains only the selected item (in this case: a map name). It is not expected to create a separate request file containig "yes"
-      case 'module_1.2':
-      case 'module_1.4':
-      case 'module_1.6':
-      case 'module_1.8':
-        form = formElement(messageId);
-        lists.append($(`<select id="${messageId}-input" size="10">` + list.map(map => `<option selected value="${map}">${map}</option>`) + `</select>`));
-        buttons = [
-          buttonElement('Submit').click(() => {
-            const input = $(`#${messageId}-input`);
-            reply(res, input[0].value);
-          })
-        ];
-        break;
-
-      // • message id: module_1.3
-      // • text: Via points are optional. If you want to select 'via' points from the map, click Yes. If you want to use an already existing map, select No. If you do not want to use via points, click Cancel.
-      // • expectation: request file with text yes or no or cancel.
-      // • consequence:
-      //   - If answer is "yes", the module is waiting for a geojson file in data_from_browser. Module only goes to the next step, when geojson file is created.
-      //   - If answer is "no", module send a new message: => module_1.4
-      //   - If answer is "cancel": => module_1.5
-      // ----
-      // • message id: module_1.5
-      // • text: Target points are required. If you want to select target points from the map, click Yes. If you want to use an already existing map containing target points, click No. If you want to use the default target points map, click Cancel.
-      // • expectation: request file with text yes or no or cancel.
-      // • consequence:
-      //   - If answer is "yes", the module is waiting for a geojson file in data_from_browser. Module only goes to the next step, when geojson file is created.
-      //   - If answer is "no", module send a new message: => module_1.6
-      //   - If answer is "cancel": => module_1.7
-      // ----
-      // • message id: module_1.7
-      // • text: Optionally you may define stricken area. If you want to draw area on the map, click Yes. If you want to select a map already containing area, click No. If you do not want to use any area, click Cancel.
-      // • expectation: request file with text yes or no or cancel.
-      // • consequence:
-      //   - If answer is "yes", the module is waiting for a geojson file in data_from_browser. Module only goes to the next step, when geojson file is created.
-      //   - If answer is "no", module send a new message: => module_1.8
-      //   - If answer is "cancel": => module_1.9
-      case 'module_1.3':
-      case 'module_1.5':
-      case 'module_1.7':
-        buttons = [
-          buttonElement('Yes').click(() => {
-            const saveButton = buttonElement('Save').click(() => {
-              saveDrawing(res);
-            })
-            buttonarea.append(saveButton);
-          }),
-          buttonElement('No').click(() => {
-            reply(res, 'no');
-          }),
-          buttonElement('Cancel').click(() => {
-            reply(res, 'cancel');
-          })
-        ];
-        break;
-
-      // • message id: module_1.9
-      // • text: Do you want to set the speed on the road network? If not, the current values will used.
-      // • expectation: request file with a single yes or no.
-      // • consequence: If answer is "yes", there is a new message: => module_1.11
-      case 'module_1.9':
-        buttons = [
-          buttonElement('Yes').click(() => {
-            reply(res, 'yes');
-          }),
-          buttonElement('No').click(() => {
-            reply(res, 'no');
-          })
-        ];
-        break;
-
-      // • message id: module_1.12
-      // • text: Set speed reduction ratio for roads of stricken area
-      // • expectation: reqest file with single a floating point numeric value
-      // • message id: module_1.10
-      // • text: Set the speed on the road network.
-      // • expectation: reqest file with single a floating point numeric value
-      case 'module_1.12':
-      case 'module_1.10':
-        form = formElement(messageId);
-        form.append($(`<input id="${messageId}-input" type="number" />`));
-        buttons = [
-          buttonElement('Submit').click(() => {
-            const input = $(`#${messageId}-input`);
-            reply(res, input.val());
-          })
-        ];
-        break;
-
-      // == module_1a ==
-
-      // Start points / via points
-      case 'module_1a.1':
-      case 'module_1a.2':
-        drawnItems.clearLayers();
-        map.addLayer(drawnItems)
-        map.addLayer(fromPoints)
-        map.addLayer(viaPoints)
-        map.addLayer(toPoints)
-        map.addLayer(strickenArea)
-
-        buttons = [
-          buttonElement('Save').click(() => {
-            $(`#${messageId}-error`).remove();
-            if (!saveDrawing(res)) {
-              textarea.append($(`<span id="${messageId}-error" class="validation-error">Please draw a point using the circlemarker drawing tool.</span>`));
-            }
-          }),
-          buttonElement('Cancel').click(() => {
-            reply(res, 'cancel');
-          })
-        ];
-        break;
-
-      // stricken area
-      case 'module_1a.3':
-        drawnItems.clearLayers();
-        map.addLayer(drawnItems)
-        buttons = [
-          buttonElement('Save').click(() => {
-            $(`#${messageId}-error`).remove();
-            if (!saveDrawing(res)) {
-              textarea.append($(`<span id="${messageId}-error" class="validation-error">Please draw a polygon using the polygon drawing tool.</span>`));
-            }
-          }),
-          buttonElement('Cancel').click(() => {
-            reply(res, 'cancel');
-          })
-        ];
-        break;
-
-      // Speed reduction ratio
-      case 'module_1a.4':
-      case 'module_1a.9':
-        form = formElement(messageId);
-        form.append($(`<input id="${messageId}-input" type="number" />`));
-        form.append($(`<span>&nbsp;%</span>`));
-        buttons = [
-          buttonElement('Submit').click(() => {
-            const input = $(`#${messageId}-input`);
-            reply(res, input.val());
-          })
-        ];
-        break;
-
-      case 'module_1a.8':
-        drawnItems.clearLayers();
-        buttons = [
-          buttonElement('Yes').click(() => {
-            reply(res, 'yes');
-          }),
-          buttonElement('No').click(() => {
-            reply(res, 'no');
-          })
-        ];
-        break;
-
-      // == module_2 ==
-
-      case 'module_2.1':
-        drawnItems.clearLayers();
-        map.addLayer(drawnItems)
-        buttons = [
-          buttonElement('Save').click(() => {
-            $(`#${messageId}-error`).remove();
-            if (!saveDrawing(res)) {
-              textarea.append($(`<span id="${messageId}-error" class="validation-error">Please draw a polygon using the map’s drawing tool.</span>`));
-            }
-          })
-        ];
-        break;
-
-      case 'module_2.2':
-        form = formElement(messageId);
-        lists.append($(`<select id="${messageId}-input" class='custom-select' size="10">` + list.map(col => `<option selected value="${col}">${col}</option>`) + `</select>`));
-        buttons = [
-          buttonElement('Show attributes').click(() => {
-            const input = $(`#${messageId}-input`);
-            getAttributes(input[0].value)
-          }),
-          buttonElement('Submit').click(() => {
-            const input = $(`#${messageId}-input`);
-            reply(res, input[0].value);
-          })
-        ];
-        break;
-
-      case 'module_2.3': {
-        form = formElement(messageId);
-        const columns = list.map(col => `<option value="${col}">${col}</option>`);
-        const rel = ['AND', 'OR', 'NOT'].map(el => `<option value="${el}">${el}</option>`);
-        const op = ['>', '<', '=', '>=', '<='].map(el => `<option value="${el}">${el}</option>`);
-        const firstCondition = `
-        <div class='d-flex'>
-          <select class='${messageId}-input custom-select mr-2'>${columns}</select>
-          <select class='${messageId}-input custom-select mr-2'>${op}</select>
-          <input class='${messageId}-input form-control' type="number" />
-        </div>
-        `
-        const condition = `
-        <div>
-          <select class='${messageId}-input custom-select mt-2 mb-2'>${rel}</select>
-          <div class='d-flex'>
-                <select class='${messageId}-input custom-select mr-2'>${columns}</select>
-                <select class='${messageId}-input custom-select mr-2'>${op}</select>
-                <input class='${messageId}-input form-control mr-2' type="number" />
-                <button type="button" class="btn btn-danger" onclick="removeCondition(this)">remove</button>
-          </div>
-        </div>
-        `
-        lists.append($('<span>WHERE</span>'));
-        lists.append($(firstCondition));
-        let inputs = $(`.${messageId}-input`)
-        buttons = [
-          buttonElement('＋').click(() => {
-            lists.append($(condition));
-            inputs = $(`.${messageId}-input`)
-          }),
-          buttonElement('OK').click(() => {
-            $(`#${messageId}-error`).remove();
-            let msg = []
-            // inputs.map is problematic because jquery objs behave differently
-            for (let i = 0; i < inputs.length; i++) {
-              // validate input
-              if ((inputs[i].type === 'number' && inputs[i].value.match(/^(-?\d+\.\d+)$|^(-?\d+)$/))
-                ||
-                (inputs[i].type != 'number')) {
-                msg.push(inputs[i].value)
+        case 'add_location.4':
+          form = formElement(messageId);
+          form.append($(`<input id="${messageId}-input" type="file" name="file" />`));
+          buttons = [
+            buttonElement(t['Submit']).click(() => {
+              $(`#${messageId}-error`).remove();
+              const input = $(`#${messageId}-input`);
+              if (input[0].files.length) {
+                upload(form[0], { messageId: res.id }, handleResponse);
               } else {
-                msg = []
-                textarea.append($(`<span id="${messageId}-error" class="validation-error">Please enter valid numbers in the fields.</span>`));
-                break
+                textarea.append($(`<span id="${messageId}-error" class="validation-error">${t['error:file upload']}</span>`));
               }
-            }
-            if (msg.length) reply(res, msg)
-          })
-        ];
-        break;
+            })
+          ];
+          break;
+
+        // == set_selection ==
+        case 'set_selection.2':
+          buttons = [
+            buttonElement(t['Save']).click(() => {
+              $(`#${messageId}-error`).remove();
+              if (!saveDrawing(res)) {
+                textarea.append($(`<span id="${messageId}-error" class="validation-error">${t['error:draw polygon']}</span>`));
+              }
+            })
+          ];
+          drawnItems.clearLayers();
+          startDrawPolygon();
+          break;
+
+        case 'set_selection.3':
+          refreshLayer(selection);
+          map.addLayer(selection);
+          drawnItems.clearLayers();
+          break;
+
+        // == set_resolution ==
+        case 'set_resolution.1':
+        case 'set_resolution.2':
+          form = formElement(messageId);
+          form.append($(`<input id="${messageId}-input" type="number" />`));
+          form.append($(`<span>&nbsp;m</span>`));
+          buttons = [
+            buttonElement(t['Submit']).click(() => {
+              $(`#${messageId}-error`).remove();
+              const input = $(`#${messageId}-input`);
+              if (!isNaN(parseInt(input.val()))) {
+                reply(res, input.val());
+              } else {
+                textarea.append($(`<span id="${messageId}-error" class="validation-error">${t['error:number']}</span>`));
+              }
+            })
+          ];
+          break;
+
+        // == add_map ==
+        case 'add_map.1':
+          buttons = [
+            buttonElement(t['OK']).click(() => {
+              reply(res, 'ok');
+            })
+          ];
+          break;
+
+        case 'add_map.2':
+          form = formElement(messageId);
+          form.append($(`<input id="${messageId}-input" type="file" name="file" />`));
+          buttons = [
+            buttonElement(t['Submit']).click(() => {
+              $(`#${messageId}-error`).remove();
+              const input = $(`#${messageId}-input`);
+              if (input[0].files.length) {
+                upload(form[0], { messageId: res.id }, handleResponse);
+              } else {
+                textarea.append($(`<span id="${messageId}-error" class="validation-error">${t['error:file upload']}</span>`));
+              }
+            })
+          ];
+          break;
+
+        case 'add_map.3':
+          form = formElement(messageId);
+          form.append($(`<input id="${messageId}-input" type="text" value="${res.layerName}" />`));
+          buttons = [
+            buttonElement(t['Submit']).click(() => {
+              $(`#${messageId}-error`).remove();
+              const input = $(`#${messageId}-input`);
+              if (input.val()) {
+                reply(res, input.val());
+              } else {
+                textarea.append($(`<span id="${messageId}-error" class="validation-error">${t['error:name']}</span>`));
+              }
+            })
+          ];
+          break;
+
+        // == time map module ==
+        // Start points
+        case 'time_map.1':
+          map.addLayer(selection);
+
+          drawnItems.clearLayers();
+          startDrawCirclemarker();
+
+          buttons = [
+            buttonElement(t['Save']).click(() => {
+              $(`#${messageId}-error`).remove();
+              if (!saveDrawing(res)) {
+                textarea.append($(`<span id="${messageId}-error" class="validation-error">${t['error:draw point']}</span>`));
+              }
+            }),
+            buttonElement(t['Cancel']).click(() => {
+              reply(res, 'cancel');
+            })
+          ];
+          break;
+
+        // Via points
+        case 'time_map.2':
+          refreshLayer(fromPoints);
+          map.addLayer(fromPoints);
+
+          drawnItems.clearLayers();
+          startDrawCirclemarker();
+
+          buttons = [
+            buttonElement(t['Save']).click(() => {
+              $(`#${messageId}-error`).remove();
+              if (!saveDrawing(res)) {
+                textarea.append($(`<span id="${messageId}-error" class="validation-error">${t['error:draw point']}</span>`));
+              }
+            }),
+            buttonElement(t['Skip']).click(() => {
+              reply(res, 'cancel');
+            })
+          ];
+          break;
+
+        // stricken area
+        case 'time_map.3':
+          refreshLayer(viaPoints);
+          map.addLayer(viaPoints);
+
+          drawnItems.clearLayers();
+          startDrawPolygon();
+
+          buttons = [
+            buttonElement(t['Save']).click(() => {
+              $(`#${messageId}-error`).remove();
+              if (!saveDrawing(res)) {
+                textarea.append($(`<span id="${messageId}-error" class="validation-error">${t['error:draw polygon']}</span>`));
+              }
+            }),
+            buttonElement(t['Skip']).click(() => {
+              reply(res, 'cancel');
+            })
+          ];
+          break;
+
+        // Speed reduction ratio
+        case 'time_map.4':
+          refreshLayer(strickenArea);
+          map.addLayer(strickenArea);
+
+          cancelDrawing();
+          drawnItems.clearLayers();
+
+          form = formElement(messageId);
+          form.append($(`<input id="${messageId}-input" type="number" />`));
+          form.append($(`<span>&nbsp;%</span>`));
+          buttons = [
+            buttonElement(t['Submit']).click(() => {
+              const input = $(`#${messageId}-input`);
+              reply(res, input.val());
+            })
+          ];
+          break;
+
+        // Done
+        case 'time_map.6':
+          refreshLayer(timeMap);
+          map.addLayer(timeMap);
+
+          cancelDrawing();
+          drawnItems.clearLayers();
+          break;
+
+        // == query module ==
+        case 'query.2':
+          form = formElement(messageId);
+          lists.append($(`<select id="${messageId}-input" class='custom-select' size="10">` + list.map(col => `<option selected value="${col}">${col}</option>`) + `</select>`));
+          buttons = [
+            buttonElement(t['Show attributes']).click(() => {
+              const input = $(`#${messageId}-input`);
+              getAttributes(input[0].value)
+            }),
+            buttonElement(t['Submit']).click(() => {
+              const input = $(`#${messageId}-input`);
+              reply(res, input[0].value);
+            })
+          ];
+          break;
+
+        case 'query.3': {
+          const query = $(`<div class='query'></div>`)
+          query.append(conditionElement(list))
+          lists.append(query);
+
+          buttons = [
+            buttonElement(t['Show attributes']).click(() => {
+              getAttributes(res.map)
+            }),
+            buttonElement('＋').click(() => {
+              const len = $('.query').length
+              const query = $(`<div class='query'></div>`)
+              if (len > 0) query.append(relationSelect())
+              query.append(conditionElement(list))
+              lists.append(query);
+            }),
+            buttonElement(t['OK']).click(() => {
+              $(`#${messageId}-error`).remove();
+              let msg = []
+              const querys = $('.query')
+
+              // inputs.map is problematic because jquery objs behave differently
+              for (const query of querys) {
+                const isNumeric = $(query).find('.val').length
+                // character-type column
+                if (isNumeric) {
+                  const [rel, sel, val] = [
+                    $(query).find('.rel').val(),
+                    $(query).find('.sel').val(),
+                    $(query).find('.val').val()
+                  ]
+                  msg.push({ 'column': sel, 'isNumeric': isNumeric, 'where': `${sel} = '${val}'` })
+                  if (rel !== undefined) msg[msg.length - 1].where = rel + ' ' + msg[msg.length - 1].where
+                }
+                // numeric-type column
+                else {
+                  const [rel, sel, min, max] = [
+                    $(query).find('.rel').val(),
+                    $(query).find('.sel').val(),
+                    $(query).find('.min').val(),
+                    $(query).find('.max').val()
+                  ]
+                  if (validateNum(min) && validateNum(max)) {
+                    msg.push({ 'column': sel, 'isNumeric': isNumeric, 'where': `${sel} >= ${min} AND ${sel} <= ${max}` })
+                    if (rel !== undefined) msg[msg.length - 1].where = rel + ' ' + msg[msg.length - 1].where
+                  } else {
+                    msg = []
+                    textarea.append($(`<span id="${messageId}-error" class="validation-error">${t['error:form numbers']}</span>`));
+                    break
+                  }
+                }
+              }
+              if (msg.length) reply(res, msg)
+            })
+          ];
+          break;
+        }
       }
 
-      // == module_2b ==
+      textarea.append(text);
 
-      // • message id: module_2b.1
-      // • text: If you want to use an existing map as query area, click 'Map' button, then draw the area, and click 'Save'.  If you want to draw a new query area, click 'Draw' button. If you want to exit, click 'Cancel'.
-      // • expectation: request file with text "map", "draw" or "cancel"
-      // • consequence:
-      //    - If answer is "draw", the module is waiting for a geojson file in data_from_browser. Module only goes to the next step, when geojson file is created.
-      //    - If answer is "map", module send a new message: => module_2b.2
-      //    - If answer is cancel, module exit.
-      case 'module_2b.1.message':
-        buttons = [
-          buttonElement('Draw').click(() => {
-            reply('draw', false);
-            const saveButton = buttonElement('Save').click(() => {
-              saveDrawing();
-            })
-            buttonarea.append(saveButton);
-          }),
-          buttonElement('Cancel').click(() => {
-            reply('cancel', true);
-          })
-        ];
-        break;
+      if (form) {
+        textarea.append(form);
+      }
 
-      // • message id: module_2b.2
-      // • text: To process exit, click OK.
-      // • expectation: A request file with a single "OK" word
-      // • consequence: After the user acknowledge the message, the module exit.
-      case 'module_2b.2.message':
-        buttons = [
-          buttonElement('OK').click(() => {
-            reply('ok', false);
-            clearDialog();
-          })
-        ];
-        break;
+      if (buttons) {
+        buttons.forEach((button) => {
+          buttonarea.append(button);
+        });
+      }
     }
 
-    textarea.append(text);
-
-    if (form) {
-      textarea.append(form);
-    }
-
-    if (buttons) {
-      buttons.forEach((button) => {
-        buttonarea.append(button);
-      });
-    }
-  }
+    resolve();
+  });
 }
 
 function textElement(text) {
@@ -519,9 +337,83 @@ function buttonElement(action) {
   return $(`<button type="button" class="btn btn-primary">${action}</button>`);
 }
 
+function relationSelect() {
+  const relationOption = ['AND', 'OR'].map(el => `<option value="${el}">${el}</option>`);
+  return $(`<select class="rel custom-select mb-2">${relationOption}</select>`)
+}
+
+function conditionElement(data, id) {
+  const firstData = data[0]
+  const container = $(`<div class='card-body border-info m-0 p-10'></div>`)
+  const row1 = $(`<div class='d-flex mb-2' id='${id}'><small>${t['query attribute']}</small></div>`)
+  const columns = data.map(item => `<option value="${item.column}">${item.column}</option>`)
+  const select = $(`<select class='custom-select mr-2 ml-2 sel'>${columns}</select>`)
+  const remove = $('<button type="button" class="btn btn-secondary ml-2">&times;</button>')
+
+  row1.append(select)
+  row1.append(remove)
+  container.append(row1)
+  if (['DOUBLE PRECISION', 'INTEGER'].indexOf(firstData.type) > -1) {
+    container.append(boundSetter(firstData.bounds))
+  } else {
+    container.append(charSelector(firstData.vals))
+  }
+
+  remove.click((e) => {
+    $(e.target).parent().parent().parent().remove();
+  })
+
+  select.change((e) => {
+    const selected = data.filter(d => d.column === e.target.value)[0]
+    if (['DOUBLE PRECISION', 'INTEGER'].indexOf(selected.type) > -1) {
+      row1.next().remove()
+      container.append(boundSetter(selected.bounds))
+      const bounds = selected.bounds
+      const min = $(e.target).parent().parent().find('.min-badge')
+      const max = $(e.target).parent().parent().find('.max-badge')
+      min.html('>= ' + bounds[0])
+      max.html('<= ' + bounds[1])
+    } else {
+      row1.next().remove()
+      container.append(charSelector(selected.vals))
+      const sel = $(e.target).parent().parent().find('select')
+      sel.html(selected.values)
+    }
+
+  })
+  return container
+}
+
+/**
+ * create bound setters for numeric-type columns
+ * @param {array} bounds [min, max]
+ */
+function boundSetter(bounds) {
+  return $(`
+<div class='row justify-content-between mb-2'>
+  <small class='col-md-2'>${t['min']} <span class='min-badge badge badge-secondary'> >= ${bounds[0]}</span></small>
+  <input type='number' class='col-md-10 form-control min'>
+  <small class='col-md-2'>${t['max']} <span class='max-badge badge badge-secondary'> <= ${bounds[1]}</span></small>
+  <input type='number' class='col-md-10 form-control max'>
+</div>`)
+}
+
+/**
+ * create value selectors for character-type columns
+ * @param {array} values
+ */
+function charSelector(values) {
+  const options = values.map(value => `<option value="${value}">${value}</option>`)
+  return $(`
+<div class='row mb-2'>
+  <small class='col-md-2'>value</small>
+  <select class='col-md-10 custom-select mr-2 val'>${options}</select>
+</div>`)
+}
+
 /**
  * create a table element from data
- * @param {Array} data an array of identically structured js objects 
+ * @param {Array} data an array of identically structured js objects
  * @param {string} className className of the table
  */
 function tableElement(className, data) {
@@ -551,6 +443,11 @@ function clearDialog() {
   $('#lists').empty();
 }
 
+function validateNum(num) {
+  return !isNaN(parseFloat(num))
+}
+
+// eslint-disable-next-line no-unused-vars
 function showResults() {
   getOutput({})
   $('#results-modal').show()
@@ -558,11 +455,13 @@ function showResults() {
   $('#results-iframe').attr('src', '')
 }
 
-function show_help() {
+// eslint-disable-next-line no-unused-vars
+function showHelp() {
   $('#help-modal').show()
 }
 
 let blinkTimeout;
+// eslint-disable-next-line no-unused-vars
 function blink(selector) {
   if (!blinkTimeout) {
     $(selector).addClass("blink");
@@ -573,24 +472,30 @@ function blink(selector) {
   }
 }
 
+// eslint-disable-next-line no-unused-vars
 function removeCondition(e) {
   const rootNode = e.parentNode.parentNode;
   rootNode.parentNode.removeChild(rootNode);
 }
 
+function startDrawPolygon() {
+  const btn = $('.leaflet-draw-draw-polygon')[0];
+  btn && btn.dispatchEvent(new Event('click'));
+}
 
-$('#launch-module-menu').on('change', (event) => {
-  clearDialog();
-  const value = $(event.target).val();
-  if (value.match(/module_1/)) {
-    $('#textarea').append('The Calculate Time Map Module creates a heat map, showing the time it takes to reach any part of the selected area from a ‘start point’. Optionally, affected areas with reduced speed limit, and via-points can be defined.');
-  } else if (value.match(/module_2/)) {
-    $('#textarea').append('To query an area means to filter the map features/elements based on some user-determined values. For example, a housing map layer can be queried based on the household population and monthly income, and only the houses with the corresponding value range will be returned.');
-  }
-})
+function startDrawCirclemarker() {
+  const btn = $('.leaflet-draw-draw-circlemarker')[0];
+  btn && btn.dispatchEvent(new Event('click'));
+}
+
+function cancelDrawing() {
+  const btn = $('.leaflet-draw-actions li:contains("Cancel") a')[0];
+  btn && btn.dispatchEvent(new Event('click'));
+}
 
 /* Send messages to the backend */
 
+// eslint-disable-next-line no-unused-vars
 function launchModule() {
   // Get the selected item
   const value = $('#launch-module-menu')[0].value;
@@ -599,6 +504,7 @@ function launchModule() {
   }
 }
 
+// eslint-disable-next-line no-unused-vars
 function launchSettings(value) {
   if (value) {
     sendMessage('/launch', { launch: value }, {}, handleResponse);
@@ -606,7 +512,7 @@ function launchSettings(value) {
 }
 
 function reply(res, message) {
-  sendMessage('/reply', { msg: message }, { message_id: res.message_id }, handleResponse);
+  sendMessage('/reply', { msg: message }, { messageId: res.id }, handleResponse);
 }
 
 function saveDrawing(res) {
@@ -614,26 +520,36 @@ function saveDrawing(res) {
   if (geojson.features.length === 0) {
     return false;
   }
-  sendMessage('/drawing', { data: geojson }, { message_id: res.message_id }, handleResponse);
+  sendMessage('/drawing', { data: geojson }, { messageId: res.id }, handleResponse);
   return true;
 }
 
 function getOutput() {
-  get('/output', {}, function (res) {
-    const baseOption = "<option selected value=''> - </option>"
-    const options = res.message.list.reduce((str, file) => str + `<option value="${file}">${file}</option>`, '')
-    $('#results-select').html(baseOption + options)
-  })
+  get('/output', {}, (res) => new Promise((resolve) => {
+    const baseOption = "<option selected value=''> - </option>";
+    const options = res.list.reduce((str, file) => str + `<option value="${file}">${file}</option>`, '');
+    $('#results-select').html(baseOption + options);
+    resolve();
+  }));
 }
 
 function getAttributes(table) {
-  get('/attributes', { table }, function (res) {
-    const { tableObj, columnObj } = JSON.parse(res.message.attributes)
-
-    $('#table-description').html(tableElement('table table-bordered', tableObj))
-    $('#column-description').html(tableElement('table table-bordered', columnObj))
-    $('#table-attributes-modal').show()
-  })
+  get('/attributes', { table }, (res) => new Promise((resolve) => {
+    const { tableObj, columnObj } = JSON.parse(res.attributes);
+    // the headFields are GRASS GIS attribute names (except 'min' and 'max')
+    const cObj = { headFields: ['column', 'type', 'description', 'min', 'max'], rows: [] };
+    // filter unwanted fields
+    for (const row of columnObj.rows) {
+      if (row.column !== 'cat') {
+        cObj.rows.push({ 'column': row.column, 'type': row.type, 'description': row.description, 'min': row.min, 'max': row.max });
+      }
+    }
+    $('#table-header').text(`Table description for ${tableObj.table}`);
+    $('#table-description').text(tableObj.description);
+    $('#column-description').html(tableElement('table table-bordered', cObj));
+    $('#table-attributes-modal').show();
+    resolve();
+  }));
 }
 
 function sendMessage(target, message, params, callback) {
@@ -647,7 +563,7 @@ function sendMessage(target, message, params, callback) {
     contentType: 'application/json; encoding=utf-8',
     error: onServerError
   })
-    .done(callback)
+    .done(res => callback(res).catch(onClientError))
     .always(() => $('#loading').hide())
 }
 
@@ -660,7 +576,7 @@ function get(target, params, callback) {
     contentType: 'application/json; encoding=utf-8',
     error: onServerError
   })
-    .done(callback)
+    .done(res => callback(res).catch(onClientError))
     .always(() => $('#loading').hide())
 }
 
@@ -677,13 +593,21 @@ function upload(form, params, callback) {
     processData: false,
     error: onServerError
   })
-    .done(callback)
+    .done(res => callback(res).catch(onClientError))
     .always(() => $('#loading').hide());
 }
 
-function onServerError(xhr, textStatus) {
-  const text = xhr.responseJSON && xhr.responseJSON.message || textStatus || 'Unknown error';
-  const alert = $(`<div class="alert alert-danger" role="alert"><b>Server error:</b> ${text}&nbsp;&nbsp;<button class="close" data-dismiss="alert">×</button></div>`);
+function onClientError(error) {
+  console.error(error);
+  const text = $('<span>').text(error.message);
+  const alert = $('<div class="alert alert-danger" role="alert"></div>');
+  alert.append($(`<b>${t['Client error']}: </b>`)).append(text).append($('<button class="close" data-dismiss="alert">×</button>'));
   $('#alert-anchor').append(alert);
-  $('#loading').hide();
+}
+
+function onServerError(xhr, textStatus) {
+  const text = $('<span>').text(xhr.responseJSON && xhr.responseJSON.message || textStatus || t['Unknown error']);
+  const alert = $('<div class="alert alert-danger" role="alert"></div>');
+  alert.append($(`<b>${t['Server error']}: </b>`)).append(text).append($('<button class="close" data-dismiss="alert">×</button>'));
+  $('#alert-anchor').append(alert);
 }

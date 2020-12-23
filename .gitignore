@@ -1,28 +1,15 @@
-# runtime files
-/data_from_browser
-/data_to_client
-temp_*
-launch_locked
-
 # user data
-/geoserver_data_dir/data
+/data_from_browser/*
+/geoserver_data_dir/data/*
+/geoserver_data_dir/gwc/tmp
+/geoserver_data_dir/gwc-layers
 /geoserver_data_dir/logs/geoserver.log*
-/grass/global
+/geoserver_data_dir/security
+/grass/global/*
+/grass/metadata/*
 /grass/variables/*
 !/grass/variables/defaults
-*.geojson
-*.osm
-*.gpkg
-*.gpkg-shm
-*.gpkg-wal
-*.tif
-*.tif.aux.xml
-*.tiff
-*.tiff.aux.xml
-*.gtif
-*.gtif.aux.xml
-*.pdf
-*.ps
+/output/*
 
 # Node.js dependencies
 node_modules

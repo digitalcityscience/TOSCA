@@ -7,6 +7,8 @@ const geoserverUrl = process.env.GEOSERVER_URL
 const lat = process.env.INITIAL_LAT || 0
 const lon = process.env.INITIAL_LON || 0
 
+const translations = require(`./i18n/messages.${process.env.USE_LANG || 'en'}.json`)
+
 // File system
 const fs = require('fs')
 
@@ -43,29 +45,31 @@ app.get('/', (req, res) => {
   let options = {
     geoserverUrl,
     lat,
-    lon
+    lon,
+    t: translations
   }
   res.render('launch', options)
 })
 
+// functions
+const { getMetadata } = require('./scripts/grass')
+const { getResults } = require('./scripts/helpers')
+
 // modules
-const AddLocationModule = require('./scripts/add_location')
-const AddMapModule = require('./scripts/add_map')
-const SetSelectionModule = require('./scripts/set_selection')
-const SetResolutionModule = require('./scripts/set_resolution')
-const ModuleOne = require('./scripts/module_1')
-const ModuleOneA = require('./scripts/module_1a')
-const ModuleTwo = require('./scripts/module_2');
-const { describeTable, getResults } = require('./scripts/functions');
+const AddLocationModule = require('./scripts/modules/add_location')
+const AddMapModule = require('./scripts/modules/add_map')
+const SetSelectionModule = require('./scripts/modules/set_selection')
+const SetResolutionModule = require('./scripts/modules/set_resolution')
+const TimeMapModule = require('./scripts/modules/time_map')
+const QueryModule = require('./scripts/modules/query')
 
 const modules = {
-  add_location: new AddLocationModule(),
-  add_map: new AddMapModule(),
-  set_selection: new SetSelectionModule(),
-  set_resolution: new SetResolutionModule(),
-  module_1: new ModuleOne(),
-  module_1a: new ModuleOneA(),
-  module_2: new ModuleTwo()
+  "add_location": new AddLocationModule(),
+  "add_map": new AddMapModule(),
+  "set_selection": new SetSelectionModule(),
+  "set_resolution": new SetResolutionModule(),
+  "time_map": new TimeMapModule(),
+  "query": new QueryModule()
 }
 
 // launch a module
@@ -89,8 +93,14 @@ app.post('/launch', jsonParser, async (req, res, next) => {
 // message request
 app.post('/reply', jsonParser, async (req, res, next) => {
   try {
-    const module = modules[req.query.message_id.split('.')[0]]
-    res.send(await module.process(req.body.msg, req.query.message_id))
+    const module = modules[req.query.messageId.split('.')[0]]
+    const message = module.process(req.body.msg, req.query.messageId)
+
+    if (message) {
+      res.send(message)
+    } else {
+      next("Something went wrong")
+    }
   } catch (err) {
     next(err)
   }
@@ -99,7 +109,7 @@ app.post('/reply', jsonParser, async (req, res, next) => {
 // file upload
 app.post('/file', uploadParser.single('file'), (req, res, next) => {
   try {
-    const module = modules[req.query.message_id.split('.')[0]]
+    const module = modules[req.query.messageId.split('.')[0]]
     const file = `${dataFromBrowserDir}/${req.file.originalname}`
     const writer = fs.createWriteStream(file)
 
@@ -112,7 +122,13 @@ app.post('/file', uploadParser.single('file'), (req, res, next) => {
       // Process file after it's finished downloading.
       // Have to add another try/catch block, as we're inside an async function
       try {
-        res.send(await module.process(file, req.query.message_id))
+        const message = module.process(file, req.query.messageId)
+
+        if (message) {
+          res.send(message)
+        } else {
+          next("Something went wrong")
+        }
       } catch (err) {
         next(err)
       }
@@ -125,11 +141,11 @@ app.post('/file', uploadParser.single('file'), (req, res, next) => {
 // send a GeoJSON
 app.post('/drawing', jsonParser, (req, res, next) => {
   try {
-    const module = modules[req.query.message_id.split('.')[0]]
+    const module = modules[req.query.messageId.split('.')[0]]
     const file = `${dataFromBrowserDir}/drawing.geojson`
 
     fs.writeFileSync(file, JSON.stringify(req.body.data))
-    res.send(module.process(file, req.query.message_id))
+    res.send(module.process(file, req.query.messageId))
   } catch (err) {
     next(err)
   }
@@ -139,8 +155,7 @@ app.post('/drawing', jsonParser, (req, res, next) => {
 app.get('/output', jsonParser, (req, res, next) => {
   try {
     const list = getResults()
-    const message = { message_id: 'output', message: { list } }
-    res.send(message)
+    res.json({ list })
   } catch (err) {
     next(err)
   }
@@ -149,9 +164,8 @@ app.get('/output', jsonParser, (req, res, next) => {
 // return all attribute descriptions of a table
 app.get('/attributes', jsonParser, async (req, res, next) => {
   try {
-    const attributes = await describeTable(req.query.table)
-    const message = { message_id: 'attributes', message: { attributes } }
-    res.json(message)
+    const attributes = getMetadata('PERMANENT', req.query.table)
+    res.json({ attributes })
   } catch (err) {
     next(err)
   }
@@ -163,5 +177,24 @@ app.use((err, req, res, next) => {
     return next(err)
   }
   res.status(500)
-  res.json({ message: err.message && err.message.split('\n')[0] || err })
+
+  // GRASS errors
+  let grassError = ''
+  if (err.message.match(/Starting GRASS GIS/)) {
+    let errorMessageOngoing = false
+    for (const line of err.message.split('\n')) {
+      const errorMatch = line.match(/^ERROR/)
+      if (errorMatch) {
+        errorMessageOngoing = true
+      }
+      if (!errorMatch && !line.match(/^\s/)) {
+        errorMessageOngoing = false
+      }
+      if (errorMessageOngoing) {
+        grassError += line + ' '
+      }
+    }
+  }
+
+  res.json({ message: grassError || err.message })
 })

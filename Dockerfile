@@ -18,10 +18,10 @@ RUN sed -i -e 's/# \(en_US\.UTF-8 .*\)/\1/' /etc/locale.gen && locale-gen
 
 # Install GeoServer and CSS plugin
 WORKDIR /usr/share/geoserver
-RUN curl -L -o geoserver.zip https://sourceforge.net/projects/geoserver/files/GeoServer/2.17.2/geoserver-2.17.2-bin.zip
+RUN curl -L -o geoserver.zip https://sourceforge.net/projects/geoserver/files/GeoServer/2.18.0/geoserver-2.18.0-bin.zip
 RUN unzip -q geoserver.zip && rm geoserver.zip
 WORKDIR /usr/share/geoserver/webapps/geoserver/WEB-INF/lib
-RUN curl -o css-plugin.zip https://build.geoserver.org/geoserver/2.17.x/ext-latest/geoserver-2.17-SNAPSHOT-css-plugin.zip
+RUN curl -o css-plugin.zip https://build.geoserver.org/geoserver/2.18.x/ext-latest/geoserver-2.18-SNAPSHOT-css-plugin.zip
 RUN unzip -q css-plugin.zip && rm css-plugin.zip
 
 # Install GRASS GIS
@@ -41,12 +41,8 @@ RUN apt-get clean
 WORKDIR /oct
 RUN mkdir -p data_from_browser
 COPY webapp/package*.json ./webapp/
-RUN cd webapp && npm i --only=production --ignore-scripts
-COPY webapp/public ./webapp/public
-COPY webapp/views ./webapp/views
-COPY webapp/scripts ./webapp/scripts
-COPY webapp/app.js ./webapp/
-COPY webapp/.env ./webapp/
+RUN cd webapp && npm ci
+COPY webapp webapp
 
 COPY run.sh ./
 

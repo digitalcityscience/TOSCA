@@ -1,3 +1,6 @@
+/* global $, L, t, lat, lon, geoserverUrl, services */
+
+
 const map = new L.Map('map', {
   center: new L.LatLng(lat, lon),
   zoom: 13,
@@ -5,206 +8,70 @@ const map = new L.Map('map', {
   touchZoom: true
 });
 
-const vectorWMS = geoserverUrl + '/vector/wms';
+const rasterWMS = geoserverUrl + 'geoserver/raster/wms';
+const vectorWMS = geoserverUrl + 'geoserver/vector/wms';
 
-// Base layers
+// Background map
 const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(map);
 
-const waterLines = L.tileLayer.wms(vectorWMS, {
-  layers: 'vector:water_lines_osm',
-  format: 'image/png',
-  transparent: true,
-  maxZoom: 20,
-  minZoom: 1
+const hot = L.tileLayer('https://tile-{s}.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors; Humanitarian map style by <a href="https://www.hotosm.org/">HOT</a>'
 });
 
-const roads = L.tileLayer.wms(vectorWMS, {
-  layers: 'vector:lines_osm',
-  format: 'image/png',
-  transparent: true,
-  maxZoom: 20,
-  minZoom: 1
-});
-
-const buildings = L.tileLayer.wms(vectorWMS, {
-  layers: 'vector:polygons_osm',
-  format: 'image/png',
-  transparent: true,
-  maxZoom: 20,
-  minZoom: 1
-});
-
-const selection = L.tileLayer.wms(vectorWMS, {
-  layers: 'vector:selection',
-  format: 'image/png',
-  transparent: true,
-  maxZoom: 20,
-  minZoom: 1
-});
-
+// Drawings
 const drawnItems = L.featureGroup().addTo(map);
 
-// extension layers
-const queryArea1 = L.tileLayer.wms(vectorWMS, {
-  layers: 'vector:query_area_1',
-  format: 'image/png',
-  transparent: true,
-  maxZoom: 20,
-  minZoom: 1
-});
-
-const strickenArea = L.tileLayer.wms(vectorWMS, {
-  layers: 'vector:m1_stricken_area',
-  format: 'image/png',
-  transparent: true,
-  maxZoom: 20,
-  minZoom: 3
-});
-
-const timeMap = L.tileLayer.wms(vectorWMS, {
-  layers: 'vector:m1_time_map',
-  format: 'image/png',
-  transparent: true,
-  maxZoom: 20,
-  minZoom: 1
-});
-
-const fromPoints = L.tileLayer.wms(vectorWMS, {
-  layers: 'vector:m1_from_points',
-  format: 'image/png',
-  transparent: true,
-  maxZoom: 20,
-  minZoom: 3
-});
-
-const viaPoints = L.tileLayer.wms(vectorWMS, {
-  layers: 'vector:m1_via_points',
-  format: 'image/png',
-  transparent: true,
-  maxZoom: 20,
-  minZoom: 3
-});
-
-const toPoints = L.tileLayer.wms(vectorWMS, {
-  layers: 'vector:m1_to_points',
-  format: 'image/png',
-  transparent: true,
-  maxZoom: 20,
-  minZoom: 3
-});
-
-const accessibilityMap = L.tileLayer.wms(vectorWMS, {
-  layers: 'vector:m1b_accessibility_map',
-  format: 'image/png',
-  transparent: true,
-  legend_yes: true,
-  maxZoom: 20,
-  minZoom: 3
-});
-
-const accessibilityPoints = L.tileLayer.wms(vectorWMS, {
-  layers: 'vector:m1b_points',
-  format: 'image/png',
-  transparent: true,
-  maxZoom: 20,
-  minZoom: 3
-});
-
-const queryMap = L.tileLayer.wms(vectorWMS, {
-  layers: 'vector:query_map',
-  format: 'image/png',
-  transparent: true,
-  maxZoom: 20,
-  minZoom: 3
-});
-
-const queryResult = L.tileLayer.wms(vectorWMS, {
-  layers: 'vector:query_result',
-  format: 'image/png',
-  transparent: true,
-  maxZoom: 20,
-  minZoom: 3
-});
-
-/**
- * WFS
- */
-const owsrootUrl = 'http://localhost:8080/geoserver/ows';
-
-const defaultParameters = {
-  service: 'WFS',
-  request: 'GetFeature',
-  typeName: 'vector:lines_osm',
-  outputFormat: 'application/json',
-  SrsName: 'EPSG:4326'
-};
-const parameters = L.Util.extend(defaultParameters);
-const URL = owsrootUrl + L.Util.getParamString(parameters);
-let WFSLayer = null;
-
-const ajax = $.ajax({
-  type: 'GET',
-  url: URL,
-  success: function (response) {
-    WFSLayer = L.geoJson(response, {
-      style: function (feature) { },
-      onEachFeature: function (feature, layer) {
-        popupOptions = { maxWidth: 200 };
-        const text = Object.keys(feature.properties).map(key => `${key}: ${feature.properties[key]}`).join('<br>')
-        layer.bindPopup(text
-          , popupOptions);
-      }
-    }).addTo(map);
-  }
-});
-
-
-//Control for map legends. For those item, where the linked map has a "legend_yes: true," property, a second checkbox will displayed.
+// Control for map legends. For those item, where the linked map has a "legendYes: true," property, a second checkbox will displayed.
 L.control.legend(
   { position: 'bottomleft' }
 ).addTo(map);
 
-// Overlay layers are grouped
-const groupedOverlays = {
-  "Basemaps": {
-    'OpenStreetMap': osm
-  },
-  "Location": {
-    'Water lines': waterLines,
-    'Roads': roads,
-    'Buildings': buildings,
-  },
-  "User inputs": {
-    'Current selection': selection,
-    'Drawings on the map': drawnItems,
-    'Query area': queryArea1,
-    'Query map': queryMap,
-    "From-points": fromPoints,
-    "Via-points": viaPoints,
-    "To-points": toPoints,
-    "Stricken area": strickenArea
-  },
-  "Results": {
-    "Road-level time map": timeMap,
-    'Query result': queryResult,
-    "Accessibility map": accessibilityMap,
-    "Accessing points": accessibilityPoints
-  }
-};
+// Helper function to translate keys in layer control definitions
+function translate(layerObject) {
+  return Object.entries(layerObject).reduce((translated, [key, value]) => {
+    translated[t[key]] = value;
+    return translated;
+  }, {});
+}
+
+// Grouped layer control
+const baseLayers = translate({
+  "OSM Standard style": osm,
+  "OSM Humanitarian style": hot
+})
+
+// Configure the layer switcher
+let groupedOverlays = {}
+const groups = [...new Set(services.map(ser=>ser.group))]
+for(const group of groups){
+  groupedOverlays[group] = {}
+}
+for(const service of services){
+  // make layers available in the global scope
+  window[service.layers] = createWms(service)
+  groupedOverlays[service.group][t[service.displayName]] = window[service.layers]
+}
+groupedOverlays = translate(groupedOverlays)
 
 // Use the custom grouped layer control, not "L.control.layers"
-L.control.groupedLayers({}, groupedOverlays, { position: 'topright', collapsed: false }).addTo(map);
+L.control.groupedLayers(baseLayers, groupedOverlays, { position: 'topright', collapsed: false }).addTo(map);
+
+// Prevent click/scroll events from propagating to the map through the layer control
+const layerControlElement = $('.leaflet-control-layers')[0];
+L.DomEvent.disableClickPropagation(layerControlElement);
+L.DomEvent.disableScrollPropagation(layerControlElement);
 
 map.addControl(new L.Control.Draw({
   edit: {
     featureGroup: drawnItems,
-    poly: { allowIntersection: false }
+    poly: {
+      allowIntersection: false
+    }
   },
   draw: {
     polygon: {
-      allowIntersection: false,
       showArea: true,
       fill: '#FFFFFF',
     },
@@ -223,3 +90,17 @@ map.on(L.Draw.Event.CREATED, (event) => {
 
 /* scale bar */
 L.control.scale({ maxWidth: 300, position: 'bottomright' }).addTo(map);
+
+// eslint-disable-next-line no-unused-vars
+function refreshLayer(layer) {
+  // Force reloading of the layer
+  layer.setParams({ ts: Date.now() });
+}
+
+/**
+ * create wms service based on serviceConf
+ * @param {object} service config object from config.js
+ */
+function createWms(service) {
+  return service.type === 'vector' ? L.tileLayer.wms(vectorWMS, service) : L.tileLayer.wms(rasterWMS, service)
+}
