@@ -3,7 +3,7 @@ const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
 const GEOSERVER_URL = process.env.GEOSERVER_URL
 
 const geoServer = axios.create({
-  baseURL: GEOSERVER_URL,
+  baseURL: GEOSERVER_URL+'geoserver',
   auth: {
     username: process.env.GEOSERVER_USERNAME,
     password: process.env.GEOSERVER_PASSWORD

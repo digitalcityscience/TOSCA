@@ -94,7 +94,7 @@ app.post('/launch', jsonParser, async (req, res, next) => {
 app.post('/reply', jsonParser, async (req, res, next) => {
   try {
     const module = modules[req.query.messageId.split('.')[0]]
-    const message = module.process(req.body.msg, req.query.messageId)
+    const message = await module.process(req.body.msg, req.query.messageId)
 
     if (message) {
       res.send(message)
@@ -107,7 +107,7 @@ app.post('/reply', jsonParser, async (req, res, next) => {
 })
 
 // file upload
-app.post('/file', uploadParser.single('file'), (req, res, next) => {
+app.post('/file', uploadParser.single('file'), async (req, res, next) => {
   try {
     const module = modules[req.query.messageId.split('.')[0]]
     const file = `${dataFromBrowserDir}/${req.file.originalname}`
@@ -122,7 +122,7 @@ app.post('/file', uploadParser.single('file'), (req, res, next) => {
       // Process file after it's finished downloading.
       // Have to add another try/catch block, as we're inside an async function
       try {
-        const message = module.process(file, req.query.messageId)
+        const message = await module.process(file, req.query.messageId)
 
         if (message) {
           res.send(message)
