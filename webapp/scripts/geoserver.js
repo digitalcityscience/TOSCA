@@ -3,7 +3,7 @@ const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
 const GEOSERVER_URL = process.env.GEOSERVER_URL
 
 const geoServer = axios.create({
-  baseURL: GEOSERVER_URL+'geoserver',
+  baseURL: GEOSERVER_URL + 'geoserver',
   auth: {
     username: process.env.GEOSERVER_USERNAME,
     password: process.env.GEOSERVER_PASSWORD
@@ -146,10 +146,21 @@ module.exports = {
    */
   async addDatastore(workspaceName, storeName, databaseFile, databaseFileFormat) {
     const ds = new DataStore(workspaceName, storeName, databaseFile, databaseFileFormat)
-    const res = await ds.post().catch(err => {
-      console.log(err.message)
-    })
+    const res = await ds.post().catch(errorHandler)
     return res.data
+  },
+
+  deleteDatastore(workspaceName, storeName) {
+    return geoServer.delete(
+      `/rest/workspaces/${workspaceName}/datastores/${storeName}`,
+      {
+        params: { recurse: true },
+        headers: {
+          'accept': 'application/json',
+          'content-type': 'application/json'
+        }
+      }
+    ).catch(errorHandler)
   },
 
   /**
@@ -160,9 +171,34 @@ module.exports = {
    */
   async addFeatureType(workspaceName, storeName, featuretypeName) {
     const ft = new FeatureType(workspaceName, storeName, featuretypeName)
-    const res = await ft.post().catch(err => {
-      console.log(err.message)
-    })
+    const res = await ft.post().catch(errorHandler)
     return res.data
   },
+}
+
+/**
+ * Error handler for axios calls
+ * @param {Object} err 
+ */
+function errorHandler(err) {
+  if (err.response) {
+    throw new Error(`
+    Geoserver API invalid response;
+    response.data - ${err.response.data};
+    response.status - ${err.response.status};
+    response.header - ${JSON.stringify(err.response.headers)}
+    `);
+  } else if (err.request) {
+    throw new Error(`
+    \n
+    Geoserver API request failed;
+    request - ${JSON.stringify(err.request)}
+    `);
+  } else {
+    throw new Error(`
+    \n
+    Geoserver API request failed;
+    request - ${JSON.stringify(err.message)}
+    `);
+  }
 }

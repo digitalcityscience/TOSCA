@@ -1,6 +1,6 @@
 const { addRaster, addVector, gpkgOut, mapsetExists, isLegalName } = require('../grass.js')
-const { checkWritableDir } = require('../helpers.js')
-const { addDatastore, addFeatureType } = require('../geoserver.js')
+const { checkWritableDir, getFilesOfType } = require('../helpers.js')
+const { deleteDatastore, addDatastore, addFeatureType } = require('../geoserver.js')
 const translations = require(`../../i18n/messages.${process.env.USE_LANG || 'en'}.json`)
 
 const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
@@ -41,7 +41,7 @@ module.exports = class {
         } catch (err) {
           throw new Error(translations['add_map.errors.2'])
         }
-        
+
         return {
           id: 'add_map.3',
           message: translations['add_map.message.3'],
@@ -58,7 +58,14 @@ module.exports = class {
           addVector('PERMANENT', this.mapFile, message)
           gpkgOut('PERMANENT', message, message)
           if (this.mapFile.match(/.*\.gpkg/i)) {
-            await addDatastore('vector', message, message+'.gpkg', 'geopkg')
+            // delete old data if exists
+            const allGpkg = getFilesOfType('gpkg', GEOSERVER)
+              .map(name=>name.substring(name.lastIndexOf('/') + 1, name.lastIndexOf('.')))
+            if (allGpkg.indexOf(message) > -1) {
+              await deleteDatastore('vector', message)
+            }
+
+            await addDatastore('vector', message, message + '.gpkg', 'geopkg')
             await addFeatureType('vector', message, message)
           }
         } else if (this.mapType === 'raster') {
