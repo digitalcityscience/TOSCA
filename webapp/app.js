@@ -53,7 +53,7 @@ app.get('/', (req, res) => {
 
 // functions
 const { getMetadata } = require('./scripts/grass')
-const { getResults } = require('./scripts/helpers')
+const { getResults, getUploadLayers } = require('./scripts/helpers')
 
 // modules
 const AddLocationModule = require('./scripts/modules/add_location')
@@ -166,6 +166,15 @@ app.get('/attributes', jsonParser, async (req, res, next) => {
   try {
     const attributes = getMetadata('PERMANENT', req.query.table)
     res.json({ attributes })
+  } catch (err) {
+    next(err)
+  }
+})
+
+// return all user-uploaded layers in GEOSERVER_DATA_DIR
+app.get('/upload-layers', jsonParser, (req, res, next) => {
+  try {
+    res.json(getUploadLayers())
   } catch (err) {
     next(err)
   }

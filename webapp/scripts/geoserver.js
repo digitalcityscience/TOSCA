@@ -1,5 +1,5 @@
 const axios = require('axios')
-const GEOSERVER = `${process.env.GEOSERVER_DATA_DIR}/data`
+const GEOSERVER_UPLOAD = `${process.env.GEOSERVER_DATA_DIR}/data/upload`
 const GEOSERVER_URL = process.env.GEOSERVER_URL
 
 const geoServer = axios.create({
@@ -28,7 +28,7 @@ class DataStore {
         name: this.storeName,
         connectionParameters: {
           entry: [
-            { "@key": "database", "$": `file://${GEOSERVER}/${this.databaseFile}` },
+            { "@key": "database", "$": `file://${GEOSERVER_UPLOAD}/${this.databaseFile}` },
             { "@key": "dbtype", "$": this.databaseFileFormat }
           ]
         }
