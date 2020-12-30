@@ -88,7 +88,7 @@ const options = {
   activeColor: '#080A06 !important',
   completedColor: '#000000'
 }
-var measureControl = new L.Control.Measure(options);
+const measureControl = new L.Control.Measure(options);
 measureControl.addTo(map)
 
 // Save drawed items in feature group
