@@ -153,6 +153,7 @@
   padding: 5px;
 }
 .getFeatureClass tr td:first-of-type {
+  font-weight: bold;
   border: 1px solid black;
   width:50%;
 }
