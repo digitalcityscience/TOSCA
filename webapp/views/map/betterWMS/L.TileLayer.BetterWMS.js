@@ -48,7 +48,7 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
             width: size.x,
             layers: this.wmsParams.layers,
             query_layers: this.wmsParams.layers,
-            info_format: 'text/html'
+            info_format: 'application/json'
           };
       params[params.version === '1.3.0' ? 'i' : 'x'] = Math.round(point.x);
       params[params.version === '1.3.0' ? 'j' : 'y'] = Math.round(point.y);
@@ -56,17 +56,29 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
       return this._url + L.Util.getParamString(params, this._url, true);
     },
     
-    showGetFeatureInfo: function (err, latlng, content) {
-      if (err) { console.log(err); return; } // do nothing if there's an error
+    showGetFeatureInfo: function (content, latlng) {
       
       // Otherwise show the content in a popup, or something.
-      L.popup({ maxWidth: 800})
+      L.popup({ maxWidth: 'auto'})
         .setLatLng(latlng)
-        .setContent(content)
+        .setContent(getTableHTML(content.features[0].properties, content.features[0].id))
         .openOn(this._map);
     }
   });
   
+  function getTableHTML(properties, name) {
+    let html = "<div class='getFeatureClass'>" + "<p>" + name + "</p>"
+    html += "<table><tbody>";
+  
+    for(var key in properties) {
+      html += "<tr><td>" + key+ "</td>"
+      html += "<td>"+properties[key]+"</td></tr>"
+    }
+  
+    html = html + "</tbody></table></div>";
+    return html;
+  }
+
   L.tileLayer.betterWms = function (url, options) {
     return new L.TileLayer.BetterWMS(url, options);  
   };
