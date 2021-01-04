@@ -150,7 +150,12 @@ module.exports = {
     return res.data
   },
 
-  deleteDatastore(workspaceName, storeName) {
+  /**
+   * remove a datastore and the layers dependant on it through Geoserver REST API
+   * @param {*} workspaceName 
+   * @param {*} storeName 
+   */
+  removeDatastore(workspaceName, storeName) {
     return geoServer.delete(
       `/rest/workspaces/${workspaceName}/datastores/${storeName}`,
       {

@@ -52,8 +52,9 @@ app.get('/', (req, res) => {
 })
 
 // functions
-const { getMetadata } = require('./scripts/grass')
+const { getMetadata, remove } = require('./scripts/grass')
 const { getResults, getUploadLayers } = require('./scripts/helpers')
+const { removeDatastore } = require('./scripts/geoserver')
 
 // modules
 const AddLocationModule = require('./scripts/modules/add_location')
@@ -175,6 +176,18 @@ app.get('/attributes', jsonParser, async (req, res, next) => {
 app.get('/upload-layers', jsonParser, (req, res, next) => {
   try {
     res.json(getUploadLayers())
+  } catch (err) {
+    next(err)
+  }
+})
+
+// delete user-uploaded layer in GEOSERVER_DATA_DIR by name
+app.delete('/upload-layers', jsonParser, (req, res, next) => {
+  try {
+    remove('PERMANENT', req.query.layer)
+    fs.unlinkSync(`${geoserverDataDir}/data/upload/${req.query.layer}.gpkg`)
+    removeDatastore('vector', req.query.layer)
+    res.json({ message: `${req.query.layer} deleted!` })
   } catch (err) {
     next(err)
   }
