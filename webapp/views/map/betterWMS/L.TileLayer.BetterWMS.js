@@ -57,12 +57,16 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
     },
     
     showGetFeatureInfo: function (content, latlng) {
-      
+      if(content.features.length == 0){
+          return
+      }
       // Otherwise show the content in a popup, or something.
+      else{
       L.popup({ maxWidth: 'auto'})
         .setLatLng(latlng)
         .setContent(getTableHTML(content.features[0].properties, content.features[0].id))
         .openOn(this._map);
+      }
     }
   });
   
