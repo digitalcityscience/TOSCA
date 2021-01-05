@@ -1,4 +1,4 @@
-/* global $, L, t, map, drawnItems, refreshLayer */
+/* global $, L, t, map, drawnItems, refreshLayer, layerControl */
 const selection = window['selection']
 const fromPoints = window['time_map_from_points']
 const viaPoints = window['time_map_via_points']
@@ -140,6 +140,10 @@ function handleResponse(res) {
               }
             })
           ];
+          break;
+
+        case 'add_map.4':
+          layerControl.initialize()
           break;
 
         // == time map module ==
@@ -551,6 +555,8 @@ function getLayers() {
         deleteBtn.on('click', (evt) => {
           deleteMethod('/upload-layers', { layer }, () => new Promise((resolve) => {
             evt.target.parentNode.remove()
+            layerControl.initialize() // refresh layerControl
+            window[layer] = undefined // remove global variable
             resolve();
           }))
         })

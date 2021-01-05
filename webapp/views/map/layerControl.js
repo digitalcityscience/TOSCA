@@ -20,7 +20,7 @@ const baseLayers = translate({
 // eslint-disable-next-line no-unused-vars
 class LayerControl {
   constructor() {
-    this.services = staticServices
+    this.services = null
   }
   /**
    * Initialize this layer control and renders it to the DOM
@@ -31,7 +31,9 @@ class LayerControl {
         resolve(res);
       })
         .then(res => {
-          res.forEach(layer=>{
+          this.services = [...staticServices]
+
+          res.forEach(layer => {
             this.services.push({
               layers: layer,
               format: 'image/png',
@@ -54,7 +56,7 @@ class LayerControl {
    * create groupedOverlays
    * @param {object} config service config for groupedOverlays
    */
-  configure(config){
+  configure(config) {
     let groupedOverlays = {}
     const groups = [...new Set(config.map(ser => ser.group))]
     for (const group of groups) {
@@ -79,7 +81,10 @@ class LayerControl {
    * @param {object} groupedOverlays layer switcher configuration
    */
   // eslint-disable-next-line no-unused-vars
-  render(groupedOverlays){
+  render(groupedOverlays) {
+    if ($('.leaflet-control-layers').length) {
+      $('.leaflet-control-layers')[0].remove()
+    }
     L.control.groupedLayers(baseLayers, groupedOverlays, { position: 'topright', collapsed: false }).addTo(map);
 
     // Prevent click/scroll events from propagating to the map through the layer control
@@ -101,9 +106,9 @@ function createWms(service) {
 function translate(layerObject) {
   return Object.entries(layerObject).reduce((translated, [key, value]) => {
     // use group name in config if no translation is provided
-    if(t[key]!== undefined){
+    if (t[key] !== undefined) {
       translated[t[key]] = value;
-    }else{
+    } else {
       translated[key] = value;
     }
     return translated;
