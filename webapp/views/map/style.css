@@ -29,7 +29,7 @@
   width: 40px !important;
   height: 40px !important;
   line-height: 40px !important;
-  font-size: 2rem !important;
+  /* font-size: 2rem !important; */
   font-weight: normal !important;
 }
 
@@ -116,4 +116,17 @@
 
 .leaflet-container .leaflet-control-attribution {
   font-size: 0.9rem;
+}
+
+.leaflet-control-measure h3, .leaflet-measure-resultpopup h3{
+  font-size: 0.9rem !important;
+}
+
+.leaflet-control-measure p, .leaflet-measure-resultpopup p{
+  font-size: 0.8rem !important;
+}
+
+.leaflet-control-measure .tasks, .leaflet-measure-resultpopup .tasks {
+  font-size: 0.8rem !important;
+  text-align: justify !important;
 }
