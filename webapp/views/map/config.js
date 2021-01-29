@@ -618,7 +618,12 @@ const services = [
   },
   {
     layers: 'Sub_Post_Offices',
-    displayName:p
+    displayName: 'Sub Post Office',
+    format: 'image/png',
+    transparent: true,
+    legend: true,
+    maxZoom: 20,
+    minZoom: 1,
     type: 'vector',
     group: 'Community Services'
   },
