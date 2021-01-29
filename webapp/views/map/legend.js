@@ -12,7 +12,7 @@ L.Control.GroupedLayers.prototype._addItem = function (obj) {
   // The original functionality -- of course -- preserved and called :)
   const label = layerAddOrigFunc.call(this, obj);
   // Only for WMS -- otherwise it has no sense.
-  if (obj.layer instanceof L.tileLayer.betterWms && obj.layer.options.legend) {
+  if (obj.layer instanceof L.TileLayer.WMS && obj.layer.options.legend) {
     label.children[0].addEventListener('click', handleLegendClick.bind(obj.layer));
   }
   return label;
