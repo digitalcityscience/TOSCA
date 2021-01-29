@@ -255,7 +255,7 @@ const services = [
     minZoom: 1,
     type: 'vector',
     group: 'Bhubaneswar thematic maps'
-  }
+  },
   // Proposed CDP 203 GROUP Layers
   {
     layers: 'Proposed_CDP_2030_BMC_Landuse',
@@ -618,12 +618,7 @@ const services = [
   },
   {
     layers: 'Sub_Post_Offices',
-    displayName: 'Sub Post Office',
-    format: 'image/png',
-    transparent: true,
-    legend: true,
-    maxZoom: 20,
-    minZoom: 1,
+    displayName:p
     type: 'vector',
     group: 'Community Services'
   },
