@@ -145,6 +145,9 @@ function handleResponse(res) {
         // == time map module ==
         // Start points
         case 'time_map.1':
+          refreshLayer(fromPoints);
+          refreshLayer(viaPoints);
+          refreshLayer(strickenArea);
           map.addLayer(selection);
 
           drawnItems.clearLayers();
