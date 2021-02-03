@@ -2,10 +2,9 @@ version: "3.7"
 services:
   webapp:
     build: ./webapp
-    image: webapp
+    image: open-city-toolkit/webapp
     ports:
       - 3000:3000
-    container_name: webapp
     volumes:
       - type: volume
         source: grass
@@ -18,10 +17,9 @@ services:
         target: /usr/share/geoserver/data_dir
   geoserver:
     build: ./geoserver
-    image: geoserver
+    image: open-city-toolkit/geoserver
     ports:
       - 8080:8080
-    container_name: geoserver
     volumes:
       - type: volume
         source: geoserver_data
@@ -32,16 +30,16 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: $PWD/geoserver_data_dir
+      device: ./geoserver_data_dir
   grass:
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: $PWD/grass
+      device: ./grass
   output:
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: $PWD/output
+      device: ./output
