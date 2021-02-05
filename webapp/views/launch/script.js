@@ -163,31 +163,31 @@ function handleResponse(res) {
           ];
           break;
 
-        // Via points
+        // Temperately disable Via points
         case 'time_map.2':
-          refreshLayer(fromPoints);
-          map.addLayer(fromPoints);
+         // refreshLayer(fromPoints);
+         // map.addLayer(fromPoints);
 
-          drawnItems.clearLayers();
-          startDrawCirclemarker();
+        //  drawnItems.clearLayers();
+        //  startDrawCirclemarker();
 
-          buttons = [
-            buttonElement(t['Save']).click(() => {
-              $(`#${messageId}-error`).remove();
-              if (!saveDrawing(res)) {
-                textarea.append($(`<span id="${messageId}-error" class="validation-error">${t['error:draw point']}</span>`));
-              }
-            }),
-            buttonElement(t['Skip']).click(() => {
-              reply(res, 'cancel');
-            })
-          ];
-          break;
+        //  buttons = [
+        //    buttonElement(t['Save']).click(() => {
+        //     $(`#${messageId}-error`).remove();
+        //      if (!saveDrawing(res)) {
+        //        textarea.append($(`<span id="${messageId}-error" class="validation-error">${t['error:draw point']}</span>`));
+        //      }
+        //   }),
+        //    buttonElement(t['Skip']).click(() => {
+        //      reply(res, 'cancel');
+        //    })
+        //  ];
+        //  break;
 
         // stricken area
         case 'time_map.3':
-          refreshLayer(viaPoints);
-          map.addLayer(viaPoints);
+          refreshLayer(fromPoints);
+          map.addLayer(fromPoints);
 
           drawnItems.clearLayers();
           startDrawPolygon();
