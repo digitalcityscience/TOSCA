@@ -8,6 +8,8 @@ const map = new L.Map('map', {
   touchZoom: true
 });
 
+map.doubleClickZoom.disable(); 
+
 const rasterWMS = geoserverUrl + 'geoserver/raster/wms';
 const vectorWMS = geoserverUrl + 'geoserver/vector/wms';
 
@@ -93,12 +95,10 @@ L.control.scale({ maxWidth: 300, position: 'bottomright' }).addTo(map);
 
 //Measure tool
 const options = {
-  position: 'topleft',
-  activeColor: '#080A06 !important',
-  completedColor: '#000000'
+  position : 'topleft',
+  color : '#4a4747'
 }
-var measureControl = new L.Control.Measure(options);
-measureControl.addTo(map)
+L.control.measure(options).addTo(map);
 
 // eslint-disable-next-line no-unused-vars
 function refreshLayer(layer) {
