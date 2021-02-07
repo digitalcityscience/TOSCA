@@ -47,9 +47,14 @@ module.exports = class {
     if (!fs.existsSync(`${GRASS}/variables/roads_speed`)) {
       fs.copyFileSync(`${GRASS}/variables/defaults/roads_speed_defaults`, `${GRASS}/variables/roads_speed`)
     }
-    this.roadsSpeed = fs.readFileSync(`${GRASS}/variables/roads_speed`).toString().trim().split('\n')
+    if (!fs.existsSync(`${GRASS}/variables/roads_speed_wal`)) {
+      fs.copyFileSync(`${GRASS}/variables/defaults/roads_speed_wal_defaults`, `${GRASS}/variables/roads_speed_wal`)
+    }
+    if (!fs.existsSync(`${GRASS}/variables/roads_speed_bic`)) {
+      fs.copyFileSync(`${GRASS}/variables/defaults/roads_speed_bic_defaults`, `${GRASS}/variables/roads_speed_bic`)
+    }
+
     this.highwayTypes = fs.readFileSync(`${GRASS}/variables/defaults/highway_types`).toString().trim().split('\n')
-    this.roadSpeedValues = new Map(this.highwayTypes.map((t, i) => [t, parseInt(this.roadsSpeed[i].split(':')[1])]))
 
     // Delete files from previous run, if any
     for (const filename of ['m1_from_points.gpkg', 'm1_via_points.gpkg', 'm1_stricken_area.gpkg', 'm1_time_map.gpkg', 'm1_time_map.tif']) {
@@ -60,11 +65,29 @@ module.exports = class {
       }
     }
 
-    return { id: 'time_map.1', message: translations['time_map.message.1'] }
+    return { id: 'time_map.12', message: translations['time_map.message.12'] }
   }
 
   process(message, replyTo) {
     switch (replyTo) {
+      case 'time_map.12': {
+        let speedFile = ''
+        switch (message) {
+          case 'Automobile':
+            speedFile = 'roads_speed'
+            break
+          case 'Bicycle':
+            speedFile = 'roads_speed_bic'
+            break
+          case 'Walk':
+            speedFile = 'roads_speed_wal'
+            break
+        }
+        this.roadsSpeed = fs.readFileSync(`${GRASS}/variables/${speedFile}`).toString().trim().split('\n')
+        this.roadSpeedValues = new Map(this.highwayTypes.map((t, i) => [t, parseInt(this.roadsSpeed[i].split(':')[1])]))
+
+        return { id: 'time_map.1', message: translations['time_map.message.1'] }
+      }
       case 'time_map.1':
         if (message.match(/drawing\.geojson/)) {
           addVector(this.mapset, message, 'm1_from_points')

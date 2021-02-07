@@ -143,6 +143,25 @@ function handleResponse(res) {
           break;
 
         // == time map module ==
+        // Travel mode
+        case 'time_map.12':
+          form = formElement(messageId);
+          lists.append($(`<select id="${messageId}-input" class='custom-select' size="10">` + ['Automobile', 'Bicycle', 'Walk'].map(col => `<option selected value="${col}">${col}</option>`) + `</select>`));
+          buttons = [
+            buttonElement(t['Submit']).click(() => {
+              $(`#${messageId}-error`).remove();
+              const mode = $(`#${messageId}-input`).val()
+              if (mode) {
+                reply(res, mode)
+              }
+              else {
+                textarea.append($(`<span id="${messageId}-error" class="validation-error">${t['error:travel mode']}</span>`));
+              }
+            }),
+            buttonElement(t['Cancel']).click(() => {
+            })
+          ];
+          break;
         // Start points
         case 'time_map.1':
           map.addLayer(selection);
