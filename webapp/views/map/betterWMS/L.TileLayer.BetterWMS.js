@@ -4,14 +4,14 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
     // Triggered when the layer is added to a map.
     //   Register a click listener, then do all the upstream WMS things
     L.TileLayer.WMS.prototype.onAdd.call(this, map);
-    map.on('click', this.getFeatureInfo, this);
+    map.on('dblclick', this.getFeatureInfo, this);
   },
   
   onRemove: function (map) {
     // Triggered when the layer is removed from a map.
     //   Unregister a click listener, then do all the upstream WMS things
     L.TileLayer.WMS.prototype.onRemove.call(this, map);
-    map.off('click', this.getFeatureInfo, this);
+    map.off('dblclick', this.getFeatureInfo, this);
   },
   
   getFeatureInfo: function (evt) {
@@ -75,8 +75,12 @@ function getTableHTML(properties, name) {
   html += "<table><tbody>";
 
   for(var key in properties) {
+    let value = properties[key]
+      if(properties[key] == null){
+         value = ''
+    }
     html += "<tr><td>" + key+ "</td>"
-    html += "<td>"+properties[key]+"</td></tr>"
+    html += "<td>"+value+"</td></tr>"
   }
 
   html = html + "</tbody></table></div>";
