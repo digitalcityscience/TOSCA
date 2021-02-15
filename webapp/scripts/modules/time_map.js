@@ -165,7 +165,7 @@ module.exports = class {
     }
 
     // Add "spd_average" attribute column (integer type) to the road network map (if not yet exist -- if exist GRASS will skip this process)
-    grass(this.mapset, `v.db.addcolumn map=m1a_highways_points_connected columns='avg_speed INT'`)
+    grass(this.mapset, `v.db.addcolumn map=m1a_highways_points_connected columns='avg_speed double precision'`)
 
     // Now updating the datatable of highways_points_connected map, using "roads_speed" file to get speed data and conditions.
     for (const [where, value] of this.roadSpeedValues) {

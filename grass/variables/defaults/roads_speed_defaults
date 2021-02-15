@@ -6,4 +6,4 @@ Connecting roads: 50
 Service and track roads: 50
 Residential roads: 40
 Living_streets: 15
-Footways: 0
+Footways: 0.0001
