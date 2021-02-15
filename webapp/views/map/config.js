@@ -61,16 +61,6 @@ const services = [
     group: 'Time map'
   },
   {
-    layers: 'time_map_via_points',
-    format: 'image/png',
-    transparent: true,
-    maxZoom: 20,
-    minZoom: 3,
-    displayName: 'Via point',
-    type: 'vector',
-    group: 'Time map'
-  },
-  {
     layers: 'time_map_stricken_area',
     format: 'image/png',
     transparent: true,
