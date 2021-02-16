@@ -8,8 +8,6 @@ const map = new L.Map('map', {
   touchZoom: true
 });
 
-map.doubleClickZoom.disable(); 
-
 const rasterWMS = geoserverUrl + 'geoserver/raster/wms';
 const vectorWMS = geoserverUrl + 'geoserver/vector/wms';
 
@@ -93,13 +91,6 @@ map.on(L.Draw.Event.CREATED, (event) => {
 /* scale bar */
 L.control.scale({ maxWidth: 300, position: 'bottomright' }).addTo(map);
 
-//Measure tool
-const options = {
-  position : 'topleft',
-  color : '#4a4747'
-}
-L.control.measure(options).addTo(map);
-
 // eslint-disable-next-line no-unused-vars
 function refreshLayer(layer) {
   // Force reloading of the layer
@@ -111,5 +102,5 @@ function refreshLayer(layer) {
  * @param {object} service config object from config.js
  */
 function createWms(service) {
-  return service.type === 'vector' ? L.tileLayer.betterWms(vectorWMS, service) : L.tileLayer.betterWms(rasterWMS, service)
+  return service.type === 'vector' ? L.tileLayer.wms(vectorWMS, service) : L.tileLayer.wms(rasterWMS, service)
 }
