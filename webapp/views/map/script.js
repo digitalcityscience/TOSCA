@@ -8,6 +8,8 @@ const map = new L.Map('map', {
   touchZoom: true
 });
 
+map.doubleClickZoom.disable(); 
+
 const rasterWMS = geoserverUrl + 'geoserver/raster/wms';
 const vectorWMS = geoserverUrl + 'geoserver/vector/wms';
 
@@ -102,5 +104,5 @@ function refreshLayer(layer) {
  * @param {object} service config object from config.js
  */
 function createWms(service) {
-  return service.type === 'vector' ? L.tileLayer.wms(vectorWMS, service) : L.tileLayer.wms(rasterWMS, service)
+  return service.type === 'vector' ? L.tileLayer.betterWms(vectorWMS, service) : L.tileLayer.betterWms(rasterWMS, service)
 }

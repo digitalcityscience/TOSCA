@@ -24,6 +24,10 @@ WORKDIR /usr/share/geoserver/webapps/geoserver/WEB-INF/lib
 RUN curl -o css-plugin.zip https://build.geoserver.org/geoserver/2.18.x/ext-latest/geoserver-2.18-SNAPSHOT-css-plugin.zip
 RUN unzip -q css-plugin.zip && rm css-plugin.zip
 
+# enable GeoServer CORS
+WORKDIR /usr/share/geoserver/webapps/geoserver/WEB-INF
+RUN sed -i '170d;191d;222d;227d' web.xml
+
 # Install GRASS GIS
 RUN apt-get install -y grass-core
 
