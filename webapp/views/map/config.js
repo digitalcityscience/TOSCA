@@ -9,7 +9,7 @@ const services = [
     displayName: 'Waterways',
     type: 'vector',
     group: 'Basemap'
-  }, 
+  },
   {
     layers: 'osm_roads',
     format: 'image/png',
@@ -19,7 +19,7 @@ const services = [
     displayName: 'Roads',
     type: 'vector',
     group: 'Basemap'
-  }, 
+  },
   {
     layers: 'osm_buildings',
     format: 'image/png',
@@ -29,7 +29,7 @@ const services = [
     displayName: 'Buildings',
     type: 'vector',
     group: 'Basemap'
-  }, 
+  },
   {
     layers: 'basemap_bbox',
     format: 'image/png',
@@ -39,7 +39,7 @@ const services = [
     displayName: 'Basemap boundary',
     type: 'vector',
     group: 'Basemap'
-  }, 
+  },
   {
     layers: 'selection',
     format: 'image/png',
@@ -49,7 +49,7 @@ const services = [
     displayName: 'Current selection',
     type: 'vector',
     group: 'Basemap'
-  }, 
+  },
   {
     layers: 'time_map_from_points',
     format: 'image/png',
@@ -59,17 +59,7 @@ const services = [
     displayName: 'Start point',
     type: 'vector',
     group: 'Time map'
-  }, 
-  {
-    layers: 'time_map_via_points',
-    format: 'image/png',
-    transparent: true,
-    maxZoom: 20,
-    minZoom: 3,
-    displayName: 'Via point',
-    type: 'vector',
-    group: 'Time map'
-  }, 
+  },
   {
     layers: 'time_map_stricken_area',
     format: 'image/png',
@@ -79,16 +69,16 @@ const services = [
     displayName: 'Affected area',
     type: 'vector',
     group: 'Time map'
-  }, 
+  },
   {
-    layers: 'time_map_result',
+    layers: 'time_map_vector',
     format: 'image/png',
     transparent: true,
     legend: true,
     maxZoom: 20,
     minZoom: 1,
     displayName: 'Road-level time map',
-    type: 'raster',
+    type: 'vector',
     group: 'Time map'
   }
 ]
