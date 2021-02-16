@@ -91,6 +91,13 @@ map.on(L.Draw.Event.CREATED, (event) => {
 /* scale bar */
 L.control.scale({ maxWidth: 300, position: 'bottomright' }).addTo(map);
 
+//Measure tool
+const options = {
+  position : 'topleft',
+  color : '#4a4747'
+}
+L.control.measure(options).addTo(map);
+
 // eslint-disable-next-line no-unused-vars
 function refreshLayer(layer) {
   // Force reloading of the layer
