@@ -29,7 +29,7 @@
   width: 40px !important;
   height: 40px !important;
   line-height: 40px !important;
-  font-size: 2rem !important;
+  /* font-size: 2rem !important; */
   font-weight: normal !important;
 }
 
@@ -116,4 +116,49 @@
 
 .leaflet-container .leaflet-control-attribution {
   font-size: 0.9rem;
+}
+
+.leaflet-control-measure h3, .leaflet-measure-resultpopup h3{
+  font-size: 0.9rem !important;
+}
+
+.leaflet-control-measure p, .leaflet-measure-resultpopup p{
+  font-size: 0.8rem !important;
+}
+
+.leaflet-control-measure .tasks, .leaflet-measure-resultpopup .tasks {
+  font-size: 0.8rem !important;
+  text-align: justify !important;
+}
+
+/* ShowFeatureInfo  */
+.getFeatureClass table {
+  justify-content: center;
+  align-items: center;
+  font-size: 0.7rem;
+  width : 100%
+}
+.getFeatureClass tbody {
+  display:block;
+  overflow:auto;
+  max-height: 250px;
+  position: relative;
+  align-items: stretch;
+}
+.getFeatureClass tr {
+  border: 1px solid black;
+  word-break: break-word;
+  white-space: pre-line;
+}
+.getFeatureClass td {
+  padding: 5px;
+}
+.getFeatureClass tr td:first-of-type {
+  font-weight: bold;
+  border: 1px solid black;
+  width:50%;
+  background-color:#e8e8e8;
+}
+.getFeatureClass p{
+  font-weight: bold;
 }
