@@ -47,6 +47,9 @@ module.exports = class {
     if (!fs.existsSync(`${GRASS}/variables/roads_speed`)) {
       fs.copyFileSync(`${GRASS}/variables/defaults/roads_speed_defaults`, `${GRASS}/variables/roads_speed`)
     }
+    if (!fs.existsSync(`${GRASS}/variables/time_map_color_rule`)) {
+      fs.copyFileSync(`${GRASS}/variables/defaults/time_map_color_rule`, `${GRASS}/variables/time_map_color_rule`)
+    }
     this.roadsSpeed = fs.readFileSync(`${GRASS}/variables/roads_speed`).toString().trim().split('\n')
     this.highwayTypes = fs.readFileSync(`${GRASS}/variables/defaults/highway_types`).toString().trim().split('\n')
     this.roadSpeedValues = new Map(this.highwayTypes.map((t, i) => [t, parseInt(this.roadsSpeed[i].split(':')[1])]))
@@ -248,7 +251,7 @@ end
 
     // set color for maps:
     grass(this.mapset, `g.region res=${this.resolution}`)
-    grass(this.mapset, `r.colors map=m1a_time_map color=gyr`)
+    grass(this.mapset, `r.colors map=m1a_time_map rules=${GRASS}/variables/time_map_color_rule`)
 
     const date = new Date()
     const dateString = date.toString()
