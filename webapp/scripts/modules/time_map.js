@@ -251,7 +251,7 @@ end
 
     // set color for maps:
     grass(this.mapset, `g.region res=${this.resolution}`)
-    grass(this.mapset, `r.colors map=m1a_time_map rules=${GRASS}/variables/time_map_color_rule`)
+    grass(this.mapset, `r.colors map=m1a_time_map rules="${GRASS}/variables/time_map_color_rule"`)
 
     const date = new Date()
     const dateString = date.toString()
