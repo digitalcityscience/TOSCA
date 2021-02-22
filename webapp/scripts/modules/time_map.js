@@ -1,5 +1,5 @@
 const fs = require('fs')
-const { addVector, gpkgOut, grass, initMapset, listVector, mapsetExists, remove } = require('../grass')
+const { addVector, getValueSetsVector, gpkgOut, grass, initMapset, listVector, mapsetExists, remove } = require('../grass')
 const { checkWritableDir, mergePDFs, psToPDF, textToPS } = require('../helpers')
 const translations = require(`../../i18n/messages.${process.env.USE_LANG || 'en'}.json`)
 
@@ -54,6 +54,8 @@ module.exports = class {
     this.highwayTypes = fs.readFileSync(`${GRASS}/variables/defaults/highway_types`).toString().trim().split('\n')
     this.roadSpeedValues = new Map(this.highwayTypes.map((t, i) => [t, parseInt(this.roadsSpeed[i].split(':')[1])]))
 
+    this.averageSpeed = AVERAGE_SPEED
+
     // Delete files from previous run, if any
     for (const filename of ['m1_from_points.gpkg', 'm1_via_points.gpkg', 'm1_stricken_area.gpkg', 'm1_time_map.gpkg', 'm1_time_map.tif']) {
       try {
@@ -100,18 +102,40 @@ module.exports = class {
 
       case 'time_map.3':
         if (message.match(/drawing\.geojson/)) {
-          addVector(this.mapset, message, 'm1_stricken_area')
-          gpkgOut(this.mapset, 'm1_stricken_area', 'm1_stricken_area')
           this.strickenArea = 'm1_stricken_area'
+          addVector(this.mapset, message, this.strickenArea)
+          gpkgOut(this.mapset, this.strickenArea, this.strickenArea)
           return { id: 'time_map.4', message: translations['time_map.message.4'] }
+        } else if (message === 'risk_zone') {
+          this.strickenArea = 'm1_stricken_area'
+          return {
+            id: 'time_map.12',
+            message: translations['time_map.message.12'],
+            list: listVector('cotopaxi_scenarios').filter(layer => layer.match(/^(ash_fall|lahar_flow|lava_flow)_zones@cotopaxi_scenarios$/))
+          }
         }
-        this.averageSpeed = AVERAGE_SPEED
         this.calculate()
         return { id: 'time_map.6', message: translations['time_map.message.6'] }
 
+      case 'time_map.12':
+        this.zonesLayer = message
+        return {
+          id: 'time_map.13',
+          message: translations['time_map.message.13'],
+          list: getValueSetsVector(this.mapset, this.zonesLayer)
+        }
+
+      case 'time_map.13': {
+        // Extract matching features and store them in queryZone
+        const [col, val] = message
+        console.log(col, val)
+        grass(this.mapset, `v.extract input=${this.zonesLayer} where="${col} = '${val}'" output=${this.strickenArea} --overwrite`)
+        gpkgOut(this.mapset, this.strickenArea, this.strickenArea)
+        return { id: 'time_map.4', message: translations['time_map.message.4'] }
+      }
+
       case 'time_map.4':
         this.reductionRatio = parseFloat(message) / 100
-        this.averageSpeed = AVERAGE_SPEED
         this.calculate()
         return { id: 'time_map.6', message: translations['time_map.message.6'] }
 
@@ -124,7 +148,6 @@ module.exports = class {
       //   if (message.toLowerCase() == 'yes') {
       //     return messages[9]
       //   }
-      //   this.averageSpeed = AVERAGE_SPEED
       //   this.calculate()
       //   return messages[6]
 

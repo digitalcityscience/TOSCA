@@ -190,8 +190,39 @@ function getUnivarBounds(mapset, map, column) {
     return val.substring(0, i + n + 1)
   }
   const stats = getUnivar(mapset, map, column)
-  // stats.n is the number of valid(not NULL) values 
+  // stats.n is the number of valid(not NULL) values
   return stats.n > 0 ? [round(stats.min, 2), round(stats.max, 2)] : ['not provided', 'not provided']
+}
+
+/**
+ * Return a list containing a set of distinct values for each column
+ * @param {string} mapset mapset
+ * @param {string} layer layer name
+ */
+function getValueSetsDB(mapset, layer) {
+  return getColumns(mapset, layer).map(col => {
+    const values = grass(mapset, `db.select sql="SELECT ${col.name} FROM ${layer}"`).trim().split('\n').slice(1)
+    col.rows = Array.from(new Set(values).values())
+    return col
+  })
+}
+
+/**
+ * Return a list containing a set of distinct values for each column
+ * @param {string} mapset mapset
+ * @param {string} layer layer name
+ */
+function getValueSetsVector(mapset, layer) {
+  const table = grass(mapset, `v.db.select map=${layer}`).trim().split('\n').map(row => row.split('|'))
+  const columns = table[0]
+  const rows = table.slice(1)
+
+  return columns.slice(1).map((columnName, i) => {  // ignore first element "cat"
+    return {
+      name: columnName,
+      rows: Array.from(new Set(rows.map(row => row.slice(1)[i])).values())
+    }
+  })
 }
 
 /**
@@ -401,6 +432,8 @@ module.exports = {
   getTopology,
   getUnivar,
   getUnivarBounds,
+  getValueSetsDB,
+  getValueSetsVector,
   gpkgOut,
   grass,
   initMapset,

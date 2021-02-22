@@ -1,5 +1,5 @@
 const fs = require('fs')
-const { addVector, getColumns, grass, initMapset, listVector, mapsetExists, dbSelectAllRaw, remove,dbTables } = require('../grass')
+const { addVector, getValueSetsDB, grass, initMapset, listVector, mapsetExists, dbSelectAllRaw, remove, dbTables } = require('../grass')
 const { checkWritableDir, filterDefaultLayers, psToPDF, textToPS, mergePDFs } = require('../helpers')
 const translations = require(`../../i18n/messages.${process.env.USE_LANG || 'en'}.json`)
 
@@ -29,21 +29,10 @@ module.exports = class {
   }
 
   message2() {
-    const columns = getColumns(this.mapset, this.zonesLayer)
-    const list = columns.map(col => {
-      col.rows = []
-      // Extract a set of values appearing in the given dataset
-      const set = new Set(grass(this.mapset, `db.select sql="SELECT ${col.name} FROM ${this.zonesLayer}"`).trim().split('\n').slice(1))
-      for (const value of set.values()) {
-        col.rows.push(value)
-      }
-      return col
-    })
-
     return {
       id: 'cotopaxi_scenarios.2',
       message: translations['cotopaxi_scenarios.message.2'],
-      list: list
+      list: getValueSetsDB(this.mapset, this.zonesLayer)
     }
   }
 
@@ -97,7 +86,7 @@ module.exports = class {
         const [col, val] = message
 
         // Extract matching features and store them in queryZone
-        grass(this.mapset, `v.extract input=${this.zonesLayer} where="${col} = ${val}" output=${queryZone} --overwrite`)
+        grass(this.mapset, `v.extract input=${this.zonesLayer} where="${col} = '${val}'" output=${queryZone} --overwrite`)
 
         return this.message3()
       }

@@ -200,11 +200,43 @@ function handleResponse(res) {
                 textarea.append($(`<span id="${messageId}-error" class="validation-error">${t['error:draw polygon']}</span>`));
               }
             }),
+            buttonElement(t['Use risk zone']).click(() => {
+              reply(res, 'risk_zone');
+            }),
             buttonElement(t['Skip']).click(() => {
               reply(res, 'cancel');
             })
           ];
           break;
+
+        // use risk zone as affected area
+        case 'time_map.12':
+          form = formElement(messageId);
+          lists.append($(`<select id="${messageId}-input" class='custom-select' size="3">` + list.map(col => `<option selected value="${col}">${col}</option>`) + `</select>`));
+          buttons = [
+            buttonElement(t['Submit']).click(() => {
+              const input = $(`#${messageId}-input`);
+              reply(res, input[0].value);
+            })
+          ];
+          break;
+
+        case 'time_map.13': {
+          const query = $(`<div class="query"></div>`);
+          query.append(queryElement(list, messageId));
+          lists.append(query);
+
+          buttons = [
+            buttonElement(t['Submit']).click(() => {
+              const query = $(`#${messageId}`);
+              const attr = query.find('.attr').val();
+              const value = query.find('.value').val();
+
+              reply(res, [attr, value]);
+            })
+          ];
+          break;
+        }
 
         // Speed reduction ratio
         case 'time_map.4':
