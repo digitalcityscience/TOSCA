@@ -1,9 +1,8 @@
 /* global $, L, t, map, drawnItems, refreshLayer */
 const selection = window['selection']
 const fromPoints = window['time_map_from_points']
-const viaPoints = window['time_map_via_points']
 const strickenArea = window['time_map_stricken_area']
-const timeMap = window['time_map_result']
+const timeMap = window['time_map_vector']
 
 /**
  * Handle incoming messages from backend
@@ -145,6 +144,8 @@ function handleResponse(res) {
         // == time map module ==
         // Start points
         case 'time_map.1':
+          refreshLayer(fromPoints);
+          refreshLayer(strickenArea);
           map.addLayer(selection);
 
           drawnItems.clearLayers();
@@ -163,31 +164,31 @@ function handleResponse(res) {
           ];
           break;
 
-        // Via points
-        case 'time_map.2':
-          refreshLayer(fromPoints);
-          map.addLayer(fromPoints);
+          // Via points temporarily disabled
+          // case 'time_map.2':
+          //   refreshLayer(fromPoints);
+          //   map.addLayer(fromPoints);
 
-          drawnItems.clearLayers();
-          startDrawCirclemarker();
+          //   drawnItems.clearLayers();
+          //   startDrawCirclemarker();
 
-          buttons = [
-            buttonElement(t['Save']).click(() => {
-              $(`#${messageId}-error`).remove();
-              if (!saveDrawing(res)) {
-                textarea.append($(`<span id="${messageId}-error" class="validation-error">${t['error:draw point']}</span>`));
-              }
-            }),
-            buttonElement(t['Skip']).click(() => {
-              reply(res, 'cancel');
-            })
-          ];
-          break;
+          //   buttons = [
+          //     buttonElement(t['Save']).click(() => {
+          //       $(`#${messageId}-error`).remove();
+          //       if (!saveDrawing(res)) {
+          //         textarea.append($(`<span id="${messageId}-error" class="validation-error">${t['error:draw point']}</span>`));
+          //       }
+          //     }),
+          //     buttonElement(t['Skip']).click(() => {
+          //       reply(res, 'cancel');
+          //     })
+          //   ];
+          //   break;
 
         // stricken area
         case 'time_map.3':
-          refreshLayer(viaPoints);
-          map.addLayer(viaPoints);
+          refreshLayer(fromPoints);
+          map.addLayer(fromPoints);
 
           drawnItems.clearLayers();
           startDrawPolygon();

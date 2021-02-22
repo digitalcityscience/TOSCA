@@ -1,5 +1,5 @@
 const fs = require('fs')
-const { addVector, gpkgOut, grass, initMapset, listVector, mapsetExists } = require('../grass')
+const { addVector, gpkgOut, grass, initMapset, listVector, mapsetExists, remove } = require('../grass')
 const { checkWritableDir, mergePDFs, psToPDF, textToPS } = require('../helpers')
 const translations = require(`../../i18n/messages.${process.env.USE_LANG || 'en'}.json`)
 
@@ -60,6 +60,15 @@ module.exports = class {
       }
     }
 
+    // remove GRASS layers from previous run, if any
+    try {
+      remove(this.mapset, 'm1_from_points')
+      remove(this.mapset, 'm1_via_points')
+      remove(this.mapset, 'm1_stricken_area')
+    } catch (err) {
+      // nothing to unlink
+    }
+
     return { id: 'time_map.1', message: translations['time_map.message.1'] }
   }
 
@@ -70,20 +79,21 @@ module.exports = class {
           addVector(this.mapset, message, 'm1_from_points')
           gpkgOut(this.mapset, 'm1_from_points', 'm1_from_points')
           this.fromPoints = 'm1_from_points'
-          return { id: 'time_map.2', message: translations['time_map.message.2'] }
+          return { id: 'time_map.3', message: translations['time_map.message.3'] }
         }
         return { id: 'time_map.5', message: translations['time_map.message.5'] }
 
-      case 'time_map.2':
-        if (message.match(/drawing\.geojson/)) {
-          addVector(this.mapset, message, 'm1_via_points')
-          gpkgOut(this.mapset, 'm1_via_points', 'm1_via_points')
-          this.viaPoints = 'm1_via_points'
-          return { id: 'time_map.3', message: translations['time_map.message.3'] }
-        } else {
-          this.viaPoints = null
-        }
-        return { id: 'time_map.3', message: translations['time_map.message.3'] }
+        // Via points temporarily disabled
+        // case 'time_map.2':
+        //   if (message.match(/drawing\.geojson/)) {
+        //     addVector(this.mapset, message, 'm1_via_points')
+        //     gpkgOut(this.mapset, 'm1_via_points', 'm1_via_points')
+        //     this.viaPoints = 'm1_via_points'
+        //     return { id: 'time_map.3', message: translations['time_map.message.3'] }
+        //   } else {
+        //     this.viaPoints = null
+        //   }
+        //   return { id: 'time_map.3', message: translations['time_map.message.3'] }
 
       case 'time_map.3':
         if (message.match(/drawing\.geojson/)) {
@@ -238,7 +248,7 @@ end
 
     // set color for maps:
     grass(this.mapset, `g.region res=${this.resolution}`)
-    grass(this.mapset, `r.colors -e map=m1a_time_map color=gyr`)
+    grass(this.mapset, `r.colors map=m1a_time_map color=gyr`)
 
     const date = new Date()
     const dateString = date.toString()
