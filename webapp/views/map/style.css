@@ -119,16 +119,19 @@
 }
 
 /* ShowFeatureInfo  */
+.getFeatureClass {
+  width: 300px;
+}
 .getFeatureClass table {
   justify-content: center;
   align-items: center;
-  font-size: 0.7rem;
   width : 100%
 }
-.getFeatureClass tbody {
-  display:block;
+.getFeatureClass div {
   overflow:auto;
   max-height: 250px;
+}
+.getFeatureClass tbody {
   position: relative;
   align-items: stretch;
 }
@@ -144,7 +147,6 @@
   font-weight: bold;
   border: 1px solid black;
   width:50%;
-  background-color:#e8e8e8;
 }
 .getFeatureClass p{
   font-weight: bold;

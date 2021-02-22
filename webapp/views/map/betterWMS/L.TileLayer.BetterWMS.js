@@ -75,7 +75,7 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
 
 function getTableHTML(properties, name) {
   let html = "<div class='getFeatureClass'>" + "<p>" + name + "</p>"
-  html += "<table><tbody>";
+  html += "<div><table><tbody>";
 
   for (let key in properties) {
     let value = properties[key]
@@ -85,7 +85,7 @@ function getTableHTML(properties, name) {
     }
   }
 
-  html = html + "</tbody></table></div>";
+  html = html + "</tbody></table></div></div>";
   return html;
 }
 
