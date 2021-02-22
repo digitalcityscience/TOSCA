@@ -8,8 +8,6 @@ const map = new L.Map('map', {
   touchZoom: true
 });
 
-map.doubleClickZoom.disable(); 
-
 const rasterWMS = geoserverUrl + 'geoserver/raster/wms';
 const vectorWMS = geoserverUrl + 'geoserver/vector/wms';
 
