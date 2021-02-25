@@ -30,7 +30,7 @@
   "time_map.message.9": "Set the average speed for different road types in km/h.",
   "time_map.message.10": "Please set the resolution first (in the <a class=\"text-primary\" onclick=\"blink('#settings-menu')\">settings menu</a>).",
   "time_map.message.11": "Please set a selection first (in the <a class=\"text-primary\" onclick=\"blink('#settings-menu')\">settings menu</a>).",
-  "time_map.message.12": "Please select means of transporation.",
+  "time_map.message.12": "Please select means of transportation.",
   "time_map.output.1": "Map output for time map calculations",
   "time_map.output.2": "Date of map creation",
   "time_map.output.3": "Colors on map represent time in minutes",
@@ -120,5 +120,8 @@
   "Via point": "Via point",
   "Affected area": "Affected area",
   "Road-level time map": "Road-level time map",
-  "Map legend": "Map legend"
+  "Map legend": "Map legend",
+  "Walking": "Walking",
+  "Bicycle": "Bicycle",
+  "Automobile": "Automobile"
 }

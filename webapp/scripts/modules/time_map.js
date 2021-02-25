@@ -44,14 +44,14 @@ module.exports = class {
     grass(this.mapset, `g.copy vector=lines@PERMANENT,lines --overwrite`)
 
     // Read road speed values from file if it exists - otherwise use defaults
-    if (!fs.existsSync(`${GRASS}/variables/roads_speed`)) {
-      fs.copyFileSync(`${GRASS}/variables/defaults/roads_speed_defaults`, `${GRASS}/variables/roads_speed`)
+    if (!fs.existsSync(`${GRASS}/variables/roads_speed_automobile`)) {
+      fs.copyFileSync(`${GRASS}/variables/defaults/roads_speed_automobile_defaults`, `${GRASS}/variables/roads_speed_automobile`)
     }
-    if (!fs.existsSync(`${GRASS}/variables/roads_speed_wal`)) {
-      fs.copyFileSync(`${GRASS}/variables/defaults/roads_speed_wal_defaults`, `${GRASS}/variables/roads_speed_wal`)
+    if (!fs.existsSync(`${GRASS}/variables/roads_speed_walking`)) {
+      fs.copyFileSync(`${GRASS}/variables/defaults/roads_speed_walking_defaults`, `${GRASS}/variables/roads_speed_walking`)
     }
-    if (!fs.existsSync(`${GRASS}/variables/roads_speed_bic`)) {
-      fs.copyFileSync(`${GRASS}/variables/defaults/roads_speed_bic_defaults`, `${GRASS}/variables/roads_speed_bic`)
+    if (!fs.existsSync(`${GRASS}/variables/roads_speed_bicycle`)) {
+      fs.copyFileSync(`${GRASS}/variables/defaults/roads_speed_bicycle_defaults`, `${GRASS}/variables/roads_speed_bicycle`)
     }
 
     this.highwayTypes = fs.readFileSync(`${GRASS}/variables/defaults/highway_types`).toString().trim().split('\n')
@@ -83,17 +83,17 @@ module.exports = class {
         let speedFile = ''
         switch (message) {
           case 'Automobile':
-            speedFile = 'roads_speed'
+            speedFile = 'roads_speed_automobile'
             break
           case 'Bicycle':
-            speedFile = 'roads_speed_bic'
+            speedFile = 'roads_speed_bicycle'
             break
-          case 'Walk':
-            speedFile = 'roads_speed_wal'
+          case 'Walking':
+            speedFile = 'roads_speed_walking'
             break
         }
         this.roadsSpeed = fs.readFileSync(`${GRASS}/variables/${speedFile}`).toString().trim().split('\n')
-        this.roadSpeedValues = new Map(this.highwayTypes.map((t, i) => [t, parseInt(this.roadsSpeed[i].split(':')[1])]))
+        this.roadSpeedValues = new Map(this.highwayTypes.map((t, i) => [t, parseFloat(this.roadsSpeed[i].split(':')[1])]))
 
         return { id: 'time_map.1', message: translations['time_map.message.1'] }
       }
@@ -183,7 +183,7 @@ module.exports = class {
     }
 
     // Converting clipped and connected road network map into raster format and float number
-    grass(this.mapset, `v.extract -r input=m1a_highways_points_connected@${this.mapset} where="avg_speed>0" output=m1a_temp_connections --overwrite`)
+    grass(this.mapset, `v.extract -r input=m1a_highways_points_connected@${this.mapset} where="avg_speed>=0" output=m1a_temp_connections --overwrite`)
     grass(this.mapset, `v.to.rast input=m1a_temp_connections output=m1a_temp_connections use=val value=${this.averageSpeed} --overwrite`)
     grass(this.mapset, `v.to.rast input=m1a_highways_points_connected output=m1a_highways_points_connected_1 use=attr attribute_column=avg_speed --overwrite`)
     grass(this.mapset, `r.patch input=m1a_temp_connections,m1a_highways_points_connected_1 output=m1a_highways_points_connected --overwrite`)
