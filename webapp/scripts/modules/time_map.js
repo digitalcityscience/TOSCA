@@ -44,12 +44,17 @@ module.exports = class {
     grass(this.mapset, `g.copy vector=lines@PERMANENT,lines --overwrite`)
 
     // Read road speed values from file if it exists - otherwise use defaults
-    if (!fs.existsSync(`${GRASS}/variables/roads_speed`)) {
-      fs.copyFileSync(`${GRASS}/variables/defaults/roads_speed_defaults`, `${GRASS}/variables/roads_speed`)
+    if (!fs.existsSync(`${GRASS}/variables/roads_speed_automobile`)) {
+      fs.copyFileSync(`${GRASS}/variables/defaults/roads_speed_automobile_defaults`, `${GRASS}/variables/roads_speed_automobile`)
     }
-    this.roadsSpeed = fs.readFileSync(`${GRASS}/variables/roads_speed`).toString().trim().split('\n')
+    if (!fs.existsSync(`${GRASS}/variables/roads_speed_walking`)) {
+      fs.copyFileSync(`${GRASS}/variables/defaults/roads_speed_walking_defaults`, `${GRASS}/variables/roads_speed_walking`)
+    }
+    if (!fs.existsSync(`${GRASS}/variables/roads_speed_bicycle`)) {
+      fs.copyFileSync(`${GRASS}/variables/defaults/roads_speed_bicycle_defaults`, `${GRASS}/variables/roads_speed_bicycle`)
+    }
+
     this.highwayTypes = fs.readFileSync(`${GRASS}/variables/defaults/highway_types`).toString().trim().split('\n')
-    this.roadSpeedValues = new Map(this.highwayTypes.map((t, i) => [t, parseInt(this.roadsSpeed[i].split(':')[1])]))
 
     // Delete files from previous run, if any
     for (const filename of ['m1_from_points.gpkg', 'm1_via_points.gpkg', 'm1_stricken_area.gpkg', 'm1_time_map.gpkg', 'm1_time_map.tif']) {
@@ -69,11 +74,29 @@ module.exports = class {
       // nothing to unlink
     }
 
-    return { id: 'time_map.1', message: translations['time_map.message.1'] }
+    return { id: 'time_map.12', message: translations['time_map.message.12'] }
   }
 
   process(message, replyTo) {
     switch (replyTo) {
+      case 'time_map.12': {
+        let speedFile = ''
+        switch (message) {
+          case 'Automobile':
+            speedFile = 'roads_speed_automobile'
+            break
+          case 'Bicycle':
+            speedFile = 'roads_speed_bicycle'
+            break
+          case 'Walking':
+            speedFile = 'roads_speed_walking'
+            break
+        }
+        this.roadsSpeed = fs.readFileSync(`${GRASS}/variables/${speedFile}`).toString().trim().split('\n')
+        this.roadSpeedValues = new Map(this.highwayTypes.map((t, i) => [t, parseFloat(this.roadsSpeed[i].split(':')[1])]))
+
+        return { id: 'time_map.1', message: translations['time_map.message.1'] }
+      }
       case 'time_map.1':
         if (message.match(/drawing\.geojson/)) {
           addVector(this.mapset, message, 'm1_from_points')
@@ -152,7 +175,7 @@ module.exports = class {
     }
 
     // Add "spd_average" attribute column (integer type) to the road network map (if not yet exist -- if exist GRASS will skip this process)
-    grass(this.mapset, `v.db.addcolumn map=m1a_highways_points_connected columns='avg_speed INT'`)
+    grass(this.mapset, `v.db.addcolumn map=m1a_highways_points_connected columns='avg_speed double precision'`)
 
     // Now updating the datatable of highways_points_connected map, using "roads_speed" file to get speed data and conditions.
     for (const [where, value] of this.roadSpeedValues) {
@@ -160,7 +183,7 @@ module.exports = class {
     }
 
     // Converting clipped and connected road network map into raster format and float number
-    grass(this.mapset, `v.extract -r input=m1a_highways_points_connected@${this.mapset} where="avg_speed>0" output=m1a_temp_connections --overwrite`)
+    grass(this.mapset, `v.extract -r input=m1a_highways_points_connected@${this.mapset} where="avg_speed>=0" output=m1a_temp_connections --overwrite`)
     grass(this.mapset, `v.to.rast input=m1a_temp_connections output=m1a_temp_connections use=val value=${this.averageSpeed} --overwrite`)
     grass(this.mapset, `v.to.rast input=m1a_highways_points_connected output=m1a_highways_points_connected_1 use=attr attribute_column=avg_speed --overwrite`)
     grass(this.mapset, `r.patch input=m1a_temp_connections,m1a_highways_points_connected_1 output=m1a_highways_points_connected --overwrite`)
