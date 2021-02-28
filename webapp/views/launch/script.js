@@ -143,7 +143,7 @@ function handleResponse(res) {
 
         // == time map module ==
         // Travel mode
-        case 'time_map.12':
+        case 'time_map.0':
           form = formElement(messageId);
           buttons = [
             buttonElement(t['Automobile']).click(() => {

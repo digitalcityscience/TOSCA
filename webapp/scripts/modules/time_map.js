@@ -74,12 +74,12 @@ module.exports = class {
       // nothing to unlink
     }
 
-    return { id: 'time_map.12', message: translations['time_map.message.12'] }
+    return { id: 'time_map.0', message: translations['time_map.message.0'] }
   }
 
   process(message, replyTo) {
     switch (replyTo) {
-      case 'time_map.12': {
+      case 'time_map.0': {
         let speedFile = ''
         switch (message) {
           case 'Automobile':
