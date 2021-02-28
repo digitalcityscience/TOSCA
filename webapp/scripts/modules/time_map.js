@@ -1,5 +1,5 @@
 const fs = require('fs')
-const { addVector, gpkgOut, grass, initMapset, listVector, mapsetExists } = require('../grass')
+const { addVector, gpkgOut, grass, initMapset, listVector, mapsetExists, remove } = require('../grass')
 const { checkWritableDir, mergePDFs, psToPDF, textToPS } = require('../helpers')
 const translations = require(`../../i18n/messages.${process.env.USE_LANG || 'en'}.json`)
 
@@ -44,12 +44,17 @@ module.exports = class {
     grass(this.mapset, `g.copy vector=lines@PERMANENT,lines --overwrite`)
 
     // Read road speed values from file if it exists - otherwise use defaults
-    if (!fs.existsSync(`${GRASS}/variables/roads_speed`)) {
-      fs.copyFileSync(`${GRASS}/variables/defaults/roads_speed_defaults`, `${GRASS}/variables/roads_speed`)
+    if (!fs.existsSync(`${GRASS}/variables/roads_speed_automobile`)) {
+      fs.copyFileSync(`${GRASS}/variables/defaults/roads_speed_automobile_defaults`, `${GRASS}/variables/roads_speed_automobile`)
     }
-    this.roadsSpeed = fs.readFileSync(`${GRASS}/variables/roads_speed`).toString().trim().split('\n')
+    if (!fs.existsSync(`${GRASS}/variables/roads_speed_walking`)) {
+      fs.copyFileSync(`${GRASS}/variables/defaults/roads_speed_walking_defaults`, `${GRASS}/variables/roads_speed_walking`)
+    }
+    if (!fs.existsSync(`${GRASS}/variables/roads_speed_bicycle`)) {
+      fs.copyFileSync(`${GRASS}/variables/defaults/roads_speed_bicycle_defaults`, `${GRASS}/variables/roads_speed_bicycle`)
+    }
+
     this.highwayTypes = fs.readFileSync(`${GRASS}/variables/defaults/highway_types`).toString().trim().split('\n')
-    this.roadSpeedValues = new Map(this.highwayTypes.map((t, i) => [t, parseInt(this.roadsSpeed[i].split(':')[1])]))
 
     // Delete files from previous run, if any
     for (const filename of ['m1_from_points.gpkg', 'm1_via_points.gpkg', 'm1_stricken_area.gpkg', 'm1_time_map.gpkg', 'm1_time_map.tif']) {
@@ -60,38 +65,58 @@ module.exports = class {
       }
     }
 
-    // Creating empty maps for ps output, if no related maps are created/selected by user:
-    // m1_via_points m1_to_points, m1_stricken_area
-    // If user would create a such map, empty maps will automatically overwritten
-    grass(this.mapset, `v.edit map=m1_via_points tool=create --overwrite`)
-    grass(this.mapset, `v.edit map=m1_to_points tool=create --overwrite`)
-    grass(this.mapset, `v.edit map=m1_stricken_area tool=create --overwrite`)
-    grass(this.mapset, `v.edit map=m1_stricken_area_line tool=create --overwrite`)
+    // remove GRASS layers from previous run, if any
+    try {
+      remove(this.mapset, 'm1_from_points')
+      remove(this.mapset, 'm1_via_points')
+      remove(this.mapset, 'm1_stricken_area')
+    } catch (err) {
+      // nothing to unlink
+    }
 
-    return { id: 'time_map.1', message: translations['time_map.message.1'] }
+    return { id: 'time_map.0', message: translations['time_map.message.0'] }
   }
 
   process(message, replyTo) {
     switch (replyTo) {
+      case 'time_map.0': {
+        let speedFile = ''
+        switch (message) {
+          case 'Automobile':
+            speedFile = 'roads_speed_automobile'
+            break
+          case 'Bicycle':
+            speedFile = 'roads_speed_bicycle'
+            break
+          case 'Walking':
+            speedFile = 'roads_speed_walking'
+            break
+        }
+        this.roadsSpeed = fs.readFileSync(`${GRASS}/variables/${speedFile}`).toString().trim().split('\n')
+        this.roadSpeedValues = new Map(this.highwayTypes.map((t, i) => [t, parseFloat(this.roadsSpeed[i].split(':')[1])]))
+
+        return { id: 'time_map.1', message: translations['time_map.message.1'] }
+      }
       case 'time_map.1':
         if (message.match(/drawing\.geojson/)) {
           addVector(this.mapset, message, 'm1_from_points')
           gpkgOut(this.mapset, 'm1_from_points', 'm1_from_points')
           this.fromPoints = 'm1_from_points'
-          return { id: 'time_map.2', message: translations['time_map.message.2'] }
+          return { id: 'time_map.3', message: translations['time_map.message.3'] }
         }
         return { id: 'time_map.5', message: translations['time_map.message.5'] }
 
-      case 'time_map.2':
-        if (message.match(/drawing\.geojson/)) {
-          addVector(this.mapset, message, 'm1_via_points')
-          gpkgOut(this.mapset, 'm1_via_points', 'm1_via_points')
-          this.viaPoints = 'm1_via_points'
-          return { id: 'time_map.3', message: translations['time_map.message.3'] }
-        } else {
-          this.viaPoints = null
-        }
-        return { id: 'time_map.3', message: translations['time_map.message.3'] }
+        // Via points temporarily disabled
+        // case 'time_map.2':
+        //   if (message.match(/drawing\.geojson/)) {
+        //     addVector(this.mapset, message, 'm1_via_points')
+        //     gpkgOut(this.mapset, 'm1_via_points', 'm1_via_points')
+        //     this.viaPoints = 'm1_via_points'
+        //     return { id: 'time_map.3', message: translations['time_map.message.3'] }
+        //   } else {
+        //     this.viaPoints = null
+        //   }
+        //   return { id: 'time_map.3', message: translations['time_map.message.3'] }
 
       case 'time_map.3':
         if (message.match(/drawing\.geojson/)) {
@@ -150,7 +175,7 @@ module.exports = class {
     }
 
     // Add "spd_average" attribute column (integer type) to the road network map (if not yet exist -- if exist GRASS will skip this process)
-    grass(this.mapset, `v.db.addcolumn map=m1a_highways_points_connected columns='avg_speed INT'`)
+    grass(this.mapset, `v.db.addcolumn map=m1a_highways_points_connected columns='avg_speed double precision'`)
 
     // Now updating the datatable of highways_points_connected map, using "roads_speed" file to get speed data and conditions.
     for (const [where, value] of this.roadSpeedValues) {
@@ -158,7 +183,7 @@ module.exports = class {
     }
 
     // Converting clipped and connected road network map into raster format and float number
-    grass(this.mapset, `v.extract -r input=m1a_highways_points_connected@${this.mapset} where="avg_speed>0" output=m1a_temp_connections --overwrite`)
+    grass(this.mapset, `v.extract -r input=m1a_highways_points_connected@${this.mapset} where="avg_speed>=0" output=m1a_temp_connections --overwrite`)
     grass(this.mapset, `v.to.rast input=m1a_temp_connections output=m1a_temp_connections use=val value=${this.averageSpeed} --overwrite`)
     grass(this.mapset, `v.to.rast input=m1a_highways_points_connected output=m1a_highways_points_connected_1 use=attr attribute_column=avg_speed --overwrite`)
     grass(this.mapset, `r.patch input=m1a_temp_connections,m1a_highways_points_connected_1 output=m1a_highways_points_connected --overwrite`)
@@ -246,7 +271,7 @@ end
 
     // set color for maps:
     grass(this.mapset, `g.region res=${this.resolution}`)
-    grass(this.mapset, `r.colors -e map=m1a_time_map color=gyr`)
+    grass(this.mapset, `r.colors map=m1a_time_map color=gyr`)
 
     const date = new Date()
     const dateString = date.toString()

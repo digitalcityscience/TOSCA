@@ -61,16 +61,6 @@ const services = [
     group: 'Time map'
   },
   {
-    layers: 'time_map_via_points',
-    format: 'image/png',
-    transparent: true,
-    maxZoom: 20,
-    minZoom: 3,
-    displayName: 'Via point',
-    type: 'vector',
-    group: 'Time map'
-  },
-  {
     layers: 'time_map_stricken_area',
     format: 'image/png',
     transparent: true,
@@ -81,14 +71,14 @@ const services = [
     group: 'Time map'
   },
   {
-    layers: 'time_map_result',
+    layers: 'time_map_vector',
     format: 'image/png',
     transparent: true,
     legend: true,
     maxZoom: 20,
     minZoom: 1,
     displayName: 'Road-level time map',
-    type: 'raster',
+    type: 'vector',
     group: 'Time map'
   },
   {

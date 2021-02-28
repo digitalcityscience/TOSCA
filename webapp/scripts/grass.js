@@ -101,6 +101,25 @@ function getCoordinates(mapset) {
 }
 
 /**
+ * Get a layer's attribute columns
+ * @param {string} mapset mapset
+ * @param {string} layer layer name
+ */
+function getColumns(mapset, layer) {
+  return grass(mapset, `db.describe -c table=${layer}`).trim().split('\n')
+    .filter(line => line.match(/^Column/))
+    .map(line => {
+      const matches = line.match(/Column \d+: ([^:]+):([^:]+):(\d+)/)
+      return {
+        name: matches[1],
+        type: matches[2],
+        width: matches[3]
+      }
+    })
+    .filter(col => col.name !== 'cat')
+}
+
+/**
  * Get a layer's columns with INTEGER or DOUBLE PRECISION type
  * @param {string} mapset mapset
  * @param {string} layer layer to analyze
@@ -142,7 +161,8 @@ function getAllColumns(mapset, layer) {
  * @param {string} column column
  */
 function getUnivar(mapset, map, column) {
-  return grass(mapset, `v.db.univar -e -g map=${map} column=${column}`).trim().split('\n')
+  // when all values are null, v.univar returns some info, but v.db.univar throws error
+  return grass(mapset, `v.univar -e -g map=${map} column=${column}`).trim().split('\n')
     .reduce((dict, line) => {
       const a = line.split('=')
       dict[a[0]] = a[1]
@@ -170,7 +190,8 @@ function getUnivarBounds(mapset, map, column) {
     return val.substring(0, i + n + 1)
   }
   const stats = getUnivar(mapset, map, column)
-  return stats ? [round(stats.min, 2), round(stats.max, 2)] : []
+  // stats.n is the number of valid(not NULL) values 
+  return stats.n > 0 ? [round(stats.min, 2), round(stats.max, 2)] : ['not provided', 'not provided']
 }
 
 /**
@@ -181,6 +202,16 @@ function getUnivarBounds(mapset, map, column) {
  */
 function dbSelectAllRaw(mapset, table) {
   return grass(mapset, `db.select -v sql="select * from ${table}" vertical_separator=space`)
+}
+
+/**
+ * get all tables in the mapset
+ * @param {string} mapset mapset
+ * @returns {array} all tables
+ */
+function dbTables(mapset) {
+  const tables = grass(mapset, 'db.tables -p').trim().split('\n')
+  return tables
 }
 
 /**
@@ -251,7 +282,7 @@ function listUserVector() {
 /**
  * Checks if the name contains only allowed characters for GRASS mapsets and columns
  * @param {string} name mapset name
- * @return {boolean} true or false 
+ * @return {boolean} true or false
  */
 function isLegalName(name) {
   if (!name.length || name[0] === '.') {
@@ -307,12 +338,7 @@ function getMetadata(mapset, table) {
   for (const row of data.columnObj.rows) {
     let bounds = ['-', '-']
     if (['DOUBLE PRECISION', 'INTEGER'].indexOf(row.type) > -1) {
-      try {
-        bounds = getUnivarBounds(mapset, table, row.column)
-      } catch (err) {
-        // TODO: push to warnings
-        bounds = ['not provided','not provided']
-      }
+      bounds = getUnivarBounds(mapset, table, row.column)
     }
     row.min = bounds[0]
     row.max = bounds[1]
@@ -351,7 +377,11 @@ function getMetadata(mapset, table) {
  * @param {string} args arguments to the command line
  */
 function grass(mapset, args) {
-  return execSync(`grass "${GRASS}/global/${mapset}" --exec ${args}`, { shell: '/bin/bash', encoding: 'utf-8' })
+  return execSync(`grass "${GRASS}/global/${mapset}" --exec ${args}`, {
+    shell: '/bin/bash',
+    maxBuffer: 64 * 1024 * 1024,
+    encoding: 'utf-8'
+  })
 }
 
 module.exports = {
@@ -359,9 +389,11 @@ module.exports = {
   addRaster,
   addVector,
   clip,
-  dbSelectAllRaw,
   dbSelectAllObj,
+  dbSelectAllRaw,
+  dbTables,
   getAllColumns,
+  getColumns,
   getCoordinates,
   getLayers,
   getMetadata,

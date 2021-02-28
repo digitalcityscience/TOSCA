@@ -55,7 +55,7 @@ function psToPDF(infile, outfile) {
  * @param {string} outfile output file
  */
 function textToPS(infile, outfile) {
-  execSync(`enscript -p ${outfile} ${infile}`)
+  execSync(`cat ${infile} | iconv -c -f utf-8 -t ISO-8859-1 | enscript -p ${outfile}`)
 }
 
 /**
@@ -63,11 +63,7 @@ function textToPS(infile, outfile) {
  * @returns {string[]} list of result filenames
  */
 function getResults() {
-  const list = []
-  fs.readdirSync(OUTPUT_DIR).forEach(file => {
-    list.push(file)
-  })
-  return list
+  return fs.readdirSync(OUTPUT_DIR).filter(file => file.match(/\.pdf$/i))
 }
 
 /**

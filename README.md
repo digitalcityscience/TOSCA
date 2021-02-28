@@ -17,37 +17,46 @@ The following instructions provide guidance for the installation of all required
 
 You can quickly set up a running system via [Docker](https://docs.docker.com/).
 
-Before building the image, environment variables need to be set in `webapp/.env`:
+To build and start the stack with [Docker Compose](https://docs.docker.com/compose/), run this command from the root directory, which contains the `docker-compose.yml` file:
+
+```
+docker-compose up --build
+```
+
+For the webapp it may be required to change some environment variables. These are configured in the `environment` section of the `webapp` service in `docker-compose.yml`.
 - `GEOSERVER_URL`: The base URL of the local GeoServer instance. This should normally be the public IP or domain of the server, port 8080.
 - `INITIAL_LAT`, `INITIAL_LON`: Initial center coordinates for the map view.
 - `USE_LANG`: Language of the user interface (default: English). A matching translations file must exist in `webapp/i18n`.
 
-It is also required to create these directories:
+If Docker Compose is not available, you can also build the GeoServer and webapp containers separately:
+
 ```
-mkdir -p geoserver_data_dir/data
-mkdir -p grass/global
-mkdir grass/metadata
-mkdir output
+docker build -t oct-geoserver geoserver
+
+docker build -t oct-webapp webapp
 ```
 
-Build the Docker image:
-```
-docker build -t oct .
-```
+Run the containers using the newly created images:
 
-Start a container using the newly created image.
 ```
-docker run -dti -v `pwd`/geoserver_data_dir:/usr/share/geoserver/data_dir -v `pwd`/grass:/oct/grass -v `pwd`/output:/oct/output -p 3000:3000 -p 8080:8080 --name my_oct oct
-```
+docker run -dti \
+-v `pwd`/geoserver_data_dir:/usr/share/geoserver/data_dir \
+-p 8080:8080 oct-geoserver
 
-If you want to override any environment variables, you can do so using the `-e` option:
-```
-docker run -dti -e GEOSERVER_URL=... -e INITIAL_LAT=... -e INITIAL_LON=... -v `pwd`/geoserver_data_dir:/usr/share/geoserver/data_dir -v `pwd`/grass:/oct/grass -v `pwd`/output:/oct/output -p 3000:3000 -p 8080:8080 --name my_oct oct
+docker run -dti \
+-e DATA_FROM_BROWSER_DIR=/oct/data_from_browser \
+-e GRASS_DIR=/oct/grass \
+-e OUTPUT_DIR=/oct/output \
+-e GEOSERVER_URL=http://localhost:8080/ \
+-v `pwd`/geoserver_data_dir:/usr/share/geoserver/data_dir \
+-v `pwd`/grass:/oct/grass \
+-v `pwd`/output:/oct/output \
+-p 3000:3000 oct-webapp
 ```
 
 The `geoserver_data`, `grass` and `output` directories are mounted into the container as volumes in order to make their contents persistent and accessible from the host system.
 
-While the container is running, the app is served at http://localhost:3000 and GeoServer is available at http://localhost:8080/geoserver/.
+While the stack is running, the app is served at http://localhost:3000 and GeoServer is available at http://localhost:8080/geoserver/.
 
 ### Without Docker
 
@@ -165,7 +174,7 @@ pm2 start /home/oct_user/oct/webapp/app.js
 
 ## Add metadata for map layers
 
-For better user experience, the OCT allows the user to add metadata to map layers. 
+For better user experience, the OCT allows the user to add metadata to map layers.
 Once added correctly, the metadata will be queried in various places within in the app, e.g. in the attribute table shown after the user clicks 'show attribute' in the query module.
 The metadata should be added in a `metadata.json` file under the `grass/metadata` folder.
 The metadata should conform to the following format:
