@@ -1,5 +1,15 @@
 version: "3.7"
+
 services:
+  geoserver:
+    build: ./geoserver
+    image: open-city-toolkit/geoserver
+    ports:
+      - 8080:8080
+    volumes:
+      - type: volume
+        source: geoserver_data
+        target: /usr/share/geoserver/data_dir
   webapp:
     build: ./webapp
     image: open-city-toolkit/webapp
@@ -15,15 +25,15 @@ services:
       - type: volume
         source: geoserver_data
         target: /usr/share/geoserver/data_dir
-  geoserver:
-    build: ./geoserver
-    image: open-city-toolkit/geoserver
-    ports:
-      - 8080:8080
-    volumes:
-      - type: volume
-        source: geoserver_data
-        target: /usr/share/geoserver/data_dir
+    environment:
+      - DATA_FROM_BROWSER_DIR=/oct/data_from_browser
+      - GRASS_DIR=/oct/grass
+      - OUTPUT_DIR=/oct/output
+      - GEOSERVER_URL=http://localhost:8080/
+      - INITIAL_LAT=
+      - INITIAL_LON=
+      - USE_LANG=
+
 volumes:
   geoserver_data:
     driver: local
