@@ -19,6 +19,7 @@
   "add_map.errors.1": "Wrong file format - must be one of 'geojson', 'gpkg', 'osm', 'tif', 'tiff', 'gtif'",
   "add_map.errors.2": "Invalid map name. Use alphanumeric characters only",
   "add_map.errors.3": "File not found",
+  "time_map.message.0": "Please select means of transportation.",
   "time_map.message.1": "A start point is required. Use the <a class=\"text-primary\" onclick=\"blink('.leaflet-draw-draw-circlemarker')\">circlemarker tool</a> to draw a start point.<br><small>The start point must be located inside the selection area.</small>",
   "time_map.message.2": "Optionally one via point can be added. If you want to add a via point, draw a point using the <a class=\"text-primary\" onclick=\"blink('.leaflet-draw-draw-circlemarker')\">circlemarker tool</a> and click ‘Save’.<br><small>The via point must be located inside the selection area.</small>",
   "time_map.message.3": "Defining an affected area is optional. An affected area is an area where the travel speed is reduced by, e.g., a natural disaster, flooding, or mass event. If you want to add an affected area, draw a closed area using the <a class=\"text-primary\" onclick=\"blink('.leaflet-draw-draw-polygon')\">polygon tool</a> and click ‘Save’.<br><small>The affected area must be located inside the selection area.</small>",
@@ -119,6 +120,7 @@
   "error:number": "Please enter a numeric value.",
   "error:name": "Please enter a name.",
   "error:form numbers": "Please enter valid numbers in the fields.",
+  "error:travel mode": "Please select means of transportation.",
   "Client error": "Client error",
   "Server error": "Server error",
   "Unknown error": "Unknown error",
@@ -169,5 +171,8 @@
   "Volcano lahar flow": "Volcano lahar flow",
   "Cotopaxi ash fall": "Cotopaxi ash fall",
   "Vulnerability": "Vulnerability",
-  "Map legend": "Map legend"
+  "Map legend": "Map legend",
+  "Walking": "Walking",
+  "Bicycle": "Bicycle",
+  "Automobile": "Automobile"
 }
