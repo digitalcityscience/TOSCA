@@ -467,10 +467,7 @@ function validateNum(num) {
 
 // eslint-disable-next-line no-unused-vars
 function showResults() {
-  getOutput({})
   $('#results-modal').show()
-  // empty iframe content
-  $('#results-iframe').attr('src', '')
 }
 
 // eslint-disable-next-line no-unused-vars
@@ -540,15 +537,6 @@ function saveDrawing(res) {
   }
   sendMessage('/drawing', { data: geojson }, { messageId: res.id }, handleResponse);
   return true;
-}
-
-function getOutput() {
-  get('/output', {}, (res) => new Promise((resolve) => {
-    const baseOption = "<option selected value=''> - </option>";
-    const options = res.list.reduce((str, file) => str + `<option value="${file}">${file}</option>`, '');
-    $('#results-select').html(baseOption + options);
-    resolve();
-  }));
 }
 
 function getAttributes(table) {
