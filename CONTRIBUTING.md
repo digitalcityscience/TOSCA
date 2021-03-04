@@ -6,11 +6,12 @@ We love your input! We want to make contributing to this project as easy and tra
 - Submitting a fix
 - Proposing new features
 - Becoming a maintainer
+- Contributing to the [wiki](https://github.com/citysciencelab/open-city-toolkit/wiki)
 
 ## We Develop with Github
 We use github to host code, to track issues and feature requests, as well as accept pull requests.
 
-## We Use [Github Flow](https://guides.github.com/introduction/flow/index.html), So All Code Changes Happen Through Pull Requests
+## We Use [Github Flow](https://guides.github.com/introduction/flow/index.html), so all code changes happen through pull requests
 Pull requests are the best way to propose changes to the codebase (we use [Github Flow](https://guides.github.com/introduction/flow/index.html)). We actively welcome your pull requests:
 
 1. Fork the repo and create your branch from `master`.
@@ -25,7 +26,7 @@ In short, when you submit code changes, your submissions are understood to be un
 ## Report bugs using Github's issues
 We use GitHub issues to track public bugs. Report a bug by [opening a new issue](https://github.com/citysciencelab/open-city-toolkit/issues); it's that easy!
 
-## Write bug reports with detail, background, and sample code
+## Write bug reports with detail, background and sample code
 Here's [an example](http://www.openradar.me/11905408) of a bug report.
 
 **Great Bug Reports** tend to have:
@@ -38,7 +39,7 @@ Here's [an example](http://www.openradar.me/11905408) of a bug report.
 - What actually happens
 - Notes (possibly including why you think this might be happening, or stuff you tried that didn't work)
 
-## Use a Consistent Coding Style
+## Use a consistent coding style
 This codebase uses [eslint](https://eslint.org/) and complies to [eslint:recommended](https://eslint.org/docs/rules/) rules. 
 Some extra linting requirements are listed below:
 
