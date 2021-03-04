@@ -130,3 +130,37 @@
   font-size: 0.8rem !important;
   text-align: justify !important;
 }
+
+/* ShowFeatureInfo  */
+.getFeatureClass {
+  width: 300px;
+}
+.getFeatureClass table {
+  justify-content: center;
+  align-items: center;
+  width : 100%
+}
+.getFeatureClass div {
+  overflow:auto;
+  max-height: 250px;
+}
+.getFeatureClass tbody {
+  position: relative;
+  align-items: stretch;
+}
+.getFeatureClass tr {
+  border: 1px solid black;
+  word-break: break-word;
+  white-space: pre-line;
+}
+.getFeatureClass td {
+  padding: 5px;
+}
+.getFeatureClass tr td:first-of-type {
+  font-weight: bold;
+  border: 1px solid black;
+  width:50%;
+}
+.getFeatureClass p{
+  font-weight: bold;
+}

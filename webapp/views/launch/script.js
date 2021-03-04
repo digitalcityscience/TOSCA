@@ -142,6 +142,23 @@ function handleResponse(res) {
           break;
 
         // == time map module ==
+        // Travel mode
+        case 'time_map.0':
+          form = formElement(messageId);
+          buttons = [
+            buttonElement(t['Automobile']).click(() => {
+              reply(res, 'Automobile');
+            }),
+            buttonElement(t['Bicycle']).click(() => {
+              reply(res, 'Bicycle');
+            }),
+            buttonElement(t['Walking']).click(() => {
+              reply(res, 'Walking');
+            })
+          ];
+          form.append(buttons);
+          break;
+
         // Start points
         case 'time_map.1':
           refreshLayer(fromPoints);
