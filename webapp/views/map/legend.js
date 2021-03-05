@@ -61,9 +61,7 @@ function handleLegendClick(evt) {
     p.innerHTML = services.filter(ser => ser.layers === this.options.layers)[0].displayName
     div.appendChild(p)
 
-    const img = L.DomUtil.create('img')
-    img.style = 'display:block;'
-    img.src = this._url + LEGEND_QUERY + this.wmsParams.layers
+    img.src = this._url + LEGEND_QUERY + this.wmsParams.layers + "&STYLE=" + this.wmsParams.styles;
     // add LEGEND_OPTIONS for raster legends
     img.src += img.src.split('/')[4] === 'raster' ? RASTER_QUERY : ''
     div.appendChild(img)
