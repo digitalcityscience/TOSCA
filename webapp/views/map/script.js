@@ -83,9 +83,21 @@ map.addControl(new L.Control.Draw({
   }
 }));
 
-// Save drawed items in feature group
-map.on(L.Draw.Event.CREATED, (event) => {
+// Save drawn items in feature group
+map.on(L.Draw.Event.CREATED, event => {
   drawnItems.addLayer(event.layer);
+});
+
+// Disable getFeatureInfo while drawing is in process
+map.on(L.Draw.Event.DRAWSTART, () => {
+  services.filter(service => window[service.layers] instanceof L.TileLayer.BetterWMS).forEach(service => {
+    window[service.layers].getFeatureInfoDisabled = true;
+  });
+});
+map.on(L.Draw.Event.DRAWSTOP, () => {
+  services.filter(service => window[service.layers] instanceof L.TileLayer.BetterWMS).forEach(service => {
+    window[service.layers].getFeatureInfoDisabled = false;
+  });
 });
 
 /* scale bar */

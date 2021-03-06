@@ -1,6 +1,7 @@
 /* global L, $ */
 
 L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
+  getFeatureInfoDisabled: false,
 
   onAdd: function (map) {
     // Triggered when the layer is added to a map.
@@ -17,6 +18,10 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
   },
 
   getFeatureInfo: function (evt) {
+    if (this.getFeatureInfoDisabled) {
+      return;
+    }
+
     // Make an AJAX request to the server and hope for the best
     const url = this.getFeatureInfoUrl(evt.latlng),
       showResults = L.Util.bind(this.showGetFeatureInfo, this);
