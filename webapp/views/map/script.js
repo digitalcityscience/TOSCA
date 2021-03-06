@@ -114,5 +114,10 @@ function refreshLayer(layer) {
  * @param {object} service config object from config.js
  */
 function createWms(service) {
-  return service.type === 'vector' ? L.tileLayer.betterWms(vectorWMS, service) : L.tileLayer.wms(rasterWMS, service);
+  if (service.type === 'vector') {
+    return (service.getFeatureInfo ? L.tileLayer.betterWms : L.tileLayer.wms)(vectorWMS, service);
+  }
+  if (service.type === 'raster') {
+    return L.tileLayer.wms(rasterWMS, service);
+  }
 }

@@ -8,7 +8,8 @@ const services = [
     minZoom: 1,
     displayName: 'Waterways',
     type: 'vector',
-    group: 'Basemap'
+    group: 'Basemap',
+    getFeatureInfo: true
   },
   {
     layers: 'osm_roads',
@@ -18,7 +19,8 @@ const services = [
     minZoom: 1,
     displayName: 'Roads',
     type: 'vector',
-    group: 'Basemap'
+    group: 'Basemap',
+    getFeatureInfo: true
   },
   {
     layers: 'osm_buildings',
@@ -28,7 +30,8 @@ const services = [
     minZoom: 1,
     displayName: 'Buildings',
     type: 'vector',
-    group: 'Basemap'
+    group: 'Basemap',
+    getFeatureInfo: true
   },
   {
     layers: 'basemap_bbox',
@@ -38,7 +41,8 @@ const services = [
     minZoom: 1,
     displayName: 'Basemap boundary',
     type: 'vector',
-    group: 'Basemap'
+    group: 'Basemap',
+    getFeatureInfo: false
   },
   {
     layers: 'selection',
@@ -48,7 +52,8 @@ const services = [
     minZoom: 1,
     displayName: 'Current selection',
     type: 'vector',
-    group: 'Basemap'
+    group: 'Basemap',
+    getFeatureInfo: false
   },
   {
     layers: 'time_map_from_points',
@@ -58,7 +63,8 @@ const services = [
     minZoom: 3,
     displayName: 'Start point',
     type: 'vector',
-    group: 'Time map'
+    group: 'Time map',
+    getFeatureInfo: false
   },
   {
     layers: 'time_map_stricken_area',
@@ -68,7 +74,8 @@ const services = [
     minZoom: 3,
     displayName: 'Affected area',
     type: 'vector',
-    group: 'Time map'
+    group: 'Time map',
+    getFeatureInfo: false
   },
   {
     layers: 'time_map_vector',
@@ -79,6 +86,7 @@ const services = [
     minZoom: 1,
     displayName: 'Road-level time map',
     type: 'vector',
-    group: 'Time map'
+    group: 'Time map',
+    getFeatureInfo: false
   }
 ]
