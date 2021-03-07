@@ -2,9 +2,9 @@ div(class="modal-content")
   div(class="modal-header")
     h4(class="modal-title") Previous results
     div(class="btn-group" role="group")
-      button(type="button" class="btn btn-primary") All
-      button(type="button" class="btn btn-outline-primary") Time map
-      button(type="button" class="btn btn-outline-primary") Query
+      button(type="button" class="btn btn-outline-primary" onclick="showAllResults()") All
+      button(type="button" class="btn btn-outline-primary" onclick="showTimeMapResults()") Time map
+      button(type="button" class="btn btn-outline-primary" onclick="showQueryResults()") Query
     span(class="modal-close" onclick="hideResults()") &times;
   div(class="modal-body")
     div(id="results-table")

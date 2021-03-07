@@ -603,6 +603,20 @@ function upload(form, params, callback) {
     .always(() => $('#loading').hide());
 }
 
+// eslint-disable-next-line no-unused-vars
+function deleteMethod(target, params, callback) {
+  $('#loading').show();
+
+  $.ajax({
+    type: 'DELETE',
+    url: target + '?' + $.param(params),
+    contentType: 'application/json; encoding=utf-8',
+    error: onServerError
+  })
+    .done(res => callback(res).catch(onClientError))
+    .always(() => $('#loading').hide())
+}
+
 function onClientError(error) {
   console.error(error);
   const text = $('<span>').text(error.message);
