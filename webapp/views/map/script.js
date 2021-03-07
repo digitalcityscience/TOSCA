@@ -115,7 +115,15 @@ map.on(L.Draw.Event.DRAWSTOP, () => {
 
 /* Measure tool */
 
-L.control.measure({ position : 'topleft', color : '#4a4747' }).addTo(map);
+L.control.measure({
+  position : 'topleft',
+  primaryLengthUnit: 'kilometers',
+  primaryAreaUnit: 'acres',
+  secondaryLengthUnit: undefined,
+  secondaryAreaUnit: undefined,
+  activeColor: '#1e90ff',
+  completedColor: '#1e90ff'
+}).addTo(map);
 
 
 /* Scale bar */
