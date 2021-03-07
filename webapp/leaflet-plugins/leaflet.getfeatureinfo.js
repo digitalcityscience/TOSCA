@@ -1,6 +1,7 @@
 /* global L, $ */
 
 L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
+  getFeatureInfoDisabled: false,
 
   onAdd: function (map) {
     // Triggered when the layer is added to a map.
@@ -17,6 +18,10 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
   },
 
   getFeatureInfo: function (evt) {
+    if (this.getFeatureInfoDisabled) {
+      return;
+    }
+
     // Make an AJAX request to the server and hope for the best
     const url = this.getFeatureInfoUrl(evt.latlng),
       showResults = L.Util.bind(this.showGetFeatureInfo, this);
@@ -61,9 +66,8 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
 
   showGetFeatureInfo: function (content, latlng) {
     if (content.features.length == 0) {
-      return
+      return;
     }
-    // Otherwise show the content in a popup, or something.
     else {
       L.popup({ maxWidth: 'auto' })
         .setLatLng(latlng)
@@ -74,18 +78,14 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
 });
 
 function getTableHTML(properties, name) {
-  let html = "<div class='getFeatureClass'>" + "<p>" + name + "</p>"
-  html += "<div><table><tbody>";
+  let html = `<div class="getFeatureClass"><p>${name}</p><div>`;
 
-  for (let key in properties) {
-    let value = properties[key]
-    if (properties[key] !== null && key !== 'cat') {
-      html += "<tr><td>" + key + "</td>"
-      html += "<td>" + value + "</td></tr>"
-    }
-  }
+  html += Object.entries(properties).filter(([k, v]) => k !== 'cat' && v).reduce((html, [k, v]) => {
+    html += `<tr><td>${k}</td><td>${v}</td></tr>`;
+    return html;
+  }, `<table><tbody>`) + `</tbody></table>`;
 
-  html = html + "</tbody></table></div></div>";
+  html += `</div></div>`;
   return html;
 }
 
