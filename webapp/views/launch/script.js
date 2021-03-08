@@ -249,6 +249,13 @@ function handleResponse(res) {
 
           cancelDrawing();
           drawnItems.clearLayers();
+
+          if (res.result) {
+            form = formElement(messageId);
+            buttons = [
+              buttonLinkElement(t['Open result'], 'output/' + res.result)
+            ];
+          }
           break;
 
         // == query module ==
@@ -324,6 +331,15 @@ function handleResponse(res) {
           ];
           break;
         }
+
+        case 'query.24':
+          if (res.result) {
+            form = formElement(messageId);
+            buttons = [
+              buttonLinkElement(t['Open result'], 'output/' + res.result)
+            ];
+          }
+          break;
       }
 
       textarea.append(text);
@@ -353,6 +369,10 @@ function formElement(id, isMultipart) {
 
 function buttonElement(action) {
   return $(`<button type="button" class="btn btn-primary">${action}</button>`);
+}
+
+function buttonLinkElement(action, url) {
+  return $(`<a type="button" class="btn btn-primary" href="${url}" target="_blank">${action}</a>`);
 }
 
 function relationSelect() {
