@@ -1,4 +1,4 @@
-/* global $, L, t, lat, lon, geoserverUrl, services */
+/* global $, L, t, lat, lon, geoserverUrl, layers */
 
 const map = new L.Map('map', {
   center: new L.LatLng(lat, lon),
@@ -10,7 +10,9 @@ const map = new L.Map('map', {
 const rasterWMS = geoserverUrl + 'geoserver/raster/wms';
 const vectorWMS = geoserverUrl + 'geoserver/vector/wms';
 
-// Background map
+
+/* Create background maps */
+
 const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(map);
@@ -19,48 +21,58 @@ const hot = L.tileLayer('https://tile-{s}.openstreetmap.fr/hot/{z}/{x}/{y}.png',
   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors; Humanitarian map style by <a href="https://www.hotosm.org/">HOT</a>'
 });
 
-// Drawings
-const drawnItems = L.featureGroup().addTo(map);
 
-// Control for map legends
-L.control.legend(
-  { position: 'bottomleft' }
-).addTo(map);
+/* Set up grouped layer control */
 
-// Helper function to translate keys in layer control definitions
-function translate(layerObject) {
-  return Object.entries(layerObject).reduce((translated, [key, value]) => {
-    translated[t[key]] = value;
-    return translated;
-  }, {});
-}
-
-// Grouped layer control
 const baseLayers = translate({
   "OSM Standard style": osm,
   "OSM Humanitarian style": hot
-})
+});
 
-// Configure the layer switcher
 let groupedOverlays = {}
-const groups = [...new Set(services.map(ser=>ser.group))]
-for(const group of groups){
-  groupedOverlays[group] = {}
+const groups = [...new Set(layers.map(layer => layer.group))]
+for (const group of groups) {
+  groupedOverlays[group] = {};
 }
-for(const service of services){
+for (const layer of layers) {
   // make layers available in the global scope
-  window[service.layers] = createWms(service)
-  groupedOverlays[service.group][t[service.displayName]] = window[service.layers]
+  window[layer.layers] = createWms(layer);
+  groupedOverlays[layer.group][t[layer.displayName]] = window[layer.layers];
 }
-groupedOverlays = translate(groupedOverlays)
+groupedOverlays = translate(groupedOverlays);
 
-// Use the custom grouped layer control, not "L.control.layers"
+const layerAddOrigFunc = L.Control.GroupedLayers.prototype._addItem;
+
+// Before adding items, tweak the GroupedLayers control so it adds event listeners activating the legend
+L.Control.GroupedLayers.prototype._addItem = function (obj) {
+  const label = layerAddOrigFunc.call(this, obj);
+
+  if (obj.layer instanceof L.TileLayer.WMS && obj.layer.options.legend) {
+    $(label).find('input').on('click', evt => {
+      map.legend.toggleLegendForLayer(evt.target.checked, obj.layer);
+    });
+  }
+  return label;
+};
+
 L.control.groupedLayers(baseLayers, groupedOverlays, { position: 'topright', collapsed: false }).addTo(map);
 
 // Prevent click/scroll events from propagating to the map through the layer control
 const layerControlElement = $('.leaflet-control-layers')[0];
 L.DomEvent.disableClickPropagation(layerControlElement);
 L.DomEvent.disableScrollPropagation(layerControlElement);
+
+
+/* Map legend */
+
+map.legend = L.control.legend(
+  { position: 'bottomleft' }
+).addTo(map);
+
+
+/* Drawing tool */
+
+const drawnItems = L.featureGroup().addTo(map);
 
 map.addControl(new L.Control.Draw({
   edit: {
@@ -82,24 +94,60 @@ map.addControl(new L.Control.Draw({
   }
 }));
 
-// Save drawed items in feature group
-map.on(L.Draw.Event.CREATED, (event) => {
+// Save drawn items in feature group
+map.on(L.Draw.Event.CREATED, event => {
   drawnItems.addLayer(event.layer);
 });
 
-/* scale bar */
+// Disable getFeatureInfo while drawing is in process
+map.on(L.Draw.Event.DRAWSTART, () => {
+  layers.filter(layer => window[layer.layers] instanceof L.TileLayer.BetterWMS).forEach(layer => {
+    window[layer.layers].getFeatureInfoDisabled = true;
+  });
+});
+map.on(L.Draw.Event.DRAWSTOP, () => {
+  layers.filter(layer => window[layer.layers] instanceof L.TileLayer.BetterWMS).forEach(layer => {
+    window[layer.layers].getFeatureInfoDisabled = false;
+  });
+});
+
+
+/* Scale bar */
+
 L.control.scale({ maxWidth: 300, position: 'bottomright' }).addTo(map);
 
+
+/* Helper functions */
+
+/**
+ * Force-refresh a map layer
+ * @param {object} layer layer from config.js
+ */
 // eslint-disable-next-line no-unused-vars
 function refreshLayer(layer) {
-  // Force reloading of the layer
   layer.setParams({ ts: Date.now() });
 }
 
 /**
- * create wms service based on serviceConf
- * @param {object} service config object from config.js
+ * Translate keys in layer control definitions
+ * @param {object} layer layer from config.js
  */
-function createWms(service) {
-  return service.type === 'vector' ? L.tileLayer.betterWms(vectorWMS, service) : L.tileLayer.wms(rasterWMS, service);
+function translate(layer) {
+  return Object.entries(layer).reduce((translated, [key, value]) => {
+    translated[t[key]] = value;
+    return translated;
+  }, {});
+}
+
+/**
+ * Create WMS service based on layer config
+ * @param {object} layer layer from config.js
+ */
+function createWms(layer) {
+  if (layer.type === 'vector') {
+    return (layer.getFeatureInfo ? L.tileLayer.betterWms : L.tileLayer.wms)(vectorWMS, layer);
+  }
+  if (layer.type === 'raster') {
+    return L.tileLayer.wms(rasterWMS, layer);
+  }
 }

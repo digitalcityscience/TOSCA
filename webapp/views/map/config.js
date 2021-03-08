@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-unused-vars
-const services = [
+const layers = [
   {
     layers: 'osm_waterways',
     format: 'image/png',
@@ -8,7 +8,8 @@ const services = [
     minZoom: 1,
     displayName: 'Waterways',
     type: 'vector',
-    group: 'Basemap'
+    group: 'Basemap',
+    getFeatureInfo: true
   },
   {
     layers: 'osm_roads',
@@ -18,7 +19,8 @@ const services = [
     minZoom: 1,
     displayName: 'Roads',
     type: 'vector',
-    group: 'Basemap'
+    group: 'Basemap',
+    getFeatureInfo: true
   },
   {
     layers: 'osm_buildings',
@@ -28,7 +30,8 @@ const services = [
     minZoom: 1,
     displayName: 'Buildings',
     type: 'vector',
-    group: 'Basemap'
+    group: 'Basemap',
+    getFeatureInfo: true
   },
   {
     layers: 'basemap_bbox',
@@ -38,7 +41,8 @@ const services = [
     minZoom: 1,
     displayName: 'Basemap boundary',
     type: 'vector',
-    group: 'Basemap'
+    group: 'Basemap',
+    getFeatureInfo: false
   },
   {
     layers: 'selection',
@@ -48,7 +52,8 @@ const services = [
     minZoom: 1,
     displayName: 'Current selection',
     type: 'vector',
-    group: 'Basemap'
+    group: 'Basemap',
+    getFeatureInfo: false
   },
   {
     layers: 'time_map_from_points',
@@ -58,7 +63,8 @@ const services = [
     minZoom: 3,
     displayName: 'Start point',
     type: 'vector',
-    group: 'Time map'
+    group: 'Time map',
+    getFeatureInfo: false
   },
   {
     layers: 'time_map_stricken_area',
@@ -68,7 +74,8 @@ const services = [
     minZoom: 3,
     displayName: 'Affected area',
     type: 'vector',
-    group: 'Time map'
+    group: 'Time map',
+    getFeatureInfo: false
   },
   {
     layers: 'time_map_vector',
@@ -79,7 +86,8 @@ const services = [
     minZoom: 1,
     displayName: 'Road-level time map',
     type: 'vector',
-    group: 'Time map'
+    group: 'Time map',
+    getFeatureInfo: false
   },
   {
     layers: 'bbswr_metropolitan_area',
@@ -90,7 +98,8 @@ const services = [
     maxZoom: 20,
     minZoom: 1,
     type: 'vector',
-    group: 'Bhubaneswar thematic maps'
+    group: 'Bhubaneswar thematic maps',
+    getFeatureInfo: true
   },
   {
     layers: 'bbswr_municipality',
@@ -101,7 +110,8 @@ const services = [
     maxZoom: 20,
     minZoom: 1,
     type: 'vector',
-    group: 'Bhubaneswar thematic maps'
+    group: 'Bhubaneswar thematic maps',
+    getFeatureInfo: true
   },
   {
     layers: 'bbswr_slums',
@@ -112,7 +122,8 @@ const services = [
     maxZoom: 20,
     minZoom: 1,
     type: 'vector',
-    group: 'Bhubaneswar thematic maps'
+    group: 'Bhubaneswar thematic maps',
+    getFeatureInfo: true
   },
   {
     layers: 'bbswr_land_ownership',
@@ -123,7 +134,8 @@ const services = [
     maxZoom: 20,
     minZoom: 1,
     type: 'vector',
-    group: 'Bhubaneswar thematic maps'
+    group: 'Bhubaneswar thematic maps',
+    getFeatureInfo: true
   },
   {
     layers: 'bbswr_slum_houses_total_population',
@@ -134,7 +146,8 @@ const services = [
     maxZoom: 20,
     minZoom: 1,
     type: 'vector',
-    group: 'Bhubaneswar thematic maps'
+    group: 'Bhubaneswar thematic maps',
+    getFeatureInfo: true
   },
   {
     layers: 'bbswr_slum_houses_female_population',
@@ -145,7 +158,8 @@ const services = [
     maxZoom: 20,
     minZoom: 1,
     type: 'vector',
-    group: 'Bhubaneswar thematic maps'
+    group: 'Bhubaneswar thematic maps',
+    getFeatureInfo: true
   },
   {
     layers: 'bbswr_slum_houses_male_population',
@@ -156,7 +170,8 @@ const services = [
     maxZoom: 20,
     minZoom: 1,
     type: 'vector',
-    group: 'Bhubaneswar thematic maps'
+    group: 'Bhubaneswar thematic maps',
+    getFeatureInfo: true
   },
   {
     layers: 'bbswr_slum_houses_ownership',
@@ -167,7 +182,8 @@ const services = [
     maxZoom: 20,
     minZoom: 1,
     type: 'vector',
-    group: 'Bhubaneswar thematic maps'
+    group: 'Bhubaneswar thematic maps',
+    getFeatureInfo: true
   },
   {
     layers: 'bbswr_slum_houses_religion',
@@ -178,7 +194,8 @@ const services = [
     maxZoom: 20,
     minZoom: 1,
     type: 'vector',
-    group: 'Bhubaneswar thematic maps'
+    group: 'Bhubaneswar thematic maps',
+    getFeatureInfo: true
   },
   {
     layers: 'bbswr_slum_houses_monthly_income',
@@ -189,7 +206,8 @@ const services = [
     maxZoom: 20,
     minZoom: 1,
     type: 'vector',
-    group: 'Bhubaneswar thematic maps'
+    group: 'Bhubaneswar thematic maps',
+    getFeatureInfo: true
   },
   {
     layers: 'bbswr_slum_houses_livestock',
@@ -200,7 +218,8 @@ const services = [
     maxZoom: 20,
     minZoom: 1,
     type: 'vector',
-    group: 'Bhubaneswar thematic maps'
+    group: 'Bhubaneswar thematic maps',
+    getFeatureInfo: true
   },
   {
     layers: 'bbswr_slum_houses_bathrooms',
@@ -211,7 +230,8 @@ const services = [
     maxZoom: 20,
     minZoom: 1,
     type: 'vector',
-    group: 'Bhubaneswar thematic maps'
+    group: 'Bhubaneswar thematic maps',
+    getFeatureInfo: true
   },
   {
     layers: 'bbswr_slum_houses_toilets',
@@ -222,7 +242,8 @@ const services = [
     maxZoom: 20,
     minZoom: 1,
     type: 'vector',
-    group: 'Bhubaneswar thematic maps'
+    group: 'Bhubaneswar thematic maps',
+    getFeatureInfo: true
   },
   {
     layers: 'bbswr_empty_places',
@@ -233,7 +254,8 @@ const services = [
     maxZoom: 20,
     minZoom: 1,
     type: 'vector',
-    group: 'Bhubaneswar thematic maps'
+    group: 'Bhubaneswar thematic maps',
+    getFeatureInfo: true
   },
   {
     layers: 'bbswr_empty_places_ownership',
@@ -244,6 +266,7 @@ const services = [
     maxZoom: 20,
     minZoom: 1,
     type: 'vector',
-    group: 'Bhubaneswar thematic maps'
+    group: 'Bhubaneswar thematic maps',
+    getFeatureInfo: true
   }
 ]
