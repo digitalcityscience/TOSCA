@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-unused-vars
-const services = [
+const layers = [
   {
     layers: 'osm_waterways',
     format: 'image/png',
@@ -8,7 +8,8 @@ const services = [
     minZoom: 1,
     displayName: 'Waterways',
     type: 'vector',
-    group: 'Basemap'
+    group: 'Basemap',
+    getFeatureInfo: true
   },
   {
     layers: 'osm_roads',
@@ -18,7 +19,8 @@ const services = [
     minZoom: 1,
     displayName: 'Roads',
     type: 'vector',
-    group: 'Basemap'
+    group: 'Basemap',
+    getFeatureInfo: true
   },
   {
     layers: 'osm_buildings',
@@ -28,7 +30,8 @@ const services = [
     minZoom: 1,
     displayName: 'Buildings',
     type: 'vector',
-    group: 'Basemap'
+    group: 'Basemap',
+    getFeatureInfo: true
   },
   {
     layers: 'basemap_bbox',
@@ -38,7 +41,8 @@ const services = [
     minZoom: 1,
     displayName: 'Basemap boundary',
     type: 'vector',
-    group: 'Basemap'
+    group: 'Basemap',
+    getFeatureInfo: false
   },
   {
     layers: 'selection',
@@ -48,7 +52,8 @@ const services = [
     minZoom: 1,
     displayName: 'Current selection',
     type: 'vector',
-    group: 'Basemap'
+    group: 'Basemap',
+    getFeatureInfo: false
   },
   {
     layers: 'time_map_from_points',
@@ -58,7 +63,8 @@ const services = [
     minZoom: 3,
     displayName: 'Start point',
     type: 'vector',
-    group: 'Time map'
+    group: 'Time map',
+    getFeatureInfo: false
   },
   {
     layers: 'time_map_stricken_area',
@@ -68,7 +74,8 @@ const services = [
     minZoom: 3,
     displayName: 'Affected area',
     type: 'vector',
-    group: 'Time map'
+    group: 'Time map',
+    getFeatureInfo: false
   },
   {
     layers: 'time_map_vector',
@@ -79,7 +86,8 @@ const services = [
     minZoom: 1,
     displayName: 'Road-level time map',
     type: 'vector',
-    group: 'Time map'
+    group: 'Time map',
+    getFeatureInfo: false
   },
   {
     layers: 'ltca_dem',
@@ -101,7 +109,8 @@ const services = [
     minZoom: 3,
     displayName: 'Administrative units',
     type: 'vector',
-    group: 'Latacunga thematic maps'
+    group: 'Latacunga thematic maps',
+    getFeatureInfo: true
   },
   {
     layers: 'ltga_densidad_poblacion',
@@ -112,7 +121,8 @@ const services = [
     minZoom: 3,
     displayName: 'Population density',
     type: 'vector',
-    group: 'Latacunga thematic maps'
+    group: 'Latacunga thematic maps',
+    getFeatureInfo: true
   },
   {
     layers: 'ltga_interpolated_density',
@@ -134,7 +144,8 @@ const services = [
     minZoom: 3,
     displayName: 'Greenhouses',
     type: 'vector',
-    group: 'Latacunga thematic maps'
+    group: 'Latacunga thematic maps',
+    getFeatureInfo: true
   },
   {
     layers: 'ltca_farms',
@@ -145,7 +156,8 @@ const services = [
     minZoom: 3,
     displayName: 'Farms and orchards',
     type: 'vector',
-    group: 'Latacunga thematic maps'
+    group: 'Latacunga thematic maps',
+    getFeatureInfo: true
   },
   {
     layers: 'ltca_schools',
@@ -156,7 +168,8 @@ const services = [
     minZoom: 3,
     displayName: 'Schools',
     type: 'vector',
-    group: 'Latacunga thematic maps'
+    group: 'Latacunga thematic maps',
+    getFeatureInfo: true
   },
   {
     layers: 'ltca_doct_offices',
@@ -167,7 +180,8 @@ const services = [
     minZoom: 3,
     displayName: 'Doctors and dentists',
     type: 'vector',
-    group: 'Latacunga thematic maps'
+    group: 'Latacunga thematic maps',
+    getFeatureInfo: true
   },
   {
     layers: 'ltca_hospitals',
@@ -178,7 +192,8 @@ const services = [
     minZoom: 3,
     displayName: 'Hospitals and clinics',
     type: 'vector',
-    group: 'Latacunga thematic maps'
+    group: 'Latacunga thematic maps',
+    getFeatureInfo: true
   },
   {
     layers: 'ltga_buildingfloors',
@@ -189,7 +204,8 @@ const services = [
     minZoom: 3,
     displayName: 'Building floors',
     type: 'vector',
-    group: 'Latacunga thematic maps'
+    group: 'Latacunga thematic maps',
+    getFeatureInfo: true
   },
   {
     layers: 'ltga_eje_vial',
@@ -200,7 +216,8 @@ const services = [
     minZoom: 3,
     displayName: 'Latacunga roads',
     type: 'vector',
-    group: 'Latacunga thematic maps'
+    group: 'Latacunga thematic maps',
+    getFeatureInfo: true
   },
   {
     layers: 'ltga_vias_2004',
@@ -211,7 +228,8 @@ const services = [
     minZoom: 3,
     displayName: 'Cotopaxi roads',
     type: 'vector',
-    group: 'Latacunga thematic maps'
+    group: 'Latacunga thematic maps',
+    getFeatureInfo: true
   },
   {
     layers: 'ltga_luminaria',
@@ -222,7 +240,8 @@ const services = [
     minZoom: 3,
     displayName: 'Lighting',
     type: 'vector',
-    group: 'Latacunga thematic maps'
+    group: 'Latacunga thematic maps',
+    getFeatureInfo: true
   },
   {
     layers: 'tramodistriaereo',
@@ -233,7 +252,8 @@ const services = [
     minZoom: 3,
     displayName: 'Air distribution section',
     type: 'vector',
-    group: 'Latacunga thematic maps'
+    group: 'Latacunga thematic maps',
+    getFeatureInfo: true
   },
   {
     layers: 'tramodistrisub',
@@ -244,7 +264,8 @@ const services = [
     minZoom: 3,
     displayName: 'Underground distribution section',
     type: 'vector',
-    group: 'Latacunga thematic maps'
+    group: 'Latacunga thematic maps',
+    getFeatureInfo: true
   },
   {
     layers: 'ltga_cultivo_principal',
@@ -255,7 +276,8 @@ const services = [
     minZoom: 3,
     displayName: 'Agriculture main crops',
     type: 'vector',
-    group: 'Latacunga thematic maps'
+    group: 'Latacunga thematic maps',
+    getFeatureInfo: true
   },
   {
     layers: 'ltga_uso_cobertura',
@@ -266,7 +288,8 @@ const services = [
     minZoom: 3,
     displayName: 'Land use and land cover',
     type: 'vector',
-    group: 'Latacunga thematic maps'
+    group: 'Latacunga thematic maps',
+    getFeatureInfo: true
   },
   {
     layers: 'ltca_productive_infrastructure',
@@ -277,7 +300,8 @@ const services = [
     minZoom: 3,
     displayName: 'Productive infrastructure',
     type: 'vector',
-    group: 'Latacunga thematic maps'
+    group: 'Latacunga thematic maps',
+    getFeatureInfo: true
   },
   {
     layers: 'ltca_producer_associations',
@@ -288,7 +312,8 @@ const services = [
     minZoom: 3,
     displayName: 'Producer associations',
     type: 'vector',
-    group: 'Latacunga thematic maps'
+    group: 'Latacunga thematic maps',
+    getFeatureInfo: true
   },
   {
     layers: 'ltca_markets_squares',
@@ -299,7 +324,8 @@ const services = [
     minZoom: 3,
     displayName: 'Markets and squares',
     type: 'vector',
-    group: 'Latacunga thematic maps'
+    group: 'Latacunga thematic maps',
+    getFeatureInfo: true
   },
   {
     layers: 'ltca_safe_points',
@@ -310,7 +336,8 @@ const services = [
     minZoom: 3,
     displayName: 'Safe points',
     type: 'vector',
-    group: 'Latacunga thematic maps'
+    group: 'Latacunga thematic maps',
+    getFeatureInfo: true
   },
   {
     layers: 'ltca_evacuation_routes',
@@ -321,7 +348,8 @@ const services = [
     minZoom: 3,
     displayName: 'Evacuation routes',
     type: 'vector',
-    group: 'Latacunga thematic maps'
+    group: 'Latacunga thematic maps',
+    getFeatureInfo: true
   },
   {
     layers: 'ltca_sirens',
@@ -332,7 +360,8 @@ const services = [
     minZoom: 3,
     displayName: 'Early warning sirens',
     type: 'vector',
-    group: 'Latacunga thematic maps'
+    group: 'Latacunga thematic maps',
+    getFeatureInfo: true
   },
   {
     layers: 'ltga_amenaza_coto',
@@ -343,7 +372,8 @@ const services = [
     minZoom: 3,
     displayName: 'Affected areas',
     type: 'vector',
-    group: 'Latacunga volcanic threats'
+    group: 'Latacunga volcanic threats',
+    getFeatureInfo: true
   },
   {
     layers: 'ltga_grado_amenaza',
@@ -354,7 +384,8 @@ const services = [
     minZoom: 3,
     displayName: 'Volcano lahar flow',
     type: 'vector',
-    group: 'Latacunga volcanic threats'
+    group: 'Latacunga volcanic threats',
+    getFeatureInfo: true
   },
   {
     layers: 'ltga_isopacas',
@@ -365,7 +396,8 @@ const services = [
     minZoom: 3,
     displayName: 'Cotopaxi ash fall',
     type: 'vector',
-    group: 'Latacunga volcanic threats'
+    group: 'Latacunga volcanic threats',
+    getFeatureInfo: true
   },
   {
     layers: 'ltga_vulnerabilidad',
@@ -376,6 +408,7 @@ const services = [
     minZoom: 3,
     displayName: 'Vulnerability',
     type: 'vector',
-    group: 'Latacunga volcanic threats'
+    group: 'Latacunga volcanic threats',
+    getFeatureInfo: true
   }
 ]
