@@ -118,9 +118,12 @@ map.on(L.Draw.Event.DRAWSTOP, () => {
 L.control.measure({
   position : 'topleft',
   primaryLengthUnit: 'kilometers',
-  primaryAreaUnit: 'acres',
-  secondaryLengthUnit: undefined,
-  secondaryAreaUnit: undefined,
+  primaryAreaUnit: 'sqkilometers',
+  secondaryLengthUnit: 'miles',
+  secondaryAreaUnit: 'sqmiles',
+  units: {
+    sqkilometers: {factor: 1e-6, display: 'km²', decimals: 2},
+  },
   activeColor: '#1e90ff',
   completedColor: '#1e90ff'
 }).addTo(map);
