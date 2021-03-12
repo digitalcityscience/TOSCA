@@ -144,6 +144,11 @@ function handleResponse(res) {
         // == time map module ==
         // Travel mode
         case 'time_map.0':
+          map.removeLayer(fromPoints);
+          map.removeLayer(strickenArea);
+          map.removeLayer(timeMap);
+          map.legend.toggleLegendForLayer(false, timeMap);
+
           form = formElement(messageId);
           buttons = [
             buttonElement(t['Automobile']).click(() => {
@@ -249,6 +254,10 @@ function handleResponse(res) {
         case 'time_map.6':
           refreshLayer(timeMap);
           map.addLayer(timeMap);
+
+          // refresh the legend
+          map.legend.toggleLegendForLayer(false, timeMap);
+          map.legend.toggleLegendForLayer(true, timeMap);
 
           cancelDrawing();
           drawnItems.clearLayers();
