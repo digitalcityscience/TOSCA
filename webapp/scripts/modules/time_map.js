@@ -123,24 +123,6 @@ module.exports = class {
         this.averageSpeed = AVERAGE_SPEED
         this.calculate()
         return { id: 'time_map.6', message: translations['time_map.message.6'] }
-
-      // temporarilly skip message 8 & 9
-      // case 'time_map.4':
-      //   this.reductionRatio = parseFloat(message) / 100
-      //   return messages[8]
-
-      // case 'time_map.8':
-      //   if (message.toLowerCase() == 'yes') {
-      //     return messages[9]
-      //   }
-      //   this.averageSpeed = AVERAGE_SPEED
-      //   this.calculate()
-      //   return messages[6]
-
-      // case 'time_map.9':
-      //   this.averageSpeed = message
-      //   this.calculate()
-      //   return messages[6]
     }
   }
 
