@@ -1,4 +1,4 @@
-/* global $, L, t, map, drawnItems, refreshLayer */
+/* global $, L, t, map, drawnItems, refreshLayer, resultModal */
 const selection = window['selection']
 const fromPoints = window['time_map_from_points']
 const strickenArea = window['time_map_stricken_area']
@@ -486,8 +486,9 @@ function validateNum(num) {
 }
 
 // eslint-disable-next-line no-unused-vars
-function showResults() {
+function onClickResults() {
   $('#results-modal').show()
+  resultModal.updateResults();
 }
 
 // eslint-disable-next-line no-unused-vars

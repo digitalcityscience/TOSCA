@@ -12,6 +12,8 @@ html
     script(src='/lib/leaflet-draw/leaflet.draw.js')
     script(src='/lib/leaflet-groupedlayercontrol/leaflet.groupedlayercontrol.js')
     script(src="/lib/leaflet-betterWMS/L.TileLayer.BetterWMS.js")
+    script 
+      include ../results-modal/script.js
 
     style
       include style.css
@@ -32,7 +34,7 @@ html
                 option(selected value='time_map') #{t['Calculate time map']}
                 option(value='query') #{t['Query area']}
               button(class='btn btn-success btn-lg mr-2' onclick='launchModule()') ▷&nbsp;#{t['Run']}
-              button(class='btn btn-light btn-lg' id="result-btn" onclick='showResults()') #{t['Results']}
+              button(class='btn btn-light btn-lg' id="result-btn" onclick='onClickResults()') #{t['Results']}
             li(class="nav-item flex-grow-1")
             li(class="nav-item dropdown")
               a(class="btn btn-lg nav-link dropdown-toggle" id="settings-menu" data-toggle="dropdown") #{t['Settings']}
@@ -104,6 +106,5 @@ html
       include ../map/legend.js
       include ../map/script.js
       include script.js
-      include ../results-modal/script.js
       include ../help-modal/script.js
       include ../table-attributes-modal/script.js
