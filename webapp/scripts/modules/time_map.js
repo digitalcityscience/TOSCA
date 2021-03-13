@@ -181,7 +181,7 @@ module.exports = class {
       grass(this.mapset, `v.net input=highways points=${this.viaPoints} output=m1a_highways_via_points operation=connect threshold=${CONNECT_DISTANCE} --overwrite`)
       grass(this.mapset, `v.patch -e input=m1a_highways_via_points,m1a_highways_from_points output=m1a_highways_points_connected --overwrite`)
     } else {
-      grass(this.mapset, `g.rename vector=m1a_highways_from_points,m1a_highways_points_connected`)
+      grass(this.mapset, `g.rename vector=m1a_highways_from_points,m1a_highways_points_connected --overwrite`)
     }
 
     // Add "spd_average" attribute column (integer type) to the road network map (if not yet exist -- if exist GRASS will skip this process)
@@ -229,11 +229,13 @@ module.exports = class {
     // Calculating 'from--via' time map, 'via--to' time map and it sum. There is a NULL value replacenet too. It is neccessary, because otherwise, if one of the maps containes NULL value, NULL value cells will not considering while summarizing the maps. Therefore, before mapcalc operation, NULL has to be replaced by 0.
     // FIXME: when this.viaPoints == true, PDF results has a green background, probably due to null raster cells
     if (this.viaPoints) {
-      grass(this.mapset, `r.cost -n input=m1a_specific_time output=m1a_from_to_cost start_points=${this.fromPoints} stop_points=${this.viaPoints} null_cost=0 --overwrite`)
+      grass(this.mapset, `r.cost -n input=m1a_specific_time output=m1a_from_to_cost start_points=${this.fromPoints} stop_points=${this.viaPoints} --overwrite`)
       const VIA_VALUE = grass(this.mapset, `r.what map=m1a_from_to_cost points=${this.viaPoints}`).split('|')[3]
-      grass(this.mapset, `r.cost -n input=m1a_specific_time output=m1a_via_to_cost start_points=${this.viaPoints} stop_points=${this.toPoints} null_cost=0 --overwrite`)
+      grass(this.mapset, `r.null map=m1a_from_to_cost null=0 --overwrite`)
+      grass(this.mapset, `r.cost -n input=m1a_specific_time output=m1a_via_to_cost start_points=${this.viaPoints} stop_points=${this.toPoints} --overwrite`)
+      grass(this.mapset, `r.null map=m1a_via_to_cost --overwrite`)
       grass(this.mapset, `r.mapcalc expression="m1a_time_map_temp=m1a_via_to_cost+${VIA_VALUE}" --overwrite`)
-      grass(this.mapset, `r.mapcalc expression="m1a_time_map=m1a_time_map_temp*${METER_TO_PROJ}" --overwrite`)
+      grass(this.mapset, `r.mapcalc expression="m1a_time_map=m1a_time_map_temp/60*${METER_TO_PROJ}" --overwrite`)
     } else {
       grass(this.mapset, `r.cost input=m1a_specific_time output=m1a_from_to_cost start_points=${this.fromPoints} stop_points=${this.toPoints} --overwrite`)
       grass(this.mapset, `r.mapcalc expression="m1a_time_map_temp=m1a_from_to_cost*${METER_TO_PROJ}/60" --overwrite`)
