@@ -29,6 +29,9 @@ class ResultModal {
 
   onClickTimeMap() {
     const tbody = $('#results-table table tbody').empty();
+    $('#all-btn').removeClass('active');
+    $('#query-btn').removeClass('active');
+    $('#time-map-btn').addClass('active');
 
     this.currentView = 'TIMEMAP';
     this.dataTimeMap.forEach(file => {
@@ -38,6 +41,9 @@ class ResultModal {
 
   onClickQuery() {
     const tbody = $('#results-table table tbody').empty();
+    $('#all-btn').removeClass('active');
+    $('#query-btn').addClass('active');
+    $('#time-map-btn').removeClass('active');
 
     this.currentView = 'QUERY';
     this.dataQuery.forEach(file => {
@@ -47,6 +53,9 @@ class ResultModal {
 
   onClickAll() {
     const tbody = $('#results-table table tbody').empty();
+    $('#all-btn').addClass('active');
+    $('#query-btn').removeClass('active');
+    $('#time-map-btn').removeClass('active');
 
     this.currentView = 'ALL';
     this.dataAll.forEach(file => {
