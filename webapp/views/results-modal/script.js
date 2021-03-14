@@ -5,26 +5,26 @@
  */
 class ResultModal {
   constructor(data = [], resultToDelete = '', currentView = 'ALL') {
-    this._data = data;
+    this.results = data;
     this.resultToDelete = resultToDelete;
     this.currentView = currentView;
   }
 
   get dataAll() {
-    return this._data;
+    return this.results;
   }
   set dataAll(val) {
-    this._data = val;
+    this.results = val;
   }
   get dataTimeMap() {
-    return this._data.filter(str => str.match(/^time/));
+    return this.results.filter(result => result.file.match(/^time/));
   }
   get dataQuery() {
-    return this._data.filter(str => str.match(/^query/));
+    return this.results.filter(result => result.file.match(/^query/));
   }
 
   remove(file) {
-    this.dataAll.splice(this.dataAll.indexOf(file), 1);
+    this.dataAll.splice(this.dataAll.findIndex(result => result.file == file), 1);
   }
 
   onClickTimeMap() {
@@ -34,8 +34,8 @@ class ResultModal {
     $('#time-map-btn').addClass('active');
 
     this.currentView = 'TIMEMAP';
-    this.dataTimeMap.forEach(file => {
-      this.appendItem(tbody, file);
+    this.dataTimeMap.sort((a, b) => b.date.valueOf() - a.date.valueOf()).forEach(result => {
+      tbody.append(result.getTableRow());
     });
   }
 
@@ -46,8 +46,8 @@ class ResultModal {
     $('#time-map-btn').removeClass('active');
 
     this.currentView = 'QUERY';
-    this.dataQuery.forEach(file => {
-      this.appendItem(tbody, file);
+    this.dataQuery.sort((a, b) => b.date.valueOf() - a.date.valueOf()).forEach(result => {
+      tbody.append(result.getTableRow());
     });
   }
 
@@ -58,8 +58,8 @@ class ResultModal {
     $('#time-map-btn').removeClass('active');
 
     this.currentView = 'ALL';
-    this.dataAll.forEach(file => {
-      this.appendItem(tbody, file);
+    this.dataAll.sort((a, b) => b.date.valueOf() - a.date.valueOf()).forEach(result => {
+      tbody.append(result.getTableRow());
     });
   }
 
@@ -75,9 +75,9 @@ class ResultModal {
   }
 
   updateResults() {
-    get('/output', {}, res => new Promise(resolve => {
+    get('/output/', {}, res => new Promise(resolve => {
       res.list.sort().reverse();
-      this.dataAll = res.list;
+      this.dataAll = res.list.map(file => new Result(file));
 
       switch (this.currentView) {
         case 'QUERY':
@@ -94,18 +94,24 @@ class ResultModal {
     }));
   }
 
-  appendItem(tbody, file) {
-    const m = file.match(/.*(\d{4})-(\d{2})-(\d{2})_(\d{4})\.pdf$/);
-    const date = new Date(m[1], m[2] - 1, m[3]);
-    tbody.append(`<tr>
-  <td>${date.toDateString()}</td>
-  <td><a href="/output/${file}" target="_blank">${file}</a></td>
-  <td><button type="button" class="btn btn-outline-danger" value="${file}" onclick="resultModal.onClickDelete(this)">Delete</button></td>
-  </tr>`);
-  }
-
   hide() {
     $('#results-modal').hide();
+  }
+}
+
+class Result {
+  constructor(file) {
+    this.file = file;
+    const m = this.file.match(/.*(\d{4})-(\d{2})-(\d{2})_(\d{2})(\d{2})\.pdf$/);
+    this.date = new Date(m[1], m[2] - 1, m[3], m[4], m[5]);
+  }
+
+  getTableRow() {
+    return `<tr>
+  <td>${this.date.toDateString()}</td>
+  <td><a href="/output/${this.file}" target="_blank">${this.file}</a></td>
+  <td><button type="button" class="btn btn-outline-danger" value="${this.file}" onclick="resultModal.onClickDelete(this)">Delete</button></td>
+</tr>`;
   }
 }
 
