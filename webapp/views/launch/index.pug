@@ -20,7 +20,6 @@ html
       include style.css
       include ../map/style.css
       include ../results-modal/style.css
-      include ../help-modal/style.css
       include ../table-attributes-modal/style.css
 
   body
@@ -48,7 +47,7 @@ html
                 div(class="dropdown-divider")
                 a(class="btn dropdown-item" onclick="launchSettings('add_map')") #{t['Add layer']}
             li(class="nav-item")
-              button(class="btn btn-secondary btn-lg" onclick="showHelp()") #{t['Help']}
+              a(class="btn btn-secondary btn-lg" href="https://github.com/citysciencelab/open-city-toolkit/wiki/Open-City-Toolkit-%E2%80%90-User-manual" target="_blank") #{t['Help']}
 
       div(class="d-flex flex-grow-1 main")
         div(class="d-flex flex-column w-25 sidebar")
@@ -73,9 +72,6 @@ html
 
     div(id="results-modal" class="modal-background")
       include ../results-modal/index.pug
-
-    div(id="help-modal" class="modal-background")
-      include ../help-modal/index.pug
 
     div(id="table-attributes-modal" class="modal-background")
       include ../table-attributes-modal/index.pug
@@ -105,6 +101,5 @@ html
       include ../map/config.js
       include ../map/script.js
       include ../results-modal/script.js
-      include ../help-modal/script.js
       include ../table-attributes-modal/script.js
       include script.js
