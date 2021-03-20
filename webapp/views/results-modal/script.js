@@ -4,27 +4,27 @@
  * result modal class
  */
 class ResultModal {
-  constructor(data = [], resultToDelete = '', currentView = 'ALL') {
-    this.results = data;
+  constructor(results = [], resultToDelete = '', currentView = 'ALL') {
+    this._results = results;
     this.resultToDelete = resultToDelete;
     this.currentView = currentView;
   }
 
-  get dataAll() {
-    return this.results;
+  get results() {
+    return this._results;
   }
-  set dataAll(val) {
-    this.results = val;
+  set results(val) {
+    this._results = val;
   }
-  get dataTimeMap() {
-    return this.results.filter(result => result.file.match(/^time/));
+  get timeMapResults() {
+    return this._results.filter(str => str.file.match(/^time/));
   }
-  get dataQuery() {
-    return this.results.filter(result => result.file.match(/^query/));
+  get queryResults() {
+    return this._results.filter(str => str.file.match(/^query/));
   }
 
   remove(file) {
-    this.dataAll.splice(this.dataAll.findIndex(result => result.file == file), 1);
+    this.results.splice(this.results.indexOf(file), 1);
   }
 
   onClickTimeMap() {
@@ -34,9 +34,7 @@ class ResultModal {
     $('#time-map-btn').addClass('active');
 
     this.currentView = 'TIMEMAP';
-    this.dataTimeMap.sort((a, b) => b.date.valueOf() - a.date.valueOf()).forEach(result => {
-      tbody.append(result.getTableRow());
-    });
+    this.batchedAppend(tbody, this.timeMapResults.sort((a, b) => b.date.valueOf() - a.date.valueOf()));
   }
 
   onClickQuery() {
@@ -46,9 +44,7 @@ class ResultModal {
     $('#time-map-btn').removeClass('active');
 
     this.currentView = 'QUERY';
-    this.dataQuery.sort((a, b) => b.date.valueOf() - a.date.valueOf()).forEach(result => {
-      tbody.append(result.getTableRow());
-    });
+    this.batchedAppend(tbody, this.queryResults.sort((a, b) => b.date.valueOf() - a.date.valueOf()));
   }
 
   onClickAll() {
@@ -58,9 +54,7 @@ class ResultModal {
     $('#time-map-btn').removeClass('active');
 
     this.currentView = 'ALL';
-    this.dataAll.sort((a, b) => b.date.valueOf() - a.date.valueOf()).forEach(result => {
-      tbody.append(result.getTableRow());
-    });
+    this.batchedAppend(tbody, this.results.sort((a, b) => b.date.valueOf() - a.date.valueOf()));
   }
 
   onClickDeleteAll() {
@@ -77,7 +71,7 @@ class ResultModal {
   updateResults() {
     get('/output/', {}, res => new Promise(resolve => {
       res.list.sort().reverse();
-      this.dataAll = res.list.map(file => new Result(file));
+      this.results = res.list.map(file => new Result(file));
 
       switch (this.currentView) {
         case 'QUERY':
@@ -92,6 +86,20 @@ class ResultModal {
       }
       resolve();
     }));
+  }
+
+  batchedAppend(tbody, results) {
+    if (results.length) {
+      results.forEach(result => {
+        const m = result.file.match(/.*(\d{4})-(\d{2})-(\d{2})_(\d{4})\.pdf$/);
+        const date = new Date(m[1], m[2] - 1, m[3]);
+        tbody.append(`<tr>
+      <td>${date.toDateString()}</td>
+      <td><a href="/output/${result.file}" target="_blank">${result.file}</a></td>
+      <td><button type="button" class="btn btn-outline-danger" value="${result.file}" onclick="resultModal.onClickDelete(this)">Delete</button></td>
+      </tr>`);
+      });
+    }
   }
 
   hide() {
@@ -127,11 +135,11 @@ class DeleteModal {
   onClickDelete() {
     deleteMethod('/output', { file: this.resultModal.resultToDelete }, () => new Promise((resolve) => {
       this.resultModal.remove(this.resultModal.resultToDelete);
+      this.resultModal.resultToDelete = '';
+      this.resultModal.updateResults();
+      this.hide();
       resolve();
     }));
-    this.resultModal.resultToDelete = '';
-    this.resultModal.updateResults();
-    this.hide();
   }
 }
 
@@ -142,12 +150,12 @@ class DeleteAllModal {
 
   onClickDelete() {
     deleteMethod('/output-all', {}, () => new Promise((resolve) => {
+      this.resultModal.results = []
+      this.resultModal.resultToDelete = '';
+      $('#results-table table tbody').empty();
+      this.hide();
       resolve();
     }));
-    this.resultModal.dataAll = []
-    this.resultModal.resultToDelete = '';
-    $('#results-table table tbody').empty();
-    this.hide();
   }
 
   hide() {
