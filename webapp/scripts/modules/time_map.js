@@ -125,6 +125,7 @@ module.exports = class {
           this.strickenArea = 'm1_stricken_area'
           return { id: 'time_map.4', message: translations['time_map.message.4'] }
         }
+        this.strickenArea = null;
         this.averageSpeed = AVERAGE_SPEED
         this.calculate()
         return { id: 'time_map.6', message: translations['time_map.message.6'] }
