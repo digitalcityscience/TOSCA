@@ -15,6 +15,7 @@ html
     script(src="/lib/leaflet-measure/leaflet-measure.js")
     script(src="/lib/leaflet-plugins/leaflet.legend.js")
     script(src="/lib/leaflet-plugins/leaflet.getfeatureinfo.js")
+    script(src="/lib/split/split.js")
 
     style
       include style.css
@@ -50,7 +51,7 @@ html
               a(class="btn btn-secondary btn-lg" href="https://github.com/citysciencelab/open-city-toolkit/wiki/Open-City-Toolkit-%E2%80%90-User-manual" target="_blank") #{t['Help']}
 
       div(class="d-flex flex-grow-1 main")
-        div(class="d-flex flex-column w-25 sidebar")
+        div(id="sidebar" class="d-flex flex-column sidebar")
           div(id="dialog" class="flex-grow-1 card card-border box-shadow")
             div(id="textarea")
             div(id="lists")
@@ -92,6 +93,12 @@ html
       target.tooltip(options);
       target.on('focusin change', () => target.tooltip('show'));
       target.on('focusout', () => target.tooltip('hide'));
+
+      // split pane
+      Split(['#sidebar', '#map-container'], {
+        sizes: [25, 75],
+        minSize: [175, 350]
+      })
 
       // environment variables
       const geoserverUrl = '#{geoserverUrl}';
