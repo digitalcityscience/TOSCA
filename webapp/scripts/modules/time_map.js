@@ -56,6 +56,8 @@ module.exports = class {
 
     this.highwayTypes = fs.readFileSync(`${GRASS}/variables/defaults/highway_types`).toString().trim().split('\n')
 
+    this.averageSpeed = AVERAGE_SPEED
+
     // Delete files from previous run, if any
     for (const filename of ['m1_from_points.gpkg', 'm1_via_points.gpkg', 'm1_stricken_area.gpkg', 'm1_time_map.gpkg', 'm1_time_map.tif']) {
       try {
@@ -126,13 +128,11 @@ module.exports = class {
           return { id: 'time_map.4', message: translations['time_map.message.4'] }
         }
         this.strickenArea = null;
-        this.averageSpeed = AVERAGE_SPEED
         this.calculate()
         return { id: 'time_map.6', message: translations['time_map.message.6'] }
 
       case 'time_map.4':
         this.reductionRatio = parseFloat(message) / 100
-        this.averageSpeed = AVERAGE_SPEED
         this.calculate()
         return { id: 'time_map.6', message: translations['time_map.message.6'] }
 
