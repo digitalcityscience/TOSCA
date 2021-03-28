@@ -144,15 +144,23 @@ function handleResponse(res) {
         // == time map module ==
         // Travel mode
         case 'time_map.0':
+          map.removeLayer(fromPoints);
+          map.removeLayer(strickenArea);
+          map.removeLayer(timeMap);
+          map.legend.toggleLegendForLayer(false, timeMap);
+
           form = formElement(messageId);
           buttons = [
             buttonElement(t['Automobile']).click(() => {
+              timeMap.setParams({styles: 'time_map_vector_car'});
               reply(res, 'Automobile');
             }),
             buttonElement(t['Bicycle']).click(() => {
+              timeMap.setParams({styles: 'time_map_vector_bicycle'});
               reply(res, 'Bicycle');
             }),
             buttonElement(t['Walking']).click(() => {
+              timeMap.setParams({styles: 'time_map_vector_walking'});
               reply(res, 'Walking');
             })
           ];
@@ -180,27 +188,6 @@ function handleResponse(res) {
             })
           ];
           break;
-
-          // Via points temporarily disabled
-          // case 'time_map.2':
-          //   refreshLayer(fromPoints);
-          //   map.addLayer(fromPoints);
-
-          //   drawnItems.clearLayers();
-          //   startDrawCirclemarker();
-
-          //   buttons = [
-          //     buttonElement(t['Save']).click(() => {
-          //       $(`#${messageId}-error`).remove();
-          //       if (!saveDrawing(res)) {
-          //         textarea.append($(`<span id="${messageId}-error" class="validation-error">${t['error:draw point']}</span>`));
-          //       }
-          //     }),
-          //     buttonElement(t['Skip']).click(() => {
-          //       reply(res, 'cancel');
-          //     })
-          //   ];
-          //   break;
 
         // stricken area
         case 'time_map.3':
@@ -246,6 +233,10 @@ function handleResponse(res) {
         case 'time_map.6':
           refreshLayer(timeMap);
           map.addLayer(timeMap);
+
+          // refresh the legend
+          map.legend.toggleLegendForLayer(false, timeMap);
+          map.legend.toggleLegendForLayer(true, timeMap);
 
           cancelDrawing();
           drawnItems.clearLayers();
@@ -489,11 +480,6 @@ function validateNum(num) {
 function onClickResults() {
   $('#results-modal').show()
   resultModal.updateResults();
-}
-
-// eslint-disable-next-line no-unused-vars
-function showHelp() {
-  $('#help-modal').show()
 }
 
 let blinkTimeout;
