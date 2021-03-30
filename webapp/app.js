@@ -4,6 +4,7 @@ require('dotenv').config()
 const dataFromBrowserDir = process.env.DATA_FROM_BROWSER_DIR
 const geoserverDataDir = process.env.GEOSERVER_DATA_DIR
 const geoserverUrl = process.env.GEOSERVER_URL
+const OUTPUT_DIR = process.env.OUTPUT_DIR
 const lat = process.env.INITIAL_LAT || 0
 const lon = process.env.INITIAL_LON || 0
 
@@ -11,6 +12,7 @@ const translations = require(`./i18n/messages.${process.env.USE_LANG || 'en'}.js
 
 // File system
 const fs = require('fs')
+const path = require('path');
 
 // Express server
 const express = require('express')
@@ -35,7 +37,9 @@ app.use('/lib/bootstrap', express.static('node_modules/bootstrap/dist'))
 app.use('/lib/leaflet', express.static('node_modules/leaflet/dist'))
 app.use('/lib/leaflet-draw', express.static('node_modules/leaflet-draw/dist'))
 app.use('/lib/leaflet-groupedlayercontrol', express.static('node_modules/leaflet-groupedlayercontrol/src'))
+app.use('/lib/leaflet-measure', express.static('node_modules/leaflet-measure/dist'));
 app.use('/lib/leaflet-plugins', express.static('./leaflet-plugins'))
+app.use('/lib/split', express.static('node_modules/split.js/dist'))
 
 // Views (using Pug template engine)
 app.set('views', './views')
@@ -158,6 +162,34 @@ app.get('/output', jsonParser, (req, res, next) => {
   try {
     const list = getResults()
     res.json({ list })
+  } catch (err) {
+    next(err)
+  }
+})
+
+// delete file from OUTPUT_DIR
+app.delete('/output', jsonParser, (req, res, next) => {
+  try {
+    fs.unlinkSync(`${OUTPUT_DIR}/${req.query.file}`)
+    res.json({ message: `${req.query.file} deleted!` })
+  } catch (err) {
+    next(err)
+  }
+})
+
+// delete all files in OUTPUT_DIR
+app.delete('/output-all', jsonParser, (req, res, next) => {
+  try {
+    fs.readdir(OUTPUT_DIR, (err, files) => {
+      if (err) throw err;
+
+      for (const file of files) {
+        fs.unlink(path.join(OUTPUT_DIR, file), err => {
+          if (err) throw err;
+        });
+      }
+    });
+    res.json({ message: 'output folder emptied!' })
   } catch (err) {
     next(err)
   }

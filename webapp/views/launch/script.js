@@ -1,4 +1,4 @@
-/* global $, L, t, map, drawnItems, refreshLayer */
+/* global $, L, t, map, drawnItems, refreshLayer, resultModal */
 const selection = window['selection']
 const fromPoints = window['time_map_from_points']
 const strickenArea = window['time_map_stricken_area']
@@ -144,15 +144,23 @@ function handleResponse(res) {
         // == time map module ==
         // Travel mode
         case 'time_map.0':
+          map.removeLayer(fromPoints);
+          map.removeLayer(strickenArea);
+          map.removeLayer(timeMap);
+          map.legend.toggleLegendForLayer(false, timeMap);
+
           form = formElement(messageId);
           buttons = [
             buttonElement(t['Automobile']).click(() => {
+              timeMap.setParams({styles: 'time_map_vector_car'});
               reply(res, 'Automobile');
             }),
             buttonElement(t['Bicycle']).click(() => {
+              timeMap.setParams({styles: 'time_map_vector_bicycle'});
               reply(res, 'Bicycle');
             }),
             buttonElement(t['Walking']).click(() => {
+              timeMap.setParams({styles: 'time_map_vector_walking'});
               reply(res, 'Walking');
             })
           ];
@@ -180,27 +188,6 @@ function handleResponse(res) {
             })
           ];
           break;
-
-          // Via points temporarily disabled
-          // case 'time_map.2':
-          //   refreshLayer(fromPoints);
-          //   map.addLayer(fromPoints);
-
-          //   drawnItems.clearLayers();
-          //   startDrawCirclemarker();
-
-          //   buttons = [
-          //     buttonElement(t['Save']).click(() => {
-          //       $(`#${messageId}-error`).remove();
-          //       if (!saveDrawing(res)) {
-          //         textarea.append($(`<span id="${messageId}-error" class="validation-error">${t['error:draw point']}</span>`));
-          //       }
-          //     }),
-          //     buttonElement(t['Skip']).click(() => {
-          //       reply(res, 'cancel');
-          //     })
-          //   ];
-          //   break;
 
         // stricken area
         case 'time_map.3':
@@ -279,8 +266,19 @@ function handleResponse(res) {
           refreshLayer(timeMap);
           map.addLayer(timeMap);
 
+          // refresh the legend
+          map.legend.toggleLegendForLayer(false, timeMap);
+          map.legend.toggleLegendForLayer(true, timeMap);
+
           cancelDrawing();
           drawnItems.clearLayers();
+
+          if (res.result) {
+            form = formElement(messageId);
+            buttons = [
+              buttonLinkElement(t['Open result'], 'output/' + res.result)
+            ];
+          }
           break;
 
         // == query module ==
@@ -357,8 +355,16 @@ function handleResponse(res) {
           break;
         }
 
-        /* Cotopaxi module */
+        case 'query.24':
+          if (res.result) {
+            form = formElement(messageId);
+            buttons = [
+              buttonLinkElement(t['Open result'], 'output/' + res.result)
+            ];
+          }
+          break;
 
+        /* Cotopaxi module */
         // Choose type of volcanic threat
         case 'cotopaxi_scenarios.0':
           form = formElement(messageId);
@@ -421,7 +427,6 @@ function handleResponse(res) {
               reply(res, input[0].value);
             })
           ];
-          break;
       }
 
       textarea.append(text);
@@ -451,6 +456,10 @@ function formElement(id, isMultipart) {
 
 function buttonElement(action) {
   return $(`<button type="button" class="btn btn-primary">${action}</button>`);
+}
+
+function buttonLinkElement(action, url) {
+  return $(`<a type="button" class="btn btn-primary" href="${url}" target="_blank">${action}</a>`);
 }
 
 function relationSelect() {
@@ -590,16 +599,9 @@ function validateNum(num) {
 }
 
 // eslint-disable-next-line no-unused-vars
-function showResults() {
-  getOutput({})
+function onClickResults() {
   $('#results-modal').show()
-  // empty iframe content
-  $('#results-iframe').attr('src', '')
-}
-
-// eslint-disable-next-line no-unused-vars
-function showHelp() {
-  $('#help-modal').show()
+  resultModal.updateResults();
 }
 
 let blinkTimeout;
@@ -666,15 +668,6 @@ function saveDrawing(res) {
   return true;
 }
 
-function getOutput() {
-  get('/output', {}, (res) => new Promise((resolve) => {
-    const baseOption = "<option selected value=''> - </option>";
-    const options = res.list.reduce((str, file) => str + `<option value="${file}">${file}</option>`, '');
-    $('#results-select').html(baseOption + options);
-    resolve();
-  }));
-}
-
 function getAttributes(table) {
   get('/attributes', { table }, (res) => new Promise((resolve) => {
     const { tableObj, columnObj } = JSON.parse(res.attributes);
@@ -737,6 +730,20 @@ function upload(form, params, callback) {
   })
     .done(res => callback(res).catch(onClientError))
     .always(() => $('#loading').hide());
+}
+
+// eslint-disable-next-line no-unused-vars
+function deleteMethod(target, params, callback) {
+  $('#loading').show();
+
+  $.ajax({
+    type: 'DELETE',
+    url: target + '?' + $.param(params),
+    contentType: 'application/json; encoding=utf-8',
+    error: onServerError
+  })
+    .done(res => callback(res).catch(onClientError))
+    .always(() => $('#loading').hide())
 }
 
 function onClientError(error) {

@@ -17,7 +17,32 @@ The following instructions provide guidance for the installation of all required
 
 You can quickly set up a running system via [Docker](https://docs.docker.com/).
 
-To build and start the stack with [Docker Compose](https://docs.docker.com/compose/), run this command from the root directory, which contains the `docker-compose.yml` file:
+To build and start the stack with [Docker Compose](https://docs.docker.com/compose/), first open `docker-compose.yaml` in your root directory and change the **volume directories** to your local absolute paths:
+
+```yaml
+...
+volumes:
+  geoserver_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./geoserver_data_dir # change this to your local absolute path
+  grass:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./grass # change this to your local absolute path
+  output:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./output # change this to your local absolute path
+```
+
+then run this command in your root directory:
 
 ```
 docker-compose up --build
