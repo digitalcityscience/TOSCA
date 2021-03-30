@@ -1,60 +1,44 @@
 /* global $, get, deleteMethod */
 
+const modules = [
+  { name: 'TIMEMAP', btnSelector: '#time-map-btn', regex: /^time/ },
+  { name: 'QUERY', btnSelector: '#query-btn', regex: /^query/ },
+  { name: 'ALL', btnSelector: '#all-btn', regex: null }
+]
+
 /**
  * result modal class
  */
 class ResultModal {
   constructor(results = [], resultToDelete = '', currentView = 'ALL') {
-    this._results = results;
+    this.results = results;
     this.resultToDelete = resultToDelete;
     this.currentView = currentView;
-  }
-
-  get results() {
-    return this._results;
-  }
-  set results(val) {
-    this._results = val;
-  }
-  get timeMapResults() {
-    return this._results.filter(str => str.file.match(/^time/));
-  }
-  get queryResults() {
-    return this._results.filter(str => str.file.match(/^query/));
   }
 
   remove(file) {
     this.results.splice(this.results.indexOf(file), 1);
   }
 
-  onClickTimeMap() {
-    const tbody = $('#results-table table tbody').empty();
-    $('#all-btn').removeClass('active');
-    $('#query-btn').removeClass('active');
-    $('#time-map-btn').addClass('active');
+  onClickView(btn) {
+    const module = modules.filter(m => m.btnSelector === `#${btn.id}`)[0];
 
-    this.currentView = 'TIMEMAP';
-    this.batchedAppend(tbody, this.timeMapResults.sort((a, b) => b.date.valueOf() - a.date.valueOf()));
+    if (module.name === this.currentView) {
+      return;
+    }
+    this.updateView(module);
   }
 
-  onClickQuery() {
+  updateView(module) {
     const tbody = $('#results-table table tbody').empty();
-    $('#all-btn').removeClass('active');
-    $('#query-btn').addClass('active');
-    $('#time-map-btn').removeClass('active');
+    for (const m of modules) {
+      $(m.btnSelector).removeClass('active');
+    }
+    $(module.btnSelector).addClass('active');
 
-    this.currentView = 'QUERY';
-    this.batchedAppend(tbody, this.queryResults.sort((a, b) => b.date.valueOf() - a.date.valueOf()));
-  }
-
-  onClickAll() {
-    const tbody = $('#results-table table tbody').empty();
-    $('#all-btn').addClass('active');
-    $('#query-btn').removeClass('active');
-    $('#time-map-btn').removeClass('active');
-
-    this.currentView = 'ALL';
-    this.batchedAppend(tbody, this.results.sort((a, b) => b.date.valueOf() - a.date.valueOf()));
+    const currentResults = module.regex !== null ? this.results.filter(str => str.file.match(module.regex)) : this.results;
+    this.batchedAppend(tbody, currentResults.sort((a, b) => b.date.valueOf() - a.date.valueOf()));
+    this.currentView = module.name;
   }
 
   onClickDeleteAll() {
@@ -72,18 +56,10 @@ class ResultModal {
     get('/output/', {}, res => new Promise(resolve => {
       res.list.sort().reverse();
       this.results = res.list.map(file => new Result(file));
+      
+      const currentModule = modules.filter(m => m.name === this.currentView)[0];
+      this.updateView(currentModule);
 
-      switch (this.currentView) {
-        case 'QUERY':
-          this.onClickQuery();
-          break;
-        case 'TIMEMAP':
-          this.onClickTimeMap();
-          break;
-        default:
-          this.onClickAll();
-          break;
-      }
       resolve();
     }));
   }
@@ -134,7 +110,6 @@ class DeleteModal {
 
   onClickDelete() {
     deleteMethod('/output', { file: this.resultModal.resultToDelete }, () => new Promise((resolve) => {
-      this.resultModal.remove(this.resultModal.resultToDelete);
       this.resultModal.resultToDelete = '';
       this.resultModal.updateResults();
       this.hide();

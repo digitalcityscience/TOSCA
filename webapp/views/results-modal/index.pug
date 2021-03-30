@@ -2,9 +2,9 @@ div(class="modal-content")
   div(class="modal-header")
     h4(class="modal-title") #{t['results.header']}
     div(class="btn-group" role="group")
-      button(type="button" class="btn btn-outline-primary" id="all-btn" onclick="resultModal.onClickAll()") #{t['All']}
-      button(type="button" class="btn btn-outline-primary" id="time-map-btn" onclick="resultModal.onClickTimeMap()") #{t['Time map']}
-      button(type="button" class="btn btn-outline-primary" id="query-btn" onclick="resultModal.onClickQuery()") #{t['Query']}
+      button(type="button" class="btn btn-outline-primary" id="all-btn" onclick="resultModal.onClickView(this)") #{t['All']}
+      button(type="button" class="btn btn-outline-primary" id="time-map-btn" onclick="resultModal.onClickView(this)") #{t['Time map']}
+      button(type="button" class="btn btn-outline-primary" id="query-btn" onclick="resultModal.onClickView(this)") #{t['Query']}
     button(type="button" class="btn btn-outline-danger" onclick="resultModal.onClickDeleteAll()") #{t['Delete all']}
     span(class="modal-close" onclick="resultModal.hide()") &times;
   div(class="modal-body results-container")
