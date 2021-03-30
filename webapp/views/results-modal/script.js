@@ -3,6 +3,7 @@
 const modules = [
   { name: 'TIMEMAP', btnSelector: '#time-map-btn', regex: /^time/ },
   { name: 'QUERY', btnSelector: '#query-btn', regex: /^query/ },
+  { name: 'COTOPAXI', btnSelector: '#cotopaxi-btn', regex: /^cotopaxi/ },
   { name: 'ALL', btnSelector: '#all-btn', regex: /.*/ }
 ]
 

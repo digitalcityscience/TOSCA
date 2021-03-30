@@ -143,11 +143,17 @@ ${translations['cotopaxi_scenarios.output.5']}:
         // Convert to PDF
         psToPDF('tmp/cotopaxi_scenarios.ps', 'tmp/cotopaxi_scenarios.pdf')
 
-        mergePDFs(`${OUTPUT_DIR}/cotopaxi_scenarios_${safeDateString}.pdf`, 'tmp/cotopaxi_scenarios.pdf','tmp/statistics.pdf')
+        this.outfile = `cotopaxi_scenarios_${safeDateString}.pdf`;
+
+        mergePDFs(`${OUTPUT_DIR}/${this.outfile}`, 'tmp/cotopaxi_scenarios.pdf', 'tmp/statistics.pdf')
 
         fs.rmdirSync('tmp', { recursive: true })
 
-        return { id: 'cotopaxi_scenarios.4', message: translations['cotopaxi_scenarios.message.4'] }
+        return {
+          id: 'cotopaxi_scenarios.4',
+          message: translations['cotopaxi_scenarios.message.4'],
+          result: this.outfile
+        }
       }
     }
   }

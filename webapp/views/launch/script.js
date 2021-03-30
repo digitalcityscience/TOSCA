@@ -427,6 +427,15 @@ function handleResponse(res) {
               reply(res, input[0].value);
             })
           ];
+          break;
+
+        case 'cotopaxi_scenarios.4':
+          if (res.result) {
+            form = formElement(messageId);
+            buttons = [
+              buttonLinkElement(t['Open result'], 'output/' + res.result)
+            ];
+          }
       }
 
       textarea.append(text);
