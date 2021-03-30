@@ -1,12 +1,7 @@
-#results-header {
-    display: flex;
-    margin-bottom: 20px;
+.results-container {
+    overflow-y: scroll;
 }
 
-#results-select{
-    width: auto;
-}
-
-iframe {
-    border: 0;
+.modal-header {
+    border-bottom: 0;
 }
