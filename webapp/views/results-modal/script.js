@@ -3,7 +3,7 @@
 const modules = [
   { name: 'TIMEMAP', btnSelector: '#time-map-btn', regex: /^time/ },
   { name: 'QUERY', btnSelector: '#query-btn', regex: /^query/ },
-  { name: 'ALL', btnSelector: '#all-btn', regex: null }
+  { name: 'ALL', btnSelector: '#all-btn', regex: /.*/ }
 ]
 
 /**
@@ -36,8 +36,12 @@ class ResultModal {
     }
     $(module.btnSelector).addClass('active');
 
-    const currentResults = module.regex !== null ? this.results.filter(str => str.file.match(module.regex)) : this.results;
-    this.batchedAppend(tbody, currentResults.sort((a, b) => b.date.valueOf() - a.date.valueOf()));
+    this.results.filter(str => str.file.match(module.regex))
+      .sort((a, b) => b.date.valueOf() - a.date.valueOf())
+      .forEach(result => {
+        tbody.append(result.getTableRow());
+      });
+
     this.currentView = module.name;
   }
 
@@ -56,26 +60,12 @@ class ResultModal {
     get('/output/', {}, res => new Promise(resolve => {
       res.list.sort().reverse();
       this.results = res.list.map(file => new Result(file));
-      
+
       const currentModule = modules.filter(m => m.name === this.currentView)[0];
       this.updateView(currentModule);
 
       resolve();
     }));
-  }
-
-  batchedAppend(tbody, results) {
-    if (results.length) {
-      results.forEach(result => {
-        const m = result.file.match(/.*(\d{4})-(\d{2})-(\d{2})_(\d{4})\.pdf$/);
-        const date = new Date(m[1], m[2] - 1, m[3]);
-        tbody.append(`<tr>
-      <td>${date.toDateString()}</td>
-      <td><a href="/output/${result.file}" target="_blank">${result.file}</a></td>
-      <td><button type="button" class="btn btn-outline-danger" value="${result.file}" onclick="resultModal.onClickDelete(this)">Delete</button></td>
-      </tr>`);
-      });
-    }
   }
 
   hide() {
