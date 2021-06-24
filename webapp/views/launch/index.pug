@@ -2,17 +2,34 @@ html
   head
     title Open City Toolkit
 
+<<<<<<< Updated upstream
     link(rel="stylesheet" href="/lib/bootstrap/css/bootstrap.min.css")
     link(rel="stylesheet" href="/lib/leaflet/leaflet.css")
     link(rel="stylesheet" href="/lib/leaflet-draw/leaflet.draw.css")
     link(rel='stylesheet' href="/lib/leaflet-measure/leaflet-measure.css")
+=======
+    link(rel='stylesheet' href='/lib/bootstrap/css/bootstrap.min.css')
+    link(rel='stylesheet' href='/lib/leaflet/leaflet.css')
+    link(rel='stylesheet' href='/lib/leaflet-draw/leaflet.draw.css')
+    link(rel='stylesheet' href='/lib/leaflet-measure/leaflet-measure.css')
 
-    script(src="/lib/jquery/jquery.min.js")
-    script(src="/lib/bootstrap/js/bootstrap.bundle.min.js")
-    script(src="/lib/leaflet/leaflet.js")
-    script(src="/lib/leaflet-draw/leaflet.draw.js")
-    script(src="/lib/leaflet-groupedlayercontrol/leaflet.groupedlayercontrol.js")
+    script(src='/lib/jquery/jquery.min.js')
+    script(src='/lib/bootstrap/js/bootstrap.bundle.min.js')
+    script(src='/lib/leaflet/leaflet.js')
+    script(src='/lib/leaflet-draw/leaflet.draw.js')
+    script(src='/lib/leaflet-groupedlayercontrol/leaflet.groupedlayercontrol.js')
+    script(src="betterWMS/L.TileLayer.BetterWMS.js")
     script(src="/lib/leaflet-measure/leaflet-measure.js")
+    script(src='https://unpkg.com/@turf/turf/turf.min.js')
+    script(src="leaflet.browser.print/leaflet.browser.print.min.js")
+>>>>>>> Stashed changes
+
+    //- script(src="/lib/jquery/jquery.min.js")
+    //- script(src="/lib/bootstrap/js/bootstrap.bundle.min.js")
+    //- script(src="/lib/leaflet/leaflet.js")
+    //- script(src="/lib/leaflet-draw/leaflet.draw.js")
+    //- script(src="/lib/leaflet-groupedlayercontrol/leaflet.groupedlayercontrol.js")
+    //- script(src="/lib/leaflet-measure/leaflet-measure.js")
     script(src="/lib/leaflet-plugins/leaflet.legend.js")
     script(src="/lib/leaflet-plugins/leaflet.getfeatureinfo.js")
     script(src="/lib/split/split.js")
@@ -75,7 +92,17 @@ html
     div(id="results-modal" class="modal-background")
       include ../results-modal/index.pug
 
+<<<<<<< Updated upstream
     div(id="table-attributes-modal" class="modal-background")
+=======
+    div(id='help-modal' class='modal-background')
+      //- include ../help-modal/index.pug
+
+    div(id='buffer-model-result' class='modal-background')
+      include ../buffer-result/index.pug 
+      
+    div(id='table-attributes-modal' class='modal-background')
+>>>>>>> Stashed changes
       include ../table-attributes-modal/index.pug
 
     script.
