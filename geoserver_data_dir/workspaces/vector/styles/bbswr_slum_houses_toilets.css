@@ -1,0 +1,52 @@
+/* @title Bubaneshwar slums toilets */
+
+/* @title  Open defecation*/
+[TOI_FACIL = 'Open defecation'] {
+   stroke: #6c0001;
+  stroke-width: 0.5;
+  fill: #d7191c;
+  fill-opacity: 1;
+}
+
+/* @title  Community dry latrine*/
+[TOI_FACIL = 'Community dry latrine'] {
+   stroke: #ab6918;
+  stroke-width: 0.5;
+  fill: #feba6f;
+  fill-opacity: 1;
+}
+/* @title  Shared dry latrine*/
+[TOI_FACIL = 'Shared dry latrine'] {
+   stroke: #ab6918;
+  stroke-width: 0.5;
+  fill: #feba6f;
+  fill-opacity: 1;
+}
+/* @title  Own dry latrine*/
+[TOI_FACIL = 'Own dry latrine'] {
+   stroke: #ab6918;
+  stroke-width: 0.5;
+  fill: #feba6f;
+  fill-opacity: 1;
+}
+/* @title  Community septic tank/flush latrine*/
+[TOI_FACIL = 'Community septic tank/flush latrine'] {
+   stroke: #05ba02;
+  stroke-width: 0.5;
+  fill: #9ef57c;
+  fill-opacity: 1;
+}
+/* @title  Shared septic tank/flush latrine*/
+[TOI_FACIL = 'Shared septic tank/flush latrine'] {
+   stroke: #05ba02;
+  stroke-width: 0.5;
+  fill: #9ef57c;
+  fill-opacity: 1;
+}
+/* @title  Own sept tank/flush latrine*/
+[TOI_FACIL = 'Own sept tank/flush latrine'] {
+   stroke: #045716;
+  stroke-width: 0.5;
+  fill: #12b340;
+  fill-opacity: 1;
+}

@@ -1,0 +1,16 @@
+<layer>
+  <name>bbswr_slums</name>
+  <id>LayerInfoImpl-343c255e:17036557ae0:-7f20</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl-343c255e:17036557ae0:-7e5a</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl-343c255e:17036557ae0:-7f21</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateModified>2020-11-04 13:25:20.622 UTC</dateModified>
+</layer>

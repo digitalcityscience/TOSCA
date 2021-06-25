@@ -1,0 +1,15 @@
+/* @title Household with animals */
+[BUFFALO='Yes' OR COW='Yes' OR  SHEEP_GOA='Yes' OR PIG='Yes' OR HEN='Yes' OR DONKEY='Yes'] {
+  stroke: #12b340;
+  stroke-width: 0.5;
+  fill: #99ffaa;
+  fill-opacity: 1;
+}
+
+/* @title Household without animals */
+[BUFFALO='No' AND COW='No' AND SHEEP_GOA='No' AND PIG='No' AND HEN='No' AND DONKEY='No'] {
+  stroke: #994443;
+  stroke-width: 0.5;
+  fill: #ffaaaa;
+  fill-opacity: 1;
+}

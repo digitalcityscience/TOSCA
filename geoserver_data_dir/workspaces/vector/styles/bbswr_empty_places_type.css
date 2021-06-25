@@ -1,0 +1,15 @@
+/* @title Bubaneshwar city empty places */
+
+/* @title Open space */
+[TYPE ='Open Space' ]{
+    stroke: #6666aa;
+    stroke-width: 0.5;
+    fill: #aaaaff;
+}
+
+/* @title Vacant Land */
+[TYPE ='Vacant Land' ]{
+    stroke: #aaaa66;
+    stroke-width: 0.5;
+    fill: #ffffaa;
+}

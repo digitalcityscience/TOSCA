@@ -2,12 +2,6 @@ html
   head
     title Open City Toolkit
 
-<<<<<<< Updated upstream
-    link(rel="stylesheet" href="/lib/bootstrap/css/bootstrap.min.css")
-    link(rel="stylesheet" href="/lib/leaflet/leaflet.css")
-    link(rel="stylesheet" href="/lib/leaflet-draw/leaflet.draw.css")
-    link(rel='stylesheet' href="/lib/leaflet-measure/leaflet-measure.css")
-=======
     link(rel='stylesheet' href='/lib/bootstrap/css/bootstrap.min.css')
     link(rel='stylesheet' href='/lib/leaflet/leaflet.css')
     link(rel='stylesheet' href='/lib/leaflet-draw/leaflet.draw.css')
@@ -22,7 +16,6 @@ html
     script(src="/lib/leaflet-measure/leaflet-measure.js")
     script(src='https://unpkg.com/@turf/turf/turf.min.js')
     script(src="leaflet.browser.print/leaflet.browser.print.min.js")
->>>>>>> Stashed changes
 
     //- script(src="/lib/jquery/jquery.min.js")
     //- script(src="/lib/bootstrap/js/bootstrap.bundle.min.js")
@@ -49,11 +42,12 @@ html
           ul(class="navbar-nav flex-grow-1 justify-content-space-evenly")
             li(class="nav-item d-flex align-items-center")
               span(class="d-inline-block align-middle m-2") #{t['Modules']}:
-              select(id="launch-module-menu" class="custom-select custom-select-lg mr-2")
-                option(selected value="time_map") #{t['Calculate time map']}
-                option(value="query") #{t['Query area']}
-              button(class="btn btn-success btn-lg mr-2" onclick="launchModule()") ▷&nbsp;#{t['Run']}
-              button(class='btn btn-light btn-lg' id="result-btn" onclick='onClickResults()') #{t['Results']}
+              select(id='launch-module-menu' class='custom-select custom-select-lg mr-2')
+                option(selected value='time_map') #{t['Calculate time map']}
+                option(value='query') #{t['Query area']}
+                option(value='buffer') #{t['Buffer Module']}
+              button(class='btn btn-success btn-lg mr-2' onclick='launchModule()') ▷&nbsp;#{t['Run']}
+              button(class='btn btn-light btn-lg' id="result-btn" onclick='showResults()') #{t['Results']}
             li(class="nav-item flex-grow-1")
             li(class="nav-item dropdown")
               a(class="btn btn-lg nav-link dropdown-toggle" id="settings-menu" data-toggle="dropdown") #{t['Settings']}
@@ -92,9 +86,6 @@ html
     div(id="results-modal" class="modal-background")
       include ../results-modal/index.pug
 
-<<<<<<< Updated upstream
-    div(id="table-attributes-modal" class="modal-background")
-=======
     div(id='help-modal' class='modal-background')
       //- include ../help-modal/index.pug
 
@@ -102,25 +93,28 @@ html
       include ../buffer-result/index.pug 
       
     div(id='table-attributes-modal' class='modal-background')
->>>>>>> Stashed changes
       include ../table-attributes-modal/index.pug
 
     script.
-      // enable Bootstrap tooltip on module select
-      const options = {
-        placement: 'bottom',
-        title: function () {
-          switch ($(this).val()) {
-            case 'time_map': return "#{t['tooltip:time map']}";
-            case 'query': return "#{t['tooltip:query']}";
-          }
-        },
-        trigger: 'manual'
-      };
-      const target = $('#launch-module-menu');
-      target.tooltip(options);
-      target.on('focusin change', () => target.tooltip('show'));
-      target.on('focusout', () => target.tooltip('hide'));
+      //- enable Bootstrap tooltip on module select
+      $(function () {
+        const options = {
+          placement: 'bottom',
+          title: function () {
+            switch ($(this).val()) {
+              case 'time_map': return "#{t['tooltip:time map']}";
+              case 'query': return "#{t['tooltip:query']}";
+              case 'buffer': return "#{t['tooltip:Buffer Module']}";
+            }
+          },
+          trigger: 'manual'
+        };
+        const target = $('#launch-module-menu');
+        target.tooltip(options);
+        target.on('focusin change', () => target.tooltip('show'));
+        target.on('focusout', () => target.tooltip('hide'));
+      });
+      //- environment variables
 
       // split pane
       Split(['#sidebar', '#map-container'], {
@@ -133,6 +127,7 @@ html
       const [lat, lon] = [#{lat}, #{lon}];
       const t = !{JSON.stringify(t)};
     script
+      include ../geojson-data/data.js
       include ../map/config.js
       include ../map/script.js
       include ../table-attributes-modal/script.js

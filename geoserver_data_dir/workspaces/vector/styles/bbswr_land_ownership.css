@@ -1,0 +1,50 @@
+/* @title Bubaneshwar city land owners */
+
+/* @title Governmental */
+[OWNERSHIP ='Govt' ]{
+    stroke: #aa4444;
+    stroke-width: 0.5;
+    fill: #dd8888;
+}
+
+/* @title Governmental Reserve */
+[OWNERSHIP ='Govt Reserved' ]{
+  stroke: #aa6666;
+    stroke-width: 0.5;
+    fill: #ffdddd;
+}
+
+/* @title Governmental - Forest Department */
+[OWNERSHIP ='Forest Department' ]{
+    stroke: #99bb99;
+    stroke-width: 0.5;
+    fill: #eeffee;
+}
+
+/* @title Governmental Forest */
+[OWNERSHIP ='Govt Forest' ]{
+    stroke: #88aa88;
+    stroke-width: 0.5;
+    fill: #aaffaa;
+}
+
+/* @title Private */
+[OWNERSHIP ='Private' ]{
+    stroke: #6666aa;
+    stroke-width: 0.5;
+    fill: #aaaaff;
+}
+
+/* @title Private Forest */
+[OWNERSHIP ='Private Forest' ]{
+    stroke: #66aaaa;
+    stroke-width: 0.5;
+    fill: #aaffff;
+}
+
+/* @title Temple/Trustee */
+[OWNERSHIP ='Temple/Trustee']{
+    stroke: #ddaa66;
+    stroke-width: 0.5;
+    fill: #ffee88;
+}

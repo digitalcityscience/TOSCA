@@ -15,10 +15,5 @@
     <entry key="namespace">vector</entry>
   </connectionParameters>
   <__default>false</__default>
-<<<<<<< Updated upstream:geoserver_data_dir/workspaces/vector/time_map_result/datastore.xml
-  <dateCreated>2020-11-19 08:48:20.959 UTC</dateCreated>
-</dataStore>
-=======
   <dateModified>2020-10-29 21:28:08.8 UTC</dateModified>
 </dataStore>
->>>>>>> Stashed changes:geoserver_data_dir/workspaces/vector/time_map_via_points/datastore.xml

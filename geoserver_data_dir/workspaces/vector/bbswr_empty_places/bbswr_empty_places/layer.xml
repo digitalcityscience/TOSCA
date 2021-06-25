@@ -1,0 +1,16 @@
+<layer>
+  <name>bbswr_empty_places</name>
+  <id>LayerInfoImpl-343c255e:17036557ae0:-7f0b</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl-343c255e:17036557ae0:-7f0a</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl-343c255e:17036557ae0:-7f0c</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateModified>2020-11-04 13:55:20.283 UTC</dateModified>
+</layer>

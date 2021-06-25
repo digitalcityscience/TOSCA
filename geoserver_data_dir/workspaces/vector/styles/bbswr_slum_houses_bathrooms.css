@@ -1,0 +1,33 @@
+/* @title Bubaneshwar slums bathrooms */
+
+/* @title With bathroom */
+[BATH_FACI = 'bathroom_facility'] {
+  stroke: #045716;
+  stroke-width: 0.8;
+  fill: #12b340;
+  fill-opacity: 1;
+}
+
+/* @title Within premises */
+[BATH_FACI = 'Within Premises'] {
+  stroke: #4b6f29;
+  stroke-width: 0.8;
+  fill: #c3d660;
+  fill-opacity: 1;
+}
+
+/* @title Outside premises */
+[BATH_FACI = 'Outside Premises'] {
+  stroke: #9b8230;
+  stroke-width: 0.8;
+  fill: #f6b34e;
+  fill-opacity: 1;
+}
+
+/* @title No bathroom facility */
+[BATH_FACI = 'No bathroom facility'] {
+  stroke: #6c0001;
+  stroke-width: 0.5;
+  fill: #d7191c;
+  fill-opacity: 1;
+}

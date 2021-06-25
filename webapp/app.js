@@ -32,11 +32,13 @@ app.listen(expressPort, () => {
 // Static files
 app.use(express.static('public'))
 app.use('/output', express.static('../output'))
-app.use('/lib/jquery', express.static('node_modules/jquery/dist'))
-app.use('/lib/bootstrap', express.static('node_modules/bootstrap/dist'))
-app.use('/lib/leaflet', express.static('node_modules/leaflet/dist'))
-app.use('/lib/leaflet-draw', express.static('node_modules/leaflet-draw/dist'))
-app.use('/lib/leaflet-groupedlayercontrol', express.static('node_modules/leaflet-groupedlayercontrol/src'))
+app.use('/lib/jquery', express.static('node_modules/jquery/dist'));
+app.use('/lib/bootstrap', express.static('node_modules/bootstrap/dist'));
+app.use('/lib/leaflet', express.static('node_modules/leaflet/dist'));
+app.use('/lib/leaflet-draw', express.static('node_modules/leaflet-draw/dist'));
+app.use('/lib/leaflet-groupedlayercontrol', express.static('node_modules/leaflet-groupedlayercontrol/src'));
+app.use('/betterWMS', express.static('views/map/betterWMS'))
+app.use('/leaflet.browser.print', express.static('node_modules/leaflet.browser.print/dist'))
 app.use('/lib/leaflet-measure', express.static('node_modules/leaflet-measure/dist'));
 app.use('/lib/leaflet-plugins', express.static('./leaflet-plugins'))
 app.use('/lib/split', express.static('node_modules/split.js/dist'))
@@ -74,7 +76,7 @@ const modules = {
   "set_selection": new SetSelectionModule(),
   "set_resolution": new SetResolutionModule(),
   "time_map": new TimeMapModule(),
-  "query": new QueryModule()
+  "query": new QueryModule(),
 }
 
 // launch a module

@@ -1,0 +1,47 @@
+/* @title 1 person */
+[MALE > 0] [MALE < 2] {
+  stroke: #6c0001;
+  stroke-width: 0.5;
+  fill: #d7191c;
+  fill-opacity: 1;
+}
+
+/* @title 2-3 person */
+[MALE >=2] [MALE < 4] {
+  stroke: #a53c04;
+  stroke-width: 0.5;
+  fill: #ed6e43;
+  fill-opacity: 1;
+}
+
+/* @title 4-5 person */
+[MALE >= 4] [MALE < 6] {
+  stroke: #b57d0e;
+  stroke-width: 0.5;
+  fill: #feba6f;
+  fill-opacity: 1;
+}
+
+/* @title 6 - 10 person */
+[MALE >= 6] [MALE < 11] {
+  stroke: #9f9700;
+  stroke-width: 0.5;
+  fill: #ffe8a5;
+  fill-opacity: 1;
+}
+
+/* @title 11-16 person */
+[MALE >= 11] [MALE < 17] {
+  stroke: #05ba02;
+  stroke-width: 0.5;
+  fill: #9ef57c;
+  fill-opacity: 1;
+}
+
+/* @title 17 - person */
+[MALE >= 17] [MALE < 50] {
+  stroke: #045716;
+  stroke-width: 0.5;
+  fill: #12b340;
+  fill-opacity: 1;
+}

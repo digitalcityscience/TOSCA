@@ -2,13 +2,56 @@
 const selection = window['selection']
 const fromPoints = window['time_map_from_points']
 const strickenArea = window['time_map_stricken_area']
-const timeMap = window['time_map_vector']
-
+const timeMap = window['time_map_result']
+let buffer_point, buffer_radius, buffered, buffered_layers=[], buffer_layer_remove=null, remove_buffer=[]
 /**
  * Handle incoming messages from backend
  * @param {object} res backend response
  * @return Promise resolving if the message is processed successfully
  */
+
+function clearBuffer(buffered_layers){
+    if(buffered_layers.length > 0){
+      buffered_layers.map(layer =>  map.removeLayer(layer))
+    }
+ }
+
+function onLayerToggle(name, element){
+  const layer = jsonData.filter(layer => layer.name == name)
+  var ptsWithin = turf.pointsWithinPolygon(layer[0], buffered)
+  if(element.checked){
+    var layer_icon = L.icon({
+      iconUrl: handleIcon(layer[0].name),
+      iconSize: [32,37],
+      iconAnchor: [16, 37],
+      popupAnchor: [0, -28]
+    });
+    const buffer_layer = L.geoJSON(ptsWithin, {
+      pointToLayer: function (feature, latlng) {
+        return L.marker(latlng, {icon: layer_icon});
+      }
+    }).addTo(map)
+    buffer_layer['id'] = name
+    buffered_layers.push(buffer_layer)
+  }
+  else{
+    remove_buffer = buffered_layers.filter(layer => layer.id == name)
+    map.removeLayer(remove_buffer[0])
+    buffered_layers=  buffered_layers.filter(layer => layer.id != name)
+  }
+}
+
+function handleIcon(layer_name){
+  if(layer_name == 'Police_Out_Post' || layer_name == 'Police_Stations'){
+    const url = `images/Police.png`
+    return url
+  }
+  else{
+    const url = `images/${layer_name}.png`
+    return url
+  }
+}
+
 function handleResponse(res) {
   return new Promise((resolve) => {
     clearDialog();
@@ -142,6 +185,16 @@ function handleResponse(res) {
           break;
 
         // == time map module ==
+        // Start points
+        case 'time_map.1':
+          if(buffer_layer_remove){
+            map.removeLayer(buffer_layer_remove)
+          }
+          clearBuffer(buffered_layers)
+          map.addLayer(selection);
+
+          drawnItems.clearLayers();
+          startDrawCirclemarker();
         // Travel mode
         case 'time_map.0':
           map.removeLayer(fromPoints);
@@ -249,8 +302,81 @@ function handleResponse(res) {
           }
           break;
 
-        // == query module ==
+        case 'buffer_module.1' : {
+          clearBuffer(buffered_layers)
+          if(buffer_layer_remove){
+            map.removeLayer(buffer_layer_remove)
+          }
+         
+            map.addLayer(selection);
+
+            drawnItems.clearLayers();
+            startDrawCirclemarker();
+
+            buttons = [
+              buttonElement(t['Save']).click(() => {
+                $(`#${messageId}-error`).remove();
+                if (!saveDrawing(res)) {
+                  textarea.append($(`<span id="${messageId}-error" class="validation-error">${t['error:draw point']}</span>`));
+                }
+              }),
+              buttonElement(t['Cancel']).click(() => {
+                reply(res, 'cancel');
+              })
+            ];
+            break;
+        }
+
+        case 'buffer_module.2' : {
+          // L.geoJSON(buffer_point).addTo(map);
+          form = formElement(messageId);
+          form.append($(`<input id="${messageId}-input" type="number" />`));
+          form.append($(`<span>&nbsp;m</span>`));
+          buttons = [
+            buttonElement(t['Submit']).click(() => {
+              const input = $(`#${messageId}-input`);
+              buffer_radius = input.val()
+              reply(res, input.val());
+            })
+          ];
+          break;
+        }
+        case 'buffer_module.3' : {
+          buffered = turf.buffer(buffer_point, buffer_radius, {units: 'meters'})
+          drawnItems.clearLayers();
+          buffer_layer_remove = L.geoJSON(buffered, {
+            pointToLayer: function (feature, latlng) {
+              return L.circle(latlng)
+            }
+          }).addTo(map)
+          const items = services.filter(service => service.buffered)
+          form = formElement(messageId);
+          let innerHTML = ""
+          items.map(service => {
+            innerHTML += `<input type="checkbox" id="${service.id}-input" value='${service.layers}' onchange='onLayerToggle("${service.layers}", this)'}'/><span>&nbsp</span><label>${service.displayName}</label></br>`}) 
+          lists.append($(`<form>` + innerHTML + `</form>`))
+          buttons = [
+            buttonElement(t['Submit'], 'leaflet-browser-print--manualMode-button').click(() => {
+              showBuffer(buffered_layers)
+              const options = {
+                printModes: [
+                  L.control.browserPrint.mode.auto("Automatico", "A6"),
+                ],
+                manualMode: false
+              }
+              L.control.browserPrint(options).addTo(map)
+              var modeToUse = L.control.browserPrint.mode.auto("Automatico", "A6");
+              map.printControl.print(modeToUse);
+            })
+          ];
+          break;
+        }
+          // == query module ==
         case 'query.2':
+          if(buffer_layer_remove){
+            map.removeLayer(buffer_layer_remove)
+          }
+          clearBuffer(buffered_layers)
           form = formElement(messageId);
           lists.append($(`<select id="${messageId}-input" class='custom-select' size="10">` + list.map(col => `<option selected value="${col}">${col}</option>`) + `</select>`));
           buttons = [
@@ -358,8 +484,8 @@ function formElement(id, isMultipart) {
   return $(`<form id="${id}-form" enctype="${isMultipart ? 'multipart/form-data' : ''}" onsubmit="event.preventDefault()"></form>`);
 }
 
-function buttonElement(action) {
-  return $(`<button type="button" class="btn btn-primary">${action}</button>`);
+function buttonElement(action, id) {
+  return $(`<button type="button" class="btn btn-primary" id=${id}>${action}</button>`);
 }
 
 function buttonLinkElement(action, url) {
@@ -482,6 +608,17 @@ function onClickResults() {
   resultModal.updateResults();
 }
 
+function showBuffer(buffered_layers){
+  let html = "<tbody>";
+  buffered_layers.map(layer => {
+    const number_of_point_layers = Object.keys(layer._layers).length
+    html += "<tr><td>" + layer['id']+ "</td>"
+    html += "<td>"+ number_of_point_layers +  "</td></tr>"
+  })
+  html = html + "</tbody>";
+  $('#buffer-output').html(html)
+}
+
 let blinkTimeout;
 // eslint-disable-next-line no-unused-vars
 function blink(selector) {
@@ -521,7 +658,14 @@ function cancelDrawing() {
 function launchModule() {
   // Get the selected item
   const value = $('#launch-module-menu')[0].value;
-  if (value) {
+  if(value == 'buffer'){
+    const res = {
+      id: "buffer_module.1",
+      message: "A start point is required. Use the circlemarker tool to draw a start point"
+    }
+    handleResponse(res)
+  }
+  else{
     sendMessage('/launch', { launch: value }, {}, handleResponse);
   }
 }
@@ -534,11 +678,27 @@ function launchSettings(value) {
 }
 
 function reply(res, message) {
+  if(res.id == 'buffer_module.1'){
+    const res = {
+      id : 'buffer_module.4',
+      message : 'Process Cancelled.'
+    }
+    handleResponse(res)
+  }
+  else if(res.id == 'buffer_module.2'){
+    const res = {
+      id : 'buffer_module.3',
+      message : 'Select Layers'
+    }
+    handleResponse(res)
+  }else{
   sendMessage('/reply', { msg: message }, { messageId: res.id }, handleResponse);
+  }
 }
 
 function saveDrawing(res) {
   const geojson = drawnItems.toGeoJSON();
+  buffer_point = geojson
   if (geojson.features.length === 0) {
     return false;
   }
@@ -567,8 +727,15 @@ function getAttributes(table) {
 
 function sendMessage(target, message, params, callback) {
   $('#loading').show();
-
-  $.ajax({
+if(params.messageId == 'buffer_module.1'){
+  const res = {
+    id: "buffer_module.2",
+    message : "Enter radius in meters"
+  }
+    handleResponse(res)
+}
+  else
+{  $.ajax({
     type: 'POST',
     url: target + '?' + $.param(params),
     data: JSON.stringify(message),
@@ -576,8 +743,9 @@ function sendMessage(target, message, params, callback) {
     contentType: 'application/json; encoding=utf-8',
     error: onServerError
   })
-    .done(res => callback(res).catch(onClientError))
-    .always(() => $('#loading').hide())
+    .done(res => {
+      callback(res).catch(onClientError)})
+    .always(() => $('#loading').hide())}
 }
 
 function get(target, params, callback) {

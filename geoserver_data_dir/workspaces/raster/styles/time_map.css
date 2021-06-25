@@ -1,0 +1,13 @@
+/*@ title Temp map */
+* {
+  raster-channels: auto;
+  raster-opacity:0.5;
+  raster-color-map: color-map-entry(#ffffff, 0, 0)
+    				color-map-entry(#007722, 0.0001)
+    				color-map-entry(#33ee00, 5)
+    				color-map-entry(#aaee00, 10)
+    				color-map-entry(#eeee00, 15)
+    				color-map-entry(#ff9900, 20)
+					color-map-entry(#ef2200, 30)	
+    				color-map-entry(#880000, 45);
+}

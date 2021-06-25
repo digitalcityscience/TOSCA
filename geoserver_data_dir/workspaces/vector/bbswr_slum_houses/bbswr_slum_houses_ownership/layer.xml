@@ -1,0 +1,16 @@
+<layer>
+  <name>bbswr_slum_houses_ownership</name>
+  <id>LayerInfoImpl-343c255e:17036557ae0:-7fad</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl-343c255e:17036557ae0:-7fdf</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl-343c255e:17036557ae0:-7fae</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateModified>2020-11-04 14:30:58.367 UTC</dateModified>
+</layer>

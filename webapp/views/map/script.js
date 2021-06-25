@@ -1,12 +1,14 @@
 /* global $, L, t, lat, lon, geoserverUrl, layers */
 
-
 const map = new L.Map('map', {
   center: new L.LatLng(lat, lon),
   zoom: 13,
   minZoom: 4,
-  touchZoom: true
+  touchZoom: true,
+  renderer: L.canvas()
 });
+
+map.doubleClickZoom.disable(); 
 
 const rasterWMS = geoserverUrl + 'geoserver/raster/wms';
 const vectorWMS = geoserverUrl + 'geoserver/vector/wms';
@@ -22,8 +24,6 @@ const hot = L.tileLayer('https://tile-{s}.openstreetmap.fr/hot/{z}/{x}/{y}.png',
   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors; Humanitarian map style by <a href="https://www.hotosm.org/">HOT</a>'
 });
 
-<<<<<<< Updated upstream
-=======
 // Drawings
 // const drawnItems = L.featureGroup().addTo(map);
 
@@ -31,7 +31,6 @@ const hot = L.tileLayer('https://tile-{s}.openstreetmap.fr/hot/{z}/{x}/{y}.png',
 // L.control.legend(
 //   { position: 'bottomleft' }
 // ).addTo(map);
->>>>>>> Stashed changes
 
 /* Set up grouped layer control */
 
@@ -105,8 +104,15 @@ map.addControl(new L.Control.Draw({
   }
 }));
 
-// Save drawn items in feature group
-map.on(L.Draw.Event.CREATED, event => {
+//Measure tool
+const options = {
+  position : 'topleft',
+  color : '#4a4747'
+}
+L.control.measure(options).addTo(map);
+
+// Save drawed items in feature group
+map.on(L.Draw.Event.CREATED, (event) => {
   drawnItems.addLayer(event.layer);
 });
 
