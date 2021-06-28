@@ -105,11 +105,11 @@ map.addControl(new L.Control.Draw({
 }));
 
 //Measure tool
-const options = {
-  position : 'topleft',
-  color : '#4a4747'
-}
-L.control.measure(options).addTo(map);
+// const options = {
+//   position : 'topleft',
+//   color : '#4a4747'
+// }
+// L.control.measure(options).addTo(map);
 
 // Save drawed items in feature group
 map.on(L.Draw.Event.CREATED, (event) => {
