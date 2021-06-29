@@ -1,9 +1,11 @@
 # Open City Toolkit
+Welcome to the Open City Tookit!
 
+The Open City Toolkit (OCT) was developed in cooperation between the CityScienceLab of the HafenCity University Hamburg (HCU) and Deutsche Gesellschaft für Internationale Zusammenarbeit GmbH (GIZ) in India and Ecuador. It is an open source tool and the software for this project is based entirely on open source components. The Open City Toolkit is a web-based geographic information system (GIS) for multi-touch tables that is optimised for the use by non-GIS-experts. It supports integrated and participatory urban planning processes, fostering dialogue between governments and citizens and exchange of knowledge and data between government departments. The main functionality of the Open City Toolkit is to visualise and analyse complex urban data, jointly among local practitioners and with citizens.
 
 https://user-images.githubusercontent.com/66685611/122094650-af3ef400-ce0c-11eb-91a1-b8b271720a36.mp4
 
-
+You can also look under the Wiki section to read the [administrator's](https://github.com/citysciencelab/open-city-toolkit/wiki/2.-Open-City-Toolkit-%E2%80%90-Administrator's-Guide) manual or the [user](https://github.com/citysciencelab/open-city-toolkit/wiki/1.-Open-City-Toolkit-%E2%80%90-User-manual) manual.
 
 
 ## Requirements
