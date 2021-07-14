@@ -32,7 +32,7 @@ const MessageView2 = ({ setStep }) => {
 
     WPS.upload(formData)
       .then(response => {
-        WPS.Execute('set_basemap', `filename=${response}`)
+        WPS.Execute('set_basemap', [{identifier: 'filename', data: response}])
           .then(() => {
             setStep(2);
           })

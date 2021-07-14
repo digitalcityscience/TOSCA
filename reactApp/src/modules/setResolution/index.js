@@ -13,7 +13,7 @@ const MessageView1 = ({ setStep }) => {
 
   const submit = () => {
     if (!isNaN(parseInt(state.value))) {
-      WPS.Execute('set_resolution', `resolution=${state.value}`)
+      WPS.Execute('set_resolution', [{identifier: 'resolution', data: state.value}])
         .then(() => {
           setStep(1);
         })

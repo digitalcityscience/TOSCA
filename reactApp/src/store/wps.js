@@ -22,9 +22,32 @@ export const WPS = {
       .then(response => parseWPSResponse(response));
   },
 
-  Execute: (identifier, dataInputs) => {
-    return fetch(baseURL + `wps?service=WPS&version=1.0.0&request=Execute&identifier=${identifier}&dataInputs=${dataInputs}`)
-      .then(response => parseWPSResponse(response));
+  Execute: (identifier, dataInputs, complexInputs) => {
+    let inputs = dataInputs?.map(input => `
+        <wps:Input>
+            <ows:Identifier>${input.identifier}</ows:Identifier>
+            <wps:Data>
+                <wps:LiteralData>${input.data}</wps:LiteralData>
+            </wps:Data>
+        </wps:Input>`) || "";
+    inputs += complexInputs?.map(input => `
+        <wps:Input>
+            <ows:Identifier>${input.identifier}</ows:Identifier>
+            <wps:Data>
+                <wps:ComplexData>${input.data}</wps:ComplexData>
+            </wps:Data>
+        </wps:Input>`) || "";
+
+    return fetch(baseURL + `wps`, {
+      method: "POST",
+      body: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<wps:Execute service="WPS" version="1.0.0" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0/wpsExecute_request.xsd">
+    <ows:Identifier>${identifier}</ows:Identifier>
+    <wps:DataInputs>${inputs}
+    </wps:DataInputs>
+</wps:Execute>
+`
+    }).then(response => parseWPSResponse(response));
   },
 
   upload: (formData) =>{
