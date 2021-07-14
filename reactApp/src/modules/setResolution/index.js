@@ -27,9 +27,8 @@ const MessageView1 = ({ setStep }) => {
     <>
       <div>
         Set the resolution in meters.
-        <form>
-          <input type="number" value={state.value} onChange={onValueChange} />
-        </form>
+        <br />
+        <input type="number" value={state.value} onChange={onValueChange} />
       </div>
       <div className="btn-group">
         <button type="button" className="btn btn-primary" onClick={submit}>Submit</button>

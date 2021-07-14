@@ -27,6 +27,10 @@ export const NavbarView = ({ onResultClicked }) => {
       });
   };
 
+  const launch = (module) => {
+    setActiveModule(module, 0);
+  };
+
   return (
     <nav className="navbar navbar-expand navbar-light">
       <div className="navbar-brand fw-bold">Open City Toolkit</div>
@@ -49,13 +53,13 @@ export const NavbarView = ({ onResultClicked }) => {
                 <a className="btn dropdown-item" onClick={testWPS}>Test WPS</a>
               </li>
               <li>
-                <a className="btn dropdown-item" onClick={() => setActiveModule(SetBasemapModule)}>Set basemap</a>
+                <a className="btn dropdown-item" onClick={() => launch(SetBasemapModule)}>Set basemap</a>
               </li>
               <li>
                 <a className="btn dropdown-item" onClick={() => { }}>Set selection</a>
               </li>
               <li>
-                <a className="btn dropdown-item" onClick={() => setActiveModule(SetResolutionModule)}>Set resolution</a>
+                <a className="btn dropdown-item" onClick={() => launch(SetResolutionModule)}>Set resolution</a>
               </li>
               <li>
                 <a className="btn dropdown-item" onClick={() => { }}>Add layer</a>

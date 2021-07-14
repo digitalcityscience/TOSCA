@@ -20,7 +20,7 @@ const MessageView1 = ({ setStep }) => {
 };
 
 MessageView1.propTypes = {
-  setStep: PropTypes.func.isRequired,
+  setStep: PropTypes.func.isRequired
 };
 
 const MessageView2 = ({ setStep }) => {
@@ -64,7 +64,7 @@ const MessageView2 = ({ setStep }) => {
 };
 
 MessageView2.propTypes = {
-  setStep: PropTypes.func.isRequired,
+  setStep: PropTypes.func.isRequired
 };
 
 const MessageView3 = () => {
@@ -75,12 +75,28 @@ const MessageView3 = () => {
   );
 };
 
-export const SetBasemapModule = () => {
-  const [step, setStep] = React.useState(0);
+export class SetBasemapModule extends React.Component {
+  constructor(props) {
+    super(props);
 
-  return [
-    <MessageView1 key={step} setStep={setStep} />,
-    <MessageView2 key={step} setStep={setStep} />,
-    <MessageView3 key={step} />
-  ][step];
+    this.state = {
+      step: props.step
+    };
+  }
+
+  setStep (value) {
+    this.setState({...this.state, step: value});
+  }
+
+  render() {
+    return [
+      <MessageView1 key="0" setStep={this.setStep.bind(this)} />,
+      <MessageView2 key="1" setStep={this.setStep.bind(this)} />,
+      <MessageView3 key="2" />
+    ][this.state.step] || null;
+  }
+}
+
+SetBasemapModule.propTypes = {
+  step: PropTypes.number.isRequired
 };

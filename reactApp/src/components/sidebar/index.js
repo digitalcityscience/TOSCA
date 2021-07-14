@@ -5,12 +5,13 @@ import './styles/style.css';
 import { GlobalContext } from '../../store/global';
 
 export const SidebarView = () => {
-  const { activeModule } = React.useContext(GlobalContext);
+  const { activeModule, activeModuleStep } = React.useContext(GlobalContext);
 
   return (
     <>
       <div id="dialog" className="flex-grow-1 card card-border box-shadow">
-        {activeModule && React.createElement(activeModule)}
+        {/* FIXME: it should rerender when step is updated */}
+        {activeModule && React.createElement(activeModule, {step: activeModuleStep})}
       </div>
       <div className="card flex-row justify-content-center">
         <div className="d-block">
