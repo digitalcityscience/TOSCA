@@ -9,11 +9,13 @@ const initialState = {
   dialogMessage: '',
   activeModule: null,
   activeModuleStep: 0,
+  drawings: null,
   WPS: WPS
 };
 const actions = {
   SET_DIALOG_MESSAGE: 'SET_DIALOG_MESSAGE',
   SET_ACTIVE_MODULE: 'SET_ACTIVE_MODULE',
+  SET_DRAWINGS: 'SET_DRAWINGS'
 };
 
 const reducer = (state, action) => {
@@ -22,6 +24,8 @@ const reducer = (state, action) => {
       return { ...state, dialogMessage: action.value };
     case 'SET_ACTIVE_MODULE':
       return { ...state, activeModule: action.module, activeModuleStep: action.step };
+    case 'SET_DRAWINGS':
+      return { ...state, drawings: action.featureGroup };
     default:
       return state;
   }
@@ -34,6 +38,7 @@ export const GlobalContextProvider = ({ children }) => {
     dialogMessage: state.dialogMessage,
     activeModule: state.activeModule,
     activeModuleStep: state.activeModuleStep,
+    drawings: state.drawings,
     WPS: state.WPS,
     setDialogMessage: (value) => {
       dispatch({ type: actions.SET_DIALOG_MESSAGE, value });
@@ -41,6 +46,9 @@ export const GlobalContextProvider = ({ children }) => {
     setActiveModule: (module, step) => {
       dispatch({ type: actions.SET_ACTIVE_MODULE, module, step });
     },
+    setDrawings: (featureGroup) => {
+      dispatch({ type: actions.SET_DRAWINGS, featureGroup });
+    }
   };
 
   return (

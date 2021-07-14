@@ -1,5 +1,5 @@
 {
-  "name": "OCTClient",
+  "name": "oct-client",
   "version": "1.0.0",
   "description": "Client application for the Open City Toolkit",
   "main": "index.js",
@@ -12,6 +12,7 @@
   "dependencies": {
     "bootstrap": "^5.0.1",
     "leaflet": "^1.7.1",
+    "leaflet-draw": "^1.0.4",
     "leaflet-groupedlayercontrol": "^0.6.1",
     "prop-types": "^15.7.2",
     "react": "^17.0.2",
