@@ -8,6 +8,7 @@ import './styles/style.css';
 import { GlobalContext } from '../../store/global';
 import { SetBasemapModule } from '../../modules/setBasemap';
 import { SetResolutionModule } from '../../modules/setResolution';
+import { SetSelectionModule } from '../../modules/setSelection';
 
 export const NavbarView = ({ onResultClicked }) => {
   const { setActiveModule, WPS } = React.useContext(GlobalContext);
@@ -56,7 +57,7 @@ export const NavbarView = ({ onResultClicked }) => {
                 <a className="btn dropdown-item" onClick={() => launch(SetBasemapModule)}>Set basemap</a>
               </li>
               <li>
-                <a className="btn dropdown-item" onClick={() => { }}>Set selection</a>
+                <a className="btn dropdown-item" onClick={() => launch(SetSelectionModule)}>Set selection</a>
               </li>
               <li>
                 <a className="btn dropdown-item" onClick={() => launch(SetResolutionModule)}>Set resolution</a>
