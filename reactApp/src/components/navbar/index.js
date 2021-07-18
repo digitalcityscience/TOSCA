@@ -6,7 +6,7 @@ import 'bootstrap/dist/js/bootstrap.bundle.min';
 
 import './styles/style.css';
 import { GlobalContext } from '../../store/global';
-import { SetBasemapModule } from '../../modules/setBasemap';
+import { SetBasemapModule } from '../../modules/setBasemapStepWizard';
 import { SetResolutionModule } from '../../modules/setResolution';
 import { SetSelectionModule } from '../../modules/setSelection';
 
