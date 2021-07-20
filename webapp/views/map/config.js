@@ -68,18 +68,6 @@ const layers = [
 
   },
   {
-    layers: 'time_map_via_points',
-    format: 'image/png',
-    transparent: true,
-    maxZoom: 20,
-    minZoom: 3,
-    displayName: 'Via point',
-    type: 'vector',
-    group: 'Time map',
-    getFeatureInfo: false
-
-  },
-  {
     layers: 'time_map_stricken_area',
     format: 'image/png',
     transparent: true,
@@ -91,7 +79,7 @@ const layers = [
     getFeatureInfo: false
   },
   {
-    layers: 'time_map_vector',
+    layers: 'm1_time_map',
     format: 'image/png',
     transparent: true,
     legend: true,
@@ -100,6 +88,18 @@ const layers = [
     displayName: 'Road-level time map',
     type: 'raster',
     group: 'Time map',
+    getFeatureInfo: false
+  },
+  {
+    layers: 'Service_Area_Map',
+    format: 'image/png',
+    transparent: true,
+    legend: false,
+    maxZoom: 20,
+    minZoom: 1,
+    displayName: 'Service Area',
+    type: 'raster',
+    group: 'Service Area',
     getFeatureInfo: false
   },
   {
@@ -417,6 +417,16 @@ const layers = [
     format: 'image/png',
     transparent: true,
     legend: true,
+    maxZoom: 20,
+    minZoom: 1,
+    type: 'vector',
+    group: 'Proposed CDP 2030'
+  },
+  {
+    layers: 'MO_Bus_Stops',
+    displayName: 'MO Bus Stops',
+    format: 'image/png',
+    transparent: true,
     maxZoom: 20,
     minZoom: 1,
     type: 'vector',

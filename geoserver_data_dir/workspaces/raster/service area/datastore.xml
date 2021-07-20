@@ -1,0 +1,24 @@
+<dataStore>
+  <id>DataStoreInfoImpl-6b37ef78:17aa4721a7c:-7ff0</id>
+  <name>service area</name>
+  <description>Accessible service area by public transport</description>
+  <type>Shapefile</type>
+  <enabled>true</enabled>
+  <workspace>
+    <id>WorkspaceInfoImpl-53a0964:16fc2624139:-7fc9</id>
+  </workspace>
+  <connectionParameters>
+    <entry key="charset">ISO-8859-1</entry>
+    <entry key="filetype">shapefile</entry>
+    <entry key="create spatial index">true</entry>
+    <entry key="memory mapped buffer">false</entry>
+    <entry key="timezone">Asia/Kolkata</entry>
+    <entry key="enable spatial index">true</entry>
+    <entry key="namespace">raster</entry>
+    <entry key="cache and reuse memory maps">true</entry>
+    <entry key="url">file:data/service_area/Service_Area_Map.shp</entry>
+    <entry key="fstype">shape</entry>
+  </connectionParameters>
+  <__default>false</__default>
+  <dateCreated>2021-07-14 12:11:40.942 UTC</dateCreated>
+</dataStore>

@@ -69,8 +69,8 @@ module.exports = class {
 
     // remove GRASS layers from previous run, if any
     try {
-      remove(this.mapset, 'm1_from_points')
       remove(this.mapset, 'm1_stricken_area')
+      remove(this.mapset, 'm1_from_points')
     } catch (err) {
       // nothing to unlink
     }

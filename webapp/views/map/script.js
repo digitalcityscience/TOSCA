@@ -24,14 +24,6 @@ const hot = L.tileLayer('https://tile-{s}.openstreetmap.fr/hot/{z}/{x}/{y}.png',
   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors; Humanitarian map style by <a href="https://www.hotosm.org/">HOT</a>'
 });
 
-// Drawings
-// const drawnItems = L.featureGroup().addTo(map);
-
-// Control for map legends
-// L.control.legend(
-//   { position: 'bottomleft' }
-// ).addTo(map);
-
 /* Set up grouped layer control */
 
 const baseLayers = translate({

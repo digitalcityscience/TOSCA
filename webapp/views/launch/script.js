@@ -2,13 +2,16 @@
 const selection = window['selection']
 const fromPoints = window['time_map_from_points']
 const strickenArea = window['time_map_stricken_area']
-const timeMap = window['time_map_result']
+const timeMap = window['m1_time_map']
+const sMap = window['Service_Area_Map']
 let buffer_point, buffer_radius, buffered, buffered_layers=[], buffer_layer_remove=null, remove_buffer=[]
 /**
  * Handle incoming messages from backend
  * @param {object} res backend response
  * @return Promise resolving if the message is processed successfully
  */
+
+var points;
 
 function clearBuffer(buffered_layers){
     if(buffered_layers.length > 0){
@@ -184,17 +187,104 @@ function handleResponse(res) {
           ];
           break;
 
-        // == time map module ==
-        // Start points
-        case 'time_map.1':
+        // Input type selection
+        case 'service_area.1':
+          form = formElement(messageId);
+          buttons = [
+            buttonElement(t['Select point']).click(()=>{
+              reply(res, 'Select point');
+            }),
+            buttonElement(t['Select Layer File']).click(()=>{
+              reply(res, 'Select Layer File');
+            })
+          ];
+          form.append(buttons);
+          break;
+        
+        // Draw circle marker
+        case 'service_area.3':
           if(buffer_layer_remove){
             map.removeLayer(buffer_layer_remove)
           }
           clearBuffer(buffered_layers)
-          map.addLayer(selection);
-
           drawnItems.clearLayers();
           startDrawCirclemarker();
+          form = formElement(messageId)
+          buttons = [
+            buttonElement(t['Save']).click(() => {
+              $(`#${messageId}-error`).remove();
+              if (!saveDrawing(res)) {
+                textarea.append($(`<span id="${messageId}-error" class="validation-error">${t['error:draw point']}</span>`));
+              }
+              reply(res, 'Point Selected');
+            }),
+            buttonElement(t['Cancel']).click(() => {
+              reply(res, 'cancel');
+            })
+          ];
+          break;
+
+        // Select point layer file
+        case 'service_area.4':
+          const LayerFilesArray = ["Bank Locations", "MO Bus Stops"]
+          let optionsAppend = '';
+          LayerFilesArray.forEach(function(arrayItem){
+            var arr = arrayItem.split(" ");
+            var valueItem = arr.join("_");
+            optionsAppend += " <option value="+valueItem+">"+ arrayItem + "<option/> ";
+          })
+          form = formElement(messageId);
+          form.append($(`<select id="${messageId}-input" class='custom-select custom-select-sm mr-2'> ${optionsAppend} <select/>`));
+
+          buttons = [
+            buttonElement(t['Submit']).click(()=> {
+              $(`#${messageId}-error`).remove();
+              const input = $(`#${messageId}-input`);
+              if(input.val()){
+              reply(res, input.val())}
+              else{
+                textarea.append($(`<span id="${messageId}-error" class="validation-error"> ${t['error:layer select']}</span>`))
+              }
+            })
+          ];
+          break;
+        
+        // Take input for cost parameter and request to process the python script
+        case 'service_area.5':
+          form = formElement(messageId);
+          form.append($(`<input id="${messageId}-input" type="number" />`));
+          form.append($(`<span>&nbsp;m</span>`));
+          buttons = [
+            buttonElement(t['Submit']).click(() => {
+              $(`#${messageId}-error`).remove();
+              const input = $(`#${messageId}-input`);
+              if (!isNaN(parseInt(input.val()))) {
+                if(points){
+                sendMessage('/execFile', {}, { messageId: res.id , msg: 'Output from selected point', val: input.val(), longg: points[0], latt: points[1]}, handleResponse);
+                points = null;
+                }
+                else{
+                sendMessage('/execFile', {}, { messageId: res.id , msg: 'Output from layer file', val: input.val(), LayerFile: res.Layer}, handleResponse);
+                }
+              } 
+              else {
+                textarea.append($(`<span id="${messageId}-error" class="validation-error">${t['error:number']}</span>`));
+              }
+            })
+          ];
+          form.append(buttons);
+          break;
+
+        // EndScreen options, Load layers
+        case 'service_area.2':
+          refreshLayer(sMap);
+          map.addLayer(sMap);
+          cancelDrawing();
+          break;
+
+        // == time map module ==
+        // Start points
+
         // Travel mode
         case 'time_map.0':
           map.removeLayer(fromPoints);
@@ -346,10 +436,11 @@ function handleResponse(res) {
           drawnItems.clearLayers();
           buffer_layer_remove = L.geoJSON(buffered, {
             pointToLayer: function (feature, latlng) {
+              console.log(latlng,"buffer module");
               return L.circle(latlng)
             }
           }).addTo(map)
-          const items = services.filter(service => service.buffered)
+          const items = layers.filter(service => service.buffered)
           form = formElement(messageId);
           let innerHTML = ""
           items.map(service => {
@@ -665,6 +756,7 @@ function launchModule() {
     }
     handleResponse(res)
   }
+
   else{
     sendMessage('/launch', { launch: value }, {}, handleResponse);
   }
@@ -699,6 +791,7 @@ function reply(res, message) {
 function saveDrawing(res) {
   const geojson = drawnItems.toGeoJSON();
   buffer_point = geojson
+  points = geojson["features"][0]["geometry"]["coordinates"];
   if (geojson.features.length === 0) {
     return false;
   }
@@ -734,6 +827,7 @@ if(params.messageId == 'buffer_module.1'){
   }
     handleResponse(res)
 }
+
   else
 {  $.ajax({
     type: 'POST',

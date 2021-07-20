@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="0672fa6d-e9c6-427c-91ba-9801d514d3ae" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectId" id="1qJBj92eiKIXkJM3FY1vStDrSoW" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/.." />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+  </component>
+  <component name="RunManager">
+    <configuration name="servicearea" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="servicearea" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/servicearea.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.servicearea" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" BundledDictionaries="0" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" Dictionaries="0" CorrectionsLimit="5" DefaultDictionary="application-level" UseSingleDictionary="true" />
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="0672fa6d-e9c6-427c-91ba-9801d514d3ae" name="Default Changelist" comment="" />
+      <created>1616787944399</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1616787944399</updated>
+      <workItem from="1617627842488" duration="2507000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="743" y="274" width="424" height="495" key="FileChooserDialogImpl" timestamp="1620815567085">
+      <screen x="0" y="0" width="1920" height="1032" />
+    </state>
+    <state x="743" y="274" width="424" height="495" key="FileChooserDialogImpl/0.0.1920.1032@0.0.1920.1032" timestamp="1620815567085" />
+    <state width="1897" height="267" key="GridCell.Tab.0.bottom" timestamp="1620815568990">
+      <screen x="0" y="0" width="1920" height="1032" />
+    </state>
+    <state width="1897" height="267" key="GridCell.Tab.0.bottom/0.0.1920.1032@0.0.1920.1032" timestamp="1620815568990" />
+    <state width="1897" height="267" key="GridCell.Tab.0.center" timestamp="1620815568989">
+      <screen x="0" y="0" width="1920" height="1032" />
+    </state>
+    <state width="1897" height="267" key="GridCell.Tab.0.center/0.0.1920.1032@0.0.1920.1032" timestamp="1620815568989" />
+    <state width="1897" height="267" key="GridCell.Tab.0.left" timestamp="1620815568989">
+      <screen x="0" y="0" width="1920" height="1032" />
+    </state>
+    <state width="1897" height="267" key="GridCell.Tab.0.left/0.0.1920.1032@0.0.1920.1032" timestamp="1620815568989" />
+    <state width="1897" height="267" key="GridCell.Tab.0.right" timestamp="1620815568989">
+      <screen x="0" y="0" width="1920" height="1032" />
+    </state>
+    <state width="1897" height="267" key="GridCell.Tab.0.right/0.0.1920.1032@0.0.1920.1032" timestamp="1620815568989" />
+    <state x="449" y="151" width="1022" height="741" key="SettingsEditor" timestamp="1620815296735">
+      <screen x="0" y="0" width="1920" height="1032" />
+    </state>
+    <state x="449" y="151" width="1022" height="741" key="SettingsEditor/0.0.1920.1032@0.0.1920.1032" timestamp="1620815296735" />
+  </component>
+</project>
