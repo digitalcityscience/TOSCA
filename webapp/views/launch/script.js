@@ -189,6 +189,8 @@ function handleResponse(res) {
 
         // Input type selection
         case 'service_area.1':
+          map.removeLayer(sMap);
+          drawnItems.clearLayers();
           form = formElement(messageId);
           buttons = [
             buttonElement(t['Select point']).click(()=>{
@@ -203,10 +205,6 @@ function handleResponse(res) {
         
         // Draw circle marker
         case 'service_area.3':
-          if(buffer_layer_remove){
-            map.removeLayer(buffer_layer_remove)
-          }
-          clearBuffer(buffered_layers)
           drawnItems.clearLayers();
           startDrawCirclemarker();
           form = formElement(messageId)
