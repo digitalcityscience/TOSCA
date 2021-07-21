@@ -1,5 +1,5 @@
 # Pull base system
-FROM ubuntu:18.04
+FROM debian:buster
 
 ENV LANG=en_US.UTF-8
 ENV LANGUAGE=en_US:en
