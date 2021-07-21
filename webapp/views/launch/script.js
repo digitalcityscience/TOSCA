@@ -224,7 +224,7 @@ function handleResponse(res) {
 
         // Select point layer file
         case 'service_area.4':
-          const LayerFilesArray = ["Bank Locations", "MO Bus Stops"]
+          const LayerFilesArray = ["Bank Locations", "MO Bus Stops"] // File names should contain spaces only
           let optionsAppend = '';
           LayerFilesArray.forEach(function(arrayItem){
             var arr = arrayItem.split(" ");

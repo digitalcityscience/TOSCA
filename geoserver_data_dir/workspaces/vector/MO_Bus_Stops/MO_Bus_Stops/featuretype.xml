@@ -1,5 +1,5 @@
 <featureType>
-  <id>FeatureTypeInfoImpl-de3043b:17ac0995a34:-7ff8</id>
+  <id>FeatureTypeInfoImpl--7d5a555b:17ac8436032:-7ffb</id>
   <name>MO_Bus_Stops</name>
   <nativeName>MO%20Bus%20Stops</nativeName>
   <namespace>
@@ -9,7 +9,6 @@
   <keywords>
     <string>features</string>
     <string>MO%20Bus%20Stops</string>
-    <string>MO_Bus_Stops\@language=en\;</string>
     <string>MO_Bus_Stops</string>
   </keywords>
   <nativeCRS>GEOGCS[&quot;WGS 84&quot;, 
@@ -23,23 +22,23 @@
   AUTHORITY[&quot;EPSG&quot;,&quot;4326&quot;]]</nativeCRS>
   <srs>EPSG:4326</srs>
   <nativeBoundingBox>
-    <minx>85.61149343479678</minx>
-    <maxx>85.86052668192045</maxx>
-    <miny>20.14839038292</miny>
+    <minx>85.75293424271018</minx>
+    <maxx>85.86049753854945</maxx>
+    <miny>20.231089082397954</miny>
     <maxy>20.321887081125606</maxy>
     <crs>EPSG:4326</crs>
   </nativeBoundingBox>
   <latLonBoundingBox>
-    <minx>85.61149343479678</minx>
-    <maxx>85.86052668192045</maxx>
-    <miny>20.14839038292</miny>
+    <minx>85.75293424271018</minx>
+    <maxx>85.86049753854945</maxx>
+    <miny>20.231089082397954</miny>
     <maxy>20.321887081125606</maxy>
     <crs>EPSG:4326</crs>
   </latLonBoundingBox>
   <projectionPolicy>FORCE_DECLARED</projectionPolicy>
   <enabled>true</enabled>
   <store class="dataStore">
-    <id>DataStoreInfoImpl-de3043b:17ac0995a34:-7ff9</id>
+    <id>DataStoreInfoImpl--7d5a555b:17ac8436032:-7ffc</id>
   </store>
   <serviceConfiguration>false</serviceConfiguration>
   <simpleConversionEnabled>false</simpleConversionEnabled>

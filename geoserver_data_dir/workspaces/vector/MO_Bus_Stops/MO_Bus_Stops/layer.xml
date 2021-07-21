@@ -1,16 +1,16 @@
 <layer>
   <name>MO_Bus_Stops</name>
-  <id>LayerInfoImpl-de3043b:17ac0995a34:-7ff7</id>
+  <id>LayerInfoImpl--7d5a555b:17ac8436032:-7ffa</id>
   <type>VECTOR</type>
   <defaultStyle>
     <id>StyleInfoImpl-50f2cee3:1719bd49253:-8000</id>
   </defaultStyle>
   <resource class="featureType">
-    <id>FeatureTypeInfoImpl-de3043b:17ac0995a34:-7ff8</id>
+    <id>FeatureTypeInfoImpl--7d5a555b:17ac8436032:-7ffb</id>
   </resource>
   <attribution>
     <logoWidth>0</logoWidth>
     <logoHeight>0</logoHeight>
   </attribution>
-  <dateCreated>2021-07-19 21:22:32.68 UTC</dateCreated>
+  <dateCreated>2021-07-21 08:53:27.100 UTC</dateCreated>
 </layer>

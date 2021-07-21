@@ -1,5 +1,5 @@
 <dataStore>
-  <id>DataStoreInfoImpl-de3043b:17ac0995a34:-7ff9</id>
+  <id>DataStoreInfoImpl--7d5a555b:17ac8436032:-7ffc</id>
   <name>MO_Bus_Stops</name>
   <description>Bus Stops</description>
   <type>Shapefile</type>
@@ -20,5 +20,5 @@
     <entry key="fstype">shape</entry>
   </connectionParameters>
   <__default>false</__default>
-  <dateCreated>2021-07-19 21:20:27.147 UTC</dateCreated>
+  <dateCreated>2021-07-21 08:52:37.358 UTC</dateCreated>
 </dataStore>
