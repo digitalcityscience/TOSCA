@@ -33,7 +33,7 @@ RUN apt-get install wget
 RUN apt-get install -y gnupg software-properties-common
 RUN wget -qO - https://qgis.org/downloads/qgis-2020.gpg.key | sudo gpg --no-default-keyring --keyring gnupg-ring:/etc/apt/trusted.gpg.d/qgis-archive.gpg --import
 RUN chmod a+r /etc/apt/trusted.gpg.d/qgis-archive.gpg
-RUN sudo add-apt-repository "deb https://qgis.org/ubuntu $(lsb_release -c -s) main"
+RUN add-apt-repository "deb https://qgis.org/ubuntu $(lsb_release -c -s) main"
 RUN apt-get update
 RUN apt-get install -y qgis qgis-plugin-grass
 
