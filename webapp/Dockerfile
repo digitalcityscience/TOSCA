@@ -31,6 +31,11 @@ RUN apt-get install -y qgis qgis-plugin-grass
 RUN export PYTHONPATH=/usr/share/qgis/python
 RUN export LD_LIBRARY_PATH=/usr/lib
 
+# Additional dependencies
+RUN apt-get install -y xvfb
+RUN Xvfb :99 -ac -noreset & 
+RUN export DISPLAY=:99
+
 # Install webapp
 WORKDIR /oct
 RUN mkdir -p data_from_browser
