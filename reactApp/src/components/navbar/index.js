@@ -14,7 +14,7 @@ export const NavbarView = ({ onResultClicked }) => {
   const { setActiveModule, WPS } = React.useContext(GlobalContext);
 
   const testWPS = () => {
-    WPS.Execute('say_hello', 'name=React')
+    WPS.Execute('say_hello', [{identifier: 'name', data: 'React'}])
       .then(document => {
         alert(document
           .getElementsByTagName("wps:ProcessOutputs")[0]
