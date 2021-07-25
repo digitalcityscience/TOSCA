@@ -38,7 +38,7 @@ export const SetBasemapModule = () => {
         <div>
           If you set a new basemap, the existing basemap will be overwritten. Do you want to set a new basemap?
         </div>
-        <StepsFooter onClickNext={moveForward}></StepsFooter>
+        <StepsFooter onClickNext={moveForward} nextText="Yes" cancelText="No"></StepsFooter>
       </Step>
       <Step step={steps[1]}>
         <div>
