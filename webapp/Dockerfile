@@ -39,7 +39,6 @@ RUN export DISPLAY=:99
 # Install webapp
 WORKDIR /oct
 RUN mkdir -p data_from_browser
-RUN mkdir -p geoserver_data_dir/data/service_area
 COPY package*.json ./webapp/
 RUN cd webapp && npm ci
 COPY . webapp

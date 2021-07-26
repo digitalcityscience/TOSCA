@@ -47,9 +47,9 @@ QgsApplication.processingRegistry().addProvider(QgsNativeAlgorithms())
 
 if(sys.argv[3] == "fromLayer"):
      params = { 'DEFAULT_DIRECTION' : 2, 'DEFAULT_SPEED' : 50, 'DIRECTION_FIELD' : '', 'INCLUDE_BOUNDS' : False,
-         'INPUT' : '/oct/webapp/scripts/servicearea/Road_Network.shp',
-         'OUTPUT_LINES' : '/oct/geoserver_data_dir/data/service_area/Service_Area_Map.shp', 'SPEED_FIELD' : '',
-         'START_POINTS' : '/oct/webapp/scripts/servicearea/Data/'+ sys.argv[2] +'.shp', 'STRATEGY' : 0,
+         'INPUT' : '/usr/share/geoserver/data_dir/data/service_area/Road_Network.shp',
+         'OUTPUT_LINES' : '/usr/share/geoserver/data_dir/data/service_area/Service_Area_Map.shp', 'SPEED_FIELD' : '',
+         'START_POINTS' : '/usr/share/geoserver/data_dir/data/service_area/'+ sys.argv[2] +'.shp', 'STRATEGY' : 0,
          'TOLERANCE' : 0, 'TRAVEL_COST2' : sys.argv[1], 'VALUE_BACKWARD' : '', 'VALUE_BOTH' : '', 'VALUE_FORWARD' : '' }
 
      processing.run("qgis:serviceareafromlayer", params)
@@ -69,8 +69,8 @@ if(sys.argv[3] == "fromPoint"):
      pt1 = xform.transform(QgsPointXY(numX, numY)) #longitude, lattitude
 
      params2 = { 'DEFAULT_DIRECTION' : 2, 'DEFAULT_SPEED' : 50, 'DIRECTION_FIELD' : '', 'INCLUDE_BOUNDS' : False,
-           'INPUT' : '/oct/webapp/scripts/servicearea/Road_Network.shp',
-           'OUTPUT_LINES' : '/oct/geoserver_data_dir/data/service_area/Service_Area_Map.shp',
+           'INPUT' : '/usr/share/geoserver/data_dir/data/service_area/Road_Network.shp',
+           'OUTPUT_LINES' : '/usr/share/geoserver/data_dir/data/service_area/Service_Area_Map.shp',
            'SPEED_FIELD' : '', 'START_POINT' : str(pt1[0]) + ',' + str(pt1[1]) + ' [EPSG:3857]', 'STRATEGY' : 0,
            'TOLERANCE' : 0, 'TRAVEL_COST2' : sys.argv[1], 'VALUE_BACKWARD' : '', 'VALUE_BOTH' : '', 'VALUE_FORWARD' : '' }
 
