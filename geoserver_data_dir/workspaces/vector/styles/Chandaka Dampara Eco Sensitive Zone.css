@@ -1,8 +1,7 @@
-/* @title Unaccesible areas */
+/* @title Chandaka Dampara Eco Sensitive Zone */
 * {
-  stroke: #aad576;
-  stroke-width: 1;
-  stroke-opacity: 0;
-  fill: #aad576;
-  fill-opacity:1;
+    stroke: #B4D27B;
+    stroke-width: 0.5;
+    fill: url(chandaka.png);
+  	fill-mime: 'image/png';
 }

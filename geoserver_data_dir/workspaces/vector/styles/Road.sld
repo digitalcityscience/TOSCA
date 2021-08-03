@@ -5,14 +5,21 @@
       <sld:Name>Default Styler</sld:Name>
       <sld:FeatureTypeStyle>
         <sld:Rule>
-          <sld:Title>Unaccesible areas</sld:Title>
+          <sld:Title>cyan polygon</sld:Title>
           <sld:PolygonSymbolizer>
             <sld:Fill>
-              <sld:CssParameter name="fill">#7f7979</sld:CssParameter>
+              <sld:GraphicFill>
+                <sld:Graphic>
+                  <sld:ExternalGraphic>
+                    <sld:OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="road_st.1.png"/>
+                    <sld:Format>image/png</sld:Format>
+                  </sld:ExternalGraphic>
+                </sld:Graphic>
+              </sld:GraphicFill>
             </sld:Fill>
             <sld:Stroke>
-              <sld:CssParameter name="stroke">#7f7979</sld:CssParameter>
-              <sld:CssParameter name="stroke-opacity">0</sld:CssParameter>
+              <sld:CssParameter name="stroke">#F98686</sld:CssParameter>
+              <sld:CssParameter name="stroke-width">0.5</sld:CssParameter>
             </sld:Stroke>
           </sld:PolygonSymbolizer>
         </sld:Rule>

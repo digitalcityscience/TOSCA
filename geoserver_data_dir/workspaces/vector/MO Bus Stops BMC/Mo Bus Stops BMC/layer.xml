@@ -1,0 +1,17 @@
+<layer>
+  <name>Mo Bus Stops BMC</name>
+  <id>LayerInfoImpl-6dbd5527:17af090e526:-7f87</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl--3e792261:17afd88f18c:-7df6</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl-6dbd5527:17af090e526:-7f88</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateCreated>2021-07-29 10:57:52.439 UTC</dateCreated>
+  <dateModified>2021-07-31 22:54:52.197 UTC</dateModified>
+</layer>

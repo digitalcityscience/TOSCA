@@ -1,8 +1,7 @@
-/* @title Unaccesible areas */
+/* @title cyan polygon */
 * {
-  stroke: #7f7979;
-  stroke-width: 1;
-  stroke-opacity: 0;
-  fill: #7f7979;
-  fill-opacity:1;
+    stroke: #F98686;
+    stroke-width: 0.5;
+    fill: url(road_st.1.png);
+  	fill-mime: 'image/png';
 }

@@ -1,0 +1,8 @@
+/* @title teal point */
+* {
+    mark: url(traininginstituesother.png);
+    mark-size: 25px;
+    :mark {
+        fill: #00cc33;
+    }
+}

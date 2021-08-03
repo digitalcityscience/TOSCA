@@ -1,0 +1,7 @@
+/* @title Wholesale Commercial Use Zone */
+* {
+  stroke: #E97B79;
+  stroke-width: 0.5;
+  fill: url(wholesalecommercialusezone.1.png);
+  fill-mime: 'image/png'; 
+}

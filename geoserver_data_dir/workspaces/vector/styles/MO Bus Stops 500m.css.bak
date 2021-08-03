@@ -1,0 +1,6 @@
+/* @title dark orange polygon */
+* {
+  	fill: #999999;
+  	stroke: #999999;  	
+    fill-opacity: 0.5;
+}

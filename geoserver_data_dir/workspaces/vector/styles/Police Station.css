@@ -1,8 +1,8 @@
-/* @title gold point */
+/* @title Police Station */
 * {
-    mark: symbol(square);
-    mark-size: 16px;
+    mark: url(policestation.png);
+    mark-size: 25px;
     :mark {
-        fill: #6ca6cd;
+        fill: #4361EE;
     }
 }

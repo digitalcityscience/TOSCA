@@ -1,8 +1,8 @@
-/* @title gold point */
+/* @title Restaurant */
 * {
-    mark: symbol(square);
-    mark-size: 16px;
+    mark: url(restaurant.png);
+    mark-size: 25px;
     :mark {
-        fill: #f4a460;
+        fill: #E57676;
     }
 }

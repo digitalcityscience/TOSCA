@@ -8,11 +8,11 @@
           <sld:Title>Slum</sld:Title>
           <sld:PolygonSymbolizer>
             <sld:Fill>
-              <sld:CssParameter name="fill">#000000</sld:CssParameter>
-              <sld:CssParameter name="fill-opacity">0.03</sld:CssParameter>
+              <sld:CssParameter name="fill">#99060E</sld:CssParameter>
+              <sld:CssParameter name="fill-opacity">0.75</sld:CssParameter>
             </sld:Fill>
             <sld:Stroke>
-              <sld:CssParameter name="stroke">#444444</sld:CssParameter>
+              <sld:CssParameter name="stroke">#99060E</sld:CssParameter>
               <sld:CssParameter name="stroke-width">0.5</sld:CssParameter>
             </sld:Stroke>
           </sld:PolygonSymbolizer>

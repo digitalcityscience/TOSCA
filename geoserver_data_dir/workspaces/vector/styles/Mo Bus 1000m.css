@@ -1,0 +1,8 @@
+/* @title gold polygon */
+* {
+stroke: gray;
+stroke-width: 0.5;
+fill: gray;
+fill-opacity: 8%;
+stroke-opacity: 30%;
+}

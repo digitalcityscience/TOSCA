@@ -1,8 +1,8 @@
-/* @title gold point */
+/* @title Bank */
 * {
-    mark: symbol(square);
-    mark-size: 16px;
+    mark: url(bank.png);
+    mark-size: 25px;
     :mark {
-        fill: #ff0000;
+        fill: #3F37C9;
     }
 }

@@ -3,7 +3,7 @@
   <id>LayerInfoImpl--33f7ced4:17742606d0b:-7ffa</id>
   <type>VECTOR</type>
   <defaultStyle>
-    <id>StyleInfoImpl-50f2cee3:1719bd49253:-7ffe</id>
+    <id>StyleInfoImpl--174173c6:17af20ace36:-7fcc</id>
   </defaultStyle>
   <resource class="featureType">
     <id>FeatureTypeInfoImpl--33f7ced4:17742606d0b:-7ffb</id>
@@ -13,4 +13,5 @@
     <logoHeight>0</logoHeight>
   </attribution>
   <dateCreated>2021-01-27 05:59:16.380 UTC</dateCreated>
+  <dateModified>2021-07-29 12:23:49.905 UTC</dateModified>
 </layer>

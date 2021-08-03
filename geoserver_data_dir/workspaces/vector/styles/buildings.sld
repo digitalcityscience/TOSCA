@@ -14,10 +14,10 @@
           </ogc:Filter>
           <sld:PolygonSymbolizer>
             <sld:Fill>
-              <sld:CssParameter name="fill">#ffbbbb</sld:CssParameter>
+              <sld:CssParameter name="fill">#e8e7e3</sld:CssParameter>
             </sld:Fill>
             <sld:Stroke>
-              <sld:CssParameter name="stroke">#aa0000</sld:CssParameter>
+              <sld:CssParameter name="stroke">#9D0910</sld:CssParameter>
               <sld:CssParameter name="stroke-width">0.2</sld:CssParameter>
             </sld:Stroke>
           </sld:PolygonSymbolizer>

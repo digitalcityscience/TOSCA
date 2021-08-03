@@ -1,8 +1,8 @@
-/* @title gold point */
+/* @title Sub Post Office */
 * {
-    mark: symbol(square);
-    mark-size: 16px;
+    mark: url(subpostoffice.png);
+    mark-size: 25px;
     :mark {
-        fill: #8968cd;
+        fill: #DDE5A9;
     }
 }

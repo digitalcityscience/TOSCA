@@ -1,8 +1,8 @@
-/* @title Unaccesible areas */
+/* @title Residential Use Zone */
 * {
-  stroke: #efea5a;
+  stroke: #E1C812;
   stroke-width: 1;
-  stroke-opacity: 0;
-  fill: #efea5a;
-  fill-opacity:1;
+  fill: url(residentusezone.1.png);
+  fill-mime: 'image/png';
+
 }

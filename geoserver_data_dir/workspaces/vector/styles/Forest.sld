@@ -8,11 +8,17 @@
           <sld:Title>Unaccesible areas</sld:Title>
           <sld:PolygonSymbolizer>
             <sld:Fill>
-              <sld:CssParameter name="fill">#2b9348</sld:CssParameter>
+              <sld:GraphicFill>
+                <sld:Graphic>
+                  <sld:ExternalGraphic>
+                    <sld:OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="forest_st.1.png"/>
+                    <sld:Format>image/png</sld:Format>
+                  </sld:ExternalGraphic>
+                </sld:Graphic>
+              </sld:GraphicFill>
             </sld:Fill>
             <sld:Stroke>
-              <sld:CssParameter name="stroke">#2b9348</sld:CssParameter>
-              <sld:CssParameter name="stroke-opacity">0</sld:CssParameter>
+              <sld:CssParameter name="stroke">#007200</sld:CssParameter>
             </sld:Stroke>
           </sld:PolygonSymbolizer>
         </sld:Rule>

@@ -1,5 +1,5 @@
 <coverageStore>
-  <id>CoverageStoreInfoImpl--d260471:17020009e7b:-5a40</id>
+  <id>CoverageStoreInfoImpl--3e792261:17afd88f18c:-7cfc</id>
   <name>time_map_result</name>
   <type>GeoTIFF</type>
   <enabled>true</enabled>
@@ -7,6 +7,6 @@
     <id>WorkspaceInfoImpl-53a0964:16fc2624139:-7fc9</id>
   </workspace>
   <__default>false</__default>
-  <dateModified>2020-10-29 21:27:47.907 UTC</dateModified>
+  <dateCreated>2021-07-31 23:42:21.120 UTC</dateCreated>
   <url>file:data/m1_time_map.tif</url>
 </coverageStore>

@@ -1,8 +1,8 @@
-/* @title gold point */
+/* @title Hotel */
 * {
-    mark: symbol(square);
-    mark-size: 16px;
+    mark: url(hotel.png);
+    mark-size: 25px;
     :mark {
-        fill: #eed8ae;
+        fill: #E57676;
     }
 }
