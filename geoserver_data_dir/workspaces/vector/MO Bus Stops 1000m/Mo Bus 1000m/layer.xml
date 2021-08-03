@@ -1,0 +1,17 @@
+<layer>
+  <name>Mo Bus 1000m</name>
+  <id>LayerInfoImpl-6dbd5527:17af090e526:-7f8a</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl--3b312774:17b04318a1f:-7f74</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl-6dbd5527:17af090e526:-7f8b</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateCreated>2021-07-29 10:56:21.540 UTC</dateCreated>
+  <dateModified>2021-08-02 01:36:19.803 UTC</dateModified>
+</layer>

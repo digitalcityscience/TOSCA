@@ -97,9 +97,45 @@ const layers = [
     legend: false,
     maxZoom: 20,
     minZoom: 1,
-    displayName: 'Service Area',
+    displayName: 'Service Approach Area',
     type: 'raster',
-    group: 'Service Area',
+    group: 'Transportation',
+    getFeatureInfo: false
+  },
+  {
+    layers: 'Mo Bus 500m',
+    format: 'image/png',
+    transparent: true,
+    legend: false,
+    maxZoom: 20,
+    minZoom: 1,
+    displayName: 'MO Bus Stops Buffer 500m',
+    type: 'vector',
+    group: 'Transportation',
+    getFeatureInfo: false
+  },
+  {
+    layers: 'Mo Bus 1000m',
+    format: 'image/png',
+    transparent: true,
+    legend: false,
+    maxZoom: 20,
+    minZoom: 1,
+    displayName: 'MO Bus Stops Buffer 1000m',
+    type: 'vector',
+    group: 'Transportation',
+    getFeatureInfo: false
+  },
+  {
+    layers: 'Mo Bus Stops BMC',
+    format: 'image/png',
+    transparent: true,
+    legend: false,
+    maxZoom: 20,
+    minZoom: 1,
+    displayName: 'MO Bus Stops BMC',
+    type: 'vector',
+    group: 'Transportation',
     getFeatureInfo: false
   },
   {
@@ -114,7 +150,7 @@ const layers = [
     group: 'Bhubaneswar thematic maps'
   },
   {
-    layers: 'bbswr_municipality',
+    layers: 'BMC Ward Boundary',
     displayName: 'BMC administrative units',
     format: 'image/png',
     transparent: true,
@@ -123,6 +159,18 @@ const layers = [
     minZoom: 1,
     type: 'vector',
     group: 'Bhubaneswar thematic maps'
+  },
+  {
+    layers: 'BMC Boundary',
+    format: 'image/png',
+    transparent: true,
+    legend: false,
+    maxZoom: 20,
+    minZoom: 1,
+    displayName: 'BMC Boundary',
+    type: 'vector',
+    group: 'Bhubaneswar thematic maps',
+    getFeatureInfo: false
   },
   {
     layers: 'bbswr_slums',
@@ -417,16 +465,6 @@ const layers = [
     format: 'image/png',
     transparent: true,
     legend: true,
-    maxZoom: 20,
-    minZoom: 1,
-    type: 'vector',
-    group: 'Proposed CDP 2030'
-  },
-  {
-    layers: 'MO_Bus_Stops',
-    displayName: 'MO Bus Stops',
-    format: 'image/png',
-    transparent: true,
     maxZoom: 20,
     minZoom: 1,
     type: 'vector',

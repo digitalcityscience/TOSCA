@@ -5,13 +5,13 @@
       <sld:Name>Default Styler</sld:Name>
       <sld:FeatureTypeStyle>
         <sld:Rule>
-          <sld:Title>Unaccesible areas</sld:Title>
+          <sld:Title>Ponds Lakes and Lagoons</sld:Title>
           <sld:PolygonSymbolizer>
             <sld:Fill>
-              <sld:CssParameter name="fill">#81f7e5</sld:CssParameter>
+              <sld:CssParameter name="fill">#6DA5E9</sld:CssParameter>
             </sld:Fill>
             <sld:Stroke>
-              <sld:CssParameter name="stroke">#81f7e5</sld:CssParameter>
+              <sld:CssParameter name="stroke">#6DA5E9</sld:CssParameter>
               <sld:CssParameter name="stroke-opacity">0</sld:CssParameter>
             </sld:Stroke>
           </sld:PolygonSymbolizer>

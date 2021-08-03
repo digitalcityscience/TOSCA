@@ -1,0 +1,7 @@
+/* @title Railways Area */
+* {
+    stroke: #756A5C;
+    stroke-width: 0.5;
+    fill: url(railways_st.png);
+  	fill-mime: 'image/png';
+}

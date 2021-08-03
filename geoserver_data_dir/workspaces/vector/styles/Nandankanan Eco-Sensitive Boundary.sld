@@ -5,14 +5,21 @@
       <sld:Name>Default Styler</sld:Name>
       <sld:FeatureTypeStyle>
         <sld:Rule>
-          <sld:Title>Unaccesible areas</sld:Title>
+          <sld:Title>Nandankanan Eco-Sensitive Boundary</sld:Title>
           <sld:PolygonSymbolizer>
             <sld:Fill>
-              <sld:CssParameter name="fill">#9acd32</sld:CssParameter>
+              <sld:GraphicFill>
+                <sld:Graphic>
+                  <sld:ExternalGraphic>
+                    <sld:OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="nadankanan.png"/>
+                    <sld:Format>image/png</sld:Format>
+                  </sld:ExternalGraphic>
+                </sld:Graphic>
+              </sld:GraphicFill>
             </sld:Fill>
             <sld:Stroke>
-              <sld:CssParameter name="stroke">#9acd32</sld:CssParameter>
-              <sld:CssParameter name="stroke-opacity">0</sld:CssParameter>
+              <sld:CssParameter name="stroke">#BAF2D8</sld:CssParameter>
+              <sld:CssParameter name="stroke-width">0.5</sld:CssParameter>
             </sld:Stroke>
           </sld:PolygonSymbolizer>
         </sld:Rule>

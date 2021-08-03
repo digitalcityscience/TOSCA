@@ -1,0 +1,8 @@
+/* @title Bus Depots Area */
+* {
+    mark: url(busdepots.1.png);
+    mark-size: 12px;
+    :mark {
+        fill: #94843D;
+    }
+}

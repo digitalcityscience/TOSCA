@@ -11,9 +11,10 @@
     <entry key="database">file:data/m1_from_points.gpkg</entry>
     <entry key="fetch size">1000</entry>
     <entry key="Expose primary keys">false</entry>
+    <entry key="read_only">false</entry>
     <entry key="dbtype">geopkg</entry>
     <entry key="namespace">vector</entry>
   </connectionParameters>
   <__default>false</__default>
-  <dateModified>2020-10-29 21:25:10.883 UTC</dateModified>
+  <dateModified>2021-07-31 23:31:30.237 UTC</dateModified>
 </dataStore>

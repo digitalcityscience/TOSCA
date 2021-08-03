@@ -224,7 +224,7 @@ function handleResponse(res) {
 
         // Select point layer file
         case 'service_area.4':
-          const LayerFilesArray = ["Bank Locations", "MO Bus Stops"] // File names should contain spaces only
+          const LayerFilesArray = ["Bank Locations", "Mo Bus Stops BMC"] // File names should contain spaces only
           let optionsAppend = '';
           LayerFilesArray.forEach(function(arrayItem){
             var arr = arrayItem.split(" ");
@@ -273,11 +273,89 @@ function handleResponse(res) {
           form.append(buttons);
           break;
 
-        // EndScreen options, Load layers
+        // EndScreen options, Load layers, Export map with layers toggeled
         case 'service_area.2':
           refreshLayer(sMap);
           map.addLayer(sMap);
           cancelDrawing();
+
+          form = formElement(messageId);
+          buttons = [
+            buttonElement(t['Export Map']).click(()=> {
+              handleResponse({id: 'service_area.7', message: "You can choose to either export the Printable Map in Landscape mode or in Portrait mode"})
+            })
+          ];
+          break;
+        
+        case 'service_area.7':
+
+          form = formElement(messageId);
+          buttons = [
+
+            // Landscape print button -------------------------------------------------------------------------
+            buttonElement(t['Landscape mode'], 'leaflet-browser-print--manualMode-button').click(() => {
+              var legcontent = null;
+              const options = {
+                printModes: [
+                  L.control.browserPrint.mode.landscape(),
+                ],
+                manualMode: false,
+                pagesSelector: "[leaflet-browser-print-pages-serviceArea]",
+                contentSelector: "[leaflet-browser-print-content-serviceArea]",
+              }
+              L.control.browserPrint(options).addTo(map)
+
+              // Get Legend content as html before print starts
+              map.on('browser-pre-print', function(e){
+                legcontent = document.getElementById("leaflet-legend-content");
+                htmlcontent = document.querySelectorAll(".leaflet-legend-item");
+                legcontent.style.maxHeight = "inherit";
+                appendedLegContent = formatContent(htmlcontent);
+                $("#service-area-output-legend").html(appendedLegContent);
+              })
+
+              // Add the legend content to its respective div element after print is over
+              map.on('browser-print-end', function(e){
+                legcontent.style.maxHeight = "";
+                document.getElementById("leaflet-legend-container").append(legcontent)
+              })
+              var modeToUse = L.control.browserPrint.mode.landscape();
+              map.printControl.print(modeToUse);
+            }),
+
+            // Portrait print button -------------------------------------------------------------------------
+            buttonElement(t['Portrait mode'], 'leaflet-browser-print--manualMode-button').click(() => {
+              var legcontent = null;
+              const options = {
+                printModes: [
+                  L.control.browserPrint.mode.portrait(),
+                ],
+                manualMode: false,
+                pagesSelector: "[leaflet-browser-print-pages-serviceArea]",
+                contentSelector: "[leaflet-browser-print-content-serviceArea]",
+              }
+              L.control.browserPrint(options).addTo(map)
+
+              // Get Legend content as html before print starts
+              map.on('browser-pre-print', function(e){
+                legcontent = document.getElementById("leaflet-legend-content");
+                htmlcontent = document.querySelectorAll(".leaflet-legend-item");
+                legcontent.style.maxHeight = "inherit";
+                appendedLegContent = formatContent(htmlcontent);
+                $("#service-area-output-legend").html(appendedLegContent);
+              })
+
+              // Add the legend content to its respective div element after print is over
+              map.on('browser-print-end', function(e){
+                legcontent.style.maxHeight = "";
+                document.getElementById("leaflet-legend-container").append(legcontent)
+              })
+              var modeToUse = L.control.browserPrint.mode.portrait();
+              map.printControl.print(modeToUse);
+            }),
+          ];
+          form.append(buttons);
+
           break;
 
         // == time map module ==
@@ -293,15 +371,15 @@ function handleResponse(res) {
           form = formElement(messageId);
           buttons = [
             buttonElement(t['Automobile']).click(() => {
-              timeMap.setParams({styles: 'time_map_vector_car'});
+              // timeMap.setParams({styles: 'time_map_vector_car'});
               reply(res, 'Automobile');
             }),
             buttonElement(t['Bicycle']).click(() => {
-              timeMap.setParams({styles: 'time_map_vector_bicycle'});
+              // timeMap.setParams({styles: 'time_map_vector_bicycle'});
               reply(res, 'Bicycle');
             }),
             buttonElement(t['Walking']).click(() => {
-              timeMap.setParams({styles: 'time_map_vector_walking'});
+              // timeMap.setParams({styles: 'time_map_vector_walking'});
               reply(res, 'Walking');
             })
           ];
@@ -372,6 +450,8 @@ function handleResponse(res) {
 
         // Done
         case 'time_map.6':
+          map.legend.toggleLegendForLayer(false, timeMap);
+          map.legend.toggleLegendForLayer(true, timeMap);
           refreshLayer(timeMap);
           map.addLayer(timeMap);
 
@@ -706,6 +786,18 @@ function showBuffer(buffered_layers){
   })
   html = html + "</tbody>";
   $('#buffer-output').html(html)
+}
+
+function formatContent(legcontent){
+  let html = `<tbody>`;
+  legcontent.forEach((content) => {
+    html += `<tr><td>  ${content.innerText}  </td>`
+    console.log(content, content.getElementsByTagName('img'))
+    html += `<td> <img src="${content.getElementsByTagName('img')[0].src}"  </td></tr>`
+  })
+  html = html + `</tbody>`;
+  console.log(html)
+  return html;
 }
 
 let blinkTimeout;

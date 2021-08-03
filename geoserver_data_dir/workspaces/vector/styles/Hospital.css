@@ -1,7 +1,7 @@
 /* @title gold point */
 * {
-    mark: symbol(square);
-    mark-size: 16px;
+    mark: url(hospital.png);
+    mark-size: 25px;
     :mark {
         fill: #b4bfb8;
     }
