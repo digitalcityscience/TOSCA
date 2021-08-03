@@ -1,9 +1,9 @@
 import os
 import subprocess
 
-# os.environ["DISPLAY"]=":99"
+os.environ["DISPLAY"]=":99"
 
-# xvfb = subprocess.Popen(['Xvfb', ':99'])
+xvfb = subprocess.Popen(['Xvfb', ':99'])
 
 from qgis.core import *
 from qgis.gui import *
