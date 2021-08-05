@@ -72,6 +72,17 @@ map.legend = L.control.legend(
 ).addTo(map);
 
 
+// $('#leaflet-legend-content').hide();
+
+// $('#leaflet-legend-container').hover(
+//   function(){
+//     $('#leaflet-legend-content').show();
+//   },
+//   function(){
+//     $('#leaflet-legend-content').hide();
+//   }
+//   );
+
 /* Drawing tool */
 
 const drawnItems = L.featureGroup().addTo(map);

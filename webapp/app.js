@@ -127,7 +127,7 @@ app.post('/execFile', (req, res, next) => {
     // Execute python file from here.
     // PYTHON_PATH_SCRIPT imported from .env file
     const testscript = execFile('python3', [PYTHON_SCRIPT_PATH, req.query.val, [req.query.longg, req.query.latt], "fromPoint"], (error, stdout, stderr) => {
-      console.log(stdout);
+      // console.log(stdout);
       if (error) throw error;
       const message = module.process(req.query.msg, req.query.messageId)
       if(message){

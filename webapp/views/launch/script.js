@@ -792,11 +792,11 @@ function formatContent(legcontent){
   let html = `<tbody>`;
   legcontent.forEach((content) => {
     html += `<tr><td>  ${content.innerText}  </td>`
-    console.log(content, content.getElementsByTagName('img'))
+    // console.log(content, content.getElementsByTagName('img'))
     html += `<td> <img src="${content.getElementsByTagName('img')[0].src}"  </td></tr>`
   })
   html = html + `</tbody>`;
-  console.log(html)
+  // console.log(html)
   return html;
 }
 
