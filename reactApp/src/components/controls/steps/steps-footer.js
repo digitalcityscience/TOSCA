@@ -15,15 +15,15 @@ export const StepsFooter = ({
   return (
     <React.Fragment>
       { currentStep !== StepPositions.getFirst(steps) &&
-        <button className='btn-back btn-primary' onClick={onClickBack}>{backText || 'Back'}</button>
+        <button type="button" className='btn-back btn btn-primary mt-3 mx-1' onClick={onClickBack}>{backText || 'Back'}</button>
       }
       { currentStep !== StepPositions.getLast(steps) &&
-        <button className='btn-next btn-primary' onClick={onClickNext}>{nextText || 'Next'}</button>
+        <button type="button" className='btn-next btn btn-primary mt-3 mx-1' onClick={onClickNext}>{nextText || 'Next'}</button>
       }
       { currentStep === StepPositions.getLast(steps) &&
-        <button className='btn-submit btn-primary' onClick={onClickSubmit}>{submitText || 'Submit'}</button>
+        <button type="button" className='btn-submit btn btn-primary mt-3 mx-1' onClick={onClickSubmit}>{submitText || 'Submit'}</button>
       }
-      <button className='btn-submit btn-primary' onClick={() => setActiveModule(null)}>{cancelText || 'Cancel'}</button>
+      <button type="button" className='btn-submit btn btn-primary mt-3 mx-1' onClick={() => setActiveModule(null)}>{cancelText || 'Cancel'}</button>
     </React.Fragment>
   );
 };

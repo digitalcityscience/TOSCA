@@ -27,7 +27,7 @@ export const Root = () => {
           <NavbarView onResultClicked={onResultClicked} />
         </div>
         <div className="d-flex flex-grow-1 main">
-          <div id="sidebar" className="d-flex flex-column sidebar">
+          <div id="sidebar" className="d-flex flex-column w-25 sidebar">
             <SidebarView />
           </div>
           <div id="map-container" className="col card box-shadow">
