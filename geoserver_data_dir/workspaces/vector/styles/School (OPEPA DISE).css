@@ -1,7 +1,7 @@
 /* @title gold point */
 * {
     mark: url(school.png);
-    mark-size: 25px;
+    mark-size: 16px;
     :mark {
         fill: 	#cd8162;
     }

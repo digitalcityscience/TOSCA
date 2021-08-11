@@ -9,7 +9,7 @@
           <sld:PointSymbolizer>
             <sld:Graphic>
               <sld:ExternalGraphic>
-                <sld:OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="clinic.png"/>
+                <sld:OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="hospital.png"/>
                 <sld:Format>image/jpeg</sld:Format>
               </sld:ExternalGraphic>
               <sld:Size>25</sld:Size>

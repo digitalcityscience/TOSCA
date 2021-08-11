@@ -1,0 +1,7 @@
+/* @title violet polygon */
+* {
+    stroke: #000000;
+    stroke-width: 0.5;
+    fill: gray;
+	fill-opacity: 20%;
+}

@@ -12,7 +12,7 @@
                 <sld:OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="school.png"/>
                 <sld:Format>image/jpeg</sld:Format>
               </sld:ExternalGraphic>
-              <sld:Size>25</sld:Size>
+              <sld:Size>16</sld:Size>
             </sld:Graphic>
           </sld:PointSymbolizer>
         </sld:Rule>

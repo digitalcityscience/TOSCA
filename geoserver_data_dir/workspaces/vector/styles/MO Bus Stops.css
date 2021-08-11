@@ -1,10 +1,10 @@
 /* @title violet point */
 * {
   label: [Name];
-  label-offset: -15 25;
-  label-anchor: 0.5 1.0;
-  mark: url(mobusstop.png);
-  mark-size: 25px;
+  label-offset: 0 5;
+  label-anchor: 0 0;
+  mark: symbol(circle);
+  mark-size: 10px;
   font-fill: black;
 
   :mark {

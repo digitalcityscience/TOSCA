@@ -8,11 +8,12 @@
           <sld:Title>Bubaneshwar metropolitan area</sld:Title>
           <sld:PolygonSymbolizer>
             <sld:Fill>
-              <sld:CssParameter name="fill">#fffbf5</sld:CssParameter>
+              <sld:CssParameter name="fill">#f3eadb</sld:CssParameter>
+              <sld:CssParameter name="fill-opacity">0.2</sld:CssParameter>
             </sld:Fill>
             <sld:Stroke>
-              <sld:CssParameter name="stroke">#decaa0</sld:CssParameter>
-              <sld:CssParameter name="stroke-width">6</sld:CssParameter>
+              <sld:CssParameter name="stroke">#ccb688</sld:CssParameter>
+              <sld:CssParameter name="stroke-width">2</sld:CssParameter>
             </sld:Stroke>
           </sld:PolygonSymbolizer>
         </sld:Rule>

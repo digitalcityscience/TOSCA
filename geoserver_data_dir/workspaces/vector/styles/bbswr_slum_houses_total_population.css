@@ -1,47 +1,47 @@
 /* @title 1 person */
 [TOTAL > 0] [TOTAL < 2] {
-  stroke: #6c0001;
+  stroke: #FFCCD5;
   stroke-width: 0.5;
-  fill: #d7191c;
+  fill: #FFCCD5;
   fill-opacity: 1;
 }
 
 /* @title 2-3 person */
 [TOTAL >=2] [TOTAL < 4] {
-  stroke: #a53c04;
+  stroke: #FFB3C1;
   stroke-width: 0.5;
-  fill: #ed6e43;
+  fill: #FFB3C1;
   fill-opacity: 1;
 }
 
 /* @title 4-5 person */
 [TOTAL >= 4] [TOTAL < 6] {
-  stroke: #b57d0e;
+  stroke: #FF758F;
   stroke-width: 0.5;
-  fill: #feba6f;
+  fill: #FF758F;
   fill-opacity: 1;
 }
 
 /* @title 6 - 10 person */
 [TOTAL >= 6] [TOTAL < 11] {
-  stroke: #9f9700;
+  stroke: #FF4D6D;
   stroke-width: 0.5;
-  fill: #ffe8a5;
+  fill: #FF4D6D;
   fill-opacity: 1;
 }
 
 /* @title 11-16 person */
 [TOTAL >= 11] [TOTAL < 17] {
-  stroke: #05ba02;
+  stroke: #A4133C;
   stroke-width: 0.5;
-  fill: #9ef57c;
+  fill: #A4133C;
   fill-opacity: 1;
 }
 
 /* @title 17 - person */
 [TOTAL >= 17] [TOTAL < 50] {
-  stroke: #045716;
+  stroke: #590D22;
   stroke-width: 0.5;
-  fill: #12b340;
+  fill: #590D22;
   fill-opacity: 1;
 }

@@ -8,11 +8,13 @@
           <sld:Title>violet point</sld:Title>
           <sld:PointSymbolizer>
             <sld:Graphic>
-              <sld:ExternalGraphic>
-                <sld:OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="mobusstop.png"/>
-                <sld:Format>image/jpeg</sld:Format>
-              </sld:ExternalGraphic>
-              <sld:Size>25</sld:Size>
+              <sld:Mark>
+                <sld:WellKnownName>circle</sld:WellKnownName>
+                <sld:Fill>
+                  <sld:CssParameter name="fill">#A6A601</sld:CssParameter>
+                </sld:Fill>
+              </sld:Mark>
+              <sld:Size>10</sld:Size>
             </sld:Graphic>
           </sld:PointSymbolizer>
           <sld:TextSymbolizer>
@@ -22,12 +24,12 @@
             <sld:LabelPlacement>
               <sld:PointPlacement>
                 <sld:AnchorPoint>
-                  <sld:AnchorPointX>0.5</sld:AnchorPointX>
-                  <sld:AnchorPointY>1.0</sld:AnchorPointY>
+                  <sld:AnchorPointX>0</sld:AnchorPointX>
+                  <sld:AnchorPointY>0</sld:AnchorPointY>
                 </sld:AnchorPoint>
                 <sld:Displacement>
-                  <sld:DisplacementX>-15</sld:DisplacementX>
-                  <sld:DisplacementY>25</sld:DisplacementY>
+                  <sld:DisplacementX>0</sld:DisplacementX>
+                  <sld:DisplacementY>5</sld:DisplacementY>
                 </sld:Displacement>
               </sld:PointPlacement>
             </sld:LabelPlacement>

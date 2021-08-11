@@ -1,6 +1,6 @@
 /* @title gold point */
 * {
-    mark: url(clinic.png);
+    mark: url(hospital.png);
     mark-size: 25px;
     :mark {
         fill: #fa8072;

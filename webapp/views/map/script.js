@@ -71,18 +71,6 @@ map.legend = L.control.legend(
   { position: 'bottomleft' }
 ).addTo(map);
 
-
-// $('#leaflet-legend-content').hide();
-
-// $('#leaflet-legend-container').hover(
-//   function(){
-//     $('#leaflet-legend-content').show();
-//   },
-//   function(){
-//     $('#leaflet-legend-content').hide();
-//   }
-//   );
-
 /* Drawing tool */
 
 const drawnItems = L.featureGroup().addTo(map);
@@ -106,13 +94,6 @@ map.addControl(new L.Control.Draw({
     circlemarker: true
   }
 }));
-
-//Measure tool
-// const options = {
-//   position : 'topleft',
-//   color : '#4a4747'
-// }
-// L.control.measure(options).addTo(map);
 
 // Save drawed items in feature group
 map.on(L.Draw.Event.CREATED, (event) => {

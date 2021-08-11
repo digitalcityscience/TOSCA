@@ -1,47 +1,47 @@
 /* @title 1 person */
 [FEMALE > 0] [FEMALE < 2] {
-  stroke: #6c0001;
+  stroke: #BFEDD0;
   stroke-width: 0.5;
-  fill: #d7191c;
+  fill: #BFEDD0;
   fill-opacity: 1;
 }
 
 /* @title 2-3 person */
 [FEMALE >=2] [FEMALE < 4] {
-  stroke: #a53c04;
+  stroke: #88D4AB;
   stroke-width: 0.5;
-  fill: #ed6e43;
+  fill: #88D4AB;
   fill-opacity: 1;
 }
 
 /* @title 4-5 person */
 [FEMALE >= 4] [FEMALE < 6] {
-  stroke: #b57d0e;
+  stroke: #67B99A;
   stroke-width: 0.5;
-  fill: #feba6f;
+  fill: #67B99A;
   fill-opacity: 1;
 }
 
 /* @title 6 - 10 person */
 [FEMALE >= 6] [FEMALE < 11] {
-  stroke: #9f9700;
+  stroke: #469D89;
   stroke-width: 0.5;
-  fill: #ffe8a5;
+  fill: #469D89;
   fill-opacity: 1;
 }
 
 /* @title 11-16 person */
 [FEMALE >= 11] [FEMALE < 17] {
-  stroke: #05ba02;
+  stroke: #238075;
   stroke-width: 0.5;
-  fill: #9ef57c;
+  fill: #238075;
   fill-opacity: 1;
 }
 
 /* @title 17 - person */
 [FEMALE >= 17] [FEMALE < 50] {
-  stroke: #045716;
+  stroke: #023B3B;
   stroke-width: 0.5;
-  fill: #12b340;
+  fill: #023B3B;
   fill-opacity: 1;
 }
