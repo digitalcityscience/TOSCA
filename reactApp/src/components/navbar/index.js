@@ -13,19 +13,18 @@ import { SetSelectionModule } from '../../modules/setSelection';
 export const NavbarView = ({ onResultClicked }) => {
   const { setActiveModule, WPS } = React.useContext(GlobalContext);
 
-  const testWPS = () => {
-    WPS.Execute('say_hello', [{identifier: 'name', data: 'React'}])
-      .then(document => {
-        alert(document
-          .getElementsByTagName("wps:ProcessOutputs")[0]
-          .getElementsByTagName("wps:Output")[0]
-          .getElementsByTagName("wps:Data")[0]
-          .getElementsByTagName("wps:LiteralData")[0]
-          .textContent);
-      })
-      .catch(err => {
-        console.error(err.message);
-      });
+  const testWPS = async () => {
+    try {
+      const document = await WPS.Execute('say_hello', [{identifier: 'name', data: 'React'}]);
+      alert(document
+        .getElementsByTagName("wps:ProcessOutputs")[0]
+        .getElementsByTagName("wps:Output")[0]
+        .getElementsByTagName("wps:Data")[0]
+        .getElementsByTagName("wps:LiteralData")[0]
+        .textContent);
+    } catch (err) {
+      console.error(err.message);
+    }
   };
 
   const launch = (module) => {

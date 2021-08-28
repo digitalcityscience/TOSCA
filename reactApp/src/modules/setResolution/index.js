@@ -11,15 +11,14 @@ const MessageView1 = ({ setStep }) => {
     state.value = event.target.value;
   };
 
-  const submit = () => {
+  const submit = async () => {
     if (!isNaN(parseInt(state.value))) {
-      WPS.Execute('set_resolution', [{identifier: 'resolution', data: state.value}])
-        .then(() => {
-          setStep(1);
-        })
-        .catch(err => {
-          console.error(err.message);
-        });
+      try {
+        await WPS.Execute('set_resolution', [{identifier: 'resolution', data: state.value}]);
+        setStep(1);
+      } catch (err) {
+        console.error(err.message);
+      }
     }
   };
 

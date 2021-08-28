@@ -11,17 +11,16 @@ const MessageView1 = ({ setStep }) => {
     return null;
   }
 
-  const submit = () => {
-    WPS.Execute('set_selection', [], [{
-      identifier: 'selection',
-      data: JSON.stringify(geojson)
-    }])
-      .then(() => {
-        setStep(1);
-      })
-      .catch(err => {
-        console.error(err.message);
-      });
+  const submit = async () => {
+    try {
+      await WPS.Execute('set_selection', [], [{
+        identifier: 'selection',
+        data: JSON.stringify(geojson)
+      }]);
+      setStep(1);
+    } catch (err) {
+      console.error(err.message);
+    }
   };
 
   return (

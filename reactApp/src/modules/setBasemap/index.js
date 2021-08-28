@@ -27,22 +27,16 @@ const MessageView2 = ({ setStep }) => {
   const { setActiveModule, WPS } = React.useContext(GlobalContext);
   const basemapForm = React.createRef();
 
-  const submit = () => {
+  const submit = async () => {
     const formData = new FormData(basemapForm.current);
 
-    WPS.upload(formData)
-      .then(response => {
-        WPS.Execute('set_basemap', [{identifier: 'filename', data: response}])
-          .then(() => {
-            setStep(2);
-          })
-          .catch(err => {
-            console.error(err.message);
-          });
-      })
-      .catch(err => {
-        console.error(err.message);
-      });
+    try {
+      const response = await WPS.upload(formData);
+      await WPS.Execute('set_basemap', [{identifier: 'filename', data: response}]);
+      setStep(2);
+    } catch (err) {
+      console.error(err.message);
+    }
   };
 
   return (

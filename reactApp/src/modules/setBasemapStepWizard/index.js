@@ -9,29 +9,27 @@ export const SetBasemapModule = () => {
   const basemapForm = React.createRef();
   const steps = ['introduction', 'selectMap'];
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
+
   const moveForward = () => {
     setCurrentStepIndex(prev => prev + 1);
   };
+
   const moveBack = () => {
     setCurrentStepIndex(prev => prev - 1);
   };
-  const onSubmit = () => {
+
+  const onSubmit = async () => {
     const formData = new FormData(basemapForm.current);
 
-    WPS.upload(formData)
-      .then(response => {
-        WPS.Execute('set_basemap', [{identifier: 'filename', data: response}])
-          .then(() => {
-            setActiveModule(null);
-          })
-          .catch(err => {
-            console.error(err.message);
-          });
-      })
-      .catch(err => {
-        console.error(err.message);
-      });
+    try {
+      const response = await WPS.upload(formData);
+      await WPS.Execute('set_basemap', [{identifier: 'filename', data: response}]);
+      setActiveModule(null);
+    } catch (err) {
+      console.error(err.message);
+    }
   };
+
   return (
     <StepsContainer steps={steps} currentStep={steps[currentStepIndex]}>
       <Step step={steps[0]}>
