@@ -6,6 +6,7 @@ import { MapView } from './map';
 import { NavbarView } from './navbar';
 import { SidebarView } from './sidebar';
 import { ResultModal } from './modals/result-modal';
+import { AlertContainer } from './common/alert-container';
 
 import './styles/style.css';
 
@@ -34,6 +35,7 @@ export const Root = () => {
             <MapView />
           </div>
         </div>
+        <AlertContainer />
       </div>
       {showModal && <ResultModal onCloseClicked={onResultModalCloseClicked} />}
     </>

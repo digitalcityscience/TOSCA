@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { GlobalContext } from '../../store/global';
+import { useAlert } from '../../store/alert';
 
 const MessageView1 = ({ setStep }) => {
   const { setActiveModule } = React.useContext(GlobalContext);
@@ -26,15 +27,17 @@ MessageView1.propTypes = {
 const MessageView2 = ({ setStep }) => {
   const { setActiveModule, WPS } = React.useContext(GlobalContext);
   const basemapForm = React.createRef();
+  const { addAlert } = useAlert();
 
   const submit = async () => {
     const formData = new FormData(basemapForm.current);
 
     try {
       const response = await WPS.upload(formData);
-      await WPS.Execute('set_basemap', [{identifier: 'filename', data: response}]);
+      await WPS.Execute('set_basemap', [{ identifier: 'filename', data: response }]);
       setStep(2);
     } catch (err) {
+      addAlert({ message: err.message });
       console.error(err.message);
     }
   };
@@ -78,8 +81,8 @@ export class SetBasemapModule extends React.Component {
     };
   }
 
-  setStep (value) {
-    this.setState({...this.state, step: value});
+  setStep(value) {
+    this.setState({ ...this.state, step: value });
   }
 
   render() {
