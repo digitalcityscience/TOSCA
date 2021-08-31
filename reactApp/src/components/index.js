@@ -7,6 +7,7 @@ import { NavbarView } from './navbar';
 import { SidebarView } from './sidebar';
 import { ResultModal } from './modals/result-modal';
 import { AlertContainer } from './common/alert-container';
+import { LoadingContainer } from './common/loading-container';
 
 import './styles/style.css';
 
@@ -36,6 +37,7 @@ export const Root = () => {
           </div>
         </div>
         <AlertContainer />
+        <LoadingContainer />
       </div>
       {showModal && <ResultModal onCloseClicked={onResultModalCloseClicked} />}
     </>

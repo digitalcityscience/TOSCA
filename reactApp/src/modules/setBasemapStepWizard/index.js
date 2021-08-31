@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 
 import { GlobalContext } from '../../store/global';
 import { StepsContainer, Step, StepsFooter } from '../../components/controls/steps';
+import { useLoading } from '../../store/loading';
+import { useAlert } from '../../store/alert';
 
 export const SetBasemapModule = () => {
   const { setActiveModule, WPS } = React.useContext(GlobalContext);
@@ -9,6 +11,9 @@ export const SetBasemapModule = () => {
   const basemapForm = React.createRef();
   const steps = ['introduction', 'selectMap'];
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
+
+  const { showLoading, hideLoading } = useLoading();
+  const { addAlert } = useAlert();
 
   const moveForward = () => {
     setCurrentStepIndex(prev => prev + 1);
@@ -22,12 +27,15 @@ export const SetBasemapModule = () => {
     const formData = new FormData(basemapForm.current);
 
     try {
+      showLoading();
       const response = await WPS.upload(formData);
-      await WPS.Execute('set_basemap', [{identifier: 'filename', data: response}]);
+      await WPS.Execute('set_basemap', [{ identifier: 'filename', data: response }]);
       setActiveModule(null);
     } catch (err) {
+      addAlert({ message: err.message });
       console.error(err.message);
     }
+    hideLoading();
   };
 
   return (

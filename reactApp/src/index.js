@@ -4,6 +4,7 @@ import { Root } from 'components';
 import 'styles/style.css';
 import { GlobalContextProvider } from './store/global';
 import { AlertContextProvider } from './store/alert';
+import { LoadingContextProvider } from './store/loading';
 
 import 'regenerator-runtime/runtime';
 
@@ -11,7 +12,9 @@ const App = () => {
   return (
     <GlobalContextProvider>
       <AlertContextProvider>
-        <Root />
+        <LoadingContextProvider>
+          <Root />
+        </LoadingContextProvider>
       </AlertContextProvider>
     </GlobalContextProvider>
   );
