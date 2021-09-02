@@ -46,10 +46,9 @@ export const useLayerControl = (map) => {
 
       let overlayMaps = {};
       try {
-        const workspace = 'vector';
         const featureTypes = await Promise.all(geoserverWorkspaces.map(workspace => geoserverREST.GetFeatureTypesInWorkspace(workspace))).then(results => results.flat());
         const featureTypeNames = featureTypes.map(ft => ft.name);
-        const featureTypeInfos = await Promise.all(featureTypeNames.map(name => geoserverREST.GetFeatureType(workspace, name)));
+        const featureTypeInfos = await Promise.all(featureTypeNames.map(name => geoserverREST.GetFeatureType('vector', name)));
        
         const layersConfig = featureTypeInfos.map(info => ({
           layers: info.name,
