@@ -1,12 +1,16 @@
 import React, { useEffect } from 'react';
 import L from 'leaflet';
+
 import 'leaflet-draw';
 import 'leaflet-groupedlayercontrol';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw/dist/leaflet.draw.css';
+import './styles/style.css';
 
 import { GlobalContext } from '../../store/global';
-import './styles/style.css';
+import { useLayerControl } from './hooks/use-layer-control';
+
+let map = {};
 
 export const MapView = () => {
   const { setDrawings } = React.useContext(GlobalContext);
@@ -14,7 +18,7 @@ export const MapView = () => {
   // this hook only run once on component mount
   // making sure the leaflet map container doesn't change with any react state change
   useEffect(() => {
-    const map = new L.Map('map', {
+    map = new L.Map('map', {
       center: new L.LatLng(
         process.env.LATITUDE,
         process.env.LONGITUDE
@@ -23,24 +27,6 @@ export const MapView = () => {
       minZoom: 4,
       touchZoom: true
     });
-
-    /* Create background maps */
-    const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
-
-    const hot = L.tileLayer('https://tile-{s}.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors; Humanitarian map style by <a href="https://www.hotosm.org/">HOT</a>'
-    });
-
-    /* Set up grouped layer control */
-    const baseLayers = {
-      "OSM Standard style": osm,
-      "OSM Humanitarian style": hot
-    };
-
-    L.control.groupedLayers(baseLayers, {}, { position: 'topright', collapsed: false }).addTo(map);
-
     /* Drawing tool */
     const drawings = L.featureGroup().addTo(map);
 
@@ -73,8 +59,9 @@ export const MapView = () => {
 
     /* Scale bar */
     L.control.scale({ maxWidth: 300, position: 'bottomright' }).addTo(map);
-
   }, []);
+
+  useLayerControl(map);
 
   return (
     <div id="map"></div>

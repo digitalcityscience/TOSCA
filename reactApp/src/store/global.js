@@ -2,6 +2,7 @@ import React, { useReducer } from 'react';
 import PropTypes from 'prop-types';
 
 import { WPS } from './wps';
+import { geoserverREST } from './geoserver-rest';
 
 export const GlobalContext = React.createContext();
 
@@ -10,7 +11,8 @@ const initialState = {
   activeModule: null,
   activeModuleStep: 0,
   drawings: null,
-  WPS: WPS
+  WPS,
+  geoserverREST,
 };
 const actions = {
   SET_DIALOG_MESSAGE: 'SET_DIALOG_MESSAGE',
@@ -40,6 +42,7 @@ export const GlobalContextProvider = ({ children }) => {
     activeModuleStep: state.activeModuleStep,
     drawings: state.drawings,
     WPS: state.WPS,
+    geoserverREST: state.geoserverREST,
     setDialogMessage: (value) => {
       dispatch({ type: actions.SET_DIALOG_MESSAGE, value });
     },
@@ -59,5 +62,8 @@ export const GlobalContextProvider = ({ children }) => {
 };
 
 GlobalContextProvider.propTypes = {
-  children: PropTypes.object.isRequired,
+  children: PropTypes.oneOfType([
+    PropTypes.object,
+    PropTypes.array
+  ]).isRequired,
 };

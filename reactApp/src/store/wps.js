@@ -1,4 +1,4 @@
-const baseURL = "http://localhost:5000/"; // will be moved to .env in following iteration
+const baseURL = process.env.WPS_URL;
 
 const parseWPSResponse = async (response) => {
   const text = await response.text();
