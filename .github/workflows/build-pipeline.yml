@@ -2,18 +2,17 @@ name: TOSCA Build Pipeline
 
 on:
   push:
-    branches: [ master, "feat/*" ]
+    branches: [master, "feat/*"]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 env:
   REGISTRY: ghcr.io
   # github.repository as <account>/<repo>
   IMAGE_NAME: ${{ github.repository }}
 
-
 jobs:
-  backend-build-and-push-image:
+  geoserver-build-and-push-image:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -43,8 +42,8 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-  
-  frontend-build-and-push-image:
+
+  webapp-build-and-push-image:
     runs-on: ubuntu-latest
     permissions:
       contents: read
