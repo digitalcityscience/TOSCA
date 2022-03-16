@@ -35,9 +35,6 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-geoserver
           tags: |
-            # minimal
-            type=edge
-            # define default branch
             type=edge,branch=$repo.default_branch
 
       - name: Build and push Docker image
@@ -71,9 +68,6 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-webapp
           tags: |
-            # minimal
-            type=edge
-            # define default branch
             type=edge,branch=$repo.default_branch
 
       - name: Build and push Docker image
