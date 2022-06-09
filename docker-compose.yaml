@@ -1,55 +1,43 @@
-version: "3.7"
+version: "3.3"
 
 services:
   geoserver:
-    build: ./geoserver
-    image: open-city-toolkit/geoserver
+    build: /opt/tosca/geoserver
+    image: tosca-geoserver
+    #image: ghcr.io/digitalcityscience/tosca-geoserver:feat-github-actions
     ports:
       - 8080:8080
+    environment:
+      - GEOSERVER_CSRF_DISABLED=true
+    restart: always
     volumes:
       - type: volume
-        source: geoserver_data
+        source: ./geoserver_data_dir
         target: /usr/share/geoserver/data_dir
   webapp:
-    build: ./webapp
-    image: open-city-toolkit/webapp
+    build: /opt/tosca/webapp
+    image: tosca-webapp
+          #image: ghcr.io/digitalcityscience/tosca-webapp:feat-github-actions
     ports:
       - 3000:3000
+    restart: always
     volumes:
       - type: volume
-        source: grass
+        source: ./grass
         target: /oct/grass
       - type: volume
-        source: output
+        source: ./output
         target: /oct/output
       - type: volume
-        source: geoserver_data
+        source: ./geoserver_data_dir
         target: /usr/share/geoserver/data_dir
     environment:
       - DATA_FROM_BROWSER_DIR=/oct/data_from_browser
       - GRASS_DIR=/oct/grass
       - OUTPUT_DIR=/oct/output
-      - GEOSERVER_URL=http://localhost:8080/
-      - INITIAL_LAT=
-      - INITIAL_LON=
-      - USE_LANG=
+      - GEOSERVER_URL=https://geoserver.tosca.digitalcityscience.rocks/
+      - INITIAL_LAT=53.5511
+      - INITIAL_LON=9.9937
+      - USE_LANG=en
 
-volumes:
-  geoserver_data:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ./geoserver_data_dir
-  grass:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ./grass
-  output:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ./output
+                                   
