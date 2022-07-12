@@ -12,8 +12,8 @@ services:
         target: /usr/share/geoserver/data_dir
 
   wpsserver:
-    build: https://github.com/citysciencelab/open-city-toolkit-flask.git
-    image: open-city-toolkit/wpsserver
+    build: https://github.com/digitalcityscience/TOSCA-flask.git
+    image: tosca/wpsserver
     ports:
       - 5000:5000
     volumes:
