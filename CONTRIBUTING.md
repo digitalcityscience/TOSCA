@@ -1,4 +1,4 @@
-# Contributing to Open City Toolkit
+# Contributing to TOSCA
 We love your input! We want to make contributing to this project as easy and transparent as possible, whether it's:
 
 - Reporting a bug
@@ -6,7 +6,7 @@ We love your input! We want to make contributing to this project as easy and tra
 - Submitting a fix
 - Proposing new features
 - Becoming a maintainer
-- Contributing to the [wiki](https://github.com/citysciencelab/open-city-toolkit/wiki)
+- Contributing to the [wiki](https://github.com/digitalcityscience/TOSCA/wiki)
 
 ## We develop with Github
 We use github to host code, to track issues and feature requests, as well as accept pull requests.
@@ -24,7 +24,7 @@ Pull requests are the best way to propose changes to the codebase (we use [Githu
 In short, when you submit code changes, your submissions are understood to be under the same [MIT License](http://choosealicense.com/licenses/mit/) that covers the project. Feel free to contact the maintainers if that's a concern.
 
 ## Report bugs using Github's issues
-We use GitHub issues to track public bugs. Report a bug by [opening a new issue](https://github.com/citysciencelab/open-city-toolkit/issues); it's that easy!
+We use GitHub issues to track public bugs. Report a bug by [opening a new issue](https://github.com/digitalcityscience/TOSCA/issues); it's that easy!
 
 ## Write bug reports with detail, background and sample code
 Here's [an example](http://www.openradar.me/11905408) of a bug report.

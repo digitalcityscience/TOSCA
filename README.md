@@ -5,7 +5,7 @@ The Toolkit for Open and Sustainable City Planning and Analysis (TOSCA) was deve
 
 https://user-images.githubusercontent.com/66685611/122094650-af3ef400-ce0c-11eb-91a1-b8b271720a36.mp4
 
-You can also look under the Wiki section to read the [administrator's](https://github.com/citysciencelab/open-city-toolkit/wiki/2.-Open-City-Toolkit-%E2%80%90-Administrator's-Guide) manual or the [user](https://github.com/citysciencelab/open-city-toolkit/wiki/1.-Open-City-Toolkit-%E2%80%90-User-manual) manual.
+You can also look under the Wiki section to read the [administrator's](https://github.com/digitalcityscience/TOSCA/wiki/2.-Open-City-Toolkit-%E2%80%90-Administrator's-Guide) manual or the [user](https://github.com/digitalcityscience/TOSCA/wiki/1.-Open-City-Toolkit-%E2%80%90-User-manual) manual.
 
 
 ## Requirements
