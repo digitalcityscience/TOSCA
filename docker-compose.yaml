@@ -3,7 +3,7 @@ version: "3.7"
 services:
   geoserver:
     build: ./geoserver
-    image: open-city-toolkit/geoserver
+    image: tosca/geoserver
     ports:
       - 8080:8080
     volumes:
@@ -12,7 +12,7 @@ services:
         target: /usr/share/geoserver/data_dir
   webapp:
     build: ./webapp
-    image: open-city-toolkit/webapp
+    image: tosca/webapp
     ports:
       - 3000:3000
     volumes:
