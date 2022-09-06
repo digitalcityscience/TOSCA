@@ -1,7 +1,7 @@
 {
   "name": "TOSCA",
   "version": "0.1.0",
-  "description": "Open City Toolkit (pilot application)",
+  "description": "TOSCA",
   "repository": "https://github.com/digitalcityscience/TOSCA",
   "main": "app.js",
   "scripts": {
