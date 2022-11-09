@@ -1,5 +1,5 @@
 # Pull base system
-FROM debian:buster
+FROM debian:bullseye
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV GEOSERVER_HOME=/usr/share/geoserver
