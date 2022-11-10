@@ -12,7 +12,7 @@ services:
         target: /usr/share/geoserver/data_dir
 
   wpsserver:
-    build: https://github.com/digitalcityscience/TOSCA-flask.git
+    build: https://github.com/digitalcityscience/TOSCA-flask.git#main
     image: tosca/wpsserver
     ports:
       - 5000:5000
@@ -31,6 +31,12 @@ services:
       - GEOSERVER_USERNAME=admin
       - GEOSERVER_PASSWORD=geoserver
       - GRASS_DIR=/pywps-flask/grass
+
+  webapp:
+    build: https://github.com/digitalcityscience/TOSCA-vue.git#main
+    image: tosca/webapp
+    ports:
+      - 80:80
 
 volumes:
   geoserver_data:
