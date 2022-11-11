@@ -41,10 +41,6 @@ services:
 volumes:
   geoserver_data:
     driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ./geoserver_data_dir
   grass:
     driver: local
   output:

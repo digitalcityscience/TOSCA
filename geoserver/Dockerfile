@@ -20,4 +20,12 @@ RUN unzip -q css-plugin.zip && rm css-plugin.zip
 # enable CORS
 RUN sed -i '170d;191d;222d;227d' /usr/share/geoserver/webapps/geoserver/WEB-INF/web.xml
 
+# set up workspaces
+RUN rm -r \
+  $GEOSERVER_DATA_DIR/data/* \
+  $GEOSERVER_DATA_DIR/layergroups/* \
+  $GEOSERVER_DATA_DIR/styles/* \
+  $GEOSERVER_DATA_DIR/workspaces/*
+COPY install_data $GEOSERVER_DATA_DIR
+
 CMD /usr/share/geoserver/bin/startup.sh
