@@ -3,12 +3,58 @@ const selection = window['selection']
 const fromPoints = window['time_map_from_points']
 const strickenArea = window['time_map_stricken_area']
 const timeMap = window['time_map_vector']
-
+const sMap = window['Service_Area_Map']
+let buffer_point, buffer_radius, buffered, buffered_layers=[], buffer_layer_remove=null, remove_buffer=[]
 /**
  * Handle incoming messages from backend
  * @param {object} res backend response
  * @return Promise resolving if the message is processed successfully
  */
+
+var points;
+
+function clearBuffer(buffered_layers){
+    if(buffered_layers.length > 0){
+      buffered_layers.map(layer =>  map.removeLayer(layer))
+    }
+ }
+
+function onLayerToggle(name, element){
+  const layer = jsonData.filter(layer => layer.name == name)
+  var ptsWithin = turf.pointsWithinPolygon(layer[0], buffered)
+  if(element.checked){
+    var layer_icon = L.icon({
+      iconUrl: handleIcon(layer[0].name),
+      iconSize: [32,37],
+      iconAnchor: [16, 37],
+      popupAnchor: [0, -28]
+    });
+    const buffer_layer = L.geoJSON(ptsWithin, {
+      pointToLayer: function (feature, latlng) {
+        return L.marker(latlng, {icon: layer_icon});
+      }
+    }).addTo(map)
+    buffer_layer['id'] = name
+    buffered_layers.push(buffer_layer)
+  }
+  else{
+    remove_buffer = buffered_layers.filter(layer => layer.id == name)
+    map.removeLayer(remove_buffer[0])
+    buffered_layers=  buffered_layers.filter(layer => layer.id != name)
+  }
+}
+
+function handleIcon(layer_name){
+  if(layer_name == 'Police_Out_Post' || layer_name == 'Police_Stations'){
+    const url = `images/Police.png`
+    return url
+  }
+  else{
+    const url = `images/${layer_name}.png`
+    return url
+  }
+}
+
 function handleResponse(res) {
   return new Promise((resolve) => {
     clearDialog();
@@ -140,6 +186,178 @@ function handleResponse(res) {
             })
           ];
           break;
+
+        // Input type selection
+        case 'service_area.1':
+          map.removeLayer(sMap);
+          drawnItems.clearLayers();
+          form = formElement(messageId);
+          buttons = [
+            buttonElement(t['Select point']).click(()=>{
+              reply(res, 'Select point');
+            }),
+            buttonElement(t['Select Layer File']).click(()=>{
+              reply(res, 'Select Layer File');
+            })
+          ];
+          form.append(buttons);
+          break;
+
+        // Draw circle marker
+        case 'service_area.3':
+          drawnItems.clearLayers();
+          startDrawCirclemarker();
+          form = formElement(messageId)
+          buttons = [
+            buttonElement(t['Save']).click(() => {
+              $(`#${messageId}-error`).remove();
+              if (!saveDrawing(res)) {
+                textarea.append($(`<span id="${messageId}-error" class="validation-error">${t['error:draw point']}</span>`));
+              }
+              reply(res, 'Point Selected');
+            }),
+            buttonElement(t['Cancel']).click(() => {
+              reply(res, 'cancel');
+            })
+          ];
+          break;
+
+        // Select point layer file
+        case 'service_area.4':
+          //const LayerFilesArray = ["Bank Locations", "Mo Bus Stops BMC"] // File names should contain spaces only
+		  const LayerFilesArray = ["Bank Locations"]
+          let optionsAppend = '';
+          LayerFilesArray.forEach(function(arrayItem){
+            var arr = arrayItem.split(" ");
+            var valueItem = arr.join("_");
+            optionsAppend += " <option value="+valueItem+">"+ arrayItem + "<option/> ";
+          })
+          form = formElement(messageId);
+          form.append($(`<select id="${messageId}-input" class='custom-select custom-select-sm mr-2'> ${optionsAppend} <select/>`));
+
+          buttons = [
+            buttonElement(t['Submit']).click(()=> {
+              $(`#${messageId}-error`).remove();
+              const input = $(`#${messageId}-input`);
+              if(input.val()){
+              reply(res, input.val())}
+              else{
+                textarea.append($(`<span id="${messageId}-error" class="validation-error"> ${t['error:layer select']}</span>`))
+              }
+            })
+          ];
+          break;
+
+        // Take input for cost parameter and request to process the python script
+        case 'service_area.5':
+          form = formElement(messageId);
+          form.append($(`<input id="${messageId}-input" type="number" />`));
+          form.append($(`<span>&nbsp;m</span>`));
+          buttons = [
+            buttonElement(t['Submit']).click(() => {
+              $(`#${messageId}-error`).remove();
+              const input = $(`#${messageId}-input`);
+              if (!isNaN(parseInt(input.val()))) {
+                if(points){
+                sendMessage('/execFile', {}, { messageId: res.id , msg: 'Output from selected point', val: input.val(), longg: points[0], latt: points[1]}, handleResponse);
+                points = null;
+                }
+                else{
+                sendMessage('/execFile', {}, { messageId: res.id , msg: 'Output from layer file', val: input.val(), LayerFile: res.Layer}, handleResponse);
+                }
+              }
+              else {
+                textarea.append($(`<span id="${messageId}-error" class="validation-error">${t['error:number']}</span>`));
+              }
+            })
+          ];
+          form.append(buttons);
+          break;
+
+        // EndScreen options, Load layers, Export map with layers toggeled
+        case 'service_area.2':
+          refreshLayer(sMap);
+          map.addLayer(sMap);
+          cancelDrawing();
+
+          form = formElement(messageId);
+          buttons = [
+            buttonElement(t['Export Map']).click(()=> {
+              handleResponse({id: 'service_area.7', message: "You can choose to either export the Printable Map in Landscape mode or in Portrait mode"})
+            })
+          ];
+          break;
+        case 'service_area.7':
+
+          form = formElement(messageId);
+          buttons = [
+
+            // Landscape print button -------------------------------------------------------------------------
+            buttonElement(t['Landscape mode'], 'leaflet-browser-print--manualMode-button').click(() => {
+              var legcontent = null;
+              const options = {
+                printModes: [
+                  L.control.browserPrint.mode.landscape(),
+                ],
+                manualMode: false,
+                pagesSelector: "[leaflet-browser-print-pages-serviceArea]",
+                contentSelector: "[leaflet-browser-print-content-serviceArea]",
+              }
+              L.control.browserPrint(options).addTo(map)
+
+              // Get Legend content as html before print starts
+              map.on('browser-pre-print', function(e){
+                legcontent = document.getElementById("leaflet-legend-content");
+                htmlcontent = document.querySelectorAll(".leaflet-legend-item");
+                legcontent.style.maxHeight = "inherit";
+                appendedLegContent = formatContent(htmlcontent);
+                $("#service-area-output-legend").html(appendedLegContent);
+              })
+
+              // Add the legend content to its respective div element after print is over
+              map.on('browser-print-end', function(e){
+                legcontent.style.maxHeight = "";
+                document.getElementById("leaflet-legend-container").append(legcontent)
+              })
+              var modeToUse = L.control.browserPrint.mode.landscape();
+              map.printControl.print(modeToUse);
+            }),
+
+            // Portrait print button -------------------------------------------------------------------------
+            buttonElement(t['Portrait mode'], 'leaflet-browser-print--manualMode-button').click(() => {
+              var legcontent = null;
+              const options = {
+                printModes: [
+                  L.control.browserPrint.mode.portrait(),
+                ],
+                manualMode: false,
+                pagesSelector: "[leaflet-browser-print-pages-serviceArea]",
+                contentSelector: "[leaflet-browser-print-content-serviceArea]",
+              }
+              L.control.browserPrint(options).addTo(map)
+
+              // Get Legend content as html before print starts
+              map.on('browser-pre-print', function(e){
+                legcontent = document.getElementById("leaflet-legend-content");
+                htmlcontent = document.querySelectorAll(".leaflet-legend-item");
+                legcontent.style.maxHeight = "inherit";
+                appendedLegContent = formatContent(htmlcontent);
+                $("#service-area-output-legend").html(appendedLegContent);
+              })
+
+              // Add the legend content to its respective div element after print is over
+              map.on('browser-print-end', function(e){
+                legcontent.style.maxHeight = "";
+                document.getElementById("leaflet-legend-container").append(legcontent)
+              })
+              var modeToUse = L.control.browserPrint.mode.portrait();
+              map.printControl.print(modeToUse);
+            }),
+          ];
+          form.append(buttons);
+
+          break;
+
 
         // == time map module ==
         // Travel mode
@@ -281,8 +499,82 @@ function handleResponse(res) {
           }
           break;
 
+		    case 'buffer_module.1' : {
+          clearBuffer(buffered_layers)
+          if(buffer_layer_remove){
+            map.removeLayer(buffer_layer_remove)
+          }
+         
+            map.addLayer(selection);
+
+            drawnItems.clearLayers();
+            startDrawCirclemarker();
+
+            buttons = [
+              buttonElement(t['Save']).click(() => {
+                $(`#${messageId}-error`).remove();
+                if (!saveDrawing(res)) {
+                  textarea.append($(`<span id="${messageId}-error" class="validation-error">${t['error:draw point']}</span>`));
+                }
+              }),
+              buttonElement(t['Cancel']).click(() => {
+                reply(res, 'cancel');
+              })
+            ];
+            break;
+        }
+
+        case 'buffer_module.2' : {
+          // L.geoJSON(buffer_point).addTo(map);
+          form = formElement(messageId);
+          form.append($(`<input id="${messageId}-input" type="number" />`));
+          form.append($(`<span>&nbsp;m</span>`));
+          buttons = [
+            buttonElement(t['Submit']).click(() => {
+              const input = $(`#${messageId}-input`);
+              buffer_radius = input.val()
+              reply(res, input.val());
+            })
+          ];
+          break;
+        }
+        case 'buffer_module.3' : {
+          buffered = turf.buffer(buffer_point, buffer_radius, {units: 'meters'})
+          drawnItems.clearLayers();
+          buffer_layer_remove = L.geoJSON(buffered, {
+            pointToLayer: function (feature, latlng) {
+              console.log(latlng,"buffer module");
+              return L.circle(latlng)
+            }
+          }).addTo(map)
+          const items = layers.filter(service => service.buffered)
+          form = formElement(messageId);
+          let innerHTML = ""
+          items.map(service => {
+            innerHTML += `<input type="checkbox" id="${service.id}-input" value='${service.layers}' onchange='onLayerToggle("${service.layers}", this)'}'/><span>&nbsp</span><label>${service.displayName}</label></br>`}) 
+          lists.append($(`<form>` + innerHTML + `</form>`))
+          buttons = [
+            buttonElement(t['Submit'], 'leaflet-browser-print--manualMode-button').click(() => {
+              showBuffer(buffered_layers)
+              const options = {
+                printModes: [
+                  L.control.browserPrint.mode.auto("Automatico", "A6"),
+                ],
+                manualMode: false
+              }
+              L.control.browserPrint(options).addTo(map)
+              var modeToUse = L.control.browserPrint.mode.auto("Automatico", "A6");
+              map.printControl.print(modeToUse);
+            })
+          ];
+          break;
+        }								  
         // == query module ==
         case 'query.2':
+		 if(buffer_layer_remove){
+            map.removeLayer(buffer_layer_remove)
+          }
+          clearBuffer(buffered_layers)				  						  
           form = formElement(messageId);
           lists.append($(`<select id="${messageId}-input" class='custom-select' size="10">` + list.map(col => `<option selected value="${col}">${col}</option>`) + `</select>`));
           buttons = [
@@ -613,6 +905,28 @@ function onClickResults() {
   resultModal.updateResults();
 }
 
+function showBuffer(buffered_layers){
+  let html = "<tbody>";
+  buffered_layers.map(layer => {
+    const number_of_point_layers = Object.keys(layer._layers).length
+    html += "<tr><td>" + layer['id']+ "</td>"
+    html += "<td>"+ number_of_point_layers +  "</td></tr>"
+  })
+  html = html + "</tbody>";
+  $('#buffer-output').html(html)
+}
+
+function formatContent(legcontent){
+  let html = `<tbody>`;
+  legcontent.forEach((content) => {
+    html += `<tr><td>  ${content.innerText}  </td>`
+    // console.log(content, content.getElementsByTagName('img'))
+    html += `<td> <img src="${content.getElementsByTagName('img')[0].src}"  </td></tr>`
+  })
+  html = html + `</tbody>`;
+  // console.log(html)
+  return html;
+}						 
 let blinkTimeout;
 // eslint-disable-next-line no-unused-vars
 function blink(selector) {
@@ -652,7 +966,15 @@ function cancelDrawing() {
 function launchModule() {
   // Get the selected item
   const value = $('#launch-module-menu')[0].value;
-  if (value) {
+  if(value == 'buffer'){
+    const res = {
+      id: "buffer_module.1",
+      message: "A start point is required. Use the circlemarker tool to draw a start point"
+    }
+    handleResponse(res)
+  }
+
+  else{
     sendMessage('/launch', { launch: value }, {}, handleResponse);
   }
 }
@@ -665,11 +987,28 @@ function launchSettings(value) {
 }
 
 function reply(res, message) {
+ if(res.id == 'buffer_module.1'){
+    const res = {
+      id : 'buffer_module.4',
+      message : 'Process Cancelled.'
+    }
+    handleResponse(res)
+  }
+  else if(res.id == 'buffer_module.2'){
+    const res = {
+      id : 'buffer_module.3',
+      message : 'Select Layers'
+    }
+    handleResponse(res)
+  }else{							  	
   sendMessage('/reply', { msg: message }, { messageId: res.id }, handleResponse);
+  }
 }
 
 function saveDrawing(res) {
   const geojson = drawnItems.toGeoJSON();
+  buffer_point = geojson
+  points = geojson["features"][0]["geometry"]["coordinates"];														 
   if (geojson.features.length === 0) {
     return false;
   }
@@ -698,7 +1037,15 @@ function getAttributes(table) {
 
 function sendMessage(target, message, params, callback) {
   $('#loading').show();
+if(params.messageId == 'buffer_module.1'){
+  const res = {
+    id: "buffer_module.2",
+    message : "Enter radius in meters"
+  }
+    handleResponse(res)
+}
 
+  else						    
   $.ajax({
     type: 'POST',
     url: target + '?' + $.param(params),

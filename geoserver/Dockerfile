@@ -12,7 +12,7 @@ RUN apt-get clean
 
 # Install GeoServer and CSS plugin
 WORKDIR /usr/share/geoserver
-RUN curl -L -o geoserver.zip https://sourceforge.net/projects/geoserver/files/GeoServer/2.18.0/geoserver-2.18.0-bin.zip
+RUN curl -L -o geoserver.zip https://sourceforge.net/projects/geoserver/files/GeoServer/2.18.5/geoserver-2.18.5-bin.zip
 RUN unzip -q geoserver.zip && rm geoserver.zip
 WORKDIR /usr/share/geoserver/webapps/geoserver/WEB-INF/lib
 RUN curl -o css-plugin.zip https://build.geoserver.org/geoserver/2.18.x/ext-latest/geoserver-2.18-SNAPSHOT-css-plugin.zip

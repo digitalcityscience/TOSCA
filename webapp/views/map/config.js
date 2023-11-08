@@ -90,6 +90,32 @@ const layers = [
     getFeatureInfo: false
   },
   {
+    layers: 'Service_Area_Map',
+    format: 'image/png',
+    transparent: true,
+    legend: true,
+    maxZoom: 20,
+    minZoom: 1,
+    displayName: 'Service Approach Area',
+    type: 'vector',
+    group: 'Transportation',
+    getFeatureInfo: false
+  },
+  {
+    layers: 'bank_locations',
+    format: 'image/png',
+    transparent: true,
+    legend: false,
+    maxZoom: 20,
+    minZoom: 1,
+    displayName: 'Bank Locations',
+    type: 'vector',
+    group: 'Transportation',
+    getFeatureInfo: false,
+    id: 1,
+    buffered: true
+  },
+  {
     layers: 'ltca_dem',
     format: 'image/png',
     transparent: true,

@@ -1,0 +1,23 @@
+<dataStore>
+  <id>DataStoreInfoImpl-3cad3199:189d5695de0:-7ffb</id>
+  <name>bank_locations</name>
+  <type>Directory of spatial files (shapefiles)</type>
+  <enabled>true</enabled>
+  <workspace>
+    <id>WorkspaceInfoImpl-53a0964:16fc2624139:-7fff</id>
+  </workspace>
+  <connectionParameters>
+    <entry key="charset">ISO-8859-1</entry>
+    <entry key="filetype">shapefile</entry>
+    <entry key="create spatial index">true</entry>
+    <entry key="memory mapped buffer">false</entry>
+    <entry key="timezone">Etc/UTC</entry>
+    <entry key="enable spatial index">true</entry>
+    <entry key="namespace">vector</entry>
+    <entry key="cache and reuse memory maps">true</entry>
+    <entry key="url">file:data/service_area</entry>
+    <entry key="fstype">shape</entry>
+  </connectionParameters>
+  <__default>false</__default>
+  <dateCreated>2023-08-08 13:52:40.468 UTC</dateCreated>
+</dataStore>

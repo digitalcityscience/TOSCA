@@ -12,7 +12,10 @@ html
     script(src="/lib/leaflet/leaflet.js")
     script(src="/lib/leaflet-draw/leaflet.draw.js")
     script(src="/lib/leaflet-groupedlayercontrol/leaflet.groupedlayercontrol.js")
+    script(src="betterWMS/L.TileLayer.BetterWMS.js")
     script(src="/lib/leaflet-measure/leaflet-measure.js")
+    script(src="https://unpkg.com/@turf/turf/turf.min.js")
+    script(src="leaflet.browser.print/leaflet.browser.print.min.js")
     script(src="/lib/leaflet-plugins/leaflet.legend.js")
     script(src="/lib/leaflet-plugins/leaflet.getfeatureinfo.js")
     script(src="/lib/split/split.js")
@@ -36,6 +39,8 @@ html
                 option(selected value="time_map") #{t['Calculate time map']}
                 option(value="query") #{t['Query area']}
                 option(value="cotopaxi_scenarios") #{t['Cotopaxi eruption scenarios']}
+                option(value='buffer') #{t['Buffer Module']}
+                option(value='service_area') #{t['Service Approach Area']}
               button(class="btn btn-success btn-lg mr-2" onclick="launchModule()") ▷&nbsp;#{t['Run']}
               button(class='btn btn-light btn-lg' id="result-btn" onclick='onClickResults()') #{t['Results']}
             li(class="nav-item flex-grow-1")
@@ -76,6 +81,15 @@ html
     div(id="results-modal" class="modal-background")
       include ../results-modal/index.pug
 
+    div(id='help-modal' class='modal-background')
+      //- include ../help-modal/index.pug
+
+    div(id='buffer-model-result' class='modal-background')
+      include ../buffer-result/index.pug
+
+    div(id='service-model-result' class='modal-background')
+      include ../service-area-result/index.pug
+
     div(id="table-attributes-modal" class="modal-background")
       include ../table-attributes-modal/index.pug
 
@@ -87,6 +101,8 @@ html
           switch ($(this).val()) {
             case 'time_map': return "#{t['tooltip:time map']}";
             case 'query': return "#{t['tooltip:query']}";
+            case 'buffer': return "#{t['tooltip:Buffer Module']}";
+            case 'service_area': return "#{t['tooltip:Service Area']}";            
             case 'cotopaxi_scenarios': return "#{t['tooltip:cotopaxi scenarios']}";
           }
         },
@@ -108,6 +124,7 @@ html
       const [lat, lon] = [#{lat}, #{lon}];
       const t = !{JSON.stringify(t)};
     script
+      include ../geojson-data/data.js 
       include ../map/config.js
       include ../map/script.js
       include ../table-attributes-modal/script.js

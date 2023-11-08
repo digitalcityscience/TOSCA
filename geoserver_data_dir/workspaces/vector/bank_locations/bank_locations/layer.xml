@@ -1,0 +1,21 @@
+<layer>
+  <name>bank_locations</name>
+  <id>LayerInfoImpl-3cad3199:189d5695de0:-7ff5</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl--1c06912b:1760386b5c5:-7fd7</id>
+  </defaultStyle>
+  <styles class="linked-hash-set">
+    <style>
+      <id>StyleInfoImpl-603fce8d:173ec88db00:-7784</id>
+    </style>
+  </styles>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl-3cad3199:189d5695de0:-7ff6</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateCreated>2023-08-08 13:54:39.803 UTC</dateCreated>
+</layer>

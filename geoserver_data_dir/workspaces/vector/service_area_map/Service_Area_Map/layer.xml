@@ -1,0 +1,17 @@
+<layer>
+  <name>Service_Area_Map</name>
+  <id>LayerInfoImpl-3546d3c3:189d47ea06d:-7ff9</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl-3546d3c3:189d47ea06d:-7ff7</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl-3546d3c3:189d47ea06d:-7ffa</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateCreated>2023-08-08 13:01:25.290 UTC</dateCreated>
+  <dateModified>2023-08-08 13:04:12.893 UTC</dateModified>
+</layer>

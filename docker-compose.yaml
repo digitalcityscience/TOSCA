@@ -3,7 +3,7 @@ version: "3.7"
 services:
   geoserver:
     build: ./geoserver
-    image: open-city-toolkit/geoserver
+    image: tosca/geoserver
     ports:
       - 8080:8080
     volumes:
@@ -12,7 +12,7 @@ services:
         target: /usr/share/geoserver/data_dir
   webapp:
     build: ./webapp
-    image: open-city-toolkit/webapp
+    image: tosca/webapp
     ports:
       - 3000:3000
     volumes:
@@ -29,10 +29,10 @@ services:
       - DATA_FROM_BROWSER_DIR=/oct/data_from_browser
       - GRASS_DIR=/oct/grass
       - OUTPUT_DIR=/oct/output
-      - GEOSERVER_URL=http://localhost:8080/
+      - GEOSERVER_URL=http://192.168.14.21:8080
       - INITIAL_LAT=-0.93
       - INITIAL_LON=-78.61
-      - USE_LANG=es
+      - USE_LANG=en
 
 volumes:
   geoserver_data:

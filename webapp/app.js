@@ -5,6 +5,8 @@ const dataFromBrowserDir = process.env.DATA_FROM_BROWSER_DIR
 const geoserverDataDir = process.env.GEOSERVER_DATA_DIR
 const geoserverUrl = process.env.GEOSERVER_URL
 const OUTPUT_DIR = process.env.OUTPUT_DIR
+const PYTHON_SCRIPT_PATH=process.env.PYTHON_SCRIPT_PATH 
+const POINTS_SCRIPT_PATH=process.env.POINTS_SCRIPT_PATH 													
 const lat = process.env.INITIAL_LAT || 0
 const lon = process.env.INITIAL_LON || 0
 
@@ -25,6 +27,9 @@ const jsonParser = require('body-parser').json()
 const multer = require('multer')
 const uploadParser = multer()
 
+// Python Script Executer
+const {execFile} = require("child_process");
+
 app.listen(expressPort, () => {
   console.log(`App listening on port ${expressPort}`)
 })
@@ -37,6 +42,8 @@ app.use('/lib/bootstrap', express.static('node_modules/bootstrap/dist'))
 app.use('/lib/leaflet', express.static('node_modules/leaflet/dist'))
 app.use('/lib/leaflet-draw', express.static('node_modules/leaflet-draw/dist'))
 app.use('/lib/leaflet-groupedlayercontrol', express.static('node_modules/leaflet-groupedlayercontrol/src'))
+app.use('/betterWMS', express.static('views/map/betterWMS'))
+app.use('/leaflet.browser.print', express.static('node_modules/leaflet.browser.print/dist'))
 app.use('/lib/leaflet-measure', express.static('node_modules/leaflet-measure/dist'));
 app.use('/lib/leaflet-plugins', express.static('./leaflet-plugins'))
 app.use('/lib/split', express.static('node_modules/split.js/dist'))
@@ -68,6 +75,7 @@ const SetResolutionModule = require('./scripts/modules/set_resolution')
 const TimeMapModule = require('./scripts/modules/time_map')
 const QueryModule = require('./scripts/modules/query')
 const LatacungaModule = require('./scripts/modules/cotopaxi_scenarios')
+const ServiceArea = require('./scripts/modules/service_area')
 
 const modules = {
   "add_location": new AddLocationModule(),
@@ -76,7 +84,8 @@ const modules = {
   "set_resolution": new SetResolutionModule(),
   "time_map": new TimeMapModule(),
   "query": new QueryModule(),
-  "cotopaxi_scenarios": new LatacungaModule()
+  "cotopaxi_scenarios": new LatacungaModule(),
+  "service_area": new ServiceArea(),
 }
 
 // launch a module
@@ -111,6 +120,50 @@ app.post('/reply', jsonParser, (req, res, next) => {
     next(err)
   }
 })
+
+// Execute a python file
+app.post('/execFile', (req, res, next) => {
+  const module = modules[req.query.messageId.split('.')[0]]
+  try {
+
+    // If longitude is available then input type is "fromPoint"
+    if(req.query.longg){
+
+    // Execute python file from here.
+    // PYTHON_PATH_SCRIPT imported from .env file
+    const testscript = execFile('python3', [PYTHON_SCRIPT_PATH, req.query.val, [req.query.longg, req.query.latt], "fromPoint"], (error, stdout, stderr) => {
+      // console.log(stdout);
+      if (error) throw error;
+      const message = module.process(req.query.msg, req.query.messageId)
+      if(message){
+        res.send(message)
+      }
+      else{
+        next("Something went wrong")
+      }
+      })
+
+    }
+
+    // Else input type is "fromLayer"
+    else{
+    const testscript = execFile('python3', [PYTHON_SCRIPT_PATH, req.query.val, (req.query.LayerFile.split("_")).join(" "), "fromLayer"], (error, stdout, stderr) => {
+      if (error) throw error;
+      const message = module.process(req.query.msg, req.query.messageId)
+      if(message){
+        res.send(message)
+      }
+      else{
+        next("Something went wrong")
+      }
+      })
+    }
+  }
+  catch (err){
+    next(err)
+  }
+})
+
 
 // file upload
 app.post('/file', uploadParser.single('file'), (req, res, next) => {
