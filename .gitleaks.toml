@@ -1,0 +1,8 @@
+# Secret scanning (gitleaks), used by CI. Extends the default rules.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "GeoServer's public default login, used only to detect and replace it"
+regexTarget = "match"
+regexes = ['''admin:geoserver''']
