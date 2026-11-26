@@ -44,6 +44,11 @@ if [[ $status == 0 ]]; then
   make smoke >/dev/null || { echo "Smoke test failed after the second deployment." >&2; status=1; }
 fi
 make versions || true
+# With released images (no versions.local.env), check that exactly the pinned
+# digests and versions are running.
+if [[ $status == 0 && ! -e versions.local.env ]] && ! grep -q ':unreleased$' versions.env; then
+  scripts/ci/verify-pinned.sh "$project" || status=1
+fi
 if [[ $status != 0 ]]; then
   echo "::group::logs"
   make ps || true
