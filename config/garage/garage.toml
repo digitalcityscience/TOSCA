@@ -1,0 +1,24 @@
+# Garage configuration for a single-node TOSCA installation.
+#
+# Nothing in this file is secret. Garage reads the secrets from the container
+# environment: GARAGE_RPC_SECRET and GARAGE_ADMIN_TOKEN. The application's S3
+# key comes from GARAGE_DEFAULT_ACCESS_KEY / GARAGE_DEFAULT_SECRET_KEY
+# (`garage server --single-node --default-access-key`).
+metadata_dir = "/var/lib/garage/meta"
+data_dir = "/var/lib/garage/data"
+db_engine = "sqlite"
+replication_factor = 1
+compression_level = 2
+
+rpc_bind_addr = "[::]:3901"
+rpc_public_addr = "garage:3901"
+
+[s3_api]
+# Must equal S3_REGION_NAME of the backend; requests signed for another region
+# are rejected.
+s3_region = "garage"
+api_bind_addr = "[::]:3900"
+
+[admin]
+# Reachable only inside the Compose network; the port is not published.
+api_bind_addr = "[::]:3903"

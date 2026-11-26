@@ -1,0 +1,26 @@
+# Development: run the web app from the source checkout with hot reload.
+# Used by `make dev-up`. Everything else stays as in compose.yaml.
+#
+# The Vite dev server replaces the nginx image on the same port and gets the
+# same VITE_* values, so the app is at the same address as with `make up`.
+
+services:
+  web:
+    image: node:22-alpine
+    working_dir: /app
+    command: ["sh", "-c", "npm ci && exec npm run dev -- --host 0.0.0.0 --port 80"]
+    volumes:
+      - ${FRONTEND_SRC:-./components/TOSCA-Frontend}:/app
+      # Kept in a volume so the container's packages do not mix with the ones
+      # installed on the host.
+      - web_node_modules:/app/node_modules
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1/"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      # The first start installs the packages.
+      start_period: 300s
+
+volumes:
+  web_node_modules:

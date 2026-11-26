@@ -1,0 +1,340 @@
+# TOSCA platform stack.
+#
+# Use `make` (see `make help`); it passes versions.env and .env to Compose.
+# Calling `docker compose` directly on this file will not find the image names.
+#
+#   versions.env   which images (committed; the platform release)
+#   .env           this installation: addresses, ports, secrets (never committed)
+#
+# This file has no `build:` blocks: the normal path pulls released images.
+# compose.build.yaml adds them for building from source.
+#
+# Start order:
+#   db ──────────────► migrate ──────┐
+#   garage ──────────► storage-init ─┼─► django
+#   geoserver ───────► geoserver-init┘
+#   web (independent)
+
+name: ${COMPOSE_PROJECT_NAME:-tosca}
+
+# Everything the backend image reads. Shared by the long-running API and the
+# one-shot jobs so that all of them see the same configuration.
+x-backend-environment: &backend-environment
+  ENV: prod
+  ENV_TYPE: production
+  PROD_MODE: "true"
+  DJANGO_SETTINGS_MODULE: tosca_api.settings.production
+  TOSCA_VERSION: ${TOSCA_VERSION:-unreleased}
+
+  DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:?run `make init` to create .env}
+  FIELD_ENCRYPTION_KEY: ${FIELD_ENCRYPTION_KEY:?}
+  DJANGO_DEBUG: "False"
+  DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS:?}
+  DJANGO_HEALTHCHECK_HOST: ${DJANGO_HEALTHCHECK_HOST:-localhost}
+  DJANGO_CORS_ALLOWED_ORIGINS: ${DJANGO_CORS_ALLOWED_ORIGINS:?}
+  DJANGO_CORS_ALLOW_CREDENTIALS: "true"
+  DJANGO_STATIC_URL: /static/
+  DJANGO_STATIC_ROOT: /app/staticfiles
+  DJANGO_MEDIA_URL: /media/
+  DJANGO_MEDIA_ROOT: /app/media
+  GUNICORN_WORKERS: ${GUNICORN_WORKERS:-3}
+  GUNICORN_THREADS: ${GUNICORN_THREADS:-2}
+  GUNICORN_TIMEOUT: ${GUNICORN_TIMEOUT:-120}
+
+  # The API connects as its own role; the PostgreSQL superuser password is
+  # deliberately not given to the backend.
+  DATABASE_URL: postgresql://${PG_API_USER:-tosca_api}:${PG_API_PASSWORD:?}@db:5432/${PG_DATABASE:-tosca}
+  PG_HOST: db
+  PG_DOCKER_PORT: "5432"
+  PG_DATABASE: ${PG_DATABASE:-tosca}
+  PG_API_USER: ${PG_API_USER:-tosca_api}
+  PG_API_PASSWORD: ${PG_API_PASSWORD:?}
+  PG_GS_USER: ${PG_GS_USER:-tosca_gs}
+  PG_GS_PASSWORD: ${PG_GS_PASSWORD:?}
+  PG_SCHEMA_API: ${PG_SCHEMA_API:-api_schema}
+  PG_SCHEMA_GEOSERVER: ${PG_SCHEMA_GEOSERVER:-gs_auth_role_schema}
+  PG_SCHEMA_GIS: ${PG_SCHEMA_GIS:-gis_schema}
+  PG_SCHEMA_JDBCCONF: ${PG_SCHEMA_JDBCCONF:-gs_jdbcconfig_schema}
+  DB_CONN_MAX_AGE: ${DB_CONN_MAX_AGE:-60}
+  DB_STATEMENT_TIMEOUT_MS: ${DB_STATEMENT_TIMEOUT_MS:-30000}
+
+  GEOSERVER_HOST: geoserver
+  GEOSERVER_PORT: "8080"
+  GEOSERVER_INTERNAL_URL: http://geoserver:8080/geoserver
+  GEOSERVER_PUBLIC_URL: ${TOSCA_GEOSERVER_URL:?}
+  GEOSERVER_SECURITY_MODE: ${GEOSERVER_SECURITY_MODE:-default}
+  GEOSERVER_ADMIN_USER: ${GEOSERVER_ADMIN_USER:-admin}
+  GEOSERVER_ADMIN_PASSWORD: ${GEOSERVER_ADMIN_PASSWORD:?}
+  GEOSERVER_DATA_DIR: /geoserver_data/data
+  GEOSERVER_DB_HOST: db
+  GEOSERVER_DB_PORT: "5432"
+  GEOSERVER_DB_NAME: ${PG_DATABASE:-tosca}
+  GEOSERVER_DB_USER: ${PG_GS_USER:-tosca_gs}
+  GEOSERVER_DB_PASSWORD: ${PG_GS_PASSWORD:?}
+  GEOSERVER_DB_SCHEMA: ${PG_SCHEMA_GEOSERVER:-gs_auth_role_schema}
+  RUN_SETUP_DEFAULT_ENGINE: ${RUN_SETUP_DEFAULT_ENGINE:-true}
+  RUN_DEFAULT_GEODATA_PROVIDER_SYNC_ON_STARTUP: ${RUN_DEFAULT_GEODATA_PROVIDER_SYNC_ON_STARTUP:-true}
+
+  # Explicit so no setting can make production write media into the container.
+  DJANGO_STORAGE_BACKEND: s3
+  # The backend signs browser-facing download URLs with this address, so it
+  # must be the address browsers use, and it must also be reachable from
+  # inside the containers.
+  S3_ENDPOINT_URL: ${TOSCA_STORAGE_URL:?}
+  S3_REGION_NAME: garage
+  S3_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID:?}
+  S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY:?}
+  S3_BUCKET_NAME: ${S3_BUCKET_NAME:-tosca-media-private}
+  S3_PUBLIC_BUCKET_NAME: ${S3_PUBLIC_BUCKET_NAME:-tosca-media-public}
+  S3_ARCHIVE_BUCKET_NAME: ${S3_ARCHIVE_BUCKET_NAME:-tosca-media-archive}
+  S3_ADDRESSING_STYLE: path
+  S3_SIGNATURE_VERSION: s3v4
+  MEDIA_PRIVATE_PREFIX: ${MEDIA_PRIVATE_PREFIX:-media/originals/}
+  MEDIA_DERIVATIVE_PREFIX: ${MEDIA_DERIVATIVE_PREFIX:-media/derivatives/}
+  THROTTLE_EDITORJS_UPLOAD: ${THROTTLE_EDITORJS_UPLOAD:-30/minute}
+  THROTTLE_EDITORJS_MEDIA: ${THROTTLE_EDITORJS_MEDIA:-120/minute}
+
+  KEYCLOAK_SERVER_URL: ${KEYCLOAK_SERVER_URL:-}
+  KEYCLOAK_REALM: ${KEYCLOAK_REALM:-}
+  KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID:-}
+  KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET:-}
+  KEYCLOAK_JWKS_URL: ${KEYCLOAK_JWKS_URL:-}
+  KEYCLOAK_ISSUER: ${KEYCLOAK_ISSUER:-}
+  ALLOWED_TOKEN_AUDIENCES: ${ALLOWED_TOKEN_AUDIENCES:-}
+  ALLOWED_TOKEN_CLIENTS: ${ALLOWED_TOKEN_CLIENTS:-}
+
+  GEOSIMULATIONS_RUNS_ENABLED: ${GEOSIMULATIONS_RUNS_ENABLED:-false}
+  GEOSIMULATIONS_ALLOW_ANONYMOUS_RUNS: ${GEOSIMULATIONS_ALLOW_ANONYMOUS_RUNS:-false}
+
+  # Start-up work is done by the one-shot services below, once, before the API
+  # starts; the API container itself does not repeat it.
+  RUN_MIGRATIONS_ON_STARTUP: "false"
+  CONFIGURE_STORAGE_CORS_ON_STARTUP: "false"
+
+# Runs one management command as the unprivileged user and exits, without the
+# start-up steps of the API container's entrypoint.
+x-backend-job: &backend-job
+  image: ${BACKEND_IMAGE:?}
+  entrypoint: ["gosu", "appuser:appuser", "/venv/bin/python", "manage.py"]
+  restart: "no"
+
+services:
+  db:
+    image: ${POSTGIS_IMAGE:?}
+    environment:
+      POSTGRES_DB: ${PG_DATABASE:-tosca}
+      POSTGRES_USER: ${PG_SUPERUSER:-postgres}
+      POSTGRES_PASSWORD: ${PG_SUPERPASS:?}
+      # Read by config/postgis/init001.sh the first time the volume is created.
+      PG_API_USER: ${PG_API_USER:-tosca_api}
+      PG_API_PASSWORD: ${PG_API_PASSWORD:?}
+      PG_GS_USER: ${PG_GS_USER:-tosca_gs}
+      PG_GS_PASSWORD: ${PG_GS_PASSWORD:?}
+      PG_SCHEMA_API: ${PG_SCHEMA_API:-api_schema}
+      PG_SCHEMA_GEOSERVER: ${PG_SCHEMA_GEOSERVER:-gs_auth_role_schema}
+      PG_SCHEMA_GIS: ${PG_SCHEMA_GIS:-gis_schema}
+      PG_SCHEMA_JDBCCONF: ${PG_SCHEMA_JDBCCONF:-gs_jdbcconfig_schema}
+    ports:
+      # For backups and admin tools on the host only.
+      - "127.0.0.1:${DB_PORT:-5432}:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./config/postgis:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB} -h 127.0.0.1 -p 5432"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+    restart: unless-stopped
+
+  geoserver:
+    image: ${GEOSERVER_IMAGE:?}
+    environment:
+      PROD_MODE: "true"
+      GEOSERVER_DATA_DIR: /geoserver_data/data
+      GEOSERVER_SECURITY_MODE: ${GEOSERVER_SECURITY_MODE:-default}
+      GEOSERVER_ADMIN_USER: ${GEOSERVER_ADMIN_USER:-admin}
+      GEOSERVER_ADMIN_PASSWORD: ${GEOSERVER_ADMIN_PASSWORD:?}
+      GEOSERVER_PUBLIC_URL: ${TOSCA_GEOSERVER_URL:?}
+      PROXY_BASE_URL: ${TOSCA_GEOSERVER_URL:?}
+      GEOSERVER_USE_HEADERS_PROXY_URL: "true"
+      GEOSERVER_CORS_ENABLED: "true"
+      GEOSERVER_CORS_ALLOWED_ORIGINS: ${GEOSERVER_CORS_ALLOWED_ORIGINS:?}
+      GEOSERVER_CORS_ALLOWED_METHODS: GET,POST,PUT,DELETE,HEAD,OPTIONS
+      GEOSERVER_CORS_ALLOWED_HEADERS: Authorization,Content-Type,X-Requested-With
+      GEOSERVER_ALLOW_WILDCARD_CORS: "false"
+      GEOSERVER_CSRF_WHITELIST: ${GEOSERVER_CSRF_WHITELIST:?}
+      GEOSERVER_CSRF_DISABLED: "false"
+      # If this list differs from the one built into the image, the image
+      # downloads plugins when it starts.
+      OFFICIAL_PLUGINS: ${GEOSERVER_OFFICIAL_PLUGINS-mbstyle,vectortiles}
+      COMMUNITY_PLUGINS: ${GEOSERVER_COMMUNITY_PLUGINS-}
+      BUILD_JDBC_PLUGINS: "false"
+      GEOSERVER_ENABLE_JDBC_ROLE: ${GEOSERVER_ENABLE_JDBC_ROLE:-false}
+      GEOSERVER_ENABLE_JDBC_AUTH: ${GEOSERVER_ENABLE_JDBC_AUTH:-false}
+      GEOSERVER_ENABLE_JDBC_CONFIG: ${GEOSERVER_ENABLE_JDBC_CONFIG:-false}
+      ENABLE_JDBC_CONFIG: ${GEOSERVER_ENABLE_JDBC_CONFIG:-false}
+      ENABLE_JDBC_LOGIN: ${GEOSERVER_ENABLE_JDBC_AUTH:-false}
+      GEOSERVER_JDBC_CONFIG_IMPORT: "false"
+      GEOSERVER_JDBC_EXTRA_ROLES: ""
+      JDBC_LOGIN_SERVICE_NAME: jdbc_login
+      JDBC_AUTH_SERVICE_NAME: jdbc_auth
+      GS_ROLE_SERVICE_NAME: jdbc_role
+      GS_ADMIN_ROLE: ADMIN
+      GS_GROUP_ADMIN_ROLE: GROUP_ADMIN
+      GEOSERVER_DB_BACKEND: POSTGRES
+      GEOSERVER_DB_HOST: db
+      GEOSERVER_DB_PORT: "5432"
+      GEOSERVER_DB_NAME: ${PG_DATABASE:-tosca}
+      GEOSERVER_DB_USER: ${PG_GS_USER:-tosca_gs}
+      GEOSERVER_DB_PASSWORD: ${PG_GS_PASSWORD:?}
+      GEOSERVER_DB_SCHEMA: ${PG_SCHEMA_GEOSERVER:-gs_auth_role_schema}
+      GS_JDBC_URL: jdbc:postgresql://db:5432/${PG_DATABASE:-tosca}?currentSchema=${PG_SCHEMA_GEOSERVER:-gs_auth_role_schema}
+      PG_HOST: db
+      PG_DOCKER_PORT: "5432"
+      PG_DATABASE: ${PG_DATABASE:-tosca}
+      PG_GS_USER: ${PG_GS_USER:-tosca_gs}
+      PG_GS_PASSWORD: ${PG_GS_PASSWORD:?}
+      PG_SCHEMA_API: ${PG_SCHEMA_API:-api_schema}
+      PG_SCHEMA_GEOSERVER: ${PG_SCHEMA_GEOSERVER:-gs_auth_role_schema}
+      PG_SCHEMA_GIS: ${PG_SCHEMA_GIS:-gis_schema}
+      PG_SCHEMA_JDBCCONF: ${PG_SCHEMA_JDBCCONF:-gs_jdbcconfig_schema}
+      GEOSERVER_JVM_XMS: ${GEOSERVER_JVM_XMS:-1G}
+      GEOSERVER_JVM_XMX: ${GEOSERVER_JVM_XMX:-2G}
+      DISK_QUOTA_ENABLED: "false"
+    ports:
+      - "${BIND_ADDRESS:-0.0.0.0}:${GEOSERVER_PORT:-8585}:8080"
+    volumes:
+      - geoserver_data:/geoserver_data/data
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS -o /dev/null http://127.0.0.1:8080/geoserver/web/"]
+      interval: 15s
+      timeout: 10s
+      retries: 40
+      start_period: 60s
+    restart: unless-stopped
+
+  # The GeoServer image starts with the built-in admin/geoserver account and
+  # does not apply GEOSERVER_ADMIN_PASSWORD itself; this sets it over REST.
+  geoserver-init:
+    image: ${CURL_IMAGE:?}
+    depends_on:
+      geoserver:
+        condition: service_healthy
+    environment:
+      GEOSERVER_ADMIN_USER: ${GEOSERVER_ADMIN_USER:-admin}
+      GEOSERVER_ADMIN_PASSWORD: ${GEOSERVER_ADMIN_PASSWORD:?}
+    volumes:
+      - ./config/geoserver/init.sh:/init.sh:ro
+    entrypoint: ["sh", "/init.sh"]
+    restart: "no"
+
+  # Object storage for uploaded media: the upstream Garage image, unchanged.
+  garage:
+    image: ${GARAGE_IMAGE:?}
+    command: ["/garage", "server", "--single-node", "--default-access-key"]
+    environment:
+      GARAGE_RPC_SECRET: ${GARAGE_RPC_SECRET:?}
+      GARAGE_ADMIN_TOKEN: ${GARAGE_ADMIN_TOKEN:?}
+      # Garage creates this key on start-up, with the right to create buckets.
+      # It is the key the backend uses.
+      GARAGE_DEFAULT_ACCESS_KEY: ${S3_ACCESS_KEY_ID:?}
+      GARAGE_DEFAULT_SECRET_KEY: ${S3_SECRET_ACCESS_KEY:?}
+    ports:
+      # Browsers download media straight from here with signed URLs.
+      - "${BIND_ADDRESS:-0.0.0.0}:${STORAGE_PORT:-3900}:3900"
+    volumes:
+      - ./config/garage/garage.toml:/etc/garage.toml:ro
+      - garage_meta:/var/lib/garage/meta
+      - garage_data:/var/lib/garage/data
+    healthcheck:
+      # The image has no shell; this runs the binary directly.
+      test: ["CMD", "/garage", "status"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    restart: unless-stopped
+
+  # Creates the media buckets that are missing and applies their CORS rules.
+  storage-init:
+    <<: *backend-job
+    command: ["init_storage"]
+    environment:
+      <<: *backend-environment
+      # Talks to Garage inside the Compose network, so it does not depend on
+      # the public address being reachable yet.
+      S3_ENDPOINT_URL: http://garage:3900
+    depends_on:
+      garage:
+        condition: service_healthy
+
+  migrate:
+    <<: *backend-job
+    command: ["migrate", "--noinput"]
+    environment: *backend-environment
+    depends_on:
+      db:
+        condition: service_healthy
+
+  django:
+    image: ${BACKEND_IMAGE:?}
+    environment: *backend-environment
+    volumes:
+      - django_logs:/app/logs
+    ports:
+      - "${BIND_ADDRESS:-0.0.0.0}:${API_PORT:-8000}:8000"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      storage-init:
+        condition: service_completed_successfully
+      geoserver-init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS -H \"Host: $${DJANGO_HEALTHCHECK_HOST}\" http://127.0.0.1:8000/readyz >/dev/null"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 90s
+    restart: unless-stopped
+
+  # The web app: static files, configured when the container starts.
+  # Every value here is public: it is sent to the browser in /config.js.
+  web:
+    image: ${FRONTEND_IMAGE:?}
+    environment:
+      VITE_BACKEND_ROOT_URL: ${TOSCA_API_URL:?}
+      VITE_GEONODE_REST_URL: ${TOSCA_API_URL:?}/api
+      VITE_GEOSERVER_BASE_URL: ${TOSCA_GEOSERVER_URL:?}
+      VITE_APP_BRAND_NAME: ${APP_BRAND_NAME:-TOSCA}
+      VITE_ENABLED_FEATURES: ${ENABLED_FEATURES:-}
+      VITE_MAP_START_LNG: ${MAP_START_LNG:-10.0}
+      VITE_MAP_START_LAT: ${MAP_START_LAT:-53.55}
+      VITE_MAP_START_ZOOM: ${MAP_START_ZOOM:-11}
+      VITE_MAPTILER_API_KEY: ${MAPTILER_API_KEY:?}
+      # Optional groups: leave all of a group empty to turn the feature off.
+      VITE_INHOUSE_MAP_BASE_URL: ${INHOUSE_MAP_BASE_URL:-}
+      VITE_INHOUSE_MAP_API_KEY: ${INHOUSE_MAP_API_KEY:-}
+      VITE_KEYCLOAK_URL: ${WEB_KEYCLOAK_URL:-}
+      VITE_KEYCLOAK_REALM: ${WEB_KEYCLOAK_REALM:-}
+      VITE_KEYCLOAK_CLIENT_ID: ${WEB_KEYCLOAK_CLIENT_ID:-}
+    ports:
+      - "${BIND_ADDRESS:-0.0.0.0}:${WEB_PORT:-8080}:80"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    restart: unless-stopped
+
+volumes:
+  pg_data:
+  geoserver_data:
+  garage_meta:
+  garage_data:
+  django_logs:

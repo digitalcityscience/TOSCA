@@ -1,0 +1,5 @@
+.env
+versions.local.env
+compose.override.yaml
+components/
+backups/

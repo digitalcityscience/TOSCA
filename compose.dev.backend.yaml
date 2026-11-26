@@ -1,0 +1,24 @@
+# Development: run the backend from the source checkout with auto-reload.
+# Used by `make dev-up`. Everything else stays as in compose.yaml.
+#
+# The backend image supplies Python and the dependencies; the application code
+# is mounted over it, so saving a file restarts the server. After changing
+# dependencies or the Dockerfile, run `make build-local SERVICE=django`.
+
+x-backend-source: &backend-source
+  - ${BACKEND_SRC:-./components/TOSCA-Backend}/tosca_api:/app/tosca_api:ro
+  - ${BACKEND_SRC:-./components/TOSCA-Backend}/templates:/app/templates:ro
+  - ${BACKEND_SRC:-./components/TOSCA-Backend}/scripts:/app/scripts:ro
+  - ${BACKEND_SRC:-./components/TOSCA-Backend}/manage.py:/app/manage.py:ro
+
+services:
+  django:
+    command: ["/venv/bin/python", "manage.py", "runserver", "0.0.0.0:8000"]
+    volumes: *backend-source
+
+  # Migrations written in the checkout are applied on the next `make dev-up`.
+  migrate:
+    volumes: *backend-source
+
+  storage-init:
+    volumes: *backend-source
