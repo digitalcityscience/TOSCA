@@ -6,6 +6,19 @@ tested together (see `versions.env` at the release tag). Versions are
 
 ## [Unreleased]
 
+## [2026.11.1] - 2026-11-26
+
+First platform release. It pins the first versioned component images, built
+from the code that runs the NGCN installation:
+
+| Component | Version |
+|---|---|
+| TOSCA-Backend | 1.0.0 |
+| TOSCA-Frontend | 1.0.0 |
+| tosca-geoserver | 2.28.5-tosca.1 |
+| PostGIS | 16-3.4 (upstream) |
+| Garage | v2.3.0 (upstream) |
+
 ### Added
 - Docker Compose stack for the whole platform with `make` commands to run,
   update, back up and develop it; `versions.env` pins the component images.
