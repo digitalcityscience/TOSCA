@@ -1,16 +1,20 @@
 # TOSCA
 
+[![Integration](https://github.com/digitalcityscience/TOSCA/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/digitalcityscience/TOSCA/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/digitalcityscience/TOSCA?sort=date)](https://github.com/digitalcityscience/TOSCA/releases)
+[![License: MIT](https://img.shields.io/github/license/digitalcityscience/TOSCA)](LICENSE)
+
 TOSCA is an open-source web platform for exploring and publishing urban
 geodata. This repository is the place to start: it runs the whole platform
 with Docker Compose and defines which component versions belong together.
 
-| Component | Repository | Image |
-|---|---|---|
-| Backend (Django API) | [TOSCA-Backend](https://github.com/digitalcityscience/TOSCA-Backend) | `ghcr.io/digitalcityscience/tosca-backend` |
-| Web app (Vue) | [TOSCA-Frontend](https://github.com/digitalcityscience/TOSCA-Frontend) | `ghcr.io/digitalcityscience/tosca-frontend` |
-| GeoServer | [geoserver_docker](https://github.com/digitalcityscience/geoserver_docker) | `ghcr.io/digitalcityscience/tosca-geoserver` |
-| PostgreSQL/PostGIS | upstream | `postgis/postgis` |
-| Object storage (Garage) | upstream | `dxflrs/garage` |
+| Component | Repository | Image | CI |
+|---|---|---|---|
+| Backend (Django API) | [TOSCA-Backend](https://github.com/digitalcityscience/TOSCA-Backend) | [`ghcr.io/digitalcityscience/tosca-backend`](https://github.com/digitalcityscience/TOSCA-Backend/pkgs/container/tosca-backend) | [![CI](https://github.com/digitalcityscience/TOSCA-Backend/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/digitalcityscience/TOSCA-Backend/actions/workflows/ci.yml) |
+| Web app (Vue) | [TOSCA-Frontend](https://github.com/digitalcityscience/TOSCA-Frontend) | [`ghcr.io/digitalcityscience/tosca-frontend`](https://github.com/digitalcityscience/TOSCA-Frontend/pkgs/container/tosca-frontend) | [![CI](https://github.com/digitalcityscience/TOSCA-Frontend/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/digitalcityscience/TOSCA-Frontend/actions/workflows/ci.yml) |
+| GeoServer | [geoserver_docker](https://github.com/digitalcityscience/geoserver_docker) | [`ghcr.io/digitalcityscience/tosca-geoserver`](https://github.com/digitalcityscience/geoserver_docker/pkgs/container/tosca-geoserver) | [![CI](https://github.com/digitalcityscience/geoserver_docker/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/digitalcityscience/geoserver_docker/actions/workflows/ci.yml) |
+| PostgreSQL/PostGIS | upstream | `postgis/postgis` | |
+| Object storage (Garage) | upstream | `dxflrs/garage` | |
 
 > **Status: not released yet.** The three TOSCA images have not been published
 > to GHCR, so `make up` cannot pull them. Until the first release, build them
@@ -19,35 +23,51 @@ with Docker Compose and defines which component versions belong together.
 
 ## Run TOSCA
 
-You need Docker with the Compose plugin, `make`, `openssl`, and a free
-[MapTiler](https://www.maptiler.com/) key for the base map.
+You need:
+
+- Docker with the Compose plugin, `make`, `openssl`;
+- a free [MapTiler](https://www.maptiler.com/) key for the base map;
+- **a Keycloak realm for sign-in.** TOSCA does not start without one today;
+  see [Sign-in](#sign-in).
 
 ```bash
 git clone https://github.com/digitalcityscience/TOSCA.git
 cd TOSCA
 
 make init          # creates .env with random secrets
-# edit .env: set PUBLIC_HOST and MAPTILER_API_KEY
+# edit .env: MAPTILER_API_KEY and the KEYCLOAK_* block
 make up
 ```
 
-`make up` prints the addresses when everything is healthy. `make smoke` checks
-the running stack end to end.
+`make up` checks `.env` first, then prints the addresses when everything is
+healthy. `make smoke` checks the running stack end to end.
 
-`PUBLIC_HOST` is the name or IP address people type in the browser. It must
-also be reachable from inside the containers, so use the machine's LAN address
-or DNS name, not `localhost`.
+On one machine the defaults are enough: the platform is at
+<http://tosca.localhost:8080>. For other people to reach it, set `PUBLIC_HOST`
+to the machine's LAN address or DNS name. `PUBLIC_HOST=localhost` does not
+work (inside a container it means the container); any `*.localhost` name does.
+Safari does not resolve `*.localhost` by itself; add
+`127.0.0.1 tosca.localhost` to `/etc/hosts` for it.
 
-### What you get, and what you do not
+### Sign-in
 
-- **Sign-in is off until you connect a Keycloak.** Without one the map is
-  public and nobody can log in, including to the admin pages. Fill in the
-  Keycloak block in `.env` to connect an existing Keycloak.
+The backend verifies sign-ins against a Keycloak realm and refuses to start
+without `KEYCLOAK_ISSUER`, `KEYCLOAK_JWKS_URL` and `KEYCLOAK_CLIENT_ID`. Fill in
+the `KEYCLOAK_*` block of `.env` for the backend, and the `WEB_KEYCLOAK_*`
+block for the web app's sign-in button. There is no built-in user database
+yet; [docs/roadmap/authentication.md](docs/roadmap/authentication.md) describes
+the current dependencies and the option of Django accounts being considered.
+
+### What else to know
+
 - **No TLS.** The stack serves plain http on the ports in `.env`. For a public
   server put a reverse proxy with TLS in front and set the four `TOSCA_*_URL`
   values to the https addresses.
 - **PostgreSQL is published on `127.0.0.1` only.** The web app, API, GeoServer
   and storage ports listen on all interfaces (`BIND_ADDRESS`).
+- On a new installation the one-shot services replace GeoServer's default
+  admin password, set the address GeoServer advertises, create the media
+  buckets and apply their CORS rules.
 
 ### Everyday commands
 
@@ -75,7 +95,7 @@ git clone https://github.com/digitalcityscience/TOSCA.git
 cd TOSCA
 
 make dev-setup     # clones the three component repositories into components/
-# edit .env: set PUBLIC_HOST and MAPTILER_API_KEY
+# edit .env: MAPTILER_API_KEY and the KEYCLOAK_* block
 make build-local   # builds the three images from components/
 make dev-up        # backend and web app from source, with reload on save
 ```
@@ -85,8 +105,11 @@ make dev-up        # backend and web app from source, with reload on save
 - Edit the code in `components/`. The web app reloads in the browser; the
   backend restarts when a Python file is saved.
 - After changing dependencies or a Dockerfile: `make build-local SERVICE=django`
-  (or `web`, `geoserver`).
-- `make test` and `make lint` run the components' own tests and linters.
+  (or `web`, `geoserver`). `LOCAL_TAG=name` builds under another tag than
+  `:local`, e.g. for a second installation on the same machine.
+- `make test` runs the components' own tests and `make lint` their linters,
+  with the same scripts as their CI, in containers: backend tests against a
+  throwaway PostGIS and Garage, web app unit tests, GeoServer image smoke test.
 - To work on checkouts elsewhere, set `BACKEND_SRC`, `FRONTEND_SRC` and
   `GEOSERVER_SRC` in `.env`.
 
@@ -106,18 +129,40 @@ web (static app, configured at start)
 | `.env` | this installation: addresses, ports, secrets | **no** |
 | `versions.local.env` | written by `make build-local`; use local images | no |
 | `compose.override.yaml` | installation-specific additions, e.g. extra mounts | no |
-| `compose.build.yaml` | adds `build:` for building from source | yes |
 | `compose.dev.*.yaml` | run a component from source | yes |
 
 The one-shot services are safe to run on every start: `migrate` applies
 pending migrations, `storage-init` creates missing media buckets and their
-CORS rules, `geoserver-init` replaces GeoServer's default admin password.
+CORS rules, `geoserver-init` replaces GeoServer's default admin password and
+sets its public address.
 
-## Versions
+## Versions and releases
 
-Each component has its own version. A platform release is a tag of this
-repository; `versions.env` at that tag pins the images that were tested
-together, each as `name:tag@sha256:digest`.
+| Repository | Versioning | Example tag |
+|---|---|---|
+| TOSCA-Backend | [SemVer](https://semver.org/) | `v1.0.0` |
+| TOSCA-Frontend | SemVer | `v1.0.0` |
+| geoserver_docker | GeoServer version + TOSCA revision | `v2.28.5-tosca.1` |
+| TOSCA (this repository) | CalVer `YYYY.MM.N` | `v2026.12.1` |
+
+Each component publishes its image from its own release tag, after its tests
+pass on the exact image that is pushed, and creates a GitHub Release. Published
+image tags are never overwritten.
+
+A **platform release** is a tag of this repository. `versions.env` at that tag
+pins the three TOSCA images that were tested together, each as
+`name:version@sha256:digest`, plus the upstream images. The release workflow
+([`release.yml`](.github/workflows/release.yml)) refuses to publish unless every
+image exists in its registry with exactly that digest and the integration test
+passes against them; it then creates a GitHub Release listing the component
+versions. It deploys nothing: installations update with `make update` when
+their operators decide to. The steps are in
+[docs/releasing.md](docs/releasing.md); the changes are in
+[CHANGELOG.md](CHANGELOG.md).
 
 `/api/version` on the API and `/version.json` on the web app report what a
-running installation actually serves.
+running installation actually serves; `make versions` shows all services.
+
+## License
+
+[MIT](LICENSE)
