@@ -8,7 +8,6 @@ SHELL := /bin/bash
 ENV_FILES := --env-file versions.env $(if $(wildcard versions.local.env),--env-file versions.local.env) $(if $(wildcard .env),--env-file .env)
 OVERRIDE  := $(if $(wildcard compose.override.yaml),-f compose.override.yaml)
 COMPOSE   := docker compose $(ENV_FILES) -f compose.yaml $(OVERRIDE)
-BUILD     := docker compose $(ENV_FILES) -f compose.yaml -f compose.build.yaml
 
 # Component checkouts. `make dev-setup` clones them into components/.
 BACKEND_SRC   ?= $(or $(shell sed -n 's/^BACKEND_SRC=//p' .env 2>/dev/null),./components/TOSCA-Backend)
@@ -22,6 +21,9 @@ DEV_FILES := $(if $(filter-out frontend,$(ONLY)),-f compose.dev.backend.yaml) \
              $(if $(filter-out backend,$(ONLY)),-f compose.dev.frontend.yaml) \
              $(if $(ONLY),,-f compose.dev.backend.yaml -f compose.dev.frontend.yaml)
 DEV := docker compose $(ENV_FILES) -f compose.yaml $(DEV_FILES)
+# The web app's dev server runs as you, so files it writes stay yours.
+export DEV_UID := $(shell id -u)
+export DEV_GID := $(shell id -g)
 
 .PHONY: help
 help: ## Show this list
@@ -33,6 +35,7 @@ init: ## Create .env with random secrets (first time only)
 	@scripts/init-env.sh
 
 up: .env ## Start TOSCA (pulls the images of this release if missing)
+	@scripts/preflight.sh
 	$(COMPOSE) up -d --wait --wait-timeout 900
 	@$(MAKE) --no-print-directory urls
 
@@ -46,6 +49,10 @@ ps: ## Show the containers
 
 logs: ## Follow the logs (SERVICE=django for one service)
 	$(COMPOSE) logs -f --tail 100 $(SERVICE)
+
+.PHONY: logs-once
+logs-once:
+	$(COMPOSE) logs --no-color --tail 200 $(SERVICE)
 
 config: ## Check the configuration and print the resolved Compose file
 	$(COMPOSE) config
@@ -65,8 +72,8 @@ urls:
 
 ##@ Update and back up
 .PHONY: pull update backup
-pull: ## Download the images of this release
-	$(COMPOSE) pull --ignore-buildable
+pull: ## Download the images of this release (locally built ones are skipped)
+	@COMPOSE="$(COMPOSE)" scripts/pull.sh
 
 update: pull backup ## Back up the database, then restart on the images in versions.env
 	$(COMPOSE) up -d --wait --wait-timeout 900
@@ -86,6 +93,9 @@ dev-setup: ## Clone the component repositories into components/ and create .env
 	@scripts/dev-setup.sh
 
 dev-up: .env ## Run backend and frontend from source with hot reload (ONLY=backend|frontend)
+	@scripts/preflight.sh
+	@# Create the node_modules mount point as you, before Docker creates it as root.
+	@$(if $(filter backend,$(ONLY)),,mkdir -p $(FRONTEND_SRC)/node_modules)
 	$(DEV) up -d --wait --wait-timeout 900
 	@$(MAKE) --no-print-directory urls
 
@@ -95,10 +105,13 @@ dev-down: ## Stop the development stack. Data volumes are kept
 dev-logs: ## Follow the development logs (SERVICE=web for one service)
 	$(DEV) logs -f --tail 100 $(SERVICE)
 
-test: ## Run the backend and frontend unit tests from the checkouts
-	$(MAKE) -C $(BACKEND_SRC) test
-	cd $(FRONTEND_SRC) && npm test -- --run
+test: ## Run the components' tests from the checkouts (in containers)
+	@scripts/check.sh test
 
-lint: ## Lint backend and frontend
-	cd $(BACKEND_SRC) && uvx ruff check .
-	cd $(FRONTEND_SRC) && npm run lint
+lint: ## Lint backend and frontend (in containers)
+	@scripts/check.sh lint
+
+##@ Release
+.PHONY: release-check
+release-check: ## Check that versions.env can be released (images exist with these digests)
+	@scripts/release-check.sh --registry

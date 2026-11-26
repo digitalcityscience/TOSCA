@@ -64,9 +64,9 @@ check "signed URL downloads the object"     tosca-smoke "$(http "$url")"
 check "allows the web app's origin (CORS)"  "$WEB" "$(header access-control-allow-origin -H "Origin: $WEB" "$url")"
 check "refuses unsigned access"             403 "$(code "${url%%\?*}")"
 if [[ -n $name ]]; then
-  $COMPOSE exec -T django gosu appuser /venv/bin/python manage.py shell -c "
+  if $COMPOSE exec -T django gosu appuser /venv/bin/python manage.py shell -c "
 from django.core.files.storage import storages
-storages['media_public'].delete('$name')" >/dev/null 2>&1 && ok "test object removed" || fail "test object removed"
+storages['media_public'].delete('$name')" >/dev/null 2>&1; then ok "test object removed"; else fail "test object removed"; fi
 fi
 
 echo

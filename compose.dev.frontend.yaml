@@ -3,17 +3,35 @@
 #
 # The Vite dev server replaces the nginx image on the same port and gets the
 # same VITE_* values, so the app is at the same address as with `make up`.
+# It runs as your own user (DEV_UID/DEV_GID, set by make), so the files it
+# writes into the checkout stay yours.
 
 services:
+  # node_modules is a volume Docker creates as root; hand it to your user.
+  web-deps:
+    image: ${DEV_NODE_IMAGE:-node:22.19.0-alpine}
+    user: "0:0"
+    command: ["chown", "-R", "${DEV_UID:-1000}:${DEV_GID:-1000}", "/app/node_modules"]
+    volumes:
+      - web_node_modules:/app/node_modules
+    restart: "no"
+
   web:
-    image: node:22-alpine
+    # Same Node.js as the component's .nvmrc.
+    image: ${DEV_NODE_IMAGE:-node:22.19.0-alpine}
+    user: "${DEV_UID:-1000}:${DEV_GID:-1000}"
     working_dir: /app
-    command: ["sh", "-c", "npm ci && exec npm run dev -- --host 0.0.0.0 --port 80"]
+    command: ["sh", "-c", "npm ci --no-audit --no-fund && exec npm run dev -- --host 0.0.0.0 --port 80"]
+    environment:
+      HOME: /tmp
     volumes:
       - ${FRONTEND_SRC:-./components/TOSCA-Frontend}:/app
-      # Kept in a volume so the container's packages do not mix with the ones
-      # installed on the host.
+      # Kept in a volume so the container's packages (built for Alpine Linux)
+      # do not mix with the ones installed on the host.
       - web_node_modules:/app/node_modules
+    depends_on:
+      web-deps:
+        condition: service_completed_successfully
     healthcheck:
       test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1/"]
       interval: 10s

@@ -7,7 +7,7 @@
 #   .env           this installation: addresses, ports, secrets (never committed)
 #
 # This file has no `build:` blocks: the normal path pulls released images.
-# compose.build.yaml adds them for building from source.
+# `make build-local` builds them from source instead.
 #
 # Start order:
 #   db ──────────────► migrate ──────┐
@@ -116,6 +116,12 @@ x-backend-environment: &backend-environment
 x-backend-job: &backend-job
   image: ${BACKEND_IMAGE:?}
   entrypoint: ["gosu", "appuser:appuser", "/venv/bin/python", "manage.py"]
+  extra_hosts: &local-host-alias
+    # For a single-machine install with PUBLIC_HOST=tosca.localhost: browsers
+    # resolve *.localhost to the machine itself, and this makes the same name
+    # reach the machine's published ports from inside the backend containers,
+    # so one storage address works for both. Harmless for any other PUBLIC_HOST.
+    - "${LOCAL_HOST_ALIAS:-tosca.localhost}:host-gateway"
   restart: "no"
 
 services:
@@ -219,7 +225,8 @@ services:
     restart: unless-stopped
 
   # The GeoServer image starts with the built-in admin/geoserver account and
-  # does not apply GEOSERVER_ADMIN_PASSWORD itself; this sets it over REST.
+  # does not apply GEOSERVER_ADMIN_PASSWORD itself; this sets it over REST,
+  # and sets the public address GeoServer advertises on a new data directory.
   geoserver-init:
     image: ${CURL_IMAGE:?}
     depends_on:
@@ -228,6 +235,7 @@ services:
     environment:
       GEOSERVER_ADMIN_USER: ${GEOSERVER_ADMIN_USER:-admin}
       GEOSERVER_ADMIN_PASSWORD: ${GEOSERVER_ADMIN_PASSWORD:?}
+      GEOSERVER_PUBLIC_URL: ${TOSCA_GEOSERVER_URL:?}
     volumes:
       - ./config/geoserver/init.sh:/init.sh:ro
     entrypoint: ["sh", "/init.sh"]
@@ -283,6 +291,7 @@ services:
   django:
     image: ${BACKEND_IMAGE:?}
     environment: *backend-environment
+    extra_hosts: *local-host-alias
     volumes:
       - django_logs:/app/logs
     ports:
