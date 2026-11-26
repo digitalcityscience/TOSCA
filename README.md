@@ -16,10 +16,9 @@ with Docker Compose and defines which component versions belong together.
 | PostgreSQL/PostGIS | upstream | `postgis/postgis` | |
 | Object storage (Garage) | upstream | `dxflrs/garage` | |
 
-> **Status: not released yet.** The three TOSCA images have not been published
-> to GHCR, so `make up` cannot pull them. Until the first release, build them
-> from source: follow [Develop TOSCA](#develop-tosca) up to `make build-local`,
-> then `make up`.
+The current release and its component versions are on the
+[Releases](https://github.com/digitalcityscience/TOSCA/releases) page;
+`versions.env` at a release tag lists the exact images.
 
 ## Run TOSCA
 
@@ -31,7 +30,7 @@ You need:
   see [Sign-in](#sign-in).
 
 ```bash
-git clone https://github.com/digitalcityscience/TOSCA.git
+git clone --branch v2026.11.1 https://github.com/digitalcityscience/TOSCA.git
 cd TOSCA
 
 make init          # creates .env with random secrets

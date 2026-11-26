@@ -69,11 +69,54 @@ Version numbers: backend and web app use SemVer (`v1.2.3`, pre-releases
 - GHCR keeps every pushed digest; `versions.env` pins digests, so even a
   replaced tag would not change what an installation pulls.
 
+## What a release has been tested on
+
+- **amd64**: every component image is tested before it is published (unit
+  tests and a smoke test of the exact build that is pushed), and the platform
+  release runs a full installation of the pinned images.
+- **arm64**: built from the same commit in the same run and published in the
+  same multi-platform image, but **not tested**. No workflow starts the arm64
+  image.
+- **GeoServer community plugins** (`jdbcconfig`, `jdbcstore`,
+  `sec-oauth2-openid-connect`) come from build.geoserver.org's nightly builds
+  for the GeoServer branch. Two builds of the same commit can therefore contain
+  different plugin binaries. What is tested and published is a single build,
+  and the platform pins it by digest, so a release does not change after the
+  fact; but rebuilding an old tag will not reproduce it byte for byte.
+
+## One-time GitHub setup
+
+These settings need a repository admin; workflows cannot set them.
+
+- **Required status checks** on `main` (Settings → Rules → Rulesets, or
+  Branches → branch protection), so a pull request cannot be merged with
+  failing CI:
+
+  | Repository | Required checks |
+  |---|---|
+  | TOSCA-Backend | `Secret scan`, `Build, lint, test, smoke` |
+  | TOSCA-Frontend | `Secret scan`, `Lint, test, build`, `Build and smoke test the image` |
+  | geoserver_docker | `Secret scan`, `Build and smoke test the image` |
+  | TOSCA | `Static checks`, `New installation, make up + make smoke` |
+
+- **Tag ruleset** in each of the four repositories: target `v*`, restrict
+  updates and deletions (and creations to maintainers, if wanted).
+- **GHCR write access**: each package (`tosca-backend`, `tosca-frontend`,
+  `tosca-geoserver`) → Package settings → *Manage Actions access* must give
+  its repository the *Write* role, otherwise the release workflow's
+  `GITHUB_TOKEN` cannot push.
+- **Merge method**: use *Create a merge commit* for component pull requests
+  that contain other people's commits, so their authorship is kept.
+- **Pushing workflow files** needs a token with the `workflow` scope (classic)
+  or *Workflows: write* (fine-grained).
+
 ## Integration test details
 
 `scripts/ci/integration.sh` creates a new `.env` with `make init`, starts the
 stack with `make up`, runs `make smoke`, deploys a second time over the same
-volumes and runs `make smoke` again. The backend gets placeholder settings for
+volumes and runs `make smoke` again. With pinned images it then checks that
+each running service uses exactly the pinned digest and that the image's
+version label is the pinned version (`scripts/ci/verify-pinned.sh`). The backend gets placeholder settings for
 an unreachable Keycloak realm, because it does not start without one (see
 [roadmap/authentication.md](roadmap/authentication.md)); no check is switched
 off, and nobody can sign in during the test.
