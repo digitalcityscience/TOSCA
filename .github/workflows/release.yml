@@ -1,0 +1,94 @@
+name: Platform release
+
+# Publishes a TOSCA platform release from a tag vYYYY.MM.N of this repository.
+#
+# It only publishes when:
+#   - versions.env pins all images as name:tag@sha256:digest, every digest
+#     exists in its registry and each TOSCA image's tag still points at it;
+#   - TOSCA_VERSION in versions.env and a CHANGELOG.md section match the tag;
+#   - a new installation of exactly those images passes `make up` + `make smoke`.
+#
+# Then it creates the GitHub Release with the component versions. It does not
+# build or push images, and it deploys nothing: installations update with
+# `make update` when their operators decide to.
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing platform tag to publish, e.g. v2026.12.1 (only if the tag push run failed)"
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: platform-release-${{ github.event.inputs.tag || github.ref_name }}
+  cancel-in-progress: false
+
+env:
+  TAG: ${{ github.event.inputs.tag || github.ref_name }}
+
+jobs:
+  check:
+    name: Check versions.env and the tag
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: refs/tags/${{ env.TAG }}
+          fetch-depth: 0
+      - name: Tag on main
+        run: |
+          git fetch -q origin main
+          git merge-base --is-ancestor "$(git rev-parse HEAD)" origin/main \
+            || { echo "::error::$TAG does not point at a commit on main"; exit 1; }
+      - name: Images exist with these digests; version and changelog match
+        run: scripts/release-check.sh --registry "$TAG"
+
+  integration:
+    name: New installation of the pinned images
+    needs: check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: refs/tags/${{ env.TAG }}
+      - name: Integration test
+        run: scripts/ci/integration.sh
+
+  release:
+    name: GitHub Release
+    needs: integration
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # create the GitHub Release
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: refs/tags/${{ env.TAG }}
+      - name: Create the GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          version=${TAG#v}
+          {
+            awk -v v="$version" '$0 ~ "^## \\[" v "\\]" {on=1; next} on && /^## \[/ {exit} on' CHANGELOG.md
+            echo
+            echo "### Components"
+            echo
+            scripts/release-check.sh --notes
+            echo
+            echo "### Install or update"
+            echo
+            echo '```bash'
+            echo "git clone --branch $TAG https://github.com/digitalcityscience/TOSCA.git   # new installation"
+            echo "git fetch --tags && git checkout $TAG && make update                       # existing installation"
+            echo '```'
+            echo
+            echo "Tested before publishing: a new installation of exactly these images with \`make up\` and \`make smoke\`, deployed twice."
+          } > "${{ runner.temp }}/notes.md"
+          gh release create "$TAG" --verify-tag --title "TOSCA $version" --notes-file "${{ runner.temp }}/notes.md"

@@ -1,0 +1,107 @@
+name: Integration
+
+# Checks this repository and runs the platform integration test: a new
+# installation from empty volumes with `make up`, checked with `make smoke`.
+#
+# Which images: the ones pinned in versions.env when all three TOSCA images
+# carry a digest (a release candidate); otherwise the three components are
+# built from source at the given refs (default: main). Nothing is pushed and
+# nothing is deployed.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    # Weekly, to notice when the components' main branches stop fitting
+    # together.
+    - cron: "17 4 * * 1"
+  workflow_dispatch:
+    inputs:
+      backend_ref:
+        description: TOSCA-Backend ref to build when versions.env is not pinned
+        default: main
+      frontend_ref:
+        description: TOSCA-Frontend ref to build when versions.env is not pinned
+        default: main
+      geoserver_ref:
+        description: geoserver_docker ref to build when versions.env is not pinned
+        default: main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: integration-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  static:
+    name: Static checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - name: gitleaks (commits of this change)
+        run: |
+          range=${{ github.event_name == 'pull_request' && format('{0}..{1}', github.event.pull_request.base.sha, github.event.pull_request.head.sha) || 'HEAD~1..HEAD' }}
+          docker run --rm -v "$PWD:/repo" zricethezav/gitleaks:v8.21.2 \
+            git /repo --redact --no-banner --log-opts="$range"
+      - name: shellcheck
+        run: |
+          docker run --rm -v "$PWD:/mnt" koalaman/shellcheck:v0.10.0 scripts/*.sh scripts/ci/*.sh
+          docker run --rm -v "$PWD:/mnt" koalaman/shellcheck:v0.10.0 -s sh config/geoserver/init.sh config/postgis/init001.sh
+      - name: actionlint
+        run: docker run --rm -v "$PWD:/repo" -w /repo rhysd/actionlint:1.7.7
+      - name: Compose files resolve with a new .env
+        run: |
+          scripts/init-env.sh
+          sed -i 's|^MAPTILER_API_KEY=.*|MAPTILER_API_KEY=x|' .env
+          make config >/dev/null
+          DEV_UID=1000 DEV_GID=1000 docker compose --env-file versions.env --env-file .env \
+            -f compose.yaml -f compose.dev.backend.yaml -f compose.dev.frontend.yaml config >/dev/null
+      - name: versions.env format
+        run: |
+          if grep -q ':unreleased$' versions.env; then
+            echo "versions.env is not pinned yet (before the first release)."
+          else
+            scripts/release-check.sh
+          fi
+
+  integration:
+    name: New installation, make up + make smoke
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Which images
+        id: images
+        run: |
+          if grep -Eq '^(BACKEND|FRONTEND|GEOSERVER)_IMAGE=.*:unreleased$' versions.env; then
+            echo "mode=build" >> "$GITHUB_OUTPUT"
+          else
+            echo "mode=pinned" >> "$GITHUB_OUTPUT"
+            scripts/release-check.sh --registry
+          fi
+
+      - name: Check out the components
+        if: steps.images.outputs.mode == 'build'
+        run: |
+          set -euo pipefail
+          clone() {
+            git clone -q --recurse-submodules "https://github.com/digitalcityscience/$1.git" "components/$1"
+            git -C "components/$1" checkout -q "$2"
+            git -C "components/$1" submodule update -q --init --recursive
+            echo "$1 at $2: $(git -C "components/$1" rev-parse HEAD)"
+          }
+          clone TOSCA-Backend "${{ github.event.inputs.backend_ref || 'main' }}"
+          clone TOSCA-Frontend "${{ github.event.inputs.frontend_ref || 'main' }}"
+          clone geoserver_docker "${{ github.event.inputs.geoserver_ref || 'main' }}"
+
+      - name: Build the components
+        if: steps.images.outputs.mode == 'build'
+        run: LOCAL_TAG=ci scripts/build-local.sh
+
+      - name: Integration test
+        run: scripts/ci/integration.sh
