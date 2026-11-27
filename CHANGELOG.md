@@ -6,6 +6,18 @@ tested together (see `versions.env` at the release tag). Versions are
 
 ## [Unreleased]
 
+### Changed
+- Environment files are named `.env.<mode>` with the mode written out, as in
+  every TOSCA repository. An installation's settings are in `.env.production`
+  (was `.env`), created by `make init` from `.env.production.example` (was
+  `.env.example`). A development checkout uses `.env.development`, created by
+  `make dev-setup` from `.env.development.example`.
+
+### Upgrading
+- Rename the settings file once before the first `make` command:
+  `mv .env .env.production`. `make` refuses to run until then, so an
+  installation cannot start without its settings.
+
 ## [2026.11.1] - 2026-11-26
 
 First platform release. It pins the first versioned component images, built

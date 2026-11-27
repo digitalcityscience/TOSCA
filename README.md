@@ -33,12 +33,12 @@ You need:
 git clone --branch v2026.11.1 https://github.com/digitalcityscience/TOSCA.git
 cd TOSCA
 
-make init          # creates .env with random secrets
-# edit .env: MAPTILER_API_KEY and the KEYCLOAK_* block
+make init          # creates .env.production with random secrets
+# edit .env.production: MAPTILER_API_KEY and the KEYCLOAK_* block
 make up
 ```
 
-`make up` checks `.env` first, then prints the addresses when everything is
+`make up` checks `.env.production` first, then prints the addresses when everything is
 healthy. `make smoke` checks the running stack end to end.
 
 On one machine the defaults are enough: the platform is at
@@ -52,14 +52,14 @@ Safari does not resolve `*.localhost` by itself; add
 
 The backend verifies sign-ins against a Keycloak realm and refuses to start
 without `KEYCLOAK_ISSUER`, `KEYCLOAK_JWKS_URL` and `KEYCLOAK_CLIENT_ID`. Fill in
-the `KEYCLOAK_*` block of `.env` for the backend, and the `WEB_KEYCLOAK_*`
+the `KEYCLOAK_*` block of `.env.production` for the backend, and the `WEB_KEYCLOAK_*`
 block for the web app's sign-in button. There is no built-in user database
 yet; [docs/roadmap/authentication.md](docs/roadmap/authentication.md) describes
 the current dependencies and the option of Django accounts being considered.
 
 ### What else to know
 
-- **No TLS.** The stack serves plain http on the ports in `.env`. For a public
+- **No TLS.** The stack serves plain http on the ports in `.env.production`. For a public
   server put a reverse proxy with TLS in front and set the four `TOSCA_*_URL`
   values to the https addresses.
 - **PostgreSQL is published on `127.0.0.1` only.** The web app, API, GeoServer
@@ -94,7 +94,8 @@ git clone https://github.com/digitalcityscience/TOSCA.git
 cd TOSCA
 
 make dev-setup     # clones the three component repositories into components/
-# edit .env: MAPTILER_API_KEY and the KEYCLOAK_* block
+                   # and creates .env.development
+# edit .env.development: MAPTILER_API_KEY and the KEYCLOAK_* block
 make build-local   # builds the three images from components/
 make dev-up        # backend and web app from source, with reload on save
 ```
@@ -110,7 +111,7 @@ make dev-up        # backend and web app from source, with reload on save
   with the same scripts as their CI, in containers: backend tests against a
   throwaway PostGIS and Garage, web app unit tests, GeoServer image smoke test.
 - To work on checkouts elsewhere, set `BACKEND_SRC`, `FRONTEND_SRC` and
-  `GEOSERVER_SRC` in `.env`.
+  `GEOSERVER_SRC` in `.env.development`.
 
 ## How it fits together
 
@@ -125,10 +126,30 @@ web (static app, configured at start)
 |---|---|---|
 | `compose.yaml` | the services and what each one is given | yes |
 | `versions.env` | the platform release: exact image versions | yes |
-| `.env` | this installation: addresses, ports, secrets | **no** |
+| `.env.production` | this installation: addresses, ports, secrets | **no** |
+| `.env.development` | the same for a development checkout | **no** |
+| `.env.production.example`, `.env.development.example` | the templates the two files are created from | yes |
 | `versions.local.env` | written by `make build-local`; use local images | no |
 | `compose.override.yaml` | installation-specific additions, e.g. extra mounts | no |
 | `compose.dev.*.yaml` | run a component from source | yes |
+
+### Environment files
+
+One naming rule in all four TOSCA repositories: the committed template is
+`.env.<mode>.example`, your copy is `.env.<mode>`, and the mode is written out
+in full (`production`, `development`). There is no plain `.env`, `.env.dev`,
+`.env.prod` or `.env.example`.
+
+- `make init` creates `.env.production` from `.env.production.example`;
+  `make dev-setup` creates `.env.development` from `.env.development.example`.
+  Both fill in random secrets.
+- The `dev-*` commands read `.env.development`. Every other command reads
+  `.env.production` when it exists, otherwise `.env.development`;
+  `ENV=production` or `ENV=development` chooses explicitly.
+- The two templates define the same variables (CI checks it): add a new
+  variable to both.
+- An installation made before this rule has a `.env`; rename it once:
+  `mv .env .env.production`. `make` refuses to run until then.
 
 The one-shot services are safe to run on every start: `migrate` applies
 pending migrations, `storage-init` creates missing media buckets and their

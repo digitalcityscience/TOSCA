@@ -24,7 +24,7 @@ realm), which lets everything start while no token can ever be accepted — so
 nobody can sign in, and every endpoint that requires a user answers 401/403.
 
 To run TOSCA you therefore point it at an existing Keycloak realm (the
-`KEYCLOAK_*` block of `.env`).
+`KEYCLOAK_*` block of `.env.production`).
 
 ## Where Keycloak is used
 

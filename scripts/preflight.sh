@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
-# Checks .env for the settings without which the stack cannot start, before
+# Checks the environment file (.env.production, or the one in ENV_FILE) for
+# the settings without which the stack cannot start, before
 # anything is started, and says what to do. Run by `make up` and `make dev-up`.
 set -Eeuo pipefail
 cd "$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")/.."
 
-value() { sed -n "s/^$1=//p" .env | sed 's/[[:space:]]*#.*$//; s/[[:space:]]*$//' | tail -n 1; }
+file=${ENV_FILE:-.env.production}
+value() { sed -n "s/^$1=//p" "$file" | sed 's/[[:space:]]*#.*$//; s/[[:space:]]*$//' | tail -n 1; }
 problems=()
 
 host=$(value PUBLIC_HOST)
@@ -25,7 +27,7 @@ if (( ${#missing[@]} )); then
 fi
 
 if (( ${#problems[@]} )); then
-  echo "Cannot start TOSCA with this .env:" >&2
+  echo "Cannot start TOSCA with this $file:" >&2
   printf '  - %s\n' "${problems[@]}" >&2
   exit 1
 fi

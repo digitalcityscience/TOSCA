@@ -54,12 +54,17 @@ jobs:
           docker run --rm -v "$PWD:/mnt" koalaman/shellcheck:v0.10.0 -s sh config/geoserver/init.sh config/postgis/init001.sh
       - name: actionlint
         run: docker run --rm -v "$PWD:/repo" -w /repo rhysd/actionlint:1.7.7
-      - name: Compose files resolve with a new .env
+      - name: Environment templates define the same variables
         run: |
-          scripts/init-env.sh
-          sed -i 's|^MAPTILER_API_KEY=.*|MAPTILER_API_KEY=x|' .env
+          names() { grep -oE '^#?[A-Z][A-Z0-9_]*=' "$1" | tr -d '#'; }
+          diff <(names .env.production.example) <(names .env.development.example)
+      - name: Compose files resolve with a new environment file
+        run: |
+          scripts/init-env.sh production
+          scripts/init-env.sh development
+          sed -i 's|^MAPTILER_API_KEY=.*|MAPTILER_API_KEY=x|' .env.production .env.development
           make config >/dev/null
-          DEV_UID=1000 DEV_GID=1000 docker compose --env-file versions.env --env-file .env \
+          DEV_UID=1000 DEV_GID=1000 docker compose --env-file versions.env --env-file .env.development \
             -f compose.yaml -f compose.dev.backend.yaml -f compose.dev.frontend.yaml config >/dev/null
       - name: versions.env format
         run: |

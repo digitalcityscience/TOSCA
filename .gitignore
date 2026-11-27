@@ -1,4 +1,7 @@
+# Environment files: only the *.example templates are committed.
 .env
+.env.*
+!.env.*.example
 versions.local.env
 compose.override.yaml
 components/

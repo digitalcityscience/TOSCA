@@ -1,10 +1,11 @@
 # TOSCA platform stack.
 #
-# Use `make` (see `make help`); it passes versions.env and .env to Compose.
+# Use `make` (see `make help`); it passes versions.env and .env.production to Compose.
 # Calling `docker compose` directly on this file will not find the image names.
 #
-#   versions.env   which images (committed; the platform release)
-#   .env           this installation: addresses, ports, secrets (never committed)
+#   versions.env      which images (committed; the platform release)
+#   .env.production   this installation: addresses, ports, secrets (never committed)
+#                     (.env.development in a development checkout)
 #
 # This file has no `build:` blocks: the normal path pulls released images.
 # `make build-local` builds them from source instead.
@@ -26,7 +27,7 @@ x-backend-environment: &backend-environment
   DJANGO_SETTINGS_MODULE: tosca_api.settings.production
   TOSCA_VERSION: ${TOSCA_VERSION:-unreleased}
 
-  DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:?run `make init` to create .env}
+  DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:?run `make init` to create .env.production}
   FIELD_ENCRYPTION_KEY: ${FIELD_ENCRYPTION_KEY:?}
   DJANGO_DEBUG: "False"
   DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS:?}
