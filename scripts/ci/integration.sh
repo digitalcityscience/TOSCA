@@ -11,16 +11,18 @@
 # an unreachable realm (keycloak.invalid). Every check stays on; no token can
 # be accepted, so endpoints that need a user answer 401/403.
 #
-# It refuses to run where a .env already exists, so it never touches a real
-# installation.
+# It refuses to run where an environment file already exists, so it never
+# touches a real installation.
 set -Eeuo pipefail
 cd "$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")/../.."
 
-[[ ! -e .env ]] || { echo "A .env exists here; run the integration test in a separate checkout." >&2; exit 1; }
+for f in .env .env.production .env.development; do
+  [[ ! -e $f ]] || { echo "$f exists here; run the integration test in a separate checkout." >&2; exit 1; }
+done
 
 project=${CI_PROJECT_NAME:-tosca-ci}
 scripts/init-env.sh >/dev/null
-set_env() { sed -i "s|^$1=.*|$1=$2|" .env; }
+set_env() { sed -i "s|^$1=.*|$1=$2|" .env.production; }
 set_env COMPOSE_PROJECT_NAME "$project"
 set_env MAPTILER_API_KEY ci-placeholder
 set_env KEYCLOAK_SERVER_URL https://keycloak.invalid/

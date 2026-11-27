@@ -112,7 +112,7 @@ These settings need a repository admin; workflows cannot set them.
 
 ## Integration test details
 
-`scripts/ci/integration.sh` creates a new `.env` with `make init`, starts the
+`scripts/ci/integration.sh` creates a new `.env.production` with `make init`, starts the
 stack with `make up`, runs `make smoke`, deploys a second time over the same
 volumes and runs `make smoke` again. With pinned images it then checks that
 each running service uses exactly the pinned digest and that the image's
